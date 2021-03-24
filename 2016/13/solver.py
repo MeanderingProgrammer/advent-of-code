@@ -1,0 +1,53 @@
+from collections import defaultdict
+
+import aoc_search
+from aoc_board import Grid, Point
+from aoc_computer import Computer
+from aoc_parser import Parser
+
+
+TEST = False
+FAVORITE_NUMBER = 10 if TEST else 1350
+GOAL = Point(7, 4) if TEST else Point(31, 39)
+
+GRID = Grid()
+
+def main():
+    start = Point(1, 1)
+    GRID[start] = False
+    # Part 1 = 92
+    print(aoc_search.bfs(start, GOAL, get_adjacent))
+    # Part 2 = 124
+    print(len(aoc_search.reachable(start, 50, get_adjacent)))
+
+
+def get_adjacent(position):
+    result = set()
+    for adjacent in position.adjacent():
+        if is_valid(adjacent):
+            if adjacent not in GRID:
+                GRID[adjacent] = is_wall(adjacent)
+            if not GRID[adjacent]:
+                result.add(adjacent)
+    return result
+
+
+def is_valid(position):
+    x = position.coords[0]
+    y = position.coords[1]
+    return x >= 0 and y >= 0 
+
+
+def is_wall(position):
+    x = position.coords[0]
+    y = position.coords[1]
+    value = (x*x) + (3*x) + (2*x*y) + y + y*y
+    value += FAVORITE_NUMBER
+    value = bin(value)[2:]
+    num_ones = sum([v == '1' for v in value])
+    return num_ones % 2 == 1
+
+
+if __name__ == '__main__':
+    main()
+
