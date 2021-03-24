@@ -1,0 +1,233 @@
+from aoc_parser import Parser
+from aoc_board import Grid, Point
+
+
+FILE_NAME = 'data'
+
+
+class Parameter:
+
+    def __init__(self, register):
+        self.register = register
+
+    def get(self, value, regs):
+        return regs.get(value) if self.register else value
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return 'r' if self.register else 'i'
+
+
+class Operator:
+
+    def __init__(self, register, symbol, f):
+        self.v1 = Parameter(True)
+        self.v2 = Parameter(register)
+        self.symbol = symbol
+        self.f = f
+
+    def process(self, instruction, regs):
+        a = self.v1.get(instruction.one(), regs)
+        b = self.v2.get(instruction.two(), regs)
+        regs.set(instruction.three(), self.f(a, b))
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return '{}{}'.format(self.symbol, self.v2)
+
+
+class Add(Operator):
+
+    def __init__(self, register):
+        super().__init__(register, 'add', lambda x, y: x + y)
+
+
+class Mult(Operator):
+
+    def __init__(self, register):
+        super().__init__(register, 'mul', lambda x, y: x * y)
+
+
+class And(Operator):
+
+    def __init__(self, register):
+        super().__init__(register, 'ban', lambda x, y: x & y)
+
+
+class Or(Operator):
+
+    def __init__(self, register):
+        super().__init__(register, 'bor', lambda x, y: x | y)
+
+
+class Set:
+
+    def __init__(self, register):
+        self.v1 = Parameter(register)
+
+    def process(self, instruction, regs):
+        value = self.v1.get(instruction.one(), regs)
+        regs.set(instruction.three(), value)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return 'set{}'.format(self.v1)
+
+
+class Comparison:
+
+    def __init__(self, reg1, reg2, symbol, f):
+        self.v1 = Parameter(reg1)
+        self.v2 = Parameter(reg2)
+        self.symbol = symbol
+        self.f = f
+
+    def process(self, instruction, regs):
+        a = self.v1.get(instruction.one(), regs)
+        b = self.v2.get(instruction.two(), regs)
+        value = 1 if self.f(a, b) else 0
+        regs.set(instruction.three(), value)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return '{}{}{}'.format(self.symbol, self.v1, self.v2)
+
+
+class GreaterThan(Comparison):
+
+    def __init__(self, reg1, reg2):
+        super().__init__(reg1, reg2, 'gt', lambda x, y: x > y)
+
+
+class Equals(Comparison):
+
+    def __init__(self, reg1, reg2):
+        super().__init__(reg1, reg2, 'eq', lambda x, y: x == y)
+
+
+ALL_INSTRUCTIONS = {
+    'addr': Add(True),                  
+    'addi': Add(False),                 
+    'mulr': Mult(True),                 
+    'muli': Mult(False),                
+    'banr': And(True),                  
+    'bani': And(False),                 
+    'borr': Or(True),
+    'bori': Or(False),
+    'setr': Set(True),
+    'seti': Set(False),
+    'gtir': GreaterThan(False, True),
+    'gtri': GreaterThan(True, False), 
+    'gtrr': GreaterThan(True, True),
+    'eqir': Equals(False, True),
+    'eqri': Equals(True, False),
+    'eqrr': Equals(True, True)
+}
+
+class Registers:
+
+    def __init__(self, size, ip):
+        self.values = [0 for i in range(size)]
+        self.ip = ip
+
+    def instruction(self):
+        return self.values[self.ip]
+
+    def next(self):
+        self.values[self.ip] += 1
+
+    def set(self, index, value):
+        self.values[index] = value
+
+    def get(self, index):
+        return self.values[index]
+
+    def copy(self):
+        return Registers([value for value in self.values], False)
+
+    def __eq__(self, o):
+        return str(self) == str(o)
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return str(self.values)
+
+
+class Instruction:
+
+    def __init__(self, instruction):
+        self.instruction = instruction.split()
+
+    def opcode(self):
+        return self.instruction[0]
+
+    def one(self):
+        return int(self.instruction[1])
+
+    def two(self):
+        return int(self.instruction[2])
+
+    def three(self):
+        return int(self.instruction[3])
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return str(self.instruction)
+
+
+def main():
+    # Part 1 = 6619857
+    print('Best case value = {}'.format(run(True)))
+    # Part 2 = 9547924
+    print('Worse case value = {}'.format(run(False)))
+
+
+def run(until_first):
+    pointer, instructions = get_instructions(Parser(FILE_NAME))
+    regs = Registers(6, pointer)
+
+    seen = set()
+    previous = None
+    while regs.instruction() < len(instructions):
+        instruction_index = regs.instruction()
+        instruction = instructions[instruction_index]
+        ALL_INSTRUCTIONS[instruction.opcode()].process(instruction, regs)
+        regs.next()
+
+        if instruction_index == 28:
+            value = regs.get(5)
+
+            if until_first:
+                return value
+            
+            if value in seen:
+                return previous
+            else:
+                seen.add(value)
+                previous = value
+
+
+def get_instructions(parser):
+    lines = parser.lines()
+    pointer = int(lines[0].split()[1])
+    instructions = [Instruction(line) for line in lines[1:]]
+    return pointer, instructions
+
+
+if __name__ == '__main__':
+    main()

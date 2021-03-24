@@ -1,0 +1,133 @@
+class Seat:
+
+    def __init__(self, i, j, state):
+        self.row = i
+        self.col = j
+        self.state = state
+
+    def get_row(self):
+        return self.row
+
+    def get_col(self):
+        return self.col
+
+    def get_state(self):
+        return self.state
+
+    def is_occupied(self):
+        return self.state == '#'
+
+    def is_empty(self):
+        return self.state == 'L'
+
+    def is_floor(self):
+        return self.state == '.'
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return self.state
+
+class SeatingChart:
+
+    def __init__(self, chart, transform=True):
+        if transform:
+            self.chart = []
+            for i, row in enumerate(chart):
+                seats = []
+                for j, state in enumerate(row):
+                    seats.append(Seat(i, j, state))
+                self.chart.append(seats)
+        else:
+            self.chart = chart
+
+    def step_forward(self):
+        next_chart = []
+        for row in self.chart:
+            next_row = []
+            for seat in row:
+                next_state = seat.get_state()
+                if not seat.is_floor():
+                    adjacent_seats = self.get_adjacent_seats(seat)
+                    occupied = [adjacent_seat.is_occupied() for adjacent_seat in adjacent_seats]
+                    if seat.is_empty():
+                        if not any(occupied):
+                            next_state = '#'
+                    else:
+                        if sum(occupied) >= 5:
+                            next_state = 'L'
+                next_row.append(Seat(seat.get_row(), seat.get_col(), next_state))
+            next_chart.append(next_row)
+        return SeatingChart(next_chart, False)
+
+    def get_adjacent_seats(self, seat):
+        seats = []
+
+        directions = [-1, 0, 1]
+        for d1 in directions:
+            for d2 in directions:
+                if d1 != 0 or d2 != 0:
+                    row = seat.get_row()+d1
+                    col = seat.get_col()+d2
+                    adjacent_seat = self.explore_direction(row, col, (d1, d2))
+                    if adjacent_seat is not None:
+                        seats.append(adjacent_seat)
+
+        return seats
+
+    def explore_direction(self, i, j, direc):
+        if i < 0 or j < 0:
+            return None
+        if i >= len(self.chart):
+            return None
+        if j >= len(self.chart[i]):
+            return None
+
+        seat = self.chart[i][j]
+        if not seat.is_floor():
+            return seat
+            
+        i += direc[0]
+        j += direc[1]
+        return self.explore_direction(i, j, direc)
+
+    def count_occupied(self):
+        occupied = 0
+        for row in self.chart:
+            for seat in row:
+                if seat.is_occupied():
+                    occupied += 1
+        return occupied
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        result = ''
+        for row in self.chart:
+            result += str(row) + '\n'
+        return result
+
+
+def main():
+    current_chart = SeatingChart(process())
+    next_chart = current_chart.step_forward()
+
+    while not current_chart == next_chart:
+        current_chart = next_chart
+        next_chart = next_chart.step_forward()
+
+    print('Number of occupied seats = {}'.format(current_chart.count_occupied()))
+
+
+def process():
+    with open('data.txt', 'r') as f:
+        return [list(line) for line in f.read().splitlines()]
+
+
+if __name__ == '__main__':
+    main()

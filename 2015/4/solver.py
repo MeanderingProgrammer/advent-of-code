@@ -1,0 +1,38 @@
+import hashlib 
+from collections import defaultdict
+
+import aoc_search
+from aoc_board import Grid, Point
+from aoc_computer import Computer
+from aoc_parser import Parser
+
+
+TEST = False
+SALT = 'abcdef' if TEST else 'iwrupvqb'
+
+
+def main():
+    # Part 1 = 346386
+    print(first_index(5))
+    # Part 2 = 9958218
+    print(first_index(6))
+
+
+def first_index(leading_zeros):
+    goal = '0' * leading_zeros
+    i = 1
+    while True:
+        value = SALT + str(i)
+        hashed = hash(value)
+        if hashed[:leading_zeros] == goal:
+            return i
+        i += 1
+
+
+def hash(value):
+    return hashlib.md5(str.encode(value)).hexdigest()
+
+
+if __name__ == '__main__':
+    main()
+
