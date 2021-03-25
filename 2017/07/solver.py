@@ -27,13 +27,12 @@ class Node:
 
 def main():
     graph = get_graph()
-
-    # Part 1 = xegshds
+    # Part 1: xegshds
     top_most = graph.top_most()
-    print('Top most node = {}'.format(top_most))
-
-    # Part 2 = 299
+    print('Part 1: {}'.format(top_most))
+    # Part 2: 299
     graph.get_weight(graph.get_node(top_most))
+    print('Part 2: {}'.format(graph.to_change))
 
 
 def get_graph():
@@ -52,4 +51,3 @@ def get_graph():
 
 if __name__ == '__main__':
     main()
-

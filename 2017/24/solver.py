@@ -1,12 +1,9 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Bridge:
@@ -50,10 +47,10 @@ def main():
     components = get_components()
     bridge = Bridge(components)
     statistics = bridge.build()
-    # Part 1 = 1656
-    print(get_strongest(statistics))
-    # Part 2 = 1642
-    print(get_longest_strongest(statistics))
+    # Part 1: 1656
+    print('Part 1: {}'.format(get_strongest(statistics)))
+    # Part 2: 1642
+    print('Part 2: {}'.format(get_longest_strongest(statistics)))
 
 
 def get_strongest(statistics):
@@ -77,4 +74,3 @@ def get_components():
 
 if __name__ == '__main__':
     main()
-

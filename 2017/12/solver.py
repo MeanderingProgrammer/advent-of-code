@@ -2,21 +2,19 @@ from collections import defaultdict
 
 import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 def main():
     graph = get_graph()
     
-    # Part 1 = 306
+    # Part 1: 306
     connected_to_0 = aoc_search.connected(graph, '0')
-    print('Total reachable = {}'.format(len(connected_to_0)))
+    print('Part 1: {}'.format(len(connected_to_0)))
 
-    # Part 2 = 200
+    # Part 2: 200
     heads = set(['0'])
     grouped = set(connected_to_0)
 
@@ -27,7 +25,7 @@ def main():
         grouped |= connected
         head = get_ungrouped(graph, grouped)
 
-    print('Total groups = {}'.format(len(heads)))
+    print('Part 2: {}'.format(len(heads)))
 
 
 def get_ungrouped(graph, grouped):

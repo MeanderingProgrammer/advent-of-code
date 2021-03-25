@@ -23,4 +23,3 @@ class Parser:
     def read(self):
         with open(self.file_name, 'r') as f:
             return f.read()
-

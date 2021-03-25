@@ -1,8 +1,6 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -68,18 +66,17 @@ class Intstruction:
 
 
 def main():
-    # Part 1 = 9409
-    run_computer(False)
-    # Part 2 = 913
-    #run_computer(True) -> Would take too long to run
-    count_non_primes(109_900, 126_900, 17)
+    # Part 1: 9409
+    print('Part 1: {}'.format(run_computer(False)))
+    # Part 2: 913
+    # run_computer(True) would take too long to run
+    print('Part 2: {}'.format(count_non_primes(109_900, 126_900, 17)))
 
 
 def run_computer(debug):
     comp = Computer(get_instructions(), debug)
     comp.run()
-    print('Multiplies = {}'.format(comp.multiplies))
-    print('Value at register h = {}'.format(comp.regs['h']))
+    return comp.multiplies
 
 
 def count_non_primes(start, end, step):
@@ -87,7 +84,7 @@ def count_non_primes(start, end, step):
     for value in range(start, end + 1, step):
         if not is_prime(value):
             non_primes += 1
-    print(non_primes)
+    return non_primes
 
 
 def is_prime(value):
@@ -106,4 +103,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

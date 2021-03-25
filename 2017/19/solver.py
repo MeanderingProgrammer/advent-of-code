@@ -1,12 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 UP = Point(0, -1)
 DOWN = Point(0, 1)
@@ -75,10 +71,10 @@ def main():
     grid = get_grid()
     traverser = Traverser(grid)
     traverser.traverse()
-    # Part 1 = NDWHOYRUEA
-    print('Letters encountered = {}'.format(traverser.letters()))
-    # Part 2 = 17540
-    print('Steps taken = {}'.format(traverser.steps()))
+    # Part 1: NDWHOYRUEA
+    print('Part 1: {}'.format(traverser.letters()))
+    # Part 2: 17540
+    print('Part 2: {}'.format(traverser.steps()))
 
 
 def get_grid():
@@ -93,4 +89,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

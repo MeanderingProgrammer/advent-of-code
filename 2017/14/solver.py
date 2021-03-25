@@ -1,11 +1,11 @@
 import collections
-from aoc_parser import Parser
-from aoc_board import Grid, Point
 
-TEST = False
+from aoc_board import Point
+
 
 SIZE = 256
-INPUT = 'flqrgnkx' if TEST else 'ffayrhll'
+INPUT = 'ffayrhll'
+
 
 class Knot:
 
@@ -80,11 +80,11 @@ class Knot:
 
 def main():
     points = get_enabled_points()
-    # Part 1 = 8190
-    print('Total points enabled = {}'.format(len(points)))
-    # Part 2 = 1134
+    # Part 1: 8190
+    print('Part 1: {}'.format(len(points)))
+    # Part 2: 1134
     groups = group_points(points)
-    print('Total groups = {}'.format(len(groups)))
+    print('Part 2: {}'.format(len(groups)))
 
 
 def group_points(points):

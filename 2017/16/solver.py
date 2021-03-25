@@ -1,13 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-DANCERS = 5 if TEST else 16
+FILE_NAME = 'data'
+DANCERS = 16
 
 
 class Dance:
@@ -40,11 +35,11 @@ def main():
     moves = get_moves()
     pattern = get_pattern(dance, moves)
 
-    # Part 1 = eojfmbpkldghncia
-    print('After single run = {}'.format(pattern[1]))
-    # Part 2 = iecopnahgdflmkjb
+    # Part 1: eojfmbpkldghncia
+    print('Part 1: {}'.format(pattern[1]))
+    # Part 2: iecopnahgdflmkjb
     index = 1_000_000_000 % len(pattern)
-    print('After 1,000,000,000 runs = {}'.format(pattern[index]))
+    print('Part 2: {}'.format(pattern[index]))
 
 
 def get_pattern(dance, moves):
@@ -79,4 +74,3 @@ def get_moves():
 
 if __name__ == '__main__':
     main()
-

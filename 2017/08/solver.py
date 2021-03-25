@@ -1,6 +1,6 @@
 from collections import defaultdict
+
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -59,10 +59,10 @@ def main():
     for instruction in instructions:
         instruction.apply(registers)
         maxes.append(max(registers.values()))
-    # Part 1 = 7296
-    print('Max value = {}'.format(max(registers.values())))
-    # Part 2 = 8186
-    print('Max value ever seen = {}'.format(max(maxes)))
+    # Part 1: 7296
+    print('Part 1: {}'.format(max(registers.values())))
+    # Part 2: 8186
+    print('Part 2: {}'.format(max(maxes)))
 
 
 def get_instructions():

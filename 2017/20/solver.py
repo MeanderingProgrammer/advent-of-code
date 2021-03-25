@@ -1,12 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
+from aoc_board import Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Particle:
@@ -48,10 +44,10 @@ class Particle:
 def main():
     # Part 1: 161
     particles = run_simulation(False)
-    print('Long-term closest = {}'.format(particles[0].id))
+    print('Part 1: {}'.format(particles[0].id))
     # Part 2: 438
     particles = run_simulation(True)
-    print('Remaining particles = {}'.format(len(particles)))
+    print('Part 2: {}'.format(len(particles)))
 
 
 def run_simulation(cleanup):
@@ -82,10 +78,10 @@ def run_simulation(cleanup):
     particles.sort(key=lambda particle: len(particle.pos))
     return particles
 
+
 def get_particles():
     return [Particle(line) for line in enumerate(Parser(FILE_NAME).lines())]
 
 
 if __name__ == '__main__':
     main()
-

@@ -1,12 +1,7 @@
 from collections import deque
 
-import aoc_search
-from aoc_parser import Parser
-from aoc_board import Grid, Point
 
-
-TEST = False
-STEPS = 3 if TEST else 344
+STEPS = 344
 
 
 class Lock:
@@ -31,23 +26,20 @@ class Lock:
 
 
 def main():
-    # Part 1 = 996
+    # Part 1: 996
     lock = run_lock(2_017)
-    print('Value after 2017 = {}'.format(lock.after(2_017)))
-    # Part 2 = 1898341
+    print('Part 1: {}'.format(lock.after(2_017)))
+    # Part 2: 1898341
     lock = run_lock(50_000_000)
-    print('Value after 0 = {}'.format(lock.after(0)))
+    print('Part 2: {}'.format(lock.after(0)))
 
 
 def run_lock(steps):
     lock = Lock(STEPS)
     for i in range(steps + 1):
-        if i % 1_000_000 == 0:
-            print(i)
         lock.insert(i)
     return lock
 
 
 if __name__ == '__main__':
     main()
-
