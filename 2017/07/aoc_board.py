@@ -2,6 +2,7 @@ class Graph:
 
     def __init__(self):
         self.graph = {}
+        self.to_change = None
 
     def add_node(self, node):
         self.graph[node] = set()
@@ -53,7 +54,7 @@ class Graph:
                 if len(edges) == 1:
                     change = next(iter(edges))
                     weight = change.weight
-                    print('Change edge {} from {} to {}'.format(change.id, weight, weight + amount))
+                    self.to_change = weight + amount
 
         return total_weight, seen_bad
 
@@ -191,4 +192,3 @@ class Point:
 
     def __str__(self):
         return str(self.coords)
-

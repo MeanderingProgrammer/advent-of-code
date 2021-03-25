@@ -33,7 +33,7 @@ def main():
     # Part 1: 10010101010011101
     print('Part 1: {}'.format(fill_disk(DESIRED_LENGTH)))
     # Part 2: 01100111101101111
-    print('Part 1: {}'.format(fill_disk(35_651_584)))
+    print('Part 2: {}'.format(fill_disk(35_651_584)))
 
 
 def fill_disk(length):

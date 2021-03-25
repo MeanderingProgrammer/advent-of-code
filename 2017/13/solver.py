@@ -1,12 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Scanner:
@@ -27,14 +22,14 @@ class Scanner:
 def main():
     scanners = get_scanners()
 
-    # Part 1 = 632
-    print('Trip severity = {}'.format(get_trip_severity(scanners)))
+    # Part 1: 632
+    print('Part 1: {}'.format(get_trip_severity(scanners)))
 
-    # Part 2 = 3849742
+    # Part 2: 3849742
     offset = 1
     while is_caught(scanners, offset):
         offset += 1
-    print('Offset needed = {}'.format(offset))
+    print('Part 2: {}'.format(offset))
 
 
 def get_trip_severity(scanners):
@@ -61,4 +56,3 @@ def get_scanners():
 
 if __name__ == '__main__':
     main()
-

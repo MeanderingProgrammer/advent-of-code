@@ -1,12 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 INPUT = '.#./..#/###'
 
 
@@ -82,10 +78,10 @@ class Pattern:
 
 def main():
     patterns = get_patterns()
-    # Part 1 = 188
-    run_iterations(patterns, 5)
-    # Part 2 = 2758764
-    run_iterations(patterns, 18)
+    # Part 1: 188
+    print('Part 1: {}'.format(run_iterations(patterns, 5)))
+    # Part 2: 2758764
+    print('Part 2: {}'.format(run_iterations(patterns, 18)))
 
 
 def run_iterations(patterns, n):
@@ -101,7 +97,7 @@ def run_iterations(patterns, n):
             rows.extend(join_row(new_row))
         art = Art('/'.join(rows))
 
-    print('Pixels on = {}'.format(art.on()))
+    return art.on()
 
 
 def join_row(row):

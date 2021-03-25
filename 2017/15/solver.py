@@ -1,13 +1,5 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_parser import Parser
-from aoc_board import Grid, Point
-
-
-TEST = False
-GEN_A_START = 65 if TEST else 277
-GEN_B_START = 8_921 if TEST else 349
+GEN_A_START = 277
+GEN_B_START = 349
 
 
 class Generator:
@@ -38,27 +30,24 @@ class Judge:
 
 
 def main():
+    # Pretty slow
     judge = Judge()
-    # Part 1 = 592
-    count_matches(judge, 40_000_000, False)
-    # Part 2 = 320
-    count_matches(judge, 5_000_000, True)
+    # Part 1: 592
+    print('Part 1: {}'.format(count_matches(judge, 40_000_000, False)))
+    # Part 2: 320
+    print('Part 2: {}'.format(count_matches(judge, 5_000_000, True)))
 
 
 def count_matches(judge, n, wait_for_mult):
-    count = 0
-
     gen_a = Generator(GEN_A_START, 16_807, 4)
     gen_b = Generator(GEN_B_START, 48_271, 8)
 
+    count = 0
     for i in range(n):
-        if i % 100_000 == 0:
-            print(i)
         if judge.equal(gen_a.next(wait_for_mult), gen_b.next(wait_for_mult)):
             count += 1
-    print('Total matches = {}'.format(count))
+    return count
 
 
 if __name__ == '__main__':
     main()
-

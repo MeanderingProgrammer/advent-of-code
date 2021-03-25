@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -49,8 +48,8 @@ def main():
         memory = memory.redistribute()
         cycles += 1
 
-    # Part 1 = 7864
-    print('Cycles completed = {}'.format(cycles))
+    # Part 1: 7864
+    print('Part 1: {}'.format(cycles))
 
     caused_repitition = memory
 
@@ -61,10 +60,9 @@ def main():
         memory = memory.redistribute()
         cycles += 1
 
-    # Part 2 = 1695
-    print('Repitition seen again = {}'.format(cycles))
+    # Part 2: 1695
+    print('Part 2: {}'.format(cycles))
 
 
 if __name__ == '__main__':
     main()
-

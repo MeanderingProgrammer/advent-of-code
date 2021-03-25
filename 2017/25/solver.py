@@ -1,18 +1,14 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-
+FILE_NAME = 'data'
 
 MOVEMENTS = {
     'left': Point(-1),
     'right': Point(1)
 }
+
 
 class Rule:
 
@@ -78,11 +74,9 @@ def main():
     state, rules = get_state_rules()
     machine = TuringMachine(state[0], rules)
     for i in range(state[1]):
-        if i % 100_000 == 0:
-            print(i)
         machine.step()
-    # Part 1 = 3099
-    print('Checksum = {}'.format(machine.checksum()))
+    # Part 1: 3099
+    print('Part 1: {}'.format(machine.checksum()))
 
 
 def get_state_rules():
@@ -106,4 +100,3 @@ def get_name(raw):
 
 if __name__ == '__main__':
     main()
-

@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -49,18 +48,16 @@ class Group:
 
 
 def main():
-    groups = get_groups()
-    for group in groups:
-        # Part 1 = 15922
-        print('Score = {}'.format(group.score()))
-        # Part 2 = 7314
-        print('Garbage Removed = {}'.format(group.garbage_removed))
+    group = get_group()
+    # Part 1: 15922
+    print('Part 1: {}'.format(group.score()))
+    # Part 2: 7314
+    print('Part 2: {}'.format(group.garbage_removed))
 
 
-def get_groups():
-    return [Group(line) for line in Parser(FILE_NAME).lines()]
+def get_group():
+    return Group(Parser(FILE_NAME).read())
 
 
 if __name__ == '__main__':
     main()
-

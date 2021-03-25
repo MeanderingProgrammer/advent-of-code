@@ -1,19 +1,13 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 CLEAN = '.'
 WEAKENED = 'W'
 FLAGGED = 'F'
 INFECTED = '#'
-
-
 
 U = Point(0, -1)
 D = Point(0, 1)
@@ -24,14 +18,6 @@ DIRECTIONS = [
     U, L, D, R
 ]
 
-STATE_CHANGE = {
-    CLEAN: WEAKENED,
-    WEAKENED: INFECTED,
-    FLAGGED: CLEAN,
-    INFECTED: FLAGGED
-}
-
-
 STATE_DIRECTION_CHANGE = {
     CLEAN: 1,
     WEAKENED: 0,
@@ -39,10 +25,12 @@ STATE_DIRECTION_CHANGE = {
     INFECTED: -1
 }
 
+
 class Virus:
 
-    def __init__(self, grid):
+    def __init__(self, grid, state_chage):
         self.grid = grid
+        self.state_chage = state_chage
         self.position = self.get_start_position()
         self.direction_index = 0
         self.infections = 0
@@ -51,7 +39,7 @@ class Virus:
         state = self.grid[self.position]
         state = CLEAN if state is None else state
 
-        new_state = STATE_CHANGE[state]
+        new_state = self.state_chage[state]
         self.grid[self.position] = new_state
 
         if new_state == INFECTED:
@@ -76,16 +64,32 @@ class Virus:
 
 
 def main():
-    virus = Virus(get_grid())
+    simplified_state_change = {
+        CLEAN: INFECTED,
+        INFECTED: CLEAN
+    }
+    # Part 1: 5575
+    print('Part 1: {}'.format(
+        run(10_000, simplified_state_change)
+    ))
+    
+    expanded_state_change = {
+        CLEAN: WEAKENED,
+        WEAKENED: INFECTED,
+        FLAGGED: CLEAN,
+        INFECTED: FLAGGED
+    }
+    # Part 2: 2511991
+    print('Part 2: {}'.format(
+        run(10_000_000, expanded_state_change)
+    ))
 
-    for i in range(10_000_000):
-        if i % 100_000 == 0:
-            print(i)
+
+def run(n, state_change):
+    virus = Virus(get_grid(), state_change)
+    for i in range(n):
         virus.burst()
-
-    # Part 1 = 5575
-    # Part 2 = 2511991
-    print('Infections = {}'.format(virus.infections))
+    return virus.infections
 
 
 def get_grid():
@@ -97,7 +101,5 @@ def get_grid():
     return grid
 
 
-
 if __name__ == '__main__':
     main()
-

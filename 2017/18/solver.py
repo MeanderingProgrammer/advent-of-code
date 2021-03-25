@@ -1,12 +1,9 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Computer:
@@ -29,8 +26,11 @@ class Computer:
 
     def send(self, value):
         self.sent += 1
-        self.o.q.append(value)
-        self.o.waiting = False
+        self.o.append(value)
+
+    def append(self, value):
+        self.q.append(value)
+        self.waiting = False
 
     def get(self):
         if len(self.q) == 0:
@@ -43,8 +43,9 @@ class Computer:
             instruction = self.instructions[self.ip]
             instruction.run(self)
 
-        if self.waiting and not self.o.waiting:
-            self.o.run()
+        if isinstance(self.o, Computer):
+            if self.waiting and not self.o.waiting:
+                self.o.run()
 
 
 class Intstruction:
@@ -100,6 +101,21 @@ class Intstruction:
 
 
 def main():
+    # Part 1: 9423
+    print('Part 1: {}'.format(run_1_computers()))
+    # Part 2: 7620
+    print('Part 2: {}'.format(run_2_computers()))
+
+
+def run_1_computers():
+    added = []
+    comp = Computer(0, get_instructions())
+    comp.set_other(added)
+    comp.run()
+    return added[-1]
+
+
+def run_2_computers():
     comp1 = Computer(0, get_instructions())
     comp2 = Computer(1, get_instructions())
 
@@ -107,9 +123,8 @@ def main():
     comp2.set_other(comp1)
 
     comp1.run()
-
-    # Part 2 = 7620
-    print(comp2.sent)
+    
+    return comp2.sent
 
 
 def get_instructions():
@@ -121,4 +136,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

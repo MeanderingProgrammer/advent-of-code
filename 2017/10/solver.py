@@ -1,11 +1,11 @@
 import collections
-from aoc_parser import Parser
-from aoc_board import Grid, Point
 
-TEST = False
+from aoc_parser import Parser
+
 
 SIZE = 256
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
+
 
 class Knot:
 
@@ -69,13 +69,13 @@ class Knot:
 def main():
     knot = Knot(SIZE, get_lengths(False))
     knot.run_hash()
-    # Part 1 = 38415
-    print('Score = {}'.format(knot.score()))
+    # Part 1: 38415
+    print('Part 1: {}'.format(knot.score()))
 
     knot = Knot(SIZE, get_lengths(True) + [17, 31, 73, 47, 23])
     knot.run_hash(64)
-    # Part 2 = 9de8846431eef262be78f590e39a4848
-    print('Hash = {}'.format(knot.dense_hash()))
+    # Part 2: 9de8846431eef262be78f590e39a4848
+    print('Part 2: {}'.format(knot.dense_hash()))
 
 
 def get_lengths(to_ord):
