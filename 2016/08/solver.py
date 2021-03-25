@@ -1,13 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-
+FILE_NAME = 'data'
 SIZE = 50, 6
 
 
@@ -56,9 +51,9 @@ def main():
     for operation in operations:
         operation.apply(display)
         
-    # Part 1 = 106
-    print('Total lit = {}'.format(lit(display)))
-    # Part 2 = CFLELOYFCS
+    # Part 1: 106
+    print('Part 1: {}'.format(lit(display)))
+    # Part 2: CFLELOYFCS
     print(display)
 
 
@@ -81,4 +76,3 @@ def get_operations():
 
 if __name__ == '__main__':
     main()
-

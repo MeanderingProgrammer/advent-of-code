@@ -1,24 +1,19 @@
-from collections import defaultdict
-
 import aoc_search
 from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
 
 
-TEST = False
-FAVORITE_NUMBER = 10 if TEST else 1350
-GOAL = Point(7, 4) if TEST else Point(31, 39)
+FAVORITE_NUMBER = 1350
+GOAL = Point(31, 39)
 
 GRID = Grid()
 
 def main():
     start = Point(1, 1)
     GRID[start] = False
-    # Part 1 = 92
-    print(aoc_search.bfs(start, GOAL, get_adjacent))
-    # Part 2 = 124
-    print(len(aoc_search.reachable(start, 50, get_adjacent)))
+    # Part 1: 92
+    print('Part 1: {}'.format(aoc_search.bfs(start, GOAL, get_adjacent)))
+    # Part 2: 124
+    print('Part 2: {}'.format(len(aoc_search.reachable(start, 50, get_adjacent))))
 
 
 def get_adjacent(position):
@@ -50,4 +45,3 @@ def is_wall(position):
 
 if __name__ == '__main__':
     main()
-

@@ -1,13 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Disk:
@@ -29,10 +23,10 @@ class Disk:
 
 
 def main():
-    # Part 1 = 121834
-    calculate_first_pass(False)
-    # Part 2 = 3208099
-    calculate_first_pass(True)
+    # Part 1: 121834
+    print('Part 1: {}'.format(calculate_first_pass(False)))
+    # Part 2: 3208099
+    print('Part 2: {}'.format(calculate_first_pass(True)))
 
 
 def calculate_first_pass(add_disk):
@@ -44,12 +38,11 @@ def calculate_first_pass(add_disk):
             0
         ))
 
-
     passed, time = False, 0
     while not passed:
         time += 1
         passed = passes_all(disks, time)
-    print('First time = {}'.format(time))
+    return time
 
 
 def passes_all(disks, time):

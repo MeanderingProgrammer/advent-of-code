@@ -1,19 +1,15 @@
 import hashlib 
 
-import aoc_search
-from aoc_parser import Parser
-from aoc_board import Grid, Point
 
-
-TEST = False
-DOOR_ID = 'abc' if TEST else 'ugkcyxxp'
+DOOR_ID = 'ugkcyxxp'
 
 
 def main():
-    # Part 1 = d4cd2ee1
-    generate_password(populate_v1)
-    # Part 2 = f2c730e5
-    generate_password(populate_v2)
+    # Pretty slow
+    # Part 1: d4cd2ee1
+    print('Part 1: {}'.format(generate_password(populate_v1)))
+    # Part 2: f2c730e5
+    print('Part 2: {}'.format(generate_password(populate_v2)))
 
 
 def generate_password(populator):
@@ -24,7 +20,7 @@ def generate_password(populator):
         if hashed[:5] == '00000':
             populator(password, hashed)
         i += 1
-    print('Password = {}'.format(''.join(password)))
+    return ''.join(password)
 
 
 def hash(value):
@@ -49,4 +45,3 @@ def populate_v2(password, hashed):
 
 if __name__ == '__main__':
     main()
-

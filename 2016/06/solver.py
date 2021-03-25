@@ -1,19 +1,16 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 def main():
-    # Part 1 = liwvqppc
-    error_correct_message(-1)
-    # Part 2 = caqfbzlh
-    error_correct_message(0)
+    # Part 1: liwvqppc
+    print('Part 1: {}'.format(error_correct_message(-1)))
+    # Part 2: caqfbzlh
+    print('Part 2: {}'.format(error_correct_message(0)))
 
 
 def error_correct_message(n):
@@ -25,7 +22,7 @@ def error_correct_message(n):
             frequencies[i][letter] += 1
     
     message = [nth_most_common(frequency, n) for frequency in frequencies]
-    print('Corrected message = {}'.format(''.join(message)))
+    return ''.join(message)
 
 
 def nth_most_common(frequency, n):
@@ -40,4 +37,3 @@ def get_words():
 
 if __name__ == '__main__':
     main()
-

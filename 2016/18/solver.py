@@ -1,26 +1,14 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-TEST = False
-
-ACTAUL_ROW = '.^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^....'
-TEST_ROW = '.^^.^.^^^^'
-STARTING_ROW = TEST_ROW if TEST else ACTAUL_ROW
+STARTING_ROW = '.^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^....'
 
 TRAP = '^'
 SAFE = '.'
 
 
 def main():
-    # Part 1 = 2013
-    total_safe(40)
-    # Part 2 = 20006289
-    total_safe(400_000)
+    # Part 1: 2013
+    print('Part 1: {}'.format(total_safe(40)))
+    # Part 2: 20006289
+    print('Part 2: {}'.format(total_safe(400_000)))
 
 
 def total_safe(n):
@@ -28,7 +16,7 @@ def total_safe(n):
     while len(rows) < n:
         next_row = get_next_row(rows[-1])
         rows.append(next_row)
-    print('Safe tiles = {}'.format(count_safe(rows)))
+    return count_safe(rows)
 
 
 def get_next_row(previous_row):

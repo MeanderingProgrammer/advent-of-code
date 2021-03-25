@@ -1,14 +1,10 @@
 import itertools
-from collections import defaultdict
-
 
 import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 GENERATOR = 'generator'
 MICRO_CHIP = 'microchip'
@@ -54,27 +50,27 @@ class Chip:
 
 
 def main():
-    # Part 1 = 37
-    count_steps([])
-    # Part 2 = 61 
-    count_steps([
+    # This one just so slow, oh boy
+    # Part 1: 37
+    print('Part 1: {}'.format(count_steps([])))
+    # Part 2: 61 
+    print('Part 2: {}'.format(count_steps([
         'elerium generator',
         'elerium-compatible microchip',
         'dilithium generator',
         'dilithium-compatible microchip'
-    ])
+    ])))
 
 
 def count_steps(add_to_first):
     start_state = get_start_state(add_to_first)
     end_state = get_end_state(start_state)
 
-    result = aoc_search.bfs(
+    return aoc_search.bfs(
         (0, freeze(start_state)), 
         (3, freeze(end_state)), 
         get_adjacent
     )
-    print('Steps taken = {}'.format(result))
 
 
 def get_adjacent(item):
@@ -248,4 +244,3 @@ def print_state(state):
 
 if __name__ == '__main__':
     main()
-

@@ -19,7 +19,6 @@ class Computer:
         while self.in_range():
             instruction = self.instructions[self.ip]
             instruction.run(self)
-            print(instruction, self.registers)
 
     def in_range(self):
         return self.ip >= 0 and self.ip < len(self.instructions)

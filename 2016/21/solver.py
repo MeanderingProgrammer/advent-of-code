@@ -1,14 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-START_STATE = 'abcde' if TEST else 'abcdefgh'
+FILE_NAME = 'data'
 
 
 class Scrambler:
@@ -111,16 +104,16 @@ class Scrambler:
 
 
 def main():
-    # Part 1 = bdfhgeca
-    scramble('abcdefgh')
-    # Part 2 = gdfcabeh
-    unscramble('fbgdceah')
+    # Part 1: bdfhgeca
+    print('Part 1: {}'.format(scramble('abcdefgh')))
+    # Part 2: gdfcabeh
+    print('Part 2: {}'.format(unscramble('fbgdceah')))
 
 def scramble(value):
     scrambler = Scrambler(value)
     for line in Parser(FILE_NAME).lines():
         scrambler.scramble(line)
-    print('Final value = {}'.format(scrambler))
+    return scrambler
 
 
 def unscramble(value):
@@ -129,9 +122,8 @@ def unscramble(value):
     lines.reverse()
     for line in lines:
         scrambler.unscramble(line)
-    print('Final value = {}'.format(scrambler))
+    return scrambler
 
 
 if __name__ == '__main__':
     main()
-
