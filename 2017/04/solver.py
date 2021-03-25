@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -30,10 +29,10 @@ class Password:
 
 
 def main():
-    # Part 1 = 466
-    count_valid(False)
-    # Part 2 = 251
-    count_valid(True)
+    # Part 1: 466
+    print('Part 1: {}'.format(count_valid(False)))
+    # Part 2: 251
+    print('Part 2: {}'.format(count_valid(True)))
 
 
 def count_valid(check_anagram):
@@ -41,9 +40,8 @@ def count_valid(check_anagram):
     for line in Parser(FILE_NAME).lines():
         valid = Password(line).valid(check_anagram)
         are_valid.append(valid)
-    print('Num valid = {}'.format(sum(are_valid)))
+    return sum(are_valid)
 
 
 if __name__ == '__main__':
     main()
-
