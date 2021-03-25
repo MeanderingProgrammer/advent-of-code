@@ -1,14 +1,9 @@
 import numpy as np
-from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Value:
@@ -65,12 +60,11 @@ class Value:
 
 
 def main():
-    # Part 1 = 3176
+    # Part 1: 3176
     first = evaluate(None)
-    print('First value for a: {}'.format(first))
-    # Part 2 = 14710
-    second = evaluate(first)
-    print('Second value for a: {}'.format(second))
+    print('Part 1: {}'.format(first))
+    # Part 2: 14710
+    print('Part 2: {}'.format(evaluate(first)))
 
 
 def evaluate(b_override):
@@ -90,4 +84,3 @@ def get_diagram():
 
 if __name__ == '__main__':
     main()
-

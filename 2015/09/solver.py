@@ -1,14 +1,9 @@
 import itertools
-from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 def main():
@@ -20,10 +15,10 @@ def main():
         result = distance(permutation, distances)
         options.append(result)
         
-    # Part 1 = 141
-    print(min(options))
-    # Part 2 = 736
-    print(max(options))
+    # Part 1: 141
+    print('Part 1: {}'.format(min(options)))
+    # Part 2: 736
+    print('Part 2: {}'.format(max(options)))
     
 
 def get_distances():
@@ -53,4 +48,3 @@ def distance(locations, distances):
 
 if __name__ == '__main__':
     main()
-

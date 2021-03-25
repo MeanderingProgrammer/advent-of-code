@@ -1,14 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
+from aoc_board import Point
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-
+FILE_NAME = 'data'
 
 DIRECTIONS = {
     '^': Point(0, 1),
@@ -18,10 +12,10 @@ DIRECTIONS = {
 }
 
 def main():
-    # Part 1 = 2081
-    run(1)
-    # Part 2 = 2341
-    run(2)
+    # Part 1: 2081
+    print('Part 1: {}'.format(run(1)))
+    # Part 2: 2341
+    print('Part 2: {}'.format(run(2)))
 
 def run(santas):
     locations = []
@@ -35,9 +29,8 @@ def run(santas):
         locations[santa_index] += DIRECTIONS[direction]
         visited.append(locations[santa_index])
 
-    print('Unique houses = {}'.format(len(set(visited))))
+    return len(set(visited))
 
 
 if __name__ == '__main__':
     main()
-

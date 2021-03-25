@@ -1,16 +1,9 @@
-import math
 import json
-import itertools
-from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class SantaData:
@@ -44,20 +37,17 @@ class SantaData:
         return 'red' in value.values()
 
 
-
 def main():
-    # Part 1 = 111754
-    get_total(False)
-    # Part 2 = 65402
-    get_total(True)
+    # Part 1: 111754
+    print('Part 1: {}'.format(get_total(False)))
+    # Part 2: 65402
+    print('Part 2: {}'.format(get_total(True)))
 
 
 def get_total(ignore_red):
-    for line in Parser(FILE_NAME).lines():
-        data = SantaData(line, ignore_red)
-        print(data.total())
+    santa = SantaData(Parser(FILE_NAME).string(), ignore_red)
+    return santa.total()
 
 
 if __name__ == '__main__':
     main()
-
