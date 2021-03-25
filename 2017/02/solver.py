@@ -1,15 +1,14 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
 
 
 def main():
-    # Part 1 = 47623
-    calculate_checksum(checksum_v1)
-    # Part 2 = 312
-    calculate_checksum(checksum_v2)
+    # Part 1: 47623
+    print('Part 1: {}'.format(calculate_checksum(checksum_v1)))
+    # Part 2: 312
+    print('Part 2: {}'.format(calculate_checksum(checksum_v2)))
 
 
 def calculate_checksum(f):
@@ -18,7 +17,7 @@ def calculate_checksum(f):
         values = [int(value) for value in line.split()]
         checksum = f(values)
         checksums.append(checksum)
-    print('Checksum = {}'.format(sum(checksums)))
+    return sum(checksums)
 
 
 def checksum_v1(values):
@@ -36,4 +35,3 @@ def checksum_v2(values):
 
 if __name__ == '__main__':
     main()
-

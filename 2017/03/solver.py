@@ -1,17 +1,16 @@
-from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
 def main():
     goal = 289_326
 
-    # Part 1 = 419
+    # Part 1: 419
     point, value = build_grid(goal, value_updater_v1)
-    print('Amount to move = {}'.format(len(point)))
+    print('Part 1: {}'.format(len(point)))
 
-    # Part 2 = 295229
+    # Part 2: 295229
     point, value = build_grid(goal, value_updater_v2)
-    print('First higher vlaue = {}'.format(value))
+    print('Part 2: {}'.format(value))
 
 
 def build_grid(goal, value_updater):
@@ -74,4 +73,3 @@ def value_updater_v2(previous, grid, point):
 
 if __name__ == '__main__':
     main()
-

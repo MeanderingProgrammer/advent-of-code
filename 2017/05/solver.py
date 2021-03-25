@@ -1,15 +1,14 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
 
 
 def main():
-    # Part 1 = 373160
-    run(increment_v1)
-    # Part 2 = 26395586
-    run(increment_v2)
+    # Part 1: 373160
+    print('Part 1: {}'.format(run(increment_v1)))
+    # Part 2: 26395586
+    print('Part 2: {}'.format(run(increment_v2)))
 
 
 def run(f):
@@ -20,7 +19,7 @@ def run(f):
         jumps[ip] = f(jump)
         ip += jump
         steps += 1
-    print('Total steps = {}'.format(steps))
+    return steps
 
 
 def increment_v1(current):
@@ -36,4 +35,3 @@ def increment_v2(current):
 
 if __name__ == '__main__':
     main()
-
