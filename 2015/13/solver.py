@@ -1,22 +1,17 @@
-import math
 import itertools
 from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 def main():
-    # Part 1 = 709
-    get_max_score(False)
-    # Part 2 = 668
-    get_max_score(True)
+    # Part 1: 709
+    print('Part 1: {}'.format(get_max_score(False)))
+    # Part 2: 668
+    print('Part 2: {}'.format(get_max_score(True)))
 
 
 def get_max_score(include_self):
@@ -25,13 +20,13 @@ def get_max_score(include_self):
     for permutation in get_permutations(graph, include_self):
         score = get_score(permutation, graph)
         scores.append(score)
-    print(max(scores))
+    return max(scores)
 
 
 def get_permutations(graph, include_self):
     keys = set(graph.keys())
     if include_self:
-        keys.add('Vlad')
+        keys.add('MeanderingProgrammer')
     return itertools.permutations(keys)
 
 
@@ -68,4 +63,3 @@ def get_graph():
 
 if __name__ == '__main__':
     main()
-

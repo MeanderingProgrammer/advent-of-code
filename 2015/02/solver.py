@@ -1,13 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Box:
@@ -40,10 +34,10 @@ def main():
         box = Box(*line.split('x'))
         paper.append(box.paper_needed())
         ribbon.append(box.ribbon_needed())
-    # Part 1 = 1606483
-    print('Paper needed = {}'.format(sum(paper)))
+    # Part 1: 1606483
+    print('Part 1: {}'.format(sum(paper)))
     # Part 2 = 3842356
-    print('Ribbon needed = {}'.format(sum(ribbon)))
+    print('Part 2: {}'.format(sum(ribbon)))
 
 
 if __name__ == '__main__':

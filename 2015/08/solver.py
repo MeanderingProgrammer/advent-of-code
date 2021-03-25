@@ -1,13 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class String:
@@ -42,7 +36,6 @@ class String:
         return len(result)
 
 
-
 def main():
     total, decoded, encoded = [], [], []
 
@@ -55,12 +48,11 @@ def main():
 
     total, decoded, encoded = sum(total), sum(decoded), sum(encoded)
 
-    # Part 1 = 1350
-    print(total - decoded)
-    # Part 2 = 2085
-    print(encoded - total)
+    # Part 1: 1350
+    print('Part 1: {}'.format(total - decoded))
+    # Part 2: 2085
+    print('Part 2: {}'.format(encoded - total))
 
 
 if __name__ == '__main__':
     main()
-

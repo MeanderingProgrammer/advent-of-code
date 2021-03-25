@@ -1,15 +1,4 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-TEST = False
-STARTING_PASSWORD = 'ghijklmn' if TEST else 'hxbxwxba'
+STARTING_PASSWORD = 'hxbxwxba'
 
 
 class PasswordIncrementer:
@@ -88,10 +77,10 @@ class PasswordIncrementer:
 
 def main():
     generator = PasswordIncrementer(STARTING_PASSWORD)
-    # Part 1 = hxbxxyzz
-    print(run(generator))
-    # Part 2 = hxcaabcc
-    print(run(generator))
+    # Part 1: hxbxxyzz
+    print('Part 1: {}'.format(run(generator)))
+    # Part 2: hxcaabcc
+    print('Part 2: {}'.format(run(generator)))
 
 
 def run(generator):
@@ -103,4 +92,3 @@ def run(generator):
 
 if __name__ == '__main__':
     main()
-

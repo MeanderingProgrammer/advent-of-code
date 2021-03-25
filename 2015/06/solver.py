@@ -1,16 +1,12 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 ON = '#'
 OFF = '.'
+
 
 class Action:
 
@@ -46,7 +42,6 @@ class Action:
             raise Exception('Unknown state changer: {}'.format(self.value))
 
 
-
 class PointRange:
 
     def __init__(self, value):
@@ -67,6 +62,7 @@ class PointRange:
                 result.append(point)
         return result
 
+
 class Direction:
 
     def __init__(self, value):
@@ -85,10 +81,11 @@ class Direction:
 
 
 def main():
-    # Part 1 = 400410
-    run_grid(False)
-    # Part 2 = 15343601
-    run_grid(True)
+    # This one slow, but not slow enough to improve
+    # Part 1: 400410
+    print('Part 1: {}'.format(run_grid(False)))
+    # Part 2: 15343601
+    print('Part 2: {}'.format(run_grid(True)))
 
 
 def run_grid(v2):
@@ -96,7 +93,7 @@ def run_grid(v2):
     for line in Parser(FILE_NAME).lines():
         direction = Direction(line)
         direction.apply(grid, v2)
-    print(count_on(grid))
+    return count_on(grid)
 
 
 def count_on(grid):
@@ -110,4 +107,3 @@ def count_on(grid):
 
 if __name__ == '__main__':
     main()
-

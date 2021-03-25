@@ -1,13 +1,9 @@
 from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Word:
@@ -80,10 +76,10 @@ class Word:
 
 
 def main():
-    # Part 1 = 238
-    total_nice_words(False)
-    # Part 2 = 69
-    total_nice_words(True)
+    # Part 1: 238
+    print('Part 1: {}'.format(total_nice_words(False)))
+    # Part 2: 69
+    print('Part 2: {}'.format( total_nice_words(True)))
 
 
 def total_nice_words(new_rules):
@@ -92,9 +88,8 @@ def total_nice_words(new_rules):
         word = Word(line)
         if word.nice(new_rules):
             nice_words += 1
-    print(nice_words)
+    return nice_words
 
 
 if __name__ == '__main__':
     main()
-

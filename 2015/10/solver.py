@@ -1,14 +1,4 @@
-import itertools
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-TEST = False
-START = '1' if TEST else '1113122113'
+START = '1113122113'
 
 
 class Game:
@@ -35,18 +25,19 @@ class Game:
 
 
 def main():
-    # Part 1 = 360154
-    run(40)
-    # Part 2 = 5103798
-    run(50)
+    # Slow but not too slow
+    # Part 1: 360154
+    print('Part 1: {}'.format(run(40)))
+    # Part 2: 5103798
+    print('Part 2: {}'.format(run(50)))
+
 
 def run(n):
     game = Game(START)
     for i in range(n):
         game.play()
-    print('Length after {} moves = {}'.format(n, len(game.value)))
+    return len(game.value)
 
 
 if __name__ == '__main__':
     main()
-
