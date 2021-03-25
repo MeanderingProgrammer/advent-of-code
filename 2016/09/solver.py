@@ -1,12 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Compressed:
@@ -43,22 +38,16 @@ class Compressed:
 
 
 def main():
-    # Part 1 = 102239
-    decompress(False)
-    # Part 2 = 10780403063
-    decompress(True)
+    # Part 1: 102239
+    print('Part 1: {}'.format(decompress(False)))
+    # Part 2: 10780403063
+    print('Part 2: {}'.format(decompress(True)))
 
 
 def decompress(recursive):
-    for compressed in get_data(recursive):
-        decompressed = compressed.decompress()
-        print(len(decompressed))
-
-
-def get_data(recursive):
-    return [Compressed(line, recursive) for line in Parser(FILE_NAME).lines()]
+    compressed = Compressed(Parser(FILE_NAME).string(), recursive)
+    return len(compressed.decompress())
 
 
 if __name__ == '__main__':
     main()
-

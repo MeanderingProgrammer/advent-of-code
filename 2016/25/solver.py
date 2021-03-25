@@ -1,13 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
 from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Setter:
@@ -103,13 +98,19 @@ class Output:
 
 
 def main():
-    # Part 1 = 198
+    # Part 1: 198
+    print('Part 1: {}'.format(run_until_success()))
+
+
+def run_until_success():
     i = 0
     while True:
         try:
             run_computer(i)
+            return i
         except Exception:
-            print('{} failed moving on'.format(i))
+            # Do nothing, move onto next iteration
+            pass
         i += 1
 
 
@@ -147,4 +148,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

@@ -1,12 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Triangle:
@@ -24,14 +19,13 @@ class Triangle:
 
 def main():
     # Part 1 = 862
-    num_valid(get_triangles_vertically())
+    print('Part 1: {}'.format(num_valid(get_triangles_vertically())))
     # Part 2 = 1577
-    num_valid(get_triangles_horizontally())
+    print('Part 2: {}'.format(num_valid(get_triangles_horizontally())))
 
 
 def num_valid(triangles):
-    num_valid = sum([triangle.valid() for triangle in triangles])
-    print('Valid traingles = {}'.format(num_valid))
+    return sum([triangle.valid() for triangle in triangles])
 
 
 def get_triangles_vertically():

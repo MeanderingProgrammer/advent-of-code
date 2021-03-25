@@ -1,12 +1,10 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
+
 
 class Room:
 
@@ -47,13 +45,13 @@ def main():
     rooms = get_rooms()
     rooms = [room for room in rooms if room.valid()]
     sectors = [room.sector_id for room in rooms]
-    # Part 1 = 278221
-    print('Total sectors = {}'.format(sum(sectors)))
+    # Part 1: 278221
+    print('Part 1: {}'.format(sum(sectors)))
 
     store_room = 'northpole object storage'
     north_pole_room = [room for room in rooms if room.decrypt() == store_room][0]
-    # Part 2 = 267
-    print('Id of storage room = {}'.format(north_pole_room.sector_id))
+    # Part 2: 267
+    print('Part 2: {}'.format(north_pole_room.sector_id))
 
 
 def get_rooms():

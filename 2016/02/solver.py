@@ -1,12 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 CONTROLS = {
@@ -18,16 +14,16 @@ CONTROLS = {
 
 
 def main():
-    # Part 1 = 47978
-    get_code(*create_phone(
+    # Part 1: 47978
+    print('Part 1: {}'.format(get_code(*create_phone(
         [
             [1, 2, 3],
             [4, 5, 6],
             [7, 8, 9]
         ]
-    ))
-    # Part 2 = 659AD
-    get_code(*create_phone(
+    ))))
+    # Part 2: 659AD
+    print('Part 2: {}'.format(get_code(*create_phone(
         [
             ['*', '*',  1 , '*', '*'],
             ['*',  2 ,  3 ,  4 , '*'],
@@ -35,7 +31,7 @@ def main():
             ['*', 'A', 'B', 'C', '*'],
             ['*', '*', 'D', '*', '*']
         ]
-    ))
+    ))))
 
 
 def get_code(phone, position):
@@ -43,7 +39,7 @@ def get_code(phone, position):
     for instruction in get_instructions():
         position = follow(phone, position, instruction)
         code += str(phone[position])
-    print('Code = {}'.format(code))
+    return code
 
 
 def follow(phone, position, instruction):

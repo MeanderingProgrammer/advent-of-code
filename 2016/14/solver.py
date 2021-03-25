@@ -1,19 +1,14 @@
 import hashlib 
 
-import aoc_search
-from aoc_parser import Parser
-from aoc_board import Grid, Point
 
-
-TEST = False
-SALT = 'abc' if TEST else 'qzyelonm'
+SALT = 'qzyelonm'
 
 
 def main():
-    # Part 1 = 15168
-    generate_keys(64, 1)
-    # Part 2 = 20864
-    generate_keys(64, 2_017)
+    # Part 1: 15168
+    print('Part 1: {}'.format(generate_keys(64, 1)))
+    # Part 2: 20864
+    print('Part 2: {}'.format(generate_keys(64, 2_017)))
 
 
 def generate_keys(n, num_hashes):
@@ -35,7 +30,7 @@ def generate_keys(n, num_hashes):
 
     keys = list(keys)
     keys.sort()
-    print(keys[n - 1])
+    return keys[n - 1]
     
 
 def hash(value, n):
@@ -68,4 +63,3 @@ def get_matches(i, cinq, hash_data):
 
 if __name__ == '__main__':
     main()
-

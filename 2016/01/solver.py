@@ -1,12 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
+from aoc_board import Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 DIRECTIONS = [
@@ -19,10 +15,10 @@ DIRECTIONS = [
 
 def main():
     visited = traverse()
-    # Part 1 = 252
-    print('Total distance = {}'.format(len(visited[-1])))
-    # Part 2 = 143
-    print('Distance to repeat = {}'.format(len(repeated(visited))))
+    # Part 1: 252
+    print('Part 1: {}'.format(len(visited[-1])))
+    # Part 2: 143
+    print('Part 2: {}'.format(len(repeated(visited))))
 
 def traverse():
     index, position = 0, Point(0, 0)
@@ -50,4 +46,3 @@ def repeated(visited):
 
 if __name__ == '__main__':
     main()
-

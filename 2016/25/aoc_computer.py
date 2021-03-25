@@ -7,6 +7,7 @@ class Computer:
         self.ip = 0
 
         self.outputs = None
+        self.successes = 0
 
     def output(self, value):
         if self.outputs is not None:
@@ -14,6 +15,7 @@ class Computer:
             if value != expected:
                 raise Exception('Expected alternating pattern: {} {}'.format(self.outputs, value))
         self.outputs = value
+        self.successes += 1
 
     def get(self, value):
         return self.registers[value] if value in self.registers else int(value)
@@ -25,7 +27,8 @@ class Computer:
         self.ip += amount
 
     def run(self):
-        while self.in_range():
+        # Run until we have a reasonable number of successful outputs
+        while self.in_range() and self.successes < 100:
             instruction = self.instructions[self.ip]
             instruction.run(self)
 

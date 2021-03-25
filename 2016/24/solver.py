@@ -1,31 +1,27 @@
 import itertools
-from collections import defaultdict
 
 import aoc_search
 from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 WALL = '#'
 OPEN = '.'
 
 
 def main():
-    # Part 1 = 498
-    get_shortest_path(False)
-    # Part 2 = 804
-    get_shortest_path(True)
+    # Part 1: 498
+    print('Part 1: {}'.format(get_shortest_path(False)))
+    # Part 2: 804
+    print('Part 2: {}'.format(get_shortest_path(True)))
 
 
 def get_shortest_path(go_home):
     markers, grid = get_grid()
     distances = calculate_distances(markers, grid)
-    shortest = traverse(distances, go_home)
-    print('Shortest distance = {}'.format(shortest))
+    return traverse(distances, go_home)
 
 
 def traverse(distances, go_home):
@@ -95,4 +91,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

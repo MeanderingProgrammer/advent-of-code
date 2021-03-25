@@ -1,13 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class DataRange:
@@ -44,13 +38,13 @@ def main():
     data_ranges = combine_all(data_ranges)
     data_ranges.sort()
     
-    # Part 1 = 17348574
+    # Part 1: 17348574
     lowest_unblocked = data_ranges[0].end + 1
-    print('Lowest unblocked = {}'.format(lowest_unblocked))
+    print('Part 1: {}'.format(lowest_unblocked))
 
-    # Part 2 = 104
+    # Part 2: 104
     total_unblocked = get_total_unblocked(data_ranges)
-    print('Total unblocked = {}'.format(total_unblocked))
+    print('Part 2: {}'.format(total_unblocked))
 
 
 def combine_all(data_ranges):

@@ -1,14 +1,10 @@
 import hashlib 
-from collections import defaultdict
 
 import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
+from aoc_board import Point
 
 
-TEST = False
-CODE = 'ihgpwlah' if TEST else 'udskfozm'
+CODE = 'udskfozm'
 
 
 DIRECTIONS = [
@@ -25,12 +21,12 @@ def main():
         Point(0, 0), 
         get_adjacent
     )
-    # Part 1 = DDRLRRUDDR
+    # Part 1: DDRLRRUDDR
     shortest = pull_path(paths[0])
-    print('Shortest Path = {}, length = {}'.format(shortest, len(shortest)))
-    # Part 2 = 556
+    print('Part 1: {}'.format(shortest))
+    # Part 2: 556
     longest = pull_path(paths[-1])
-    print('Longest Path = {}, length = {}'.format(longest, len(longest)))
+    print('Part 2: {}'.format(len(longest)))
 
 
 def get_adjacent(item):

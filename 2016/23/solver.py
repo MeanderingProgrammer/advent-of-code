@@ -1,13 +1,10 @@
-from collections import defaultdict
+import math
 
-import aoc_search
-from aoc_board import Grid, Point
 from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Setter:
@@ -86,11 +83,12 @@ class Toggle:
 
 
 def main():
-    # Part 1 = 11662
-    run_computer(7)
-    # Part 2 = 479008222
-    # Ends up simplifying of n! + 77*86
-    #run_computer(12)
+    # Part 1: 11662
+    print('Part 1: {}'.format(run_computer(7)))
+    # Part 2: 479008222
+    # Ends up simplifying of n! + 77*86 
+    # Did some reverse engineering
+    print('Part 2: {}'.format(math.factorial(12) + 77*86))
 
 
 def run_computer(num_eggs):
@@ -100,7 +98,7 @@ def run_computer(num_eggs):
     )
     computer.set('a', num_eggs)
     computer.run()
-    print(computer.get('a'))
+    return computer.get('a')
 
 
 def get_instructions():
@@ -126,4 +124,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

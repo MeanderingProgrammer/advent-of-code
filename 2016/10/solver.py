@@ -1,13 +1,9 @@
 from collections import defaultdict
 
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-COMPARISON = 17, 61
+FILE_NAME = 'data'
 
 
 class Entity:
@@ -38,9 +34,12 @@ class Bot:
         self.low = low
         self.high = high
         self.values = []
+        self.held = []
 
     def process(self, value, bots, outputs):
         self.values.append(value)
+        self.held.append(value)
+
         if len(self.values) == 2:
             low = min(self.values)
             self.low.process(low, bots, outputs)
@@ -48,10 +47,13 @@ class Bot:
             high = max(self.values)
             self.high.process(high, bots, outputs)
 
-            if low == COMPARISON[0] and high == COMPARISON[1]:
-                print(self.id)
-
             self.values = []
+
+    def held_all_values(self, values):
+        for value in values:
+            if value not in self.held:
+                return False
+        return True
 
     def __repr__(self):
         return str(self)
@@ -62,12 +64,20 @@ class Bot:
 
 def main():
     initial_values, bots, outputs = get_data()
-    # Part 1 = 118
     for bot, values in initial_values.items():
         for value in values:
             bots[bot].process(value, bots, outputs)
-    # Part 2 = 143153
-    print(multiply_outputs(outputs, [0, 1, 2]))
+
+    # Part 1: 118
+    print('Part 1: {}'.format(get_bot(bots.values(), [17, 61]).id))
+    # Part 2: 143153
+    print('Part 2: {}'.format(multiply_outputs(outputs, [0, 1, 2])))
+
+
+def get_bot(bots, values):
+    for bot in bots:
+        if bot.held_all_values(values):
+            return bot
 
 
 def multiply_outputs(outputs, buckets):
@@ -75,6 +85,7 @@ def multiply_outputs(outputs, buckets):
     for bucket in buckets:
         result *= outputs[bucket][0]
     return result
+
 
 def get_data():
     initial_values, bots, outputs = defaultdict(list), {}, defaultdict(list)
@@ -96,4 +107,3 @@ def get_data():
 
 if __name__ == '__main__':
     main()
-

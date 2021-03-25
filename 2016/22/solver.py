@@ -1,13 +1,10 @@
-from collections import defaultdict
-
 import aoc_search
 from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
+
 
 class Node:
 
@@ -39,14 +36,12 @@ class Node:
 
 def main():
     nodes = get_nodes()
-
-    # Part 1 = 910
+    # Part 1: 910
     viable = get_viable_connections(nodes)
-    print('Total viable nodes = {}'.format(len(viable)))
-
-    # Part 2 = 222
+    print('Part 1: {}'.format(len(viable)))
+    # Part 2: 222
     min_transfers = calculate_transfers(nodes)
-    print('Minimum transfers = {}'.format(min_transfers))
+    print('Part 2: {}'.format(min_transfers))
 
 
 def calculate_transfers(nodes):
@@ -115,4 +110,3 @@ def parse_node(node):
 
 if __name__ == '__main__':
     main()
-

@@ -1,12 +1,7 @@
-from collections import defaultdict
-
-import aoc_search
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class IpAddress:
@@ -71,12 +66,12 @@ class IpAddress:
 
 def main():
     ip_addresses = get_ip_addresses()
-    # Part 1 = 118
+    # Part 1: 118
     supported = [ip_address.tls() for ip_address in ip_addresses]
-    print('Total TLS = {}'.format(sum(supported)))
-    # Part 2 = 260
+    print('Part 1: {}'.format(sum(supported)))
+    # Part 2: 260
     supported = [ip_address.ssl() for ip_address in ip_addresses]
-    print('Total SSL = {}'.format(sum(supported)))
+    print('Part 2: {}'.format(sum(supported)))
 
 
 def get_ip_addresses():
@@ -85,4 +80,3 @@ def get_ip_addresses():
 
 if __name__ == '__main__':
     main()
-

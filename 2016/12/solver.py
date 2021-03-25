@@ -1,14 +1,8 @@
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
 from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Setter:
@@ -24,6 +18,7 @@ class Setter:
         computer.set(self.register, value)
         computer.move(1)
 
+
 class Jump:
 
     def __init__(self, register, value):
@@ -36,11 +31,12 @@ class Jump:
         else:
             computer.move(1)
 
+
 def main():
-    # Part 1 = 318117
-    run_instructions(False)
-    # Part 2 = 9227771
-    run_instructions(True)
+    # Part 1: 318117
+    print('Part 1: {}'.format(run_instructions(False)))
+    # Part 2: 9227771
+    print('Part 2: {}'.format(run_instructions(True)))
 
 
 def run_instructions(ignite):
@@ -48,7 +44,7 @@ def run_instructions(ignite):
     if ignite:
         computer.set('c', 1)
     computer.run(get_instructions())
-    print(computer.get('a'))
+    return computer.get('a')
 
 
 def get_instructions():
@@ -72,4 +68,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-
