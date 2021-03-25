@@ -1,24 +1,17 @@
-import math
 import itertools
-from collections import defaultdict
 
-import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 def main():
     weights = Parser(FILE_NAME).int_lines()
-    # Part 1 = 10439961859
-    store_weights(weights, 3)
-    # Part 2 = 72050269
-    store_weights(weights, 4)
+    # Part 1: 10439961859
+    print('Part 1: {}'.format(store_weights(weights, 3)))
+    # Part 2: 72050269
+    print('Part 2: {}'.format(store_weights(weights, 4)))
 
 
 def store_weights(weights, sections):
@@ -31,7 +24,7 @@ def store_weights(weights, sections):
         if len(options) > 0 and len(first_group) > len(options[0]):
             break
         options.append(first_group)
-    print(get_lowest_entaglement(options))
+    return get_lowest_entaglement(options)
 
 
 def group(weights, per_compartment, compartments):
@@ -66,4 +59,3 @@ def get_entaglement(values):
 
 if __name__ == '__main__':
     main()
-

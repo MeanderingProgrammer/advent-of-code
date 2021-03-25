@@ -1,16 +1,8 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
 import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Rule:
@@ -30,17 +22,13 @@ class Rule:
         after = value[index+len(self.start):]
         return before + self.end + after
 
+
 def main():
     molecule, rules = get_data()
-    # Part 1 = 576
-    print(len(run(rules, molecule)))
-    # Part 2 = 207
-    # Solution by askalski: https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/
-    elements = sum([letter.isupper() for letter in molecule])
-    rn_count = len(aoc_util.find_all(molecule, 'Rn'))
-    ar_count = len(aoc_util.find_all(molecule, 'Ar'))
-    y_count = len(aoc_util.find_all(molecule, 'Y'))
-    print(elements - rn_count - ar_count - (2 * y_count) - 1)
+    # Part 1: 576
+    print('Part 1: {}'.format(len(run(rules, molecule))))
+    # Part 2: 207
+    print('Part 2: {}'.format(replacements_needed(molecule)))
 
 
 def run(rules, molecule):
@@ -48,6 +36,16 @@ def run(rules, molecule):
     for rule in rules:
         results |= rule.replace(molecule)
     return results
+
+
+def replacements_needed(molecule):
+    # Solution by askalski
+    # https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/
+    elements = sum([letter.isupper() for letter in molecule])
+    rn_count = len(aoc_util.find_all(molecule, 'Rn'))
+    ar_count = len(aoc_util.find_all(molecule, 'Ar'))
+    y_count = len(aoc_util.find_all(molecule, 'Y'))
+    return elements - rn_count - ar_count - (2 * y_count) - 1
 
 
 def get_data():
@@ -58,4 +56,3 @@ def get_data():
 
 if __name__ == '__main__':
     main()
-

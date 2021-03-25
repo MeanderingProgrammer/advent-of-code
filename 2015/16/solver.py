@@ -1,15 +1,7 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 CHECKS = {
@@ -56,10 +48,10 @@ class Aunt:
 
 
 def main():
-    # Part 1 = 213
-    print(get_aunt(False))
-    # Part 2 = 323
-    print(get_aunt(True))
+    # Part 1: 213
+    print('Part 1: {}'.format(get_aunt(False)))
+    # Part 2: 323
+    print('Part 2: {}'.format(get_aunt(True)))
 
 
 def get_aunt(calibrate):

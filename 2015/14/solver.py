@@ -1,16 +1,8 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-TIME = 1_000 if TEST else 2_503
+FILE_NAME = 'data'
+TIME = 2_503
 
 
 class Reindeer:
@@ -39,9 +31,9 @@ class Reindeer:
 def main():
     reindeers = get_reindeers()
     # Part 1 = 2655
-    print(max(get_distance_after(reindeers, TIME)))
+    print('Part 1: {}'.format(max(get_distance_after(reindeers, TIME))))
     # Part 2 = 1059
-    print(max(get_times_in_lead(reindeers)))
+    print('Part 2: {}'.format(max(get_times_in_lead(reindeers))))
 
 
 def get_times_in_lead(reindeers):
@@ -76,4 +68,3 @@ def get_reindeers():
 
 if __name__ == '__main__':
     main()
-

@@ -1,15 +1,7 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Ingredient:
@@ -75,17 +67,15 @@ class Recipe:
 def main():
     ingredients = get_ingredients()
     recipe = Recipe(ingredients, 100)
-    # Part 1 = 18965440
-    print(recipe.best_score())
-    # Part 2 = 15862900
-    print(recipe.best_score(500))
+    # Part 1: 18965440
+    print('Part 1: {}'.format(recipe.best_score()))
+    # Part 2: 15862900
+    print('Part 2: {}'.format(recipe.best_score(500)))
 
 
 def get_ingredients():
     return [Ingredient(line) for line in Parser(FILE_NAME).lines()]
-        
 
 
 if __name__ == '__main__':
     main()
-
