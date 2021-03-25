@@ -1,16 +1,9 @@
-import math
 import itertools
-from collections import defaultdict
 
-import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Character:
@@ -86,10 +79,10 @@ def main():
         player.reset()
         enemy.reset()
         
-    # Part 1 = 121
-    print(min(win_costs))
-    # Part 2 = 201
-    print(max(loss_costs))
+    # Part 1: 121
+    print('Part 1: {}'.format(min(win_costs)))
+    # Part 2: 201
+    print('Part 2: {}'.format(max(loss_costs)))
 
 
 def fight(player, enemy):
@@ -135,4 +128,3 @@ def get_character(stats):
 
 if __name__ == '__main__':
     main()
-

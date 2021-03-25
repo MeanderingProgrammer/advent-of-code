@@ -1,22 +1,12 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
 GOAL = 29_000_000
 
 
 def main():
+    # Kinda slow
     # Part 1 = 665280
-    print(find_first(False))
+    print('Part 1: {}'.format(find_first(False)))
     # Part 2 = 705600
-    print(find_first(True))
+    print('Part 2: {}'.format(find_first(True)))
 
 
 def find_first(lazy):
@@ -38,4 +28,3 @@ def first(houses):
 
 if __name__ == '__main__':
     main()
-

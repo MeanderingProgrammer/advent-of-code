@@ -1,17 +1,8 @@
-import math
-import itertools
-from collections import defaultdict
-
 import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
 
 
-TEST = False
-PLAYER_STATS = (10, 250) if TEST else (50, 500)
-ENEMY_STATS = (14, 8) if TEST else (58, 9)
+PLAYER_STATS = (50, 500)
+ENEMY_STATS = (58, 9)
 
 
 class EffectCreator:
@@ -41,6 +32,7 @@ class EffectCreator:
             self.enemy_effect,
             self.cleanup
         )
+
 
 class Effect:
 
@@ -298,10 +290,10 @@ class Game:
 
 
 def main():
-    # Part 1 = 1269
-    play_game(False)
-    # Part 2 = 1309
-    play_game(True)
+    # Part 1: 1269
+    print('Part 1: {}'.format(play_game(False)))
+    # Part 2: 1309
+    print('Part 2: {}'.format(play_game(True)))
 
 
 def play_game(hard):
@@ -310,13 +302,12 @@ def play_game(hard):
         Warlock(*ENEMY_STATS),
         hard
     )
-    print(aoc_search.bfs(
+    return aoc_search.bfs(
         (0, game),
         lambda current: current.done(),
         lambda mana_used, current: current.get_moves(mana_used)
-    ))
+    )
 
 
 if __name__ == '__main__':
     main()
-

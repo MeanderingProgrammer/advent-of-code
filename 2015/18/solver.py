@@ -1,15 +1,8 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
 from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 ON = '#'
 OFF = '.'
@@ -77,18 +70,18 @@ class Animator:
 
 
 def main():
-    # Part 1 = 1061
-    run(False)
-    # Part 2 = 1006
-    run(True)
+    # Pretty slow but not too bad
+    # Part 1: 1061
+    print('Part 1: {}'.format(run(False)))
+    # Part 2: 1006
+    print('Part 2: {}'.format(run(True)))
 
 
 def run(force_corners):
     animator = Animator(get_grid(), force_corners)
     for i in range(100):
-        print(i)
         animator.step()
-    print(animator.lights_on())
+    return animator.lights_on()
 
 
 def get_grid():
@@ -102,4 +95,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

@@ -1,16 +1,8 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
 from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
+FILE_NAME = 'data'
 
 
 class Instruction:
@@ -50,10 +42,10 @@ class Instruction:
 
 
 def main():
-    # Part 1 = 170
-    run_computer(False)
-    # Part 2 = 247
-    run_computer(True)
+    # Part 1: 170
+    print('Part 1: {}'.format(run_computer(False)))
+    # Part 2: 247
+    print('Part 2: {}'.format(run_computer(True)))
 
 
 def run_computer(set_a):
@@ -62,7 +54,7 @@ def run_computer(set_a):
         computer.set('a', 1)
     instructions = get_instructions()
     computer.run(instructions)
-    print(computer.get('b'))
+    return computer.get('b')
 
 
 def get_instructions():
@@ -71,4 +63,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

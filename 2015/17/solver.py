@@ -1,25 +1,19 @@
-import math
 import itertools
-from collections import defaultdict
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_computer import Computer
 from aoc_parser import Parser
 
 
-TEST = False
-FILE_NAME = 'sample' if TEST else 'data'
-TOTAL_VOLUME = 25 if TEST else 150
+FILE_NAME = 'data'
+TOTAL_VOLUME = 150
 
 
 def main():
     capacities = get_capacities()
     combinations = get_combinations(capacities)
-    # Part 1 = 1304
-    print(len(combinations))
-    # Part 2 = 18
-    print(get_min_lengths(combinations))
+    # Part 1: 1304
+    print('Part 1: {}'.format(len(combinations)))
+    # Part 2: 18
+    print('Part 2: {}'.format(get_min_lengths(combinations)))
 
 
 def get_combinations(capacities):
@@ -43,4 +37,3 @@ def get_capacities():
 
 if __name__ == '__main__':
     main()
-

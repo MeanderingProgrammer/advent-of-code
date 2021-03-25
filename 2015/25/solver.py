@@ -1,22 +1,10 @@
-import math
-import itertools
-from collections import defaultdict
-
-import aoc_search
-import aoc_util
-from aoc_board import Grid, Point
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-TEST = False
-POSITION = (4, 3) if TEST else (2_947, 3_029)
+POSITION = (2_947, 3_029)
 
 
 def main():
     index = get_index(POSITION)
     # Part 1 = 19980801
-    print(get_password(index))
+    print('Part 1: {}'.format(get_password(index)))
 
 
 def get_index(position):
@@ -40,4 +28,3 @@ def get_password(n):
 
 if __name__ == '__main__':
     main()
-
