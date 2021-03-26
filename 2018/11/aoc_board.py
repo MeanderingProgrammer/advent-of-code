@@ -1,29 +1,3 @@
-class Grid:
-
-    def __init__(self):
-        self.grid = set()
-
-    def add(self, point):
-        self.grid.add(point)
-
-    def area(self):
-        width = max(self.xs()) - min(self.xs())
-        height = max(self.ys()) - min(self.ys())
-        return width * height
-
-    def xs(self):
-        return [point.x for point in self.grid]
-
-    def ys(self):
-        return [point.y for point in self.grid]
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.grid)
-
-
 class Point:
 
     def __init__(self, x, y):
@@ -65,4 +39,3 @@ class Point:
 
     def __str__(self):
         return '({}, {})'.format(self.x, self.y)
-

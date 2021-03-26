@@ -1,5 +1,6 @@
-from aoc_parser import Parser
 import re
+
+from aoc_parser import Parser
 
 
 EVENT_PATTERN = '^\[(.*)-(.*)-(.*) (.*):(.*)\] (.*)$'
@@ -88,11 +89,13 @@ def main():
                 guard_events[guard_id] = GuardEvents()
             guard_events[guard_id].add(event)
 
-    solve_strategy_1(guard_events)
-    solve_strategy_2(guard_events)
+    # Part 1: 48680
+    print('Part 1: {}'.format(solve_strategy_1(guard_events)))
+    # Part 2: 94826
+    print('Part 2: {}'.format(solve_strategy_2(guard_events)))
+
 
 def solve_strategy_1(guard_events):
-    # Part 1 = 48680
     guard_ids = [guard_id for guard_id in guard_events]
     guard_ids = sorted(guard_ids, key=lambda guard_id: guard_events[guard_id].get_sleep_time())
 
@@ -103,11 +106,11 @@ def solve_strategy_1(guard_events):
     minutes = sorted(minutes, key=lambda minute: minute_frequencies[minute])
     most_common_minute = minutes[-1]
 
-    print('Magic number = {}'.format(sleepiest_guard * most_common_minute))
+    return sleepiest_guard * most_common_minute
 
 
 def solve_strategy_2(guard_events):
-    # Part 2 = 94826
+    
     chosen_guard, chosen_minute, frequncy = None, None, 0
     for guard_id in guard_events:
         events = guard_events[guard_id]
@@ -121,9 +124,8 @@ def solve_strategy_2(guard_events):
         if most_common_minute_frequency > frequncy:
             chosen_guard, chosen_minute, frequncy = guard_id, most_common_minute, most_common_minute_frequency
 
-    print('Magic number = {}'.format(chosen_guard * chosen_minute))
+    return chosen_guard * chosen_minute
 
 
 if __name__ == '__main__':
     main()
-

@@ -1,6 +1,8 @@
+import re
+
 from aoc_parser import Parser
 from grid import Grid, Point
-import re
+
 
 CLAIM_PATTERN = '^#(.*) @ (.*),(.*): (.*)x(.*)$'
 
@@ -31,8 +33,6 @@ class Claim:
 
 
 def main():
-    # Part 1 = 120408
-    # Part 2 = 1276
     grid = Grid()
     all_claims = set()
 
@@ -50,8 +50,10 @@ def main():
             for claim_on_point in claims_on_point:
                 all_claims.discard(claim_on_point)
 
-    print('Square inches of fabric with multiple claims = {}'.format(multiple_claims))
-    print('Claim with no overlaps = {}'.format(all_claims))
+    # Part 1: 120408
+    print('Part 1: {}'.format(multiple_claims))
+    # Part 2: 1276
+    print('Part 2: {}'.format(next(iter(all_claims))))
 
 
 if __name__ == '__main__':

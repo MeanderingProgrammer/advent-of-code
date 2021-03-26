@@ -37,11 +37,11 @@ def main():
 
     strongest_bot = bots[-1]
 
-    # Part 1 = 383
+    # Part 1: 383
     bots_in_range = [bot for bot in bots if strongest_bot.in_range(bot.pos)]
-    print('Total bots in range = {}'.format(len(bots_in_range)))
+    print('Part 1: {}'.format(len(bots_in_range)))
 
-    # Part 2 = 100474026
+    # Part 2: 100474026
     bounds = get_bounds(bots)
     for i in range(10):
         best_value, best_bounds = 0, None

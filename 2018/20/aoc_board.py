@@ -1,46 +1,3 @@
-class Grid:
-
-    def __init__(self):
-        self.grid = {}
-
-    def area(self):
-        width = max(self.xs()) - min(self.xs())
-        height = max(self.ys()) - min(self.ys())
-        return width * height
-
-    def xs(self):
-        return [point.x for point in self.grid]
-
-    def ys(self):
-        return [point.y for point in self.grid]
-
-    def __setitem__(self, point, value):
-        self.grid[point] = value
-
-    def __getitem__(self, point):
-        return self.grid.get(point, None)
-
-    def __contains__(self, point):
-        return point in self.grid
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        xs, ys = self.xs(), self.ys()
-
-        rows = []
-        for y in range(min(ys), max(ys) + 1):
-            row = []
-            for x in range(min(xs), max(xs) + 1):
-                point = Point(x, y)
-                value = str(self[point]) if point in self else '.'
-                row.append(value)                
-            rows.append(''.join(row))
-
-        return '\n'.join(rows)
-
-
 class Point:
 
     def __init__(self, x, y):
@@ -105,4 +62,3 @@ class Point:
 
     def __str__(self):
         return '({}, {})'.format(self.x, self.y)
-

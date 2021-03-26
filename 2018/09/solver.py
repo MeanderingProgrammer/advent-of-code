@@ -16,6 +16,7 @@ class Player:
     def __str__(self):
         return '{}: {}'.format(self.id, self.score)
 
+
 class Game:
 
     def __init__(self, num_players):
@@ -49,18 +50,17 @@ class Game:
 def main():
     num_players = 411
     highest_value = 72_059
-    # Part 1 = 429943
-    solve(num_players, highest_value)
-    # Part 2 = 3615691746
-    solve(num_players, highest_value * 100)
+    # Part 1: 429943
+    print('Part 1: {}'.format(solve(num_players, highest_value)))
+    # Part 2: 3615691746
+    print('Part 2: {}'.format(solve(num_players, highest_value * 100)))
 
 
 def solve(num_players, num_moves):
     game = Game(num_players)
     game.play(num_moves)
-    print('High score = {}'.format(game.get_high_score()))
+    return game.get_high_score()
 
 
 if __name__ == '__main__':
     main()
-

@@ -1,5 +1,4 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from aoc_board import Point
 
 
 class PowerGrid:
@@ -24,7 +23,6 @@ class PowerGrid:
     def get_largest_any(self):
         largest_any = None
         for sub_grid_size in range(1, self.grid_size):
-            print(sub_grid_size)
             largest = self.get_largest(sub_grid_size)
             if largest_any is None or largest[1] > largest_any[0][1]:
                 largest_any = largest, sub_grid_size
@@ -69,11 +67,10 @@ def main():
     power_grid = PowerGrid(serial_number, grid_size)
     power_grid.initialize()
     # Part 1: 243,43
-    print('Largest power is at: {}'.format(power_grid.get_largest(3)[0]))
+    print('Part 1: {}'.format(power_grid.get_largest(3)[0]))
     # Part 2: 236,151,15
-    print('Largest of any size is: {}'.format(power_grid.get_largest_any()))
+    print('Part 2: {}'.format(power_grid.get_largest_any()))
 
 
 if __name__ == '__main__':
     main()
-

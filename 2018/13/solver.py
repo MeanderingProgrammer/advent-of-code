@@ -4,7 +4,6 @@ from aoc_board import Grid, Point
 
 FILE_NAME = 'data'
 
-
 LEFT = '<'
 RIGHT = '>'
 UP = '^'
@@ -30,6 +29,7 @@ INTERSECTION_OPTIONS = {
     UP: [LEFT, UP, RIGHT],
     DOWN: [RIGHT, DOWN, LEFT]
 }
+
 
 class Cart:
 
@@ -140,12 +140,12 @@ class CartSystem:
 
 def main():
     data = get_data()
-    # Part 1 = 86,118
+    # Part 1: 86,118
     system = CartSystem(get_track(data), get_carts(data))
-    print('Crash occured at: {}'.format(system.run_until_crash()))
-    # Part 2 = 2,81
+    print('Part 1: {}'.format(system.run_until_crash()[0]))
+    # Part 2: 2,81
     system = CartSystem(get_track(data), get_carts(data))
-    print('Last remaining cart is at: {}'.format(system.run_unit_one_remains()))
+    print('Part 2: {}'.format(system.run_unit_one_remains()))
 
 
 def get_data():
@@ -179,4 +179,3 @@ def get_carts(data):
 
 if __name__ == '__main__':
     main()
-

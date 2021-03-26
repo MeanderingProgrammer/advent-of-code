@@ -1,6 +1,5 @@
 import heapq 
 
-from aoc_parser import Parser
 from aoc_board import Grid, Point
 
 
@@ -60,6 +59,7 @@ class Region:
         else:
             raise Exception('Unknown type {}'.format(region_type))
 
+
 GEAR = 'g'
 TORCH = 't'
 NEITHER = 'n'
@@ -70,22 +70,21 @@ VALID_TOOL = {
     2: set([TORCH, NEITHER])
 }
 
+
 def main():
     target = Point(14, 778)
     cave = build_out_cave(11_541, target)
-    #target = Point(10, 10)
-    #cave = build_out_cave(510, target)
 
-    # Part 1 = 11575
     risk_levels = []
     for point in cave.grid:
         if point <= target:
             risk_levels.append(cave[point].type())
-    print('Total risk = {}'.format(sum(risk_levels)))
+    # Part 1: 11575
+    print('Part 1: {}'.format(sum(risk_levels)))
 
-    # Part 2 = 1068
     took = traverse(cave, Point(0, 0), target, TORCH)
-    print('Traversal took {}'.format(took))
+    # Part 2: 1068
+    print('Part 2: {}'.format(took))
 
 
 def build_out_cave(depth, target):
@@ -137,4 +136,3 @@ def traverse(cave, start, end, equipped):
 
 if __name__ == '__main__':
     main()
-

@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 class Node:
@@ -47,10 +46,10 @@ class Node:
 def main():
     file_name = 'data'
     tree = Node(Parser(file_name).int_entries())
-    # Part 1 = 42472
-    print('Total metadata = {}'.format(tree.sum_metadata()))
-    # Part 2 = 21810
-    print('Value = {}'.format(tree.value()))
+    # Part 1: 42472
+    print('Part 1: {}'.format(tree.sum_metadata()))
+    # Part 2: 21810
+    print('Part 2: {}'.format(tree.value()))
 
 
 if __name__ == '__main__':

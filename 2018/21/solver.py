@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -132,6 +131,7 @@ ALL_INSTRUCTIONS = {
     'eqrr': Equals(True, True)
 }
 
+
 class Registers:
 
     def __init__(self, size, ip):
@@ -191,10 +191,11 @@ class Instruction:
 
 
 def main():
-    # Part 1 = 6619857
-    print('Best case value = {}'.format(run(True)))
-    # Part 2 = 9547924
-    print('Worse case value = {}'.format(run(False)))
+    # I think I actually waited for this one to finish
+    # Part 1: 6619857
+    print('Part 1: {}'.format(run(True)))
+    # Part 2: 9547924
+    print('Part 2: {}'.format(run(False)))
 
 
 def run(until_first):

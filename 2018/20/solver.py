@@ -1,5 +1,5 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
+from aoc_board import Point
 
 
 FILE_NAME = 'data'
@@ -62,11 +62,10 @@ def main():
     data = Parser(FILE_NAME).read()
     regex = Regex(data[1:-1])
     regex.calculate_distances()
-
     # Part 1: 3930
-    print('Longest path = {}'.format(regex.longest_path()))
+    print('Part 1: {}'.format(regex.longest_path()))
     # Part 2: 8240
-    print('Paths of at least 1000 = {}'.format(regex.paths_longer(1_000)))
+    print('Part 2: {}'.format(regex.paths_longer(1_000)))
 
 
 def follow_path(path):

@@ -1,7 +1,3 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
-
-
 class Elve:
 
     def __init__(self, index):
@@ -49,16 +45,16 @@ class Recipes:
 
 
 def main():
-    # Input: 170_641
     goal = str(170_641)
     recipes = Recipes()
     recipes.evolve(goal)
     # Part 1: 2103141159
-    print(''.join(recipes.score_board[int(goal):int(goal)+10]))
+    at_goal = ''.join(recipes.score_board[int(goal):int(goal)+10])
+    print('Part 1: {}'.format(at_goal))
     # Part 2: 20165733
-    print(str(recipes).index(goal))
+    goal_at = str(recipes).index(goal)
+    print('Part 2: {}'.format(goal_at))
 
 
 if __name__ == '__main__':
     main()
-

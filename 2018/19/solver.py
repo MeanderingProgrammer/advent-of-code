@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -132,6 +131,7 @@ ALL_INSTRUCTIONS = {
     'eqrr': Equals(True, True)
 }
 
+
 class Registers:
 
     def __init__(self, size, ip):
@@ -191,12 +191,13 @@ class Instruction:
 
 
 def main():
-    solve_part_1()
-    solve_part_2(10_551_361)
+    # Part 1: 993
+    print('Part 1: {}'.format(solve_part_1()))
+    # Part 2: 10708912
+    print('Part 2: {}'.format(solve_part_2(10_551_361)))
 
 
 def solve_part_1():
-    # Part 1 = 993
     pointer, instructions = get_instructions(Parser(FILE_NAME))
     regs = Registers(6, pointer)
 
@@ -206,17 +207,16 @@ def solve_part_1():
         ALL_INSTRUCTIONS[instruction.opcode()].process(instruction, regs)
         regs.next()    
     
-    print('Value at register 0 = {}'.format(regs.get(0)))
+    return regs.get(0)
 
 
 def solve_part_2(value):
-    # Part 2 = 10708912
     # Reverse engineered code to figure out what it's calculating
     result = 0
     for i in range(1, value + 1):
         if value % i == 0:
             result += i
-    print('Estimation for part 2: {}'.format(result))
+    return result
 
 
 def get_instructions(parser):
@@ -228,4 +228,3 @@ def get_instructions(parser):
 
 if __name__ == '__main__':
     main()
-

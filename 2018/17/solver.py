@@ -1,11 +1,17 @@
+import sys
+
 from aoc_parser import Parser
 from aoc_board import Grid, Point
-import sys
 
 sys.setrecursionlimit(10_000)
 
 
 FILE_NAME = 'data'
+
+CLAY = '#'
+DOWN = 'd'
+LEFT = 'l'
+RIGHT = 'r'
 
 
 class PointRange:
@@ -41,12 +47,6 @@ class PointRange:
             ))
         else:
             raise Exception('Can not handle such a range')
-
-
-CLAY = '#'
-DOWN = 'd'
-LEFT = 'l'
-RIGHT = 'r'
 
 
 class GroundReservoir:
@@ -102,11 +102,11 @@ def main():
     reservoir = GroundReservoir(grid)
     reservoir.fill(start)
     # Part 1: 38409
-    print('Filled reservoir = {}'.format(
+    print('Part 1: {}'.format(
         len([point for point in reservoir.flowing if grid.in_range(point)])
     ))
     # Part 2: 32288
-    print('Settled water = {}'.format(
+    print('Part 2: {}'.format(
         len([point for point in reservoir.settled if grid.in_range(point)])
     ))
 
@@ -122,4 +122,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

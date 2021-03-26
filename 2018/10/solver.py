@@ -1,6 +1,7 @@
+import re
+
 from aoc_parser import Parser
 from aoc_board import Grid, Point
-import re
 
 
 PATTERN = '^position=<(.*), (.*)> velocity=<(.*), (.*)>$'
@@ -9,12 +10,12 @@ PATTERN = '^position=<(.*), (.*)> velocity=<(.*), (.*)>$'
 def main():
     file_name = 'data'
     point_velocities = get_point_velocities(file_name)
-    # Part 1 = GPJLLLLH
-    # Part 2 = 10515
     min_time = get_min_area_time(point_velocities)
-    print(min_time)
     grid = grid_at_time(point_velocities, min_time)
+    # Part 1: GPJLLLLH
     print(grid)
+    # Part 2: 10515
+    print('Part 1: {}'.format(min_time))
 
 
 def get_min_area_time(point_velocities):
