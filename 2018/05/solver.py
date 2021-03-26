@@ -44,36 +44,35 @@ class Polymer:
 
     @staticmethod
     def collide(unit, next_unit):
-        if unit.islower() and  next_unit.islower():
+        if unit.islower() and next_unit.islower():
             return False
-        if unit.isupper() and  next_unit.isupper():
+        if unit.isupper() and next_unit.isupper():
             return False
         return unit.lower() == next_unit.lower()
 
 
 def main():
     file_name = 'data'
-    parser = Parser(file_name)
-    polymer = Polymer(parser.read())
-    #solve_part_1(polymer)
-    solve_part_2(polymer)
+    polymer = Polymer(Parser(file_name).read())
+    # Part 1: 11242
+    print('Part 1: {}'.format(solve_part_1(polymer)))
+    # Part 2: 5492
+    print('Part 2: {}'.format(solve_part_2(polymer)))
 
 
 def solve_part_1(polymer):
-    # Part 1 = 11242
     polymer.react()
-    print('Length of polymer after reaction = {}'.format(len(polymer)))
+    return len(polymer)
 
 
 def solve_part_2(polymer):
-    # Part 2 = 5492
     lengths = []
     unit_types = polymer.get_unit_types()
     for unit_type in unit_types:
         new_polymer = polymer.remove_unit_type(unit_type)
         new_polymer.react()
         lengths.append(len(new_polymer))
-    print('Minimum length polymer = {}'.format(min(lengths)))
+    return min(lengths)
 
 
 if __name__ == '__main__':

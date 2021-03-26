@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 RULE_LENGTH = 5
@@ -84,18 +83,17 @@ class Rule:
 def main():
     file_name = 'data'
     state, rules = get(file_name)
-    # Part 1 = 1816
-    run_for(get(file_name), 20)
-    # Part 2 = 399999999957
-    run_for(get(file_name), 1_000)
-    print('Estimated based on value = {}'.format(solve_known(50_000_000_000)))
+    # Part 1: 1816
+    print('Part 1: {}'.format(run_for(get(file_name), 20)))
+    # Part 2: 399999999957
+    print('Part 2: {}'.format(solve_known(50_000_000_000)))
 
 
 def run_for(state_rules, generations):
     state, rules = state_rules
     for i in range(generations):
         state.apply_rules(rules)
-    print('Potted plants value = {}'.format(state.value()))
+    return state.value()
 
 
 def solve_known(generations):
@@ -115,4 +113,3 @@ def get(file_name):
 
 if __name__ == '__main__':
     main()
-

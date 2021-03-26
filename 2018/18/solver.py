@@ -49,19 +49,20 @@ class Landscape:
 
 def main():
     # Part 1: 515496
-    run_for(10)
-    # Part 2: 233058
+    print('Part 1: {}'.format(run_for(10)))
+
     goal = 1_000_000_000
     start, pattern = get_pattern(1_000, 5, 30)
     index = (goal - start) % len(pattern)
-    print('Resource value = {}'.format(pattern[index]))
+    # Part 2: 233058
+    print('Part 2: {}'.format(pattern[index]))
 
 
 def run_for(n):
     landscape = Landscape(get_grid())
     for i in range(n):
         landscape.step()
-    print('Resource value = {}'.format(landscape.resource_value()))
+    return landscape.resource_value()
 
 
 def get_pattern(n, min_len, max_len):
@@ -69,8 +70,6 @@ def get_pattern(n, min_len, max_len):
     landscape = Landscape(get_grid())
 
     for i in range(n):
-        if i % 50 == 0:
-            print(i)
         current = landscape.resource_value()
         scores.append(current)
         landscape.step()
@@ -111,4 +110,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

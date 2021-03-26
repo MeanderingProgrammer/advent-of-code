@@ -5,12 +5,13 @@ from aoc_board import Grid, Point
 def main():
     file_name = 'data'
     grid = get_grid(file_name)
-    #solve_part_1(grid)
-    solve_part_2(grid, 10_000)
+    # Part 1: 3251
+    print('Part 1: {}'.format(solve_part_1(grid)))
+    # Part 2: 47841
+    print('Part 2: {}'.format(solve_part_2(grid, 10_000)))
 
 
 def solve_part_1(grid):
-    # Part 1 = 3251
     closest_points = grid.closest_points()
     point_counts = get_point_counts(closest_points)
     infinite_points = get_infinite_points(closest_points, grid.max_x(), grid.max_y())
@@ -19,13 +20,11 @@ def solve_part_1(grid):
         del point_counts[infinite_point]
     
     sizes = [point_count[1] for point_count in point_counts.items()]
-    print('Maximum size that is not infinite = {}'.format(max(sizes)))
+    return max(sizes)
 
 
 def solve_part_2(grid, max_distance):
-    # Part 2 = 47841
-    total_points = grid.points_with_max_distance(max_distance)
-    print('Total points within distance = {}'.format(total_points))
+    return grid.points_with_max_distance(max_distance)
 
 
 def get_point_counts(closest_points):
@@ -60,4 +59,3 @@ def get_grid(file_name):
 
 if __name__ == '__main__':
     main()
-

@@ -1,7 +1,7 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
-from aoc_graph import Graph
 import re
+
+from aoc_parser import Parser
+from aoc_graph import Graph
 
 
 STEP_PATTERN = '^Step (.) must be finished before step (.) can begin.$'
@@ -10,20 +10,19 @@ STEP_PATTERN = '^Step (.) must be finished before step (.) can begin.$'
 def main():
     file_name = 'data'
     graph = get_graph(file_name)
-    solve_part_1(graph)
-    solve_part_2(graph)
+    # Part 1: LAPFCRGHVZOTKWENBXIMSUDJQY
+    print('Part 1: {}'.format(solve_part_1(graph)))
+    # Part 2: 936
+    print('Part 2: {}'.format(solve_part_2(graph)))
 
 
 def solve_part_1(graph):
-    # Part 1 = LAPFCRGHVZOTKWENBXIMSUDJQY
     order = graph.topo_sort()
-    print('Order String = {}'.format(''.join(order)))
+    return ''.join(order)
 
 
 def solve_part_2(graph):
-    # Part 2 = 936
-    duration = graph.get_duration(5, 60)
-    print('Total duration = {}'.format(duration))
+    return graph.get_duration(5, 60)
     
 
 def get_graph(file_name):
@@ -36,4 +35,3 @@ def get_graph(file_name):
 
 if __name__ == '__main__':
     main()
-

@@ -1,4 +1,5 @@
 from operator import attrgetter
+
 from aoc_parser import Parser
 from aoc_board import Grid, Point
 
@@ -210,19 +211,30 @@ class Game:
 def main():
     data = Parser(FILE_NAME).nested_array()
     # Part 1: 214731
+    print('Part 1: {}'.format(play_game(data, False)))
     # Part 2: 53222
-    for i in range(10, 16):
-        result = play_game(data, i)
-        print(i, result)
+    print('Part 2: {}'.format(play_game(data, True)))
 
 
-def play_game(data, attack):
-    game = Game(
+def play_game(data, play_until_elf_win):
+    if play_until_elf_win:
+        attack, result = 10, None
+        while result is None:
+            attack += 1
+            game = get_game(data, attack)
+            result = game.play_until_elf_dies()
+        return result
+    else:
+        game = get_game(data, 3)
+        return game.play()
+
+
+def get_game(data, attack):
+    return Game(
         get_grid(data),
         get_characters(data, 'G', 3), 
         get_characters(data, 'E', attack)
     )
-    return game.play_until_elf_dies()
 
 
 def get_grid(data):
@@ -247,4 +259,3 @@ def get_characters(data, symbol, attack):
 
 if __name__ == '__main__':
     main()
-

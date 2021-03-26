@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -187,19 +186,19 @@ class Battle:
 
 
 def main():
-    solve_part_1()
-    solve_part_2()
+    # Part 1: 16086
+    print('Part 1: {}'.format(solve_part_1()))
+    # Part 2: 3957
+    print('Part 2: {}'.format(solve_part_2()))
 
 
 def solve_part_1():
-    # Part 1 = 16086
     battle = Battle(get_armies())
     battle.simulate()
-    print('Winning army has {} units'.format(battle.winning_units()))
+    return battle.winning_units()
 
 
 def solve_part_2():
-    # Part 2 = 3957
     boost = 0
     immune_won = False
     while not immune_won:
@@ -209,7 +208,7 @@ def solve_part_2():
         battle.simulate()
         immune_won |= battle.immune_won()
     
-    print('Won with boost of {} and remaining units {}'.format(boost, battle.winning_units()))
+    return battle.winning_units()
 
 
 def get_armies():

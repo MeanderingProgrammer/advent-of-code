@@ -1,5 +1,5 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
+from aoc_board import Point
 
 
 FILE_NAME = 'data'
@@ -48,8 +48,8 @@ def main():
             for option in to_delete:
                 constallations.remove(option)
 
-    # Part 1 = 375
-    print('Total number of constallations = {}'.format(len(constallations)))
+    # Part 1: 375
+    print('Part 1: {}'.format(len(constallations)))
 
 
 def get_options(point, constallations):
@@ -80,4 +80,3 @@ def get_points():
 
 if __name__ == '__main__':
     main()
-

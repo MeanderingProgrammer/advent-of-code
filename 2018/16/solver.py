@@ -1,5 +1,4 @@
 from aoc_parser import Parser
-from aoc_board import Grid, Point
 
 
 FILE_NAME = 'data'
@@ -199,8 +198,6 @@ class SampleInstruction:
             before_copy = self.before.copy()
             instruction.process(self.instruction, before_copy)
             if before_copy == self.after:
-                if str(instruction) == 'gtii':
-                    print(instruction)
                 meets.add(str(instruction))
         return meets
 
@@ -219,26 +216,27 @@ class SampleInstruction:
 def main():
     parser = Parser(FILE_NAME)
     instructions = get_sample_instructions(parser)
-    # Part 1 = 560
-    # Part 2 = 622
 
-    mapping = {}
+    mapping, behave_as_at_least_3 = {}, 0
     for instruction in instructions:
         opcode = instruction.opcode()
         possible = instruction.test_all()
-
+        if len(possible) >= 3:
+            behave_as_at_least_3 += 1
         if opcode not in mapping:
             mapping[opcode] = possible
         else:
             mapping[opcode] &= possible
+    # Part 1: 560
+    print('Part 1: {}'.format(behave_as_at_least_3))
 
     mapping = collapse(mapping)
-    print(mapping)
     regs = Registers([0, 0, 0, 0], False)
     for instruction in parser.line_groups()[-1]:
         instruction = Instruction(instruction)
         ALL_INSTRUCTIONS[mapping[instruction.opcode()]].process(instruction, regs)
-    print(regs)
+    # Part 2: 622
+    print('Part 2: {}'.format(regs.get(0)))
 
 
 def get_sample_instructions(parser):
@@ -267,4 +265,3 @@ def collapse(mapping):
 
 if __name__ == '__main__':
     main()
-
