@@ -1,58 +1,78 @@
 class Transmission:
 
-    def __init__(self, raw, repeats, n):
-        self.value = [int(value) for value in raw] * repeats
-        if n is not None:
-            self.value = self.value[self.get_digits(n):]
-    
+    def __init__(self, raw, apply_offset):
+        self.digits = [int(value) for value in raw]
+        self.apply_offset = apply_offset
+        if self.apply_offset:
+            offset = self.first_n(7)
+            self.digits = self.digits[offset:]
+
     def forward(self):
-        value = [v for v in self.value]
-        value.reverse()
+        if self.apply_offset:
+            self.digits = self.forward_with_offset()
+        else:
+            self.digits = self.forward_from_start()
 
-        total = 0
-        new_value = []
-        for v in value:
-            total += v
-            new_value.append(total % 10)
-        new_value.reverse()
+    def forward_from_start(self):
+        return [self.get_new_digit(i) for i in range(len(self.digits))]
 
-        self.value = new_value
+    def get_new_digit(self, i):
+        pattern, pattern_index = self.get_pattern(i + 1), 1
+        new_digit = 0
+        for digit in self.digits:
+            new_digit += (pattern[pattern_index % len(pattern)] * digit)
+            pattern_index += 1
+        return abs(new_digit) % 10
 
-    def get_digits(self, n):
-        digits = self.value[:n]
-        value = ''.join([str(digit) for digit in digits])
-        return int(value)
+    def forward_with_offset(self):
+        # Going from back to front each digit is the 
+        # current sum % 10
+        # This only applies in the middle of a set
+        # of digits and does not hold to the start
+        self.digits.reverse()
+
+        new_digits, current_sum = [], 0
+        for digit in self.digits:
+            current_sum += digit
+            new_digits.append(current_sum % 10)
+        new_digits.reverse()
+
+        return new_digits
+
+    def first_n(self, n):
+        first_n_digits = [str(digit) for digit in self.digits[:n]]
+        as_string = ''.join(first_n_digits)
+        return int(as_string)
+
+    @staticmethod
+    def get_pattern(length):
+        components = [
+            [0] * length,
+            [1] * length,
+            [0] * length,
+            [-1] * length
+        ]
+        return [value for component in components for value in component]
 
 
 def main():
     # Part 1: 77038830
-    #solve_part_1()
+    print('Part 1: {}'.format(apply_fft(1, False)))
     # Part 2: 28135104
-    solve_part_2()
+    print('Part 2: {}'.format(apply_fft(10_000, True)))
 
-def solve_part_1():
-    # No longer works for part 1 :(
-    transmission = get_transmission(1, None)
-    print(transmission.value)
+
+def apply_fft(repeats, apply_offset):
+    transmission = get_transmission(repeats, apply_offset)
     for i in range(100):
         transmission.forward()
-        print(transmission.value)
-    print('First 8 digits = {}'.format(transmission.get_digits(8)))
+    return transmission.first_n(8)
 
 
-def solve_part_2():
-    transmission = get_transmission(10_000, 7)
-    for i in range(100):
-        transmission.forward()
-    print('8 digits from offset = {}'.format(transmission.get_digits(8)))
-
-
-def get_transmission(repeats, n):
+def get_transmission(repeats, apply_offset):
     file_name = 'data'
     with open('{}.txt'.format(file_name), 'r') as f:
-        print(len(f.read() * 10))
-        print(f.read() * 10)
-        #return Transmission(f.read(), repeats, n)
+        return Transmission(f.read() * repeats, apply_offset)
 
 
 if __name__ == '__main__':
