@@ -194,27 +194,27 @@ class RecursiveGrid:
 
 
 def main():
-    solve_part_1()
-    solve_part_2()
+    # Part 1: 32776479
+    print('Part 1: {}'.format(solve_part_1()))
+    # Part 2: 2017
+    print('Part 2: {}'.format(solve_part_2()))
 
 
 def solve_part_1():
-    # Part 1 = 32776479
     seen = set()
     grid = Grid(get_data())
     while str(grid) not in seen:
         seen.add(str(grid))
         grid.step()
         grid.update()
-    print('Biodiversity = {}'.format(grid.diversity()))
+    return grid.diversity()
 
 
 def solve_part_2():
-    # Part 2 = 2017
     grid = RecursiveGrid(get_data())
     for i in range(200):
         grid.step()
-    print('Total bugs = {}'.format(grid.count_bugs()))
+    return grid.count_bugs()
 
 
 def get_data():

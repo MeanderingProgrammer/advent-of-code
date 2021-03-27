@@ -1,6 +1,7 @@
 import itertools
 from computer import Computer
 
+
 DEBUG = False
 
 BAD_ITEMS = [
@@ -81,8 +82,14 @@ class Game:
         last_index = len(components) - components[::-1].index([]) - 1
         return components[last_index+1:-1]
 
+    def get_key(self):
+        key_line = self.instruction.split('\n')[-2]
+        key_parts = key_line.split()
+        return key_parts[-8]
+
     def __str__(self):
         return self.instruction
+
 
 class Graph:
 
@@ -121,6 +128,7 @@ class ItemBag:
 
     def __str__(self):
         return str(self.items)
+
 
 class Droid:
 
@@ -218,11 +226,12 @@ class Droid:
         program.append('\n')
         return program
 
+
 def main():
-    # Part 1 = 2622472
     droid = Droid(get_memory())
     droid.run()
-    print(droid.game)
+    # Part 1: 2622472
+    print('Part 1: {}'.format(droid.game.get_key()))
 
 
 def get_memory():

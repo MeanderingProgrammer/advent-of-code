@@ -1,30 +1,39 @@
 from computer import Computer
 
-DEBUG = False
 
+DEBUG = False
 
 
 class Network:
 
     def __init__(self, memory):
         self.__nat = None
+        self.__nat_history = []
+
         self.__network = {}
+
         for i in range(50):
             node = Node([value for value in memory], i, self)
             self.__network[i] = node
             node.run()
 
+    def run_until_nat_repeat(self):
         while True:
             running = True
             for i in range(50):
                 self.__network[i].run()
                 running = running and self.__network[i].running
             if not running:
-                print(self.__nat)
+                destination = self.__nat.y
+
+                if destination in self.__nat_history:
+                    self.__nat_history.append(destination)
+                    return self.__nat_history
+
+                self.__nat_history.append(destination)
                 self.__send_to_node(self.__network[0], self.__nat)
 
     def send_packet(self, packet):
-        print(packet)
         if packet.dest == 255:
             self.__nat = packet
         else:
@@ -80,6 +89,9 @@ class Packet:
 
 def main():
     network = Network(get_memory())
+    nat_history = network.run_until_nat_repeat()
+    print('Part 1: {}'.format(nat_history[0]))
+    print('Part 2: {}'.format(nat_history[-1]))
 
 
 def get_memory():

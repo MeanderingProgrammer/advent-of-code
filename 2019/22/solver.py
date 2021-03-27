@@ -2,6 +2,7 @@ DEAL = 'deal with increment '
 CUT = 'cut '
 NEW_STACK = 'deal into new stack'
 
+
 class Processors:
 
     def __init__(self, raw_values):
@@ -23,6 +24,7 @@ class Processors:
             return lambda deck: deck.deal_into_new()
         else:
             raise Exception('Unknown processor = {}'.format(raw_value))
+
 
 class Deck:
 
@@ -69,26 +71,23 @@ class Deck:
 
 
 def main():
-    solve_part_1()
-    # Part 2 is some some damn modulo crap, I don't even know how it works
-    solve_part_2()
+    # I have no idea how this one works, I definitely took it off
+    # the Reddits
+    # Part 1: 4684
+    print('Part 1: {}'.format(
+        process_deck(10_007).index_of(2019, 1)
+    ))
+    # Part 2: 452290953297
+    print('Part 2: {}'.format(
+        process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661)
+    ))
 
 
-def solve_part_1():
-    # Part 1 = 4684
-    deck = Deck(10_007)
-    processors = get_processors()
-    processors.apply(deck)
-    print('Card 2019 is at: {}'.format(deck.index_of(2019, 1)))
-
-
-def solve_part_2():
-    # Part 2 = 452290953297
-    n = 119_315_717_514_047
+def process_deck(n):
     deck = Deck(n)
     processors = get_processors()
     processors.apply(deck)
-    print('Value at 2020: {}'.format(deck.get(2020, 101_741_582_076_661)))
+    return deck
 
 
 def get_processors():

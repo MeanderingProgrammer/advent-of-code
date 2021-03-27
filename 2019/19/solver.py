@@ -1,5 +1,6 @@
 from computer import Computer
 
+
 DEBUG = False
 
 
@@ -70,28 +71,29 @@ class Tester:
         self.__beam.run()
         return self.__beam.value
 
+
 def main():
     tester = Tester(get_memory())
-    solve_part_1(tester, 0, 0, 50)
-    solve_part_2(tester, 100)
+    # Part 1: 160
+    print('Part 1: {}'.format(affected_points(tester, 0, 0, 50)))
+    # Part 2: 9441282
+    print('Part 2: {}'.format(bounding_point(tester, 100)))
 
 
-def solve_part_1(tester, x_start, y_start, amount):
-    # Part 1 = 160
+def affected_points(tester, x_start, y_start, amount):
     affected = []
     for y in range(y_start, y_start+amount):
         for x in range(x_start, x_start+amount):
             result = tester.test(Point(x, y))
             affected.append(result)
-    print('Total number of affected points = {}'.format(sum(affected)))
+    return sum(affected)
 
-def solve_part_2(tester, size):
-    # Part 2 = 9441282
+def bounding_point(tester, size):
     row = 1_000
     while not tester.can_bound(tester.get_left_most_point(row), size):
         row += 1
     top_left = Point(tester.get_left_most_point(row).x, row-99)
-    print('Magic number = {}'.format(top_left.get()))
+    return top_left.get()
 
 
 def get_memory():
