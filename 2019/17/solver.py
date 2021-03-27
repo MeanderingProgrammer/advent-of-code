@@ -1,5 +1,6 @@
 from computer import Computer
 
+
 DEBUG = False
 
 
@@ -250,29 +251,33 @@ class VacuumDroid:
 
 def main():
     droid = VacuumDroid()
-    solve_part_1(droid)
-    solve_part_2(droid)
+    # Part 1: 9876
+    print('Part 1: {}'.format(total_alignment(droid)))
+    # Part 2: 1234055
+    print('Part 2: {}'.format(dust_collected(droid)))
 
 
-def solve_part_1(droid):
-    # Part 1 = 9876
-    droid.set_memory(get_memory())
-    droid.run()
+def total_alignment(droid):
+    run_droid(droid, False)
     intersections = droid.get_intersections()
     alignments = [intersection.alignment() for intersection in intersections]
-    print('Sum of alignments = {}'.format(sum(alignments)))
+    return sum(alignments)
 
 
-def solve_part_2(droid):
-    # Part 2 =
+def dust_collected(droid):
     droid.create_path()
-    memory = get_memory()
-    # Set memory at address 0 to 2 to be prompted for input
-    memory[0] = 2
-    droid.set_memory(memory)
     droid.running = True
+    run_droid(droid, True)
+    return droid.value
+
+
+def run_droid(droid, prompt):
+    memory = get_memory()
+    if prompt:
+        # Set memory at address 0 to 2 to be prompted for input
+        memory[0] = 2
+    droid.set_memory(memory)
     droid.run()
-    print('Final output = {}'.format(droid.value))
 
 
 def get_memory():

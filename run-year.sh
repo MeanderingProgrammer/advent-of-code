@@ -6,6 +6,19 @@ then
     exit 1
 fi
 
+JAVA="java"
+PYTHON="python"
+
+language () {
+    echo "${1} ${2}"
+    if [[ ${1} == "2019" ]] && [[ ${2} == "18" ]]
+    then
+        to_run=${JAVA}
+    else
+        to_run=${PYTHON}
+    fi
+}
+
 year=${1}
 
 echo "Runing year ${year}"
@@ -21,10 +34,21 @@ do
         folder="${i}"
     fi
 
-    echo "Running day ${i}"
+    language ${year} ${i}
+
+    echo "Running day ${i} with ${to_run}"
 
     cd ${folder}
-    python3 solver.py
+
+    if [[ ${to_run} == ${JAVA} ]]
+    then
+        javac Solver.java
+        java Solver
+    elif [[ ${to_run} == ${PYTHON} ]]
+    then 
+        python3 solver.py
+    fi
+
     cd ..
 
 done
