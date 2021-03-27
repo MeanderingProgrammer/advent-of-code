@@ -1,5 +1,6 @@
 from computer import Computer
 
+
 DEBUG = False
 
 WALL = 0
@@ -19,6 +20,7 @@ OPPOSITES = {
     3: 4,
     4: 3
 }
+
 
 class RepairDroid:
 
@@ -115,25 +117,20 @@ class RepairDroid:
 def main():
     droid = RepairDroid(get_memory())
     droid.run()
-    #solve_part_1(droid)
-    solve_part_2(droid)
+    # Part 1: 224
+    print('Part 1: {}'.format(droid.get_min_steps((0, 0))))
+    # Part 2: 284
+    print('Part 2: {}'.format(time_for_air(droid)))
 
 
-def solve_part_1(droid):
-    # Part 1 = 224
-    min_steps = droid.get_min_steps((0, 0))
-    print('Minimum steps needed = {}'.format(min_steps))
-
-
-def solve_part_2(droid):
-    # Part 2 = 284
+def time_for_air(droid):
     # Can optimize by storing optimal paths in cache since we
     # know all subpaths lengths
     steps_needed = []
     empty_locations = droid.get_empty_locations()
     for empty_location in empty_locations:
         steps_needed.append(droid.get_min_steps(empty_location))
-    print('Time needed for air = {}'.format(max(steps_needed)))
+    return max(steps_needed)
 
 
 def get_memory():

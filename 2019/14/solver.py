@@ -1,5 +1,6 @@
-from collections import defaultdict
 import math
+
+from collections import defaultdict
 
 
 class Reactant:
@@ -17,6 +18,7 @@ class Reactant:
 
     def __str__(self):
         return '{}({})'.format(self.amount, self.product)
+
 
 class Reactions:
 
@@ -60,37 +62,32 @@ class Reactions:
                 return times, v
         return None
 
+    def ore_for_fuel(self, amount):
+        return self.ore_needed(Reactant('{} FUEL'.format(amount)))
+
     def __str__(self):
         return str(self.reactions)
 
+
 def main():
     reactions = get_reactions()
-    solve_part_1(reactions)
-    solve_part_2(reactions)
+    # Part 1: 1967319
+    print('Part 1: {}'.format(reactions.ore_for_fuel(1)))
+    # Part 2: 1122036
+    print('Part 2: {}'.format(binary_search(reactions, 1_000_000_000_000, 0, 2_000_000)))
 
 
-def solve_part_1(reactions):
-    # Part 1 = 1967319
-    ore_needed = reactions.ore_needed(Reactant('1 FUEL'))
-    print('Amount of ore needed = {}'.format(ore_needed))
+def binary_search(reactions, goal, start, end):
+    if end - start == 1:
+        return start
 
+    mid_point = (start + end + 1) // 2
+    value = reactions.ore_for_fuel(mid_point)
 
-def solve_part_2(reactions):
-    # Part 2 = 1122036
-    nearest_10_000 = iterate_by_step(reactions, 1, 10_000)
-    nearest_100 = iterate_by_step(reactions, nearest_10_000, 100)
-    exact_answer = iterate_by_step(reactions, nearest_100, 1)
-    print('Total fuel from 1 trillion ore = {}'.format(exact_answer))
-
-
-def iterate_by_step(reactions, start, step_size):
-    amount_of_fuel = start
-    while True:
-        ore_needed = reactions.ore_needed(Reactant('{} FUEL'.format(amount_of_fuel)))
-        if ore_needed > 1_000_000_000_000:
-            return amount_of_fuel - step_size
-        else:
-            amount_of_fuel += step_size
+    if value < goal:
+        return binary_search(reactions, goal, mid_point, end)
+    else: 
+        return binary_search(reactions, goal, start, mid_point)
 
 
 def get_reactions():

@@ -1,7 +1,3 @@
-import numpy as np
-from PIL import Image
-
-
 class Layer:
 
     def __init__(self):
@@ -12,12 +8,7 @@ class Layer:
         self.data.append(row)
 
     def get_count(self, value):
-        count = 0
-        for row in self.data:
-            for pixel in row:
-                if pixel == value:
-                    count += 1
-        return count
+        return sum([pixel == value for row in self.data for pixel in row])
 
     def get_pixel(self, r, c):
         return self.data[r][c]
@@ -32,10 +23,11 @@ class Layer:
 class LayeredImage:
 
     def __init__(self, data, width, height):
-        self.layers, self.width, self.height = [], width, height
+        self.layers = []
+        self.width, self.height = width, height
+
         layer_size = width * height
-        num_layers = len(data) // layer_size
-        for l in range(num_layers):
+        for l in range(len(data) // layer_size):
             layer_start = l * layer_size
             layer = Layer()
             for h in range(height):
@@ -46,25 +38,21 @@ class LayeredImage:
 
     def get_fewest(self):
         counts = [layer.get_count(0) for layer in self.layers]
-        min_index = counts.index(min(counts))
-        return self.layers[min_index]
+        return self.layers[counts.index(min(counts))]
 
-    def flatten_layers(self):
-        flattened = []
+    def flatten(self):
+        rows = []
         for r in range(self.height):
             row = []
             for c in range(self.width):
-                pixel = self.get_pixel(r, c)
-                row.append(pixel)
-            flattened.append(row)
-        return flattened
+                row.append(self.get_pixel(r, c))
+            rows.append(''.join(row))
+        return '\n'.join(rows)
 
     def get_pixel(self, r, c):
         pixels = [layer.get_pixel(r, c) for layer in self.layers]
-        for pixel in pixels:
-            if pixel != 2:
-                return pixel
-        return 2
+        pixel = next(pixel for pixel in pixels if pixel != 2)
+        return '.' if pixel == 0 else '#'
 
     def __str__(self):
         return str(self.layers)
@@ -73,11 +61,10 @@ class LayeredImage:
 def main():
     image = LayeredImage(get_image_data(), 25, 6)
     layer = image.get_fewest()
-    # Part 1 = 1965
-    print('Magic number = {}'.format(layer.get_count(1) * layer.get_count(2)))
-    # Part 2 = GZKJY
-    flattened = 255 * np.array(image.flatten_layers()).astype(np.uint8)
-    Image.fromarray(flattened, mode='L').save('part-2.png')
+    # Part 1: 1965
+    print('Part 1: {}'.format(layer.get_count(1) * layer.get_count(2)))
+    # Part 2: GZKJY
+    print(image.flatten())
 
 
 def get_image_data():
@@ -88,4 +75,3 @@ def get_image_data():
 
 if __name__ == '__main__':
     main()
-

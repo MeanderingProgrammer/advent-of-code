@@ -1,26 +1,20 @@
 from program import Program
-from itertools import permutations
+
 
 DEBUG = False
 
 
 def main():
-    solve_part_1()
-    solve_part_2()
+    # Part 1: 3512778005
+    print('Part 1: {}'.format(run(1)))
+    # Part 2: 35920
+    print('Part 2: {}'.format(run(2)))
 
 
-def solve_part_1():
-    # Part 1 = 3512778005
-    program = get_program(1)
+def run(setting):
+    program = get_program(setting)
     program.run()
-    print(program.outputs)
-
-
-def solve_part_2():
-    # Part 2 = 35920
-    program = get_program(2)
-    program.run()
-    print(program.outputs)
+    return program.outputs[0]
 
 
 def get_program(param):

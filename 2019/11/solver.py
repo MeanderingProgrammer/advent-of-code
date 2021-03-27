@@ -1,9 +1,7 @@
 from program import Program
 
-DEBUG = False
 
-import numpy as np
-from PIL import Image
+DEBUG = False
 
 
 class Direction:
@@ -23,6 +21,7 @@ class Direction:
     def step(self, position):
         to_go = self.directions[self.index % len(self.directions)]
         return position[0] + to_go[0], position[1] + to_go[1]
+
 
 class PaintBot:
 
@@ -50,36 +49,34 @@ class PaintBot:
             self.position = self.direction.step(self.position)
         self.color = not self.color
 
-    def save_grid(self):
+    def get_grid(self):
         xs = [position[0] for position in self.grid]
         ys = [position[1] for position in self.grid]
+
         rows = []
         for y in range(min(ys), max(ys)+1):
             row = []
             for x in range(max(xs), min(xs) - 1, -1):
-                row.append(self.grid.get((x, y), 0))
-            rows.append(row)
-        rows = 255 * np.array(rows).astype(np.uint8)
-        Image.fromarray(rows, mode='L').save('part-2.png')
+                value = self.grid.get((x, y), 0)
+                value = '.' if value == 0 else '#'
+                row.append(value)
+            rows.append(''.join(row))
+        return '\n'.join(rows)
 
 
 def main():
-    #solve_part_1()
-    solve_part_2()
+    # Part 1: 1909
+    print('Part 1: {}'.format(run(0, False)))
+    # Part 2: JUFEKHPH
+    run(1, True)
 
 
-def solve_part_1():
-    # Part 1 = 1909
-    bot = PaintBot(get_memory(), 0)
+def run(setting, print_grid):
+    bot = PaintBot(get_memory(), setting)
     bot.run()
-    print('Total panels painted = {}'.format(len(bot.grid)))
-
-
-def solve_part_2():
-    # Part 2 = 
-    bot = PaintBot(get_memory(), 1)
-    bot.run()
-    bot.save_grid()
+    if print_grid:
+        print(bot.get_grid())
+    return len(bot.grid)
 
 
 def get_memory():

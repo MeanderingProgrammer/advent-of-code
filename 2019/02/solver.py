@@ -18,6 +18,7 @@ class Instruction:
             result = first * second
         memory.set(self.target, result)
 
+
 class Memory:
 
     def __init__(self, commands):
@@ -38,6 +39,7 @@ class Memory:
         self.index += 4
         return Instruction(portion)
 
+
 class Computer:
 
     def __init__(self, memory):
@@ -54,20 +56,21 @@ class Computer:
                 break
             instruction.process(self.memory)
 
-def main():
-    # Part 1: 6627023
-    result = set_memory_and_run(12, 2)
-    print('First value = {}'.format(result))
 
+def main():
+    result = set_memory_and_run(12, 2)
+    # Part 1: 6627023
+    print('Part 1: {}'.format(result))
     noun, verb = get_goal_pair()
-    print('Magic number = {}'.format((100 * noun) + verb))
-    
+    # Part 2: 4019
+    print('Part 2: {}'.format((100 * noun) + verb))
+
 
 def get_goal_pair():
     for noun in range(100):
         for verb in range(100):
             result = set_memory_and_run(noun, verb)
-            if result == 19690720:
+            if result == 19_690_720:
                 return noun, verb
 
 
@@ -86,4 +89,3 @@ def get_memory():
 
 if __name__ == '__main__':
     main()
-

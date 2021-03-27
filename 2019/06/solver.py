@@ -47,10 +47,10 @@ class Orbits:
 
 def main():
     orbits = get_orbits()
-    # Part 1 = 358244
-    print('Total # of orbits = {}'.format(len(orbits)))
-    # Part 2 = 
-    print('Distance = {}'.format(orbits.get_distance('YOU', 'SAN')))
+    # Part 1: 358244
+    print('Part 1: {}'.format(len(orbits)))
+    # Part 2: 517 
+    print('Part 2: {}'.format(orbits.get_distance('YOU', 'SAN')))
 
 
 def get_orbits():
@@ -66,4 +66,3 @@ def get_orbits():
 
 if __name__ == '__main__':
     main()
-
