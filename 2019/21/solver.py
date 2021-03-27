@@ -5,29 +5,8 @@ DEBUG = False
 
 class JumpDroid:
 
-    def __init__(self, finish):
+    def __init__(self, actual_program):
         self.__computer = Computer(self, DEBUG)
-        actual_program = [
-            # If one ahead is missing always Jump
-            'NOT A J',
-            # If 3 ahead is missing
-            'NOT C T',
-            'OR T J',
-            # If 2 ahead is missing
-            'NOT B T',
-            'OR T J',
-            # Must always have thing 4 tiles ahead
-            'AND D J',
-            # Force T to False
-            'NOT A T',
-            'AND A T',
-            # If after we land is blank
-            'OR E T',
-            'OR H T',
-            'AND T J',
-            # Start the script
-            finish
-        ]
         self.__program = self.__transform(actual_program)
         self.buffer = ''
         self.value = None
@@ -62,24 +41,53 @@ class JumpDroid:
 
 
 def main():
-    #solve_part_1()
-    solve_part_2()
+    # Part 1: 19357761
+    print('Part 1: {}'.format(run_droid([
+        # If one ahead is missing always Jump
+        'NOT A J',
+        # If 3 ahead is missing
+        'NOT C T',
+        'OR T J',
+        # If 2 ahead is missing
+        'NOT B T',
+        'OR T J',
+        # Must always have thing 4 tiles ahead
+        'AND D J',
+        # Force T to False
+        'NOT A T',
+        'AND A T',
+        # Start the script
+        'WALK'
+    ])))
+    # Part 2: 1142249706
+    print('Part 2: {}'.format(run_droid([
+        # If one ahead is missing always Jump
+        'NOT A J',
+        # If 3 ahead is missing
+        'NOT C T',
+        'OR T J',
+        # If 2 ahead is missing
+        'NOT B T',
+        'OR T J',
+        # Must always have thing 4 tiles ahead
+        'AND D J',
+        # Force T to False
+        'NOT A T',
+        'AND A T',
+        # If after we land is blank
+        'OR E T',
+        'OR H T',
+        'AND T J',
+        # Start the script
+        'RUN'
+    ])))
 
 
-def solve_part_1():
-    # Part 1 = 19357761
-    droid = JumpDroid('WALK')
+def run_droid(actual_program):
+    droid = JumpDroid(actual_program)
     droid.set_memory(get_memory())
     droid.run()
-    print('Final value = {}'.format(droid.value))
-
-
-def solve_part_2():
-    # Part 2 = 1142249706
-    droid = JumpDroid('RUN')
-    droid.set_memory(get_memory())
-    droid.run()
-    print('Final value = {}'.format(droid.value))
+    return droid.value
 
 
 def get_memory():

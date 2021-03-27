@@ -15,9 +15,12 @@ class Path:
     def __init__(self, node, length, level=0):
         self.__node, self.__length, self.__level = node, length, level
 
-    def key(self):
+    def key(self, ignore_level):
         # Need to use point, as label matches 2 possible values
-        return (self.__node.point(), self.level())
+        if ignore_level:
+            return self.__node.point()
+        else:
+            return self.__node.point(), self.level()
 
     def label(self):
         return self.__node.label()
@@ -79,6 +82,7 @@ class Point:
     def __str__(self):
         return '({}, {})'.format(self.__x, self.__y)
 
+
 class Node:
 
     def __init__(self, values, point, inner):
@@ -123,7 +127,7 @@ class Maze:
         self.__nodes.extend(transposed_nodes)
         self.__transpose()
 
-        # Here we will have all values as very node has a unique point
+        # Here we will have all values as every node has a unique point
         self.__point_to_node = {node.point(): node for node in self.__nodes}
         # This will overwrite values as aside from the start and end 2 nodes
         # will share the same label
@@ -133,11 +137,11 @@ class Maze:
         
         self.__graph = self.__get_graph()
 
-    def get_path(self, start, end):
+    def get_path(self, start, end, ignore_level):
         start = self.__label_to_nodes[start, False]
-        return self.__path_between(start, end)
+        return self.__path_between(start, end, ignore_level)
 
-    def __path_between(self, start, end):
+    def __path_between(self, start, end, ignore_level):
         seen = set()
 
         queue = []
@@ -148,20 +152,24 @@ class Maze:
             if path.label() == end:
                 return path.length()
 
-            if path.key() not in seen:
-                seen.add(path.key())
+            if path.key(ignore_level) not in seen:
+                seen.add(path.key(ignore_level))
                 neighbors = self.__get_neighbors(path)
 
                 for neighbor in neighbors:
-                    if neighbor.label() in ['AA', 'ZZ']:
-                        if neighbor.level() == 0:
-                            heapq.heappush(queue, neighbor)
+                    if ignore_level:
+                        heapq.heappush(queue, neighbor)
                     else:
-                        if neighbor.level() >= 0:
-                            heapq.heappush(queue, neighbor)
+                        if neighbor.label() in ['AA', 'ZZ']:
+                            if neighbor.level() == 0:
+                                heapq.heappush(queue, neighbor)
+                        else:
+                            if neighbor.level() >= 0:
+                                heapq.heappush(queue, neighbor)
 
     def __get_neighbors(self, path):
         neighbors = []
+        print(self.__graph[path.node()])
         for neighbor in self.__graph[path.node()]:
             if neighbor.label() in ['AA', 'ZZ']:
                 neighbors.append(Path(
@@ -236,9 +244,12 @@ class Maze:
 
 
 def main():
-    # Part 2 = 7506
     maze = get_maze()
-    print('Length of path from AA to ZZ = {}'.format(maze.get_path('AA', 'ZZ')))
+    # Part 1: 628
+    print('Part 1: {}'.format(maze.get_path('AA', 'ZZ', True)))
+    # Part 2: 7506
+    print('Part 2: {}'.format(maze.get_path('AA', 'ZZ', False)))
+
 
 def get_maze():
     file_name = 'data'
@@ -251,4 +262,3 @@ def get_maze():
 
 if __name__ == '__main__':
     main()
-
