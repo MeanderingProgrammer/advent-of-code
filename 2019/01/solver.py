@@ -10,13 +10,18 @@ class Module:
         else:
             return fuel + Module(fuel).fuel(True) if fuel > 0 else 0
 
+
 def main():
     # Part 1: 3393938
+    print('Part 1: {}'.format(get_fuel(False)))
     # Part 2: 5088037
-    recursive = True
+    print('Part 2: {}'.format(get_fuel(True)))
+
+
+def get_fuel(recursive):
     modules = get_modules()
     fuel_needed = [module.fuel(recursive) for module in modules]
-    print('Total fuel needed = {}'.format(sum(fuel_needed)))
+    return sum(fuel_needed)
 
 
 def get_modules():
@@ -27,4 +32,3 @@ def get_modules():
 
 if __name__ == '__main__':
     main()
-

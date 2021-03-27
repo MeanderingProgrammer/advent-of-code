@@ -1,5 +1,5 @@
-from collections import defaultdict
 import math
+from collections import defaultdict
 
 
 class Point:
@@ -77,13 +77,13 @@ class Grid:
 
 def main():
     grid = get_grid()
-    # Part 1 = 230
     most_seen = grid.get_most_seen()
-    print('Most seen count = {}'.format(most_seen[1]))
-    # Part 2 = 
+    # Part 1: 230
+    print('Part 1: {}'.format(most_seen[1]))
     destruction_order = grid.get_destruction_order(most_seen[0])
     asteroid = destruction_order[199]
-    print('200th asteroid = {}'.format((asteroid.x * 100) + asteroid.y))
+    # Part 2: 1205
+    print('Part 2: {}'.format((asteroid.x * 100) + asteroid.y))
 
 
 def get_grid():
@@ -95,4 +95,3 @@ def get_grid():
 
 if __name__ == '__main__':
     main()
-

@@ -1,18 +1,16 @@
 class Point:
 
-    def __init__(self, x, y, step=0):
+    def __init__(self, x, y):
         self.x, self.y = x, y
-        self.step = step
 
     def __add__(self, other):
         return Point(
             self.x+other.x,
             self.y+other.y,
-            self.step + 1
         )
 
     def __len__(self):
-        return self.step
+        return abs(self.x) + abs(self.y)
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -24,7 +22,8 @@ class Point:
         return str(self)
 
     def __str__(self):
-        return '({}, {})'.format(self.x, self.y, self.step)
+        return '({}, {})'.format(self.x, self.y)
+
 
 POINT_MAPPING = {
     'R': Point(1, 0),
@@ -33,44 +32,41 @@ POINT_MAPPING = {
     'D': Point(0, -1)
 }
 
+
 class Path:
 
     def __init__(self, path):
-        self.parts = path.split(',')
+        self.points, self.step_counts = self.all_points_on_path(path.split(','))
 
-    def intersection(self, other):
-        p1 = set(self.points())
-        p1_steps = {}
-        for point in p1:
-            p1_steps[point] = point.step
+    def get_intersection(self, other):
+        return self.points & other.points
 
-        p2 = set(other.points())
-        p2_steps = {}
-        for point in p2:
-            p2_steps[point] = point.step
+    def steps(self, location):
+        return self.step_counts[location]
 
-        counts = []
-        intersection = p1.intersection(p2)
-        intersection.remove(Point(0, 0))
-        for intersectio in intersection:
-            counts.append(p1_steps[intersectio] + p2_steps[intersectio])
-
-        return min(counts)
-
-    def points(self):
-        points = [Point(0, 0)]
-        for part in self.parts:
+    @staticmethod
+    def all_points_on_path(parts):
+        points, step_counts, steps = [Point(0, 0)], {}, 0
+        for part in parts:
             direction = POINT_MAPPING[part[0]]
-            amount = int(part[1:])
-            for i in range(amount):
+            for i in range(int(part[1:])):
+                steps += 1
                 new_point = points[-1] + direction
                 points.append(new_point)
-        return points
+                if new_point not in step_counts:
+                    step_counts[new_point] = steps
+        return set(points[1:]), step_counts
+
 
 def main():
     p1, p2 = get_paths()
-    lowest = p1.intersection(p2)
-    print('Closest intersection = {}'.format(lowest))
+    intersections = p1.get_intersection(p2)
+    lengths = [len(intersection) for intersection in intersections]
+    # Part 1: 870
+    print('Part 1: {}'.format(min(lengths)))
+    steps = [p1.steps(intersection) + p2.steps(intersection) for intersection in intersections]
+    # Part 2: 13698
+    print('Part 2: {}'.format(min(steps)))
 
 
 def get_paths():

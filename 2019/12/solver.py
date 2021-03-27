@@ -1,5 +1,6 @@
 import math
 
+
 class Vector:
 
     def __init__(self, x=0, y=0, z=0):
@@ -102,38 +103,37 @@ class System:
 
 
 def main():
-    #solve_part_1()
-    solve_part_2()
+    # Part 1: 5350
+    print('Part 1: {}'.format(run_for(1_000)))
+    # Part 2: 467034091553512
+    print('Part 2: {}'.format(get_system_period()))
 
 
-def solve_part_1():
-    # Part 1 = 5350
+def run_for(n):
     system = get_system()
-    for i in range(1_000):
+    for i in range(n):
         system.step()
-    print('Total energy = {}'.format(system.energy()))
+    return system.energy()
 
 
-def solve_part_2():
-    # Part 2 = 
+def get_system_period():
     x_period = component_period(lambda vector: vector.x)
     y_period = component_period(lambda vector: vector.y)
     z_period = component_period(lambda vector: vector.z)
-    system_period = lcm(lcm(x_period, y_period), z_period)
-    print('Total system period = {}'.format(system_period))
+
+    return lcm(lcm(x_period, y_period), z_period)
 
 
 def component_period(extractor):
-    initial_state = get_system()
-    goal_state = initial_state.extract(extractor)
+    goal_state = get_system().extract(extractor)
 
     system, step = get_system(), 1
     system.step()
-    current_state = system.extract(extractor)
-    while current_state != goal_state:
+
+    while system.extract(extractor) != goal_state:
         system.step()
-        current_state = system.extract(extractor)
         step += 1
+
     return step
 
 
@@ -153,4 +153,3 @@ def get_system():
 
 if __name__ == '__main__':
     main()
-

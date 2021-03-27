@@ -225,12 +225,6 @@ class Instruction:
     def __str__(self):
         return str(self.instruction)
 
-class State:
-
-    def __init__(self, halt, output):
-        self.halt = halt
-        self.output = output
-
 
 class Program:
 
@@ -259,25 +253,14 @@ class Program:
     def get_output(self):
         return self.outputs[-1]
 
-    def run(self):
+    def run(self, pause_on_load):
         while self.pointer < len(self.memory):
             instruction = Instruction(self.memory[self.pointer:])
             if self.debug:
                 print(instruction)
             if instruction.halt():
-                return State(True, False)
+                return False
             result = instruction.process(self)
             self.pointer = self.pointer + len(instruction) if result is None else result
-
-    def run_output(self):
-        while self.pointer < len(self.memory):
-            instruction = Instruction(self.memory[self.pointer:])
-            if self.debug:
-                print(instruction)
-            if instruction.halt():
-                return State(True, False)
-            result = instruction.process(self)
-            self.pointer = self.pointer + len(instruction) if result is None else result
-            if instruction.load():
-                return State(False, True)
-
+            if pause_on_load and instruction.load():
+                return True

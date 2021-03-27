@@ -25,11 +25,12 @@ class Transmission:
 
 
 def main():
+    # Part 1: 77038830
     #solve_part_1()
+    # Part 2: 28135104
     solve_part_2()
 
 def solve_part_1():
-    # Part 1 = 77038830
     # No longer works for part 1 :(
     transmission = get_transmission(1, None)
     print(transmission.value)
@@ -40,7 +41,6 @@ def solve_part_1():
 
 
 def solve_part_2():
-    # Part 2 = 28135104
     transmission = get_transmission(10_000, 7)
     for i in range(100):
         transmission.forward()
@@ -50,7 +50,9 @@ def solve_part_2():
 def get_transmission(repeats, n):
     file_name = 'data'
     with open('{}.txt'.format(file_name), 'r') as f:
-        return Transmission(f.read(), repeats, n)
+        print(len(f.read() * 10))
+        print(f.read() * 10)
+        #return Transmission(f.read(), repeats, n)
 
 
 if __name__ == '__main__':

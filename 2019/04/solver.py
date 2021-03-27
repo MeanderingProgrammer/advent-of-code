@@ -1,24 +1,32 @@
+PASSWORD_RANGE = 256_310, 732_736
+
+
 class Password:
 
     def __init__(self, value):
         self.value = str(value)
 
-    def valid(self):
-        return self.adjacent_same() and self.only_increase()
+    def valid(self, exact):
+        ahead_same = self.same_counts()
+        if exact:
+            same_condition = 2 in ahead_same
+        else:
+            same_condition = any([same >= 2 for same in ahead_same])
+        return same_condition and self.only_increase()
 
-    def adjacent_same(self):
-        matches = []
-        look_ahead = self.value[:-1]
-        for i, digit in enumerate(look_ahead):
-            match_length = 0
-            for j, next_digit in enumerate(self.value[i:]):
-                if next_digit != digit:
-                    break
-                match_length += 1
-            if match_length == 2 and (len(matches) == 0 or matches[-1] == 1):
-                return True
-            matches.append(match_length)
-        return False
+    def same_counts(self):
+        ahead_same, i = [], 0
+        while i < len(self.value):
+            length = self.get_length_of_same(i)
+            ahead_same.append(length)
+            i += length
+        return ahead_same
+
+    def get_length_of_same(self, start):
+        current, end = self.value[start], start
+        while end < len(self.value) and self.value[end] == current:
+            end += 1
+        return end - start
 
     def only_increase(self):
         for i, digit in enumerate(self.value[:-1]):
@@ -26,19 +34,24 @@ class Password:
                 return False
         return True
 
+
 def main():
-    valid = 0
+    # Part 1: 979
+    print('Part 1: {}'.format(get_num_valid(False)))
+    # Part 2: 635
+    print('Part 2: {}'.format(get_num_valid(True)))
+
+
+def get_num_valid(exact):
+    are_valid = []
     for i in get_range():
-        if Password(i).valid():
-            valid += 1
-    print('Total possible = {}'.format(valid))
+        are_valid.append(Password(i).valid(exact))
+    return sum(are_valid)
 
 
 def get_range():
-    minimum = 256310
-    maximum = 732736
-    return range(minimum, maximum + 1)
+    return range(PASSWORD_RANGE[0], PASSWORD_RANGE[1] + 1)
+
 
 if __name__ == '__main__':
     main()
-

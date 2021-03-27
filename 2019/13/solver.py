@@ -1,5 +1,6 @@
 from program import Program
 
+
 DEBUG = False
 
 TILE_MAPPING = {
@@ -9,6 +10,7 @@ TILE_MAPPING = {
     3: 'horizontal paddle',
     4: 'ball'
 }
+
 
 class Tile:
 
@@ -21,6 +23,7 @@ class Tile:
 
     def __str__(self):
         return '{} at ({}, {})'.format(self.tile_name, self.x_pos, self.y_pos)
+
 
 class Game:
 
@@ -58,26 +61,25 @@ class Game:
     def get_tiles(self, tile_name):
         return [tile for tile in self.tiles if tile.tile_name == tile_name]
 
+
 def main():
-    #solve_part_1()
-    solve_part_2()
+    # Part 1: 363
+    print('Part 1: {}'.format(play_game(False)))
+    # Part 2: 17159
+    print('Part 2: {}'.format(play_game(True)))
 
 
-def solve_part_1():
-    # Part 1 = 363
-    game = Game(get_memory())
-    game.play()
-    print('Total block tiles = {}'.format(len(game.get_tiles('block'))))
-
-
-def solve_part_2():
-    # Part 2 = 17159
+def play_game(play_for_free):
     memory = get_memory()
-    # Override address 0 to 2 to play for free
-    memory[0] = 2
+    if play_for_free:
+        # Override address 0 to 2 to play for free
+        memory[0] = 2
     game = Game(memory)
     game.play()
-    print('Final score = {}'.format(game.score))
+    if play_for_free:
+        return game.score
+    else:
+        return len(game.get_tiles('block'))
 
 
 def get_memory():

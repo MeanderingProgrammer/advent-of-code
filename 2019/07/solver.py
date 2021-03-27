@@ -1,58 +1,36 @@
-from program import Program
 from itertools import permutations
+
+from program import Program
+
 
 DEBUG = False
 
 
 def main():
-    solve_part_1()
-    solve_part_2()
+    # Part 1: 38834
+    print('Part 1: {}'.format(run_permutations([0, 1, 2, 3, 4], False)))
+    # Part 2: 69113332
+    print('Part 2: {}'.format(run_permutations([5, 6, 7, 8, 9], True)))
 
 
-def solve_part_1():
-    # Part 1 = 38834
-    max_value = 0
-    for sequence in permutations([0, 1, 2, 3, 4]):
-        value = run_sequence(sequence)
-        if value > max_value:
-            max_value = value
-    print('Maximum value = {}'.format(max_value))
+def run_permutations(sequence, pause_on_load):
+    values = []
+    for sequence in permutations(sequence):
+        value = run_sequence(sequence, pause_on_load)
+        values.append(value)
+    return max(values)
 
 
-def solve_part_2():
-    # Part 2 = 69113332
-    max_value = 0
-    for sequence in permutations([5, 6, 7, 8, 9]):
-        value = run_sequence_loop(sequence)
-        if value > max_value:
-            max_value = value
-    print('Maximum value = {}'.format(max_value))
+def run_sequence(sequence, pause_on_load):
+    output, state, amplifiers = 0, True, get_amplifiers(sequence)
 
-
-def run_sequence(sequence):
-    output = 0
-    amplifiers = get_amplifiers(sequence)
-    for amplifier in amplifiers:
-        amplifier.add_input(output)
-        amplifier.run()
-        output = amplifier.get_output()
-    return output
-
-
-def run_sequence_loop(sequence):
-    output = 0
-    state = None
-    amplifiers = get_amplifiers(sequence)
-
-    while state is None or state.output:
+    while state:
         for amplifier in amplifiers:
             amplifier.add_input(output)
-            state = amplifier.run_output()
-            if state.halt:
-                break
+            state &= amplifier.run(pause_on_load)
             output = amplifier.get_output()
 
-    return amplifiers[-1].get_output()
+    return output
 
 
 def get_amplifiers(sequence):
