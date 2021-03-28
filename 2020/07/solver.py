@@ -44,7 +44,6 @@ class RuleGraph:
         return bags_needed
 
 
-
 class Edge:
 
     def __init__(self, raw_edge):
@@ -85,11 +84,12 @@ def main():
     for bag_rule in bag_rules:
         graph.add(bag_rule)
 
-    #connected = get_connected_to(graph, 'shiny gold')
-    #print('Total connected to = {}'.format(connected))
-
+    connected = get_connected_to(graph, 'shiny gold')
+    # Part 1: 172
+    print('Part 1: {}'.format(connected))
     bags_needed = graph.get_bags_needed('shiny gold')
-    print('Total bags needed = {}'.format(bags_needed))
+    # Part 2: 39645
+    print('Part 2: {}'.format(bags_needed))
 
 
 def get_connected_to(graph, end):
@@ -115,4 +115,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

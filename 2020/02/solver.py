@@ -3,34 +3,44 @@ class PasswordEntry:
     def __init__(self, raw_value):
         parts = raw_value.strip().split()
 
-        expected_count = parts[0].split('-')
-        self.index1 = int(expected_count[0]) - 1
-        self.index2 = int(expected_count[1]) - 1
+        value_range = parts[0].split('-')
+        self.range_start =  int(value_range[0])
+        self.range_end = int(value_range[1])
 
         self.letter = parts[1][:-1]
 
         self.password = parts[2]
 
-    def is_valid(self):
-        letter1 = self.password[self.index1]
-        letter2 = self.password[self.index2]
+
+    def valid_v1(self):
+        letter_count = sum([letter == self.letter for letter in self.password])
+        return letter_count >= self.range_start and letter_count <= self.range_end
+
+    def valid_v2(self):
+        letter1 = self.password[self.range_start - 1]
+        letter2 = self.password[self.range_end -1]
 
         match1 = letter1 == self.letter
         match2 = letter2 == self.letter
+
         return match1 != match2
 
 
 def main():
-    f = open('data.txt', 'r')
-    num_valid = 0
-    
-    for line in f:
-        entry = PasswordEntry(line)
-        if entry.is_valid():
-            num_valid += 1
+    passwords = get_passwords()
+    # Part 1: 536
+    print('Part 1: {}'.format(sum([password.valid_v1() for password in passwords])))
+    # Part 2: 558
+    print('Part 2: {}'.format(sum([password.valid_v2() for password in passwords])))
 
-    print('Total valid entries = {}'.format(num_valid))
+
+def get_passwords():
+    passwords = []
+    f = open('data.txt', 'r')
+    for line in f:
+        passwords.append(PasswordEntry(line))
     f.close()
+    return passwords
 
 
 if __name__ == '__main__':

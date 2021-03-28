@@ -40,12 +40,14 @@ class Adapters:
 
 def main():
     adapters = Adapters(process())
-    # Part 1 = 2343
+    
     chains = adapters.get_chains()
-    print('Magic number = {}'.format(chains[1] * chains[3]))
-    # Part 2 = 31581162962944
+    # Part 1: 2343
+    print('Part 1: {}'.format(chains[1] * chains[3]))
+    
     num_combinations = adapters.get_num_combinations()
-    print('Total number of combinations = {}'.format(num_combinations))
+    # Part 2: 31581162962944
+    print('Part 2: {}'.format(num_combinations))
 
 
 def process():
@@ -55,4 +57,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

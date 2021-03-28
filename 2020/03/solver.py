@@ -12,13 +12,13 @@ def main():
     for traversal in traversals:
         trees.append(traverse(board, traversal[0], traversal[1]))
 
+    # Part 1: 220
+    print('Part 1: {}'.format(trees[1]))
     result = 1
     for tree in trees:
         result *= tree
-
-    print(trees)
-    print('Multiplied = {}'.format(result))
-    
+    # Part 2: 2138320800
+    print('Part 2: {}'.format(result))
 
 
 def traverse(board, r_step, d_step):
@@ -33,8 +33,6 @@ def traverse(board, r_step, d_step):
             num_trees += 1
         x_pos += r_step
 
-    print('Right {}, Down {}'.format(r_step, d_step))
-    print('Total trees encountered = {}'.format(num_trees))
     return num_trees
 
 

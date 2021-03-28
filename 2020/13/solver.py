@@ -1,5 +1,6 @@
 import math
 
+
 class Bus:
 
     def __init__(self, bus_id):
@@ -22,20 +23,20 @@ def main():
     arrive_time = int(data[0])
     buses = [Bus(bus) for bus in data[1].split(',')]
 
-    #solve_part_1(arrive_time, buses)
-    solve_part_2(buses)
+    # Part 1: 296
+    print('Part 1: {}'.format(solve_part_1(arrive_time, buses)))
+    # Part 2: 296
+    print('Part 2: {}'.format(solve_part_2(buses)))
 
 
 def solve_part_1(arrive_time, buses):
-    # Result = 296
     wait_times = [bus.get_wait_time(arrive_time) for bus in buses]
     min_wait_times = min(wait_times)
     bus = buses[wait_times.index(min_wait_times)]
-    print('Bus * Wait Time = {}'.format(bus.bus_id * min_wait_times))
+    return bus.bus_id * min_wait_times
 
 
 def solve_part_2(buses):
-    # Result = 
     # Uses CRT: https://brilliant.org/wiki/chinese-remainder-theorem/
     multiple = get_multiple(buses)
     total = 0
@@ -46,8 +47,7 @@ def solve_part_2(buses):
             y = multiple // n
             z = get_inverse_mod(y, n)
             total += (a*y*z)
-    result = total % multiple
-    print('First consecutive start time = {}'.format(result))
+    return total % multiple
 
 
 def get_multiple(buses):
@@ -69,9 +69,7 @@ def brute_force_2(buses):
     intervals = [bus.bus_id if bus.real else 0 for bus in buses]
     max_interval = max(intervals)
     max_offset = intervals.index(max_interval)
-
-    start_time = find_start_time(buses, max_interval, max_offset)
-    print('First consecutive start time = {}'.format(start_time))
+    return find_start_time(buses, max_interval, max_offset)
 
 
 def find_start_time(buses, interval, offset):
@@ -98,4 +96,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

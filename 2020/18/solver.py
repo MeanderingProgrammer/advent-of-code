@@ -3,7 +3,7 @@ class Number:
     def __init__(self, value):
         self.value = int(value)
 
-    def evaluate(self):
+    def evaluate(self, prefer_addition):
         return self.value
 
     def __repr__(self):
@@ -11,6 +11,7 @@ class Number:
 
     def __str__(self):
         return '{}'.format(self.value)
+
 
 class Expression:
 
@@ -32,26 +33,30 @@ class Expression:
                 self.operators.append(char)
                 i += 1
 
-    def evaluate(self):
+    def evaluate(self, prefer_addition):
         if len(self.expressions) == 1:
-            return self.expressions[0].evaluate()
+            return self.expressions[0].evaluate(prefer_addition)
 
-        operator = '+' if '+' in self.operators else '*'
-        index = self.operators.index(operator)
+        if prefer_addition:
+            operator = '+' if '+' in self.operators else '*'
+            index = self.operators.index(operator)
+        else:
+            operator = self.operators[0]
+            index = 0
+        
         left = self.expressions[index]
         right = self.expressions[index+1]
         
         if operator == '+':
-            result = left.evaluate() + right.evaluate()
+            result = left.evaluate(prefer_addition) + right.evaluate(prefer_addition)
         else:
-            result = left.evaluate() * right.evaluate()
+            result = left.evaluate(prefer_addition) * right.evaluate(prefer_addition)
 
         self.expressions[index] = Number(result)
         del self.expressions[index+1]
         del self.operators[index]
 
-        return self.evaluate()
-
+        return self.evaluate(prefer_addition)
 
     def __repr__(self):
         return str(self)
@@ -78,10 +83,15 @@ class Expression:
 
 def main():
     # Part 1: 69490582260
-    # Part 2: 
+    print('Part 1: {}'.format(sum_expressions(False)))
+    # Part 2: 362464596624526
+    print('Part 2: {}'.format(sum_expressions(True)))
+
+
+def sum_expressions(prefer_addition):
     expressions = get_expressions()
-    answers = [expression.evaluate() for expression in expressions]
-    print('Sum of answers = {}'.format(sum(answers)))
+    answers = [expression.evaluate(prefer_addition) for expression in expressions]
+    return sum(answers)
 
 
 def get_expressions():
@@ -93,4 +103,3 @@ def get_expressions():
 
 if __name__ == '__main__':
     main()
-

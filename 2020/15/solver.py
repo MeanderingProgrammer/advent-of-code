@@ -1,7 +1,3 @@
-import time
-
-END_TURN = 30_000_000
-
 class Stats:
 
     def __init__(self, turn):
@@ -24,16 +20,22 @@ class Stats:
     def __str__(self):
         return str(self.turns)
 
-def main():
-    start = time.time()
 
+def main():
+    # Part 1: 240
+    print('Part 1: {}'.format(run(2_020)))
+    # Part 2: 505
+    print('Part 2: {}'.format(run(30_000_000)))
+
+
+def run(n):
     numbers = {}
     for i, value in enumerate(process()):
         stats = Stats(i)
         numbers[value] = stats
         previous = (value, stats)
 
-    for i in range(len(numbers), END_TURN):
+    for i in range(len(numbers), n):
         to_say = 0 if previous[1].is_new() else previous[1].get_difference()
         next_stats = numbers[to_say] if to_say in numbers else None
 
@@ -44,10 +46,7 @@ def main():
             next_stats.said(i)
         previous = (to_say, next_stats)
 
-    end = time.time()
-
-    print('Last number spoken was = {}'.format(previous))
-    print('Took {} seconds'.format(end - start))
+    return previous[0]
 
 
 def process():
@@ -58,4 +57,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

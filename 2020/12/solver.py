@@ -1,22 +1,34 @@
-COMMANDS = {
+COMMANDS_V1 = {
+    'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
+    'N': lambda point, pos, amount: (point, pos + Position(0, amount)),
+    'E': lambda point, pos, amount: (point, pos + Position(amount, 0)),
+    'F': lambda point, pos, amount: (point, pos + point * amount)
+}
+
+
+COMMANDS_V2 = {
     'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
     'N': lambda point, pos, amount: (point + Position(0, amount), pos),
     'E': lambda point, pos, amount: (point + Position(amount, 0), pos),
     'F': lambda point, pos, amount: (point, pos + point * amount)
 }
 
+
 class Ship:
 
-    def __init__(self):
-        self.__point, self.__pos = Position(10, 1), Position(0, 0)
+    def __init__(self, commands, is_v1):
+        self.commands = commands
+        self.__point = Position(1, 0) if is_v1 else Position(10, 1)
+        self.__pos = Position(0, 0)
 
     def move(self, instruction):
-        self.__point, self.__pos = COMMANDS[instruction.get_command()](
+        self.__point, self.__pos = self.commands[instruction.get_command()](
             self.__point, self.__pos, instruction.get_amount()
         )
 
     def get_position(self):
         return self.__pos
+
 
 class Position:
 
@@ -53,11 +65,13 @@ class Position:
     def __len__(self):
         return abs(self.__x) + abs(self.__y)
 
+
 TRANSFORMS = {
     'R': lambda amount: ('L', 360 - amount),
     'S': lambda amount: ('N', amount * -1),
     'W': lambda amount: ('E', amount * -1)
 }
+
 
 class Instruction:
 
@@ -75,11 +89,17 @@ class Instruction:
 
 def main():
     # Part 1: 362
+    print('Part 1: {}'.format(move_ship(True)))
     # Part 2: 29895
-    ship = Ship()
+    print('Part 2: {}'.format(move_ship(False)))
+
+
+def move_ship(is_v1):
+    commands = COMMANDS_V1 if is_v1 else COMMANDS_V2
+    ship = Ship(commands, is_v1)
     for instruction in get_instructions():
         ship.move(instruction)
-    print('Distance = {}'.format(len(ship.get_position())))
+    return len(ship.get_position())
 
 
 def get_instructions():

@@ -70,46 +70,42 @@ class Passport:
             kv = part.split(':')
             self.data[kv[0]] = kv[1]
 
-    def validate(self):
+    def validate(self, run_validation):
         for field in FIELD_VALIDATORS:
             if field not in self.data:
                 return False
             validator = FIELD_VALIDATORS[field]
             value = self.data[field]
-            if not validator(value):
+            if run_validation and not validator(value):
                 return False
         return True
 
 
 def main():
-    passports = process()
-    
-    num_valid = 0
-    for passport in passports:
-        is_valid = passport.validate()
-        if is_valid:
-            num_valid += 1
-    print('Total invalid = {}'.format(num_valid))
+    passports = get_passports()
+    # Part 1: 200
+    print('Part 1: {}'.format(sum([passport.validate(False) for passport in passports])))
+    # Part 2: 116
+    print('Part 2: {}'.format(sum([passport.validate(True) for passport in passports])))
 
 
-def process():
-    data = []
+def get_passports():
+    passports = []
     f = open('data.txt', 'r')
 
     passport = Passport()
     for line in f:
         line = line.strip()
         if len(line) == 0:
-            data.append(passport)
+            passports.append(passport)
             passport = Passport()
         else:
             passport.add(line)
 
-    data.append(passport)
+    passports.append(passport)
     f.close()
-    return data
+    return passports
 
 
 if __name__ == '__main__':
     main()
-
