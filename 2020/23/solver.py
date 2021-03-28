@@ -1,5 +1,3 @@
-import time
-
 class Cup:
 
     def __init__(self, value):
@@ -12,6 +10,7 @@ class Cup:
     def __str__(self):
         next_cup = 'X' if self.next_cup is None else '->'
         return '{}: {}'.format(self.value, next_cup)
+
 
 class Cups:
 
@@ -92,33 +91,41 @@ class Cups:
 
         return ''.join(result)
 
+
 def main():
     # Part 1: 45798623
-    cups = get_cups()
-    #loops = 100
-    loops = 10_000_000
+    print('Part 1: {}'.format(run(None, 100)))
+    # Part 2: 235551949822
+    print('Part 2: {}'.format(run(1_000_000, 10_000_000)))
 
-    start = time.time()
+
+def run(num_cups, loops):
+    cups = get_cups(num_cups)
     for i in range(loops):
         cups.move()
-    end = time.time()
-    print('Ran in {} seconds for {} loops'.format(end - start, loops))
 
-    cup_value_1 = cups.get_value_cup(1)
-    next_to_1 = cup_value_1.next_cup.value
-    next_to_next_to_1 = cup_value_1.next_cup.next_cup.value
+    if num_cups is None:
+        return str(cups)
+    else:
+        cup_value_1 = cups.get_value_cup(1)
+        next_to_1 = cup_value_1.next_cup.value
+        next_to_next_to_1 = cup_value_1.next_cup.next_cup.value
+        return next_to_1 * next_to_next_to_1
 
-    print('Magic number = {}'.format(next_to_1*next_to_next_to_1))
 
-def get_cups():
+def get_cups(num_cups):
     file_name = 'data'
     with open('{}.txt'.format(file_name), 'r') as f:
         data = f.read().splitlines()[0]
+
     cups = Cups()
     for value in data:
         cups.add(int(value))
-    for i in range(cups.high+1, 1_000_000+1):
-        cups.add(i)
+
+    if num_cups is not None:
+        for i in range(cups.high+1, num_cups+1):
+            cups.add(i)
+
     cups.wrap()
     return cups
 

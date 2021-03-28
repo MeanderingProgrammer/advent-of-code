@@ -15,6 +15,7 @@ class Tile:
     def __str__(self):
         return str(self.color)
 
+
 class Point:
 
     def __init__(self, x, y):
@@ -53,6 +54,7 @@ class Point:
 
     def __str__(self):
         return '({}, {})'.format(self.x, self.y)
+
 
 class Floor:
 
@@ -128,12 +130,14 @@ def main():
 
     for path in paths:
         floor.follow_path(path).flip()
-    print('Total number of black tiles = {}'.format(floor.count_black_tiles()))
+    # Part 1: 320
+    print('Part 1: {}'.format(floor.count_black_tiles()))
 
     days = 100
     for day in range(days):
         floor.transform()
-    print('Total number of black tiles after {} days = {}'.format(days, floor.count_black_tiles()))
+    # Part 2: 3777
+    print('Part 2: {}'.format(floor.count_black_tiles()))
 
 
 def get_paths():

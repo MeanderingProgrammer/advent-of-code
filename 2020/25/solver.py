@@ -25,14 +25,12 @@ class Transformer:
 def main():
     card_pub, door_pub = get_keys()
     # Part 1: 3015200
-    print_encryption_key(card_pub, door_pub, 'card')
-    print_encryption_key(door_pub, card_pub, 'door')
+    print('Part 1: {}'.format(encryption_key(card_pub, door_pub)))
 
 
-def print_encryption_key(public_key, other_public_key, source):
+def encryption_key(public_key, other_public_key):
     loop_size = Transformer(7).get_loop_size(public_key)
-    encryption_key = Transformer(other_public_key).run_loop(loop_size)
-    print('Result from {} = {}'.format(source, encryption_key))
+    return Transformer(other_public_key).run_loop(loop_size)
 
 
 def get_keys():
