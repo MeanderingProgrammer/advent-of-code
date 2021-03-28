@@ -10,7 +10,6 @@ JAVA="java"
 PYTHON="python"
 
 language () {
-    echo "${1} ${2}"
     if [[ ${1} == "2019" ]] && [[ ${2} == "18" ]]
     then
         to_run=${JAVA}
