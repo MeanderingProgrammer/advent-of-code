@@ -33,6 +33,7 @@ class OrRule:
     def __str__(self):
         return ' or '.join([str(rule) for rule in self.rules])
 
+
 class AndRule:
 
     def __init__(self, rules):
@@ -53,6 +54,7 @@ class AndRule:
 
     def __str__(self):
         return '(' + ' and '.join([str(rule) for rule in self.rules]) + ')'
+
 
 class Rules:
 
@@ -86,22 +88,18 @@ class Rules:
 
 
 def main():
-    rules, messages = process()
-    #solve_part_1(rules, messages)
-    solve_part_2(rules, messages)
-
-
-def solve_part_1(rules, messages):
     # Part 1: 198
-    matches = [rules.does_match(message) for message in messages]
-    print('Total number of matching messages = {}'.format(sum(matches)))
-
-
-def solve_part_2(rules, messages):
+    print('Part 1: {}'.format(total_matches(False)))
     # Part 2: 372
-    rules.update_for_part_2()
+    print('Part 2: {}'.format(total_matches(True)))
+
+
+def total_matches(is_part2):
+    rules, messages = process()
+    if is_part2:
+        rules.update_for_part_2()
     matches = [rules.does_match(message) for message in messages]
-    print('Total number of matching messages = {}'.format(sum(matches)))
+    return sum(matches)
 
 
 def process():
@@ -114,4 +112,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

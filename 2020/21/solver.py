@@ -18,15 +18,16 @@ class Food:
         details['Allergens'] = ', '.join(self.allergens)
         return str(details)
 
+
 def main():
     foods = get_foods()
-
-    solve_part_1(foods)
-    solve_part_2(foods)
-
-
-def solve_part_1(foods):
     # Part 1: 1679
+    print('Part 1: {}'.format(occurrences_of_non_allergens(foods)))
+    # Part 2: lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq
+    print('Part 2: {}'.format(sorted_by_allergen(foods)))
+
+
+def occurrences_of_non_allergens(foods):
     allergen_possibilities = get_allergen_possibilities(foods)
 
     possible_ingredients = set()
@@ -35,12 +36,10 @@ def solve_part_1(foods):
 
     all_ingredients = get_all_ingredients(foods)
     safe_ingredients = all_ingredients - possible_ingredients
-    occurrences = [get_occurrences(foods, ingredient) for ingredient in safe_ingredients]
-    print('Total occurrences of safe ingredients = {}'.format(sum(occurrences)))
+    return sum([get_occurrences(foods, ingredient) for ingredient in safe_ingredients])
 
 
-def solve_part_2(foods):
-    # Part 2:
+def sorted_by_allergen(foods):
     allergen_possibilities = get_allergen_possibilities(foods)
     total_allergens = len(allergen_possibilities)
     allergen_definitions = {}
@@ -58,7 +57,7 @@ def solve_part_2(foods):
 
     ingredients = [ingredient for ingredient in allergen_definitions]
     ingredients = sorted(ingredients, key=lambda ingredient: allergen_definitions[ingredient])
-    print('Canonical danger list = {}'.format(','.join(ingredients)))
+    return ','.join(ingredients)
 
 
 def get_allergen_possibilities(foods):
@@ -112,6 +111,7 @@ def get_foods():
     with open('{}.txt'.format(file_name), 'r') as f:
         foods = f.read().splitlines()
     return [Food(food) for food in foods]
+
 
 if __name__ == '__main__':
     main()

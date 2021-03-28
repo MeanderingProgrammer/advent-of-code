@@ -76,24 +76,16 @@ class Deck:
 
 
 def main():
-    solve_part_1()
-    solve_part_2()
-
-
-def solve_part_1():
     # Part 1: 32102
-    run_game(False)
-
-
-def solve_part_2():
+    print('Part 1: {}'.format(run_game(False)))
     # Part 2: 34173
-    run_game(True)
+    print('Part 2: {}'.format(run_game(True)))
 
 
 def run_game(recursive):
     game = Game(*get_decks(), recursive)
     winner = game.play()
-    print('Winning player score = {}'.format(winner.score()))
+    return winner.score()
 
 
 def get_decks():
@@ -102,6 +94,7 @@ def get_decks():
         data = f.read().splitlines()
     split = data.index('')
     return Deck(data[1:split], 1), Deck(data[split+2:], 2)
+
 
 if __name__ == '__main__':
     main()

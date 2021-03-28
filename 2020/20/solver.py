@@ -137,7 +137,6 @@ class ImageTile:
         rotated = [''.join(row) for row in rotated]
         return ImageTile(rotated, self.identifier)
 
-
     def flip(self):
         size = len(self.data)
         rotated = [[j for j in range(size)] for i in range(size)]
@@ -223,9 +222,10 @@ class SearchImage:
 def main():
     board = PuzzleBoard()
     solve_board(board)
-
-    #solve_part_1(board)
-    solve_part_2(board)
+    # Part 1: 15003787688423
+    print('Part 1: {}'.format(corner_values(board)))
+    # Part 2: 1705
+    print('Part 2: {}'.format(get_roughness(board)))
 
 
 def solve_board(board):
@@ -249,8 +249,7 @@ def solve_board(board):
         remaining_tiles = still_remaining
 
 
-def solve_part_1(board):
-    # Part 1: 15003787688423
+def corner_values(board):
     xs = []
     ys = []
     for position in board.board:
@@ -265,11 +264,10 @@ def solve_part_1(board):
     value = 1
     for corner in corners:
         value *= corner
-    print('Multiplied corners = {}'.format(value))
+    return value
 
 
-def solve_part_2(board):
-    # Part 2: 1705
+def get_roughness(board):
     image = board.coalesce()
     image_positive = image.get_num_positive()
 
@@ -280,8 +278,7 @@ def solve_part_2(board):
     for permutation in image.permutations:
         num_matches = search_image.find_num_matches(permutation)
         if num_matches > 0:
-            roughness = image_positive - (num_matches * search_positive)
-            print('Water roughness = {}'.format(roughness))
+            return image_positive - (num_matches * search_positive)
 
 
 def get_image_tiles():
