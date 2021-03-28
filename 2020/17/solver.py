@@ -1,23 +1,20 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
-
 class Point:
 
-    def __init__(self, x, y, z=0, w=0):
+    def __init__(self, dimensions, x, y, z=0, w=0):
+        self.dimensions = dimensions
         self.coords = (x, y, z, w)
 
     def get_neighbors(self):
         neighbors = [self]
-        for dimen in range(len(self.coords)):
+        for dimen in range(self.dimensions):
             length = len(neighbors)
             for i in range(length):
                 neighbor = neighbors[i]
                 coords = list(neighbor.coords)
                 coords[dimen] -= 1
-                neighbors.append(Point(*coords))
+                neighbors.append(Point(self.dimensions, *coords))
                 coords[dimen] += 2
-                neighbors.append(Point(*coords))
+                neighbors.append(Point(self.dimensions, *coords))
         return neighbors[1:]
 
     def __eq__(self, other):
@@ -31,6 +28,7 @@ class Point:
 
     def __str__(self):
         return str(self.coords)
+
 
 class Status:
 
@@ -59,7 +57,8 @@ class Status:
 
 class Grid:
 
-    def __init__(self):
+    def __init__(self, dimensions):
+        self.dimensions = dimensions
         self.grid = {}
         self.step_count = 0
 
@@ -84,34 +83,7 @@ class Grid:
             status.update_state()
 
     def get_active(self):
-        is_active = [status.active for status in self.grid.values()]
-        return sum(is_active)
-
-    def plot(self):
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-
-        w_bounds = self.get_dimen_bounds(lambda point: point.coords[3])
-        z_bounds = self.get_dimen_bounds(lambda point: point.coords[2])
-        y_bounds = self.get_dimen_bounds(lambda point: point.coords[1])
-        x_bounds = self.get_dimen_bounds(lambda point: point.coords[0])
-
-        for w in range(w_bounds[0], w_bounds[1]+1):
-            xs = []
-            ys = []
-            zs = []
-            for z in range(z_bounds[0], z_bounds[1]+1):
-                for y in range(y_bounds[1], y_bounds[0]-1, -1):
-                    for x in range(x_bounds[0], x_bounds[1]+1):
-                        status = self.grid.get(Point(x, y, z, w), Status())
-                        if status.active:
-                            xs.append(x)
-                            ys.append(y)
-                            zs.append(z)
-            ax.scatter(xs, ys, zs)
-            plt.savefig('steps/{}/{}.png'.format(self.step_count, w))
-            ax.clear()
-
+        return sum([status.active for status in self.grid.values()])
 
     def __str__(self):
         w_bounds = self.get_dimen_bounds(lambda point: point.coords[3])
@@ -127,7 +99,7 @@ class Grid:
                 for y in range(y_bounds[1], y_bounds[0]-1, -1):
                     row = ''
                     for x in range(x_bounds[0], x_bounds[1]+1):
-                        status = self.grid.get(Point(x, y, z, w), Status())
+                        status = self.grid.get(Point(self.dimensions, x, y, z, w), Status())
                         row += str(status)
                     result += row + '\n'
                 result += '\n'
@@ -141,28 +113,31 @@ class Grid:
 
 def main():
     # Part 1: 284
+    print('Part 1: {}'.format(simulate(3)))
     # Part 2: 2,240
-    grid = get_grid()
+    print('Part 2: {}'.format(simulate(4)))
+
+
+def simulate(dimensions):
+    grid = get_grid(dimensions)
     for i in range(6):
         grid.step()
-        grid.plot()
-    print('Total active cubes = {}'.format(grid.get_active()))
+    return grid.get_active()
 
 
-def get_grid():
+def get_grid(dimensions):
     file_name = 'data'
     with open('{}.txt'.format(file_name), 'r') as f:
         data = f.read().splitlines()
 
-    grid = Grid()
+    grid = Grid(dimensions)
     for y, datum in enumerate(data):
         y = len(data) - y - 1
         for x in range(len(datum)):
             status = datum[x]
-            grid.add(Point(x, y), Status(status == '#'))
+            grid.add(Point(dimensions, x, y), Status(status == '#'))
     return grid
 
 
 if __name__ == '__main__':
     main()
-

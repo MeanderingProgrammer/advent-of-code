@@ -3,25 +3,25 @@ class BoardingGroup:
     def __init__(self, responders):
         self.responders = responders
 
-    def count_all_positive(self):
+    def any_positive(self):
         positive_responses = set(self.responders[0])
-        for i in range(1, len(self.responders)):
-            responder = self.responders[i]
-            positives = set(responder)
-            positive_responses = positive_responses.intersection(positives)
+        for responder in self.responders[1:]:
+            positive_responses |= set(responder)
+        return len(positive_responses)
+
+    def all_positive(self):
+        positive_responses = set(self.responders[0])
+        for responder in self.responders[1:]:
+            positive_responses &= set(responder)
         return len(positive_responses)
 
 
 def main():
-    data = process()
-    groups = group_data(data)
-
-    total_positive = 0
-    for group in groups:
-        group = BoardingGroup(group)
-        positive_responses = group.count_all_positive()
-        total_positive += positive_responses
-    print('Total positive responses = {}'.format(total_positive))
+    groups = group_data(process())
+    # Part 1: 6782
+    print('Part 1: {}'.format(sum([group.any_positive() for group in groups])))
+    # Part 2: 3596
+    print('Part 2: {}'.format(sum([group.all_positive() for group in groups])))
 
 
 def process():
@@ -42,8 +42,8 @@ def group_data(data):
         else:
             current_group.append(datum)
     groups.append(current_group)
-    return groups
+    return [BoardingGroup(group) for group in groups]
+
 
 if __name__ == '__main__':
     main()
-

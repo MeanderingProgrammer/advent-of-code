@@ -1,5 +1,6 @@
 LENGTH = 36
 
+
 class Computer:
 
     def __init__(self, version):
@@ -83,11 +84,18 @@ class Instruction:
 
 
 def main():
-    computer = Computer(2)
+    # Part 1: 10035335144067
+    print('Part 1: {}'.format(run_computer(1)))
+    # Part 2: 3817372618036
+    print('Part 2: {}'.format(run_computer(2)))
+
+
+def run_computer(version):
+    computer = Computer(version)
     instructions = [Instruction(datum) for datum in process()]
     for instruction in instructions:
         computer.run(instruction)
-    print('Total memory = {}'.format(computer.get_total_memory()))
+    return computer.get_total_memory()
 
 
 def process():
@@ -97,4 +105,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

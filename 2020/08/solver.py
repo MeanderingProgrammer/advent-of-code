@@ -4,7 +4,6 @@ class Acc:
         self.value = value
 
     def execute(self, instruction_set):
-        #print('Acc', self.value)
         instruction_set.acc += self.value
         instruction_set.command += 1
 
@@ -15,7 +14,6 @@ class Jmp:
         self.value = value
 
     def execute(self, instruction_set):
-        #print('Jmp', self.value)
         instruction_set.command += self.value
 
 
@@ -25,7 +23,6 @@ class Nop:
         self.value = value
 
     def execute(self, instruction_set):
-        #print('Nop', self.value)
         instruction_set.command += 1
 
 
@@ -64,7 +61,6 @@ class InstructionSet:
                 return self.acc
             self.instructions[command] = instruction
 
-
     def execute(self):
         self.acc = 0
         self.command = 0
@@ -85,7 +81,6 @@ class InstructionSet:
 
         return self.inner_execute()
 
-
     @staticmethod
     def get_value(value):
         sign = value[0]
@@ -97,8 +92,11 @@ class InstructionSet:
 
 def main():
     instructions = get_instructions()
-    acc = instructions.attempt_to_fix()
-    print('Acc before fail = {}'.format(acc))
+    # Part 1: 1744
+    instructions.execute()
+    print('Part 1: {}'.format(instructions.acc))
+    # Part 2: 1174
+    print('Part 2: {}'.format(instructions.attempt_to_fix()))
 
 
 def get_instructions():
@@ -115,4 +113,3 @@ def get_instructions():
 
 if __name__ == '__main__':
     main()
-

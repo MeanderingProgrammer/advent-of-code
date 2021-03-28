@@ -36,27 +36,12 @@ class BoardingPass():
 def main():
     data = process()
     data.sort()
-    print(data)
-    missing = find_missing(data)
-    binary = to_binary(missing)
-    code = to_code(binary, 'BBBBBBBRRR', 'FFFFFFFLLL')
-    print('Code = {}'.format(code))
-
+    # Part 1: 919
+    print('Part 1: {}'.format(data[-1]))
+    code = to_code(to_binary(find_missing(data)), 'BBBBBBBRRR', 'FFFFFFFLLL')
     boarding_pass = BoardingPass(code)
-    print(boarding_pass.get_id())
-
-
-def process():
-    data = list()
-    f = open('data.txt', 'r')
-
-    for line in f:
-        line = line.strip()
-        boarding_pass = BoardingPass(line)
-        data.append(boarding_pass.get_id())
-
-    f.close()
-    return data
+    # Part 2: 642
+    print('Part 2: {}'.format(boarding_pass.get_id()))
 
 
 def find_missing(data):
@@ -89,6 +74,18 @@ def to_code(binary, high_values, low_values):
     return code
 
 
+def process():
+    data = list()
+    f = open('data.txt', 'r')
+
+    for line in f:
+        line = line.strip()
+        boarding_pass = BoardingPass(line)
+        data.append(boarding_pass.get_id())
+
+    f.close()
+    return data
+
+
 if __name__ == '__main__':
     main()
-

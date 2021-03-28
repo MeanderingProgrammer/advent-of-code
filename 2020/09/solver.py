@@ -1,5 +1,6 @@
 PREAMBLE_LENGTH = 25
 
+
 class MaskingInput:
 
     def __init__(self, data):
@@ -42,11 +43,13 @@ def main():
     masking = MaskingInput(process())
 
     invalid_number = masking.get_first_invalid()
-    print('Invalid number = {}'.format(invalid_number))
+    # Part 1: 104054607
+    print('Part 1: {}'.format(invalid_number))
 
     sum_set = masking.get_sum_set(invalid_number)
     magic_number = min(sum_set) + max(sum_set)
-    print('Break key = {}'.format(magic_number))
+    # Part 2: 13935797
+    print('Part 2: {}'.format(magic_number))
 
 
 def process():
@@ -63,4 +66,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-

@@ -1,5 +1,6 @@
 from functools import reduce
 
+
 class ValueRange:
 
     def __init__(self, value_range):
@@ -49,6 +50,7 @@ class Rule:
     def __str__(self):
         return '{}: {} assigned to {}'.format(self.field_name, self.value_ranges, self.row)
 
+
 class Ticket:
 
     def __init__(self, ticket):
@@ -80,20 +82,20 @@ class Ticket:
 
 def main():
     rules, my_ticket, nearby_tickets = process()
-    solve_part_1(rules, nearby_tickets)
-    solve_part_2(rules, my_ticket, nearby_tickets)
+    # Part 1: 26980
+    print('Part 1: {}'.format(solve_part_1(rules, nearby_tickets)))
+    # Part 2: 3021381607403
+    print('Part 2: {}'.format(solve_part_2(rules, my_ticket, nearby_tickets)))
 
 
 def solve_part_1(rules, nearby_tickets):
-    # Part 1 = 26980
     unmatched_values = []
     for ticket in nearby_tickets:
         unmatched_values.extend(ticket.get_unmatched_values(rules))
-    print('Total unmatched values = {}'.format(sum(unmatched_values)))
+    return sum(unmatched_values)
 
 
 def solve_part_2(rules, my_ticket, nearby_tickets):
-    # Part 2 = 3021381607403
     remaining_tickets = []
     for ticket in nearby_tickets:
         if len(ticket.get_unmatched_values(rules)) == 0:
@@ -102,8 +104,7 @@ def solve_part_2(rules, my_ticket, nearby_tickets):
     assign_rules(rules, remaining_tickets)
     departure_indexes = [rule.get_row() for rule in rules if rule.starts_with('departure')]
     departure_values = [my_ticket.get_value(i) for i in departure_indexes]
-    multiplied = reduce((lambda x, y: x * y), departure_values)
-    print('Departure values multiplied = {}'.format(multiplied))
+    return reduce((lambda x, y: x * y), departure_values)
 
 
 def assign_rules(rules, nearby_tickets):
@@ -140,4 +141,3 @@ def process():
 
 if __name__ == '__main__':
     main()
-
