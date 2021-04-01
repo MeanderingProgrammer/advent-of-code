@@ -169,7 +169,6 @@ class Maze:
 
     def __get_neighbors(self, path):
         neighbors = []
-        print(self.__graph[path.node()])
         for neighbor in self.__graph[path.node()]:
             if neighbor.label() in ['AA', 'ZZ']:
                 neighbors.append(Path(
@@ -210,6 +209,7 @@ class Maze:
                     Point(starting_point + offset, r),
                     inner
                 )
+                print(node.valid())
                 if node.valid():
                     nodes.append(node)
 
@@ -246,9 +246,9 @@ class Maze:
 def main():
     maze = get_maze()
     # Part 1: 628
-    print('Part 1: {}'.format(maze.get_path('AA', 'ZZ', True)))
+    #print('Part 1: {}'.format(maze.get_path('AA', 'ZZ', True)))
     # Part 2: 7506
-    print('Part 2: {}'.format(maze.get_path('AA', 'ZZ', False)))
+    #print('Part 2: {}'.format(maze.get_path('AA', 'ZZ', False)))
 
 
 def get_maze():
