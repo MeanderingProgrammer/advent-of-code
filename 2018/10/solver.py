@@ -15,7 +15,7 @@ def main():
     # Part 1: GPJLLLLH
     print(grid)
     # Part 2: 10515
-    print('Part 1: {}'.format(min_time))
+    print('Part 2: {}'.format(min_time))
 
 
 def get_min_area_time(point_velocities):
