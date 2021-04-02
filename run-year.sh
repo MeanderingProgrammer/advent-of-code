@@ -6,6 +6,10 @@ then
     exit 1
 fi
 
+time_run() {
+    command time -f "Runtime: %E" $@
+}
+
 JAVA="java"
 PYTHON="python"
 
@@ -53,10 +57,10 @@ do
     if [[ ${to_run} == ${JAVA} ]]
     then
         javac Solver.java
-        time java Solver
+        time_run java Solver
     elif [[ ${to_run} == ${PYTHON} ]]
     then 
-        time python3 solver.py
+        time_run python3 solver.py
     fi
 
     cd ..
