@@ -3,4 +3,4 @@ Public Repo for Advent of Code Solutions
 
 ## TODO
 
-* Solve 2018 Day 23 Part 2
+* Some of these are really slow and I've lost how I came to the actual answer. Need to find these gaps and fill them.
