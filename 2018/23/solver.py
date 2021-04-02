@@ -48,6 +48,9 @@ def distance_of_most_overlap(bots):
     # A copy of: https://github.com/tterb/advent-of-code/blob/master/2018/day23.py
     queue = []
 
+    # One key piece of information is that the minimum distance from the origin is
+    # guaranteed to be on the edge of one of the bots, i.e. its manhattan distance,
+    # minus its radius
     for bot in bots:
         # Positions that have a manhattan distance larger than bots manhattan
         # distance minus radius will be included by this bots radius
