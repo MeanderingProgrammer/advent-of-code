@@ -9,7 +9,7 @@ public class Solver {
         // Part 1: 628
         System.out.println(String.format("Part 1: %d", solve(false)));
         // Part 2: 7506
-        System.out.println(String.format("Part 1: %d", solve(true)));
+        System.out.println(String.format("Part 2: %d", solve(true)));
     }
 
     private static int solve(boolean recursive) {

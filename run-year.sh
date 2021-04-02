@@ -9,13 +9,24 @@ fi
 JAVA="java"
 PYTHON="python"
 
+JAVA_DAYS=(
+    "2019:18"
+    "2019:20"
+)
+
 language () {
-    if [[ ${1} == "2019" ]] && [[ ${2} == "18" ]]
-    then
-        to_run=${JAVA}
-    else
-        to_run=${PYTHON}
-    fi
+    year_day="${1}:${2}"    
+    runner="${PYTHON}"
+
+    for java_day in "${JAVA_DAYS[@]}"
+    do
+        if [[ ${year_day} == ${java_day} ]]
+        then
+            runner="${JAVA}"
+        fi
+    done
+
+    echo "${runner}"
 }
 
 year=${1}
@@ -33,7 +44,7 @@ do
         folder="${i}"
     fi
 
-    language ${year} ${i}
+    to_run=$(language ${year} ${i})
 
     echo "Running day ${i} with ${to_run}"
 
