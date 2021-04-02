@@ -53,10 +53,10 @@ do
     if [[ ${to_run} == ${JAVA} ]]
     then
         javac Solver.java
-        java Solver
+        time java Solver
     elif [[ ${to_run} == ${PYTHON} ]]
     then 
-        python3 solver.py
+        time python3 solver.py
     fi
 
     cd ..
