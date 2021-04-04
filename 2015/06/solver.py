@@ -81,7 +81,6 @@ class Direction:
 
 
 def main():
-    # This one slow, but not slow enough to improve
     # Part 1: 400410
     print('Part 1: {}'.format(run_grid(False)))
     # Part 2: 15343601

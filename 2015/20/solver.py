@@ -2,7 +2,6 @@ GOAL = 29_000_000
 
 
 def main():
-    # Kinda slow
     # Part 1 = 665280
     print('Part 1: {}'.format(find_first(False)))
     # Part 2 = 705600

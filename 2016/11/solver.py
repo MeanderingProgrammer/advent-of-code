@@ -50,7 +50,6 @@ class Chip:
 
 
 def main():
-    # This one just so slow, oh boy
     # Part 1: 37
     print('Part 1: {}'.format(count_steps([])))
     # Part 2: 61 

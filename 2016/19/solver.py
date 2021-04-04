@@ -5,7 +5,6 @@ NUM_ELVES = 3_014_603
 
 
 def main():
-    # Really slow for part 2, like 2 hours to finish
     # Part 1: 1834903
     print('Part 1: {}'.format(run(location_v1)))
     # Part 2: 1420280

@@ -30,7 +30,6 @@ class Judge:
 
 
 def main():
-    # Pretty slow
     judge = Judge()
     # Part 1: 592
     print('Part 1: {}'.format(count_matches(judge, 40_000_000, False)))
