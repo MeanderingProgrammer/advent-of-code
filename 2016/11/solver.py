@@ -6,47 +6,126 @@ from aoc_parser import Parser
 
 FILE_NAME = 'data'
 
-GENERATOR = 'generator'
-MICRO_CHIP = 'microchip'
+
+class State:
+
+    def __init__(self):
+        # 4 floors with nothing on at first
+        self.state = {i: set() for i in range(4)}
+        self.hashed = None
+
+    def add(self, floor, item, parse=False):
+        if parse:
+            item = item.split()
+            value, item_type = item[-2], item[-1]
+            if item_type == 'generator':
+                item = Generator(value)
+            elif item_type == 'microchip':
+                item = Chip(value)
+            else:
+                item = None
+        if item is not None:
+            self.state[floor].add(item)
+
+    def get(self, floor):
+        return self.state[floor]
+
+    def total_below(self, floor):
+        return sum([
+            len(self.state[level]) for level in range(floor)
+        ])
+
+    def move(self, items_to_move, new_level):
+        new_state = State()
+        for floor, items in self.state.items():
+            for item in items:
+                if item not in items_to_move:
+                    new_state.add(floor, item)
+        for item_to_move in items_to_move:
+            new_state.add(new_level, item_to_move)
+        return new_state
+
+    def is_legal(self, floors):
+        for floor in floors:
+            if self.contains_unpaired_chip(floor):
+                return False
+        return True
+
+    def contains_unpaired_chip(self, floor):
+        items = self.get(floor)
+        chips = [item for item in items if isinstance(item, Chip)]
+        generators = [item for item in items if isinstance(item, Generator)]
+
+        if len(chips) == 0 or len(generators) == 0:
+            return False
+
+        for chip in chips:
+            if chip.generator() not in generators:
+                return True
+
+        return False
+
+    def _freeze(self):
+        result = set()
+        for floor, items in self.state.items():
+            result.add((floor, frozenset(items)))
+        return frozenset(result)
+
+    def __eq__(self, o):
+        return self.state == o.state
+
+    def __hash__(self):
+        if self.hashed is None:
+            self.hashed = hash(self._freeze())
+        return self.hashed
+
+    def __lt__(self, o):
+        return len(self.get(3)) < len(o.get(3))
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return str(self.state)
 
 
 class Generator:
 
     def __init__(self, value):
-        self.value = value
+        self.value = value.upper()
 
     def __eq__(self, o):
-        return str(self) == str(o)
+        return self.value == o.value
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(self.value)
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}G'.format(self.value[0].upper())
+        return self.value[0]
 
 
 class Chip:
 
     def __init__(self, value):
-        self.value = value.split('-')[0]
+        self.value = value.split('-')[0].lower()
 
     def generator(self):
         return Generator(self.value)
 
     def __eq__(self, o):
-        return str(self) == str(o)
+        return self.value == o.value
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(self.value)
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}M'.format(self.value[0].upper())
+        return self.value[0]
 
 
 def main():
@@ -66,28 +145,82 @@ def count_steps(add_to_first):
     end_state = get_end_state(start_state)
 
     return aoc_search.bfs(
-        (0, freeze(start_state)), 
-        (3, freeze(end_state)), 
+        (0, start_state),
+        (3, end_state),
         get_adjacent
     )
 
 
-def get_adjacent(item):
-    level = item[0]
-    state = unfreeze(item[1])
+def get_start_state(additonal):
+    state = State()
+    for i, line in enumerate(Parser(FILE_NAME).lines()):
+        components = line[:-1].split(' contains ')[1].split(', ')
+        if i == 0:
+            components += additonal
+        for component in components:
+            state.add(i, component, True)
+    return state
 
-    options = pair(state[level])
+
+def get_end_state(start):
+    state = State()
+    for items in start.state.values():
+        for item in items:
+            state.add(3, item)
+    return state
+
+
+def get_adjacent(item):
+    level, state = item
+
+    options = pair(state.get(level))
 
     adjacent = set()
-    for legal_state in get_legal(state, options, level, False):
+
+    for legal_state in get_legal(level, state, options, False):
         adjacent.add((level - 1, legal_state))
-    for legal_state in get_legal(state, options, level, True):
+
+    for legal_state in get_legal(level, state, options, True):
         adjacent.add((level + 1, legal_state)) 
 
     return adjacent
 
 
-def get_legal(state, options, start_level, up):
+def pair(items):
+    result = []
+
+    # Any singular item
+    for item in items:
+        result.append([item])
+
+    chips = [item for item in items if isinstance(item, Chip)]
+    generators = [item for item in items if isinstance(item, Generator)]
+
+    # Any pair of microcips
+    for pair in itertools.combinations(chips, 2):
+        result.append(list(pair))
+
+    # Any pair of generators
+    for pair in itertools.combinations(generators, 2):
+        result.append(list(pair))
+
+    # Some pair of matching chip and generator, all are equivalent
+    matching_pair = get_matching_pair(chips, generators)
+    if matching_pair is not None:
+        result.append(matching_pair)
+
+    return result
+
+
+def get_matching_pair(chips, generators):
+    for chip in chips:
+        generator = chip.generator()
+        if generator in generators:
+            return [chip, generator]
+    return None
+
+
+def get_legal(start_level, state, options, up):
     legal = set()
 
     new_level = start_level + 1 if up else start_level - 1
@@ -96,17 +229,13 @@ def get_legal(state, options, start_level, up):
 
     # If we are going down but there is nothing below
     # then there is no point in moving things down
-    if not up:
-        total_below = sum([
-            len(state[level]) for level in range(new_level + 1)
-        ])
-        if total_below == 0:
-            return legal
+    if not up and state.total_below(start_level) == 0:
+        return legal
 
-    on_level = state[new_level]
+    on_level = state.get(new_level)
 
-    carry_2_options = [option for option in options if type(option) is tuple]
-    carry_1_options = [option for option in options if type(option) is not tuple]
+    carry_1_options = [option for option in options if len(option) == 1]
+    carry_2_options = [option for option in options if len(option) == 2]
 
     if up:
         # If we're going upstairs and can carry 2 things don't bother carrying one
@@ -116,129 +245,11 @@ def get_legal(state, options, start_level, up):
         options = carry_1_options if len(carry_1_options) > 0 else carry_2_options
 
     for option in options:
-        if type(option) is tuple:
-            option = [option[0], option[1]]
-        else:
-            option = [option] 
-        if is_legal(option, on_level):
-            for o in option:
-                move(state, start_level, new_level, o)
-            legal.add(freeze(state))
-            for o in option:
-                move(state, new_level, start_level, o)
+        new_state = state.move(option, new_level)
+        if new_state.is_legal([start_level, new_level]):
+            legal.add(new_state)
 
     return legal
-
-
-def move(state, start_level, new_level, value):
-    state[start_level].remove(value)
-    state[new_level].add(value)
-
-
-def is_legal(option, on_level):
-    if len(option) == 1:
-        return check_legality(option[0], on_level)
-    else:
-        on_level.add(option[0])
-        first_legal = check_legality(option[1], on_level)
-        on_level.remove(option[0])
-
-        on_level.add(option[1])
-        second_legal = check_legality(option[0], on_level)
-        on_level.remove(option[1])
-
-        return first_legal and second_legal
-
-
-def check_legality(item, on_level):
-    generators = [g for g in on_level if isinstance(g, Generator)]
-    if isinstance(item, Chip):
-        return len(generators) == 0 or item.generator() in generators
-    else:
-        generators += [item]
-        chips_powered = [c.generator() in generators for c in on_level if isinstance(c, Chip)]
-        return all(chips_powered)
-
-
-def pair(items):
-    result = set()
-
-    # Any singular item
-    for item in items:
-        result.add(item)
-
-    # Any pair of microcips
-    chips = [item for item in items if isinstance(item, Chip)]
-    for pair in itertools.combinations(chips, 2):
-        result.add(pair)
-
-    # Any pair of generators
-    generators = [item for item in items if isinstance(item, Generator)]
-    for pair in itertools.combinations(generators, 2):
-        result.add(pair)
-
-    # Some pair of matching chip and generator, all are equivalent
-    for chip in chips:
-        generator = chip.generator()
-        if generator in items:
-            result.add((chip, generator))
-            break
-
-    return result
-
-
-def unfreeze(state):
-    result = {}
-    for value in state:
-        result[value[0]] = set(value[1])
-    return result
-
-
-def freeze(value):
-    result = set()
-    for item in value.items():
-        result.add((item[0], frozenset(item[1])))
-    return frozenset(result)
-
-
-def get_start_state(add_to_first):
-    floors = get_base()
-    for i, line in enumerate(Parser(FILE_NAME).lines()):
-        components = line[:-1].split(',')
-        if i == 0:
-            components += add_to_first
-        for elements in components:
-            elements = elements.split()
-            value, component = elements[-2], elements[-1]
-            if component == GENERATOR:
-                floors[i].add(Generator(value))
-            elif component == MICRO_CHIP:
-                floors[i].add(Chip(value))
-    return floors
-
-
-def get_end_state(start_state):
-    end_state = get_base()
-    for floor, items in start_state.items():
-        for item in items:
-            end_state[3].add(item)
-    return end_state
-
-
-def get_base():
-    return {
-        0: set(),
-        1: set(),
-        2: set(),
-        3: set()
-    }
-
-
-def print_state(state):
-    print(0, state[0])
-    print(1, state[1])
-    print(2, state[2])
-    print(3, state[3])
 
 
 if __name__ == '__main__':
