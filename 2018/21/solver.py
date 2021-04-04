@@ -191,7 +191,6 @@ class Instruction:
 
 
 def main():
-    # I think I actually waited for this one to finish
     # Part 1: 6619857
     print('Part 1: {}'.format(run(True)))
     # Part 2: 9547924

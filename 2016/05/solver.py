@@ -5,7 +5,6 @@ DOOR_ID = 'ugkcyxxp'
 
 
 def main():
-    # Pretty slow
     # Part 1: d4cd2ee1
     print('Part 1: {}'.format(generate_password(populate_v1)))
     # Part 2: f2c730e5

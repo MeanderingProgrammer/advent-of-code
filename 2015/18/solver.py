@@ -70,7 +70,6 @@ class Animator:
 
 
 def main():
-    # Pretty slow but not too bad
     # Part 1: 1061
     print('Part 1: {}'.format(run(False)))
     # Part 2: 1006

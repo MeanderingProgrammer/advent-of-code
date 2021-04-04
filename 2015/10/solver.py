@@ -25,7 +25,6 @@ class Game:
 
 
 def main():
-    # Slow but not too slow
     # Part 1: 360154
     print('Part 1: {}'.format(run(40)))
     # Part 2: 5103798
