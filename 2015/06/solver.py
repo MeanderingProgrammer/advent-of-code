@@ -1,11 +1,9 @@
-from aoc_board import Grid, Point
+from collections import defaultdict
+
 from aoc_parser import Parser
 
 
 FILE_NAME = 'data'
-
-ON = '#'
-OFF = '.'
 
 
 class Action:
@@ -13,30 +11,25 @@ class Action:
     def __init__(self, value):
         self.value = value
 
-    def apply(self, current):
-        current = OFF if current is None else current
-        if self.value[0] == 'turn':
-            if self.value[1] == 'on':
-                return ON
-            elif self.value[1] == 'off':
-                return OFF
-            else:
-                raise Exception('Unknown turn: {}'.format(self.value))
-        elif self.value[0] == 'toggle':
-            return ON if current == OFF else OFF
+    def apply(self, current, v2):
+        return self.apply_v2(current) if v2 else self.apply_v1(current)
+
+    def apply_v1(self, current):
+        if self.value == 'turn on':
+            return 1
+        elif self.value == 'turn off':
+            return 0
+        elif self.value == 'toggle':
+            return 1 - current
         else:
             raise Exception('Unknown state changer: {}'.format(self.value))
 
     def apply_v2(self, current):
-        current = 0 if current is None else current
-        if self.value[0] == 'turn':
-            if self.value[1] == 'on':
-                return current + 1
-            elif self.value[1] == 'off':
-                return max(current - 1, 0)
-            else:
-                raise Exception('Unknown turn: {}'.format(self.value))
-        elif self.value[0] == 'toggle':
+        if self.value == 'turn on':
+            return current + 1
+        elif self.value == 'turn off':
+            return max(current - 1, 0)
+        elif self.value == 'toggle':
             return current + 2
         else:
             raise Exception('Unknown state changer: {}'.format(self.value))
@@ -45,63 +38,52 @@ class Action:
 class PointRange:
 
     def __init__(self, value):
-        bottom_left = value[0].split(',')
-        top_right = value[2].split(',')
+        bottom_left = self.to_point(value[0])
+        top_right = self.to_point(value[2])
+        self.points = self.to_points(bottom_left, top_right)
 
-        self.left = int(bottom_left[0])
-        self.bottom = int(bottom_left[1])
+    @staticmethod
+    def to_point(coords):
+        return [int(coord) for coord in coords.split(',')]
 
-        self.right = int(top_right[0])
-        self.top = int(top_right[1])
-
-    def points(self):
-        result = []
-        for y in range(self.bottom, self.top + 1):
-            for x in range(self.left, self.right + 1):
-                point = Point(x, y)
-                result.append(point)
-        return result
+    @staticmethod
+    def to_points(bottom_left, top_right):
+        points = set()
+        for x in range(bottom_left[0], top_right[0] + 1):
+            for y in range(bottom_left[1], top_right[1] + 1):
+                points.add((x, y))
+        return points
 
 
 class Direction:
 
     def __init__(self, value):
         value = value.split()
-        self.action = Action(value[:-3])
+        self.action = Action(' '.join(value[:-3]))
         self.point_range = PointRange(value[-3:])
 
     def apply(self, grid, v2):
-        for point in self.point_range.points():
-            current = grid[point]
-            if v2:
-                new_value = self.action.apply_v2(current)
-            else:
-                new_value = self.action.apply(current)
-            grid[point] = new_value
+        for point in self.point_range.points:
+            grid[point] = self.action.apply(grid[point], v2)
 
 
 def main():
+    directions = get_directions()
     # Part 1: 400410
-    print('Part 1: {}'.format(run_grid(False)))
+    print('Part 1: {}'.format(run_grid(directions, False)))
     # Part 2: 15343601
-    print('Part 2: {}'.format(run_grid(True)))
+    print('Part 2: {}'.format(run_grid(directions, True)))
 
 
-def run_grid(v2):
-    grid = Grid()
-    for line in Parser(FILE_NAME).lines():
-        direction = Direction(line)
+def run_grid(directions, v2):
+    grid = defaultdict(int)
+    for direction in directions:
         direction.apply(grid, v2)
-    return count_on(grid)
+    return sum(grid.values())
 
 
-def count_on(grid):
-    on = 0
-    for point, value in grid.items():
-        if value != OFF:
-            brightness = 1 if value == ON else value
-            on += brightness
-    return on
+def get_directions():
+    return [Direction(line) for line in Parser(FILE_NAME).lines()]
 
 
 if __name__ == '__main__':
