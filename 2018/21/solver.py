@@ -201,16 +201,24 @@ def run(until_first):
     pointer, instructions = get_instructions(Parser(FILE_NAME))
     regs = Registers(6, pointer)
 
-    seen = set()
-    previous = None
+    seen, previous = set(), None
+
     while regs.instruction() < len(instructions):
         instruction_index = regs.instruction()
         instruction = instructions[instruction_index]
         ALL_INSTRUCTIONS[instruction.opcode()].process(instruction, regs)
         regs.next()
 
+        # 28th instruction compares register 0 to register 5. If they
+        # are equal then the program will halt.
+        # Since nothing else modifies or uses register 0 we need to
+        # keep track of the register 5 values.
+        # Once we start repeating we know the last unrepeated value is 
+        # what causes the largest number of instructions to run and 
+        # still halt the program.
         if instruction_index == 28:
             value = regs.get(5)
+            print(value)
 
             if until_first:
                 return value
@@ -220,7 +228,6 @@ def run(until_first):
             else:
                 seen.add(value)
                 previous = value
-
 
 def get_instructions(parser):
     lines = parser.lines()
