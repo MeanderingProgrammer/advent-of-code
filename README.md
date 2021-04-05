@@ -5,7 +5,6 @@ Public Repo for Advent of Code Solutions
 
 | Year | Day  | Time      |
 | ---- | ---- | --------- |
-| 2015 | 4    | 0:10.9    |
 | 2015 | 6    | 4:00.74   |
 | 2015 | 10   | 0:15.86   |
 | 2015 | 18   | 0:58.79   |
