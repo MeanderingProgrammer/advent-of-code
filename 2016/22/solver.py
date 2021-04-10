@@ -1,9 +1,6 @@
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+import commons.aoc_search as aoc_search
+from commons.aoc_board import Grid, Point
+from commons.aoc_parser import Parser
 
 
 class Node:
@@ -33,15 +30,12 @@ class Node:
         return int(size[:-1])
 
 
-
 def main():
     nodes = get_nodes()
     # Part 1: 910
-    viable = get_viable_connections(nodes)
-    print('Part 1: {}'.format(len(viable)))
+    print('Part 1: {}'.format(get_viable_connections(nodes)))
     # Part 2: 222
-    min_transfers = calculate_transfers(nodes)
-    print('Part 2: {}'.format(min_transfers))
+    print('Part 2: {}'.format(calculate_transfers(nodes)))
 
 
 def calculate_transfers(nodes):
@@ -82,7 +76,7 @@ def get_viable_connections(nodes):
         for p2, n2 in nodes.items():
             if are_viable(n1, n2):
                 viable.append((n1, n2))
-    return viable
+    return len(viable)
 
 
 def are_viable(n1, n2):
@@ -95,7 +89,7 @@ def are_viable(n1, n2):
 
 def get_nodes():
     nodes = Grid()
-    for line in Parser(FILE_NAME).lines()[2:]:
+    for line in Parser().lines()[2:]:
         node, total, used, available, use = line.split()
         nodes[parse_node(node)] = Node(total, used, available)
     return nodes

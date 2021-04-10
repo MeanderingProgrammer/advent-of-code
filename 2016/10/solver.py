@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Entity:
@@ -89,7 +86,7 @@ def multiply_outputs(outputs, buckets):
 
 def get_data():
     initial_values, bots, outputs = defaultdict(list), {}, defaultdict(list)
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         parts = line.split()
 
         if parts[0] == 'value':

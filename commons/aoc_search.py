@@ -10,15 +10,38 @@ def bfs(start, end, get_adjacent):
 
         if item in seen:
             continue
+        seen.add(item)
 
         if item == end:
             return length
+        
+        for adjacent in get_adjacent(item):
+            if adjacent not in seen:
+                heapq.heappush(queue, (length + 1, adjacent))
 
+
+def bfs_paths(start, end, get_adjacent):
+    queue = [(0, start)]
+    seen = set()
+    paths = []
+
+    while len(queue) > 0:
+        length, item = heapq.heappop(queue)
+
+        if item in seen:
+            continue
         seen.add(item)
+
+        if item[0] == end:
+            paths.append(item[1])
+            # Stop exploring this direction as soon as we reach end
+            continue
 
         for adjacent in get_adjacent(item):
             if adjacent not in seen:
                 heapq.heappush(queue, (length + 1, adjacent))
+
+    return paths
 
 
 def bfs_complete(start, is_done, get_adjacent):

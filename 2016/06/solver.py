@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -32,7 +29,7 @@ def nth_most_common(frequency, n):
 
 
 def get_words():
-    return Parser(FILE_NAME).lines()
+    return Parser().lines()
 
 
 if __name__ == '__main__':

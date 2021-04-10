@@ -1,8 +1,5 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
 
 CONTROLS = {
@@ -63,9 +60,8 @@ def create_phone(pattern):
 
 
 def get_instructions():
-    return Parser(FILE_NAME).lines()
+    return Parser().lines()
 
 
 if __name__ == '__main__':
     main()
-

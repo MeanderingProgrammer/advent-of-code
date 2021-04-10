@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Compressed:
@@ -45,7 +42,7 @@ def main():
 
 
 def decompress(recursive):
-    compressed = Compressed(Parser(FILE_NAME).string(), recursive)
+    compressed = Compressed(Parser().string(), recursive)
     return len(compressed.decompress())
 
 

@@ -1,8 +1,5 @@
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_computer import Computer
+from commons.aoc_parser import Parser
 
 
 class Setter:
@@ -87,7 +84,17 @@ class Output:
     def run(self, computer):
         value = computer.get(self.register)
         computer.output(value)
+        if not self.outputs_valid(computer.outputs):
+            raise Exception('Invalid Output Values')
         computer.move(1)
+
+    def outputs_valid(self, outputs):
+        pattern = [0, 1]
+        for i, value in enumerate(outputs):
+            expected = pattern[i % len(pattern)]
+            if value != expected:
+                return False
+        return True
 
     def __repr__(self):
         return str(self)
@@ -116,16 +123,15 @@ def run_until_success():
 
 def run_computer(initial_value):
     computer = Computer(
-        ['a', 'b', 'c', 'd'],
-        get_instructions()
+        ['a', 'b', 'c', 'd'], 100
     )
     computer.set('a', initial_value)
-    computer.run()
+    computer.run(get_instructions())
 
 
 def get_instructions():
     instructions = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         parts = line.split()
         op = parts[0]
         if op == 'cpy':

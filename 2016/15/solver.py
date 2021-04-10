@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Disk:
@@ -54,7 +51,7 @@ def passes_all(disks, time):
 
 def get_disks():
     disks = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         line = line.split()
         disks.append(Disk(
             int(line[1][1:]),

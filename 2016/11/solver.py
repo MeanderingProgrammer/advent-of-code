@@ -1,10 +1,7 @@
 import itertools
 
-import aoc_search
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+import commons.aoc_search as aoc_search
+from commons.aoc_parser import Parser
 
 
 class State:
@@ -153,7 +150,7 @@ def count_steps(add_to_first):
 
 def get_start_state(additonal):
     state = State()
-    for i, line in enumerate(Parser(FILE_NAME).lines()):
+    for i, line in enumerate(Parser().lines()):
         components = line[:-1].split(' contains ')[1].split(', ')
         if i == 0:
             components += additonal

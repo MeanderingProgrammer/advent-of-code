@@ -1,11 +1,9 @@
 import itertools
 
-import aoc_search
-from aoc_board import Grid, Point
-from aoc_parser import Parser
+import commons.aoc_search as aoc_search
+from commons.aoc_board import Grid, Point
+from commons.aoc_parser import Parser
 
-
-FILE_NAME = 'data'
 
 WALL = '#'
 OPEN = '.'
@@ -80,7 +78,7 @@ def get_adjacent(grid):
 
 def get_grid():
     markers, grid = {}, Grid()
-    for y, line in enumerate(Parser(FILE_NAME).lines()):
+    for y, line in enumerate(Parser().lines()):
         for x, value in enumerate(line):
             point = Point(x, y)
             grid[point] = value

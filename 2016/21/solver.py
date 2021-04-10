@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Scrambler:
@@ -111,18 +108,22 @@ def main():
 
 def scramble(value):
     scrambler = Scrambler(value)
-    for line in Parser(FILE_NAME).lines():
+    for line in get_lines():
         scrambler.scramble(line)
     return scrambler
 
 
 def unscramble(value):
     scrambler = Scrambler(value)
-    lines = Parser(FILE_NAME).lines()
+    lines = get_lines()
     lines.reverse()
     for line in lines:
         scrambler.unscramble(line)
     return scrambler
+
+
+def get_lines():
+    return Parser().lines()
 
 
 if __name__ == '__main__':
