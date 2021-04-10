@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def modifier(r_id, amount, f):
@@ -50,7 +47,6 @@ class Instruction:
             self.modifier(registers)
 
 
-
 def main():
     registers = defaultdict(int)
     instructions = get_instructions()
@@ -59,6 +55,7 @@ def main():
     for instruction in instructions:
         instruction.apply(registers)
         maxes.append(max(registers.values()))
+
     # Part 1: 7296
     print('Part 1: {}'.format(max(registers.values())))
     # Part 2: 8186
@@ -66,12 +63,8 @@ def main():
 
 
 def get_instructions():
-    instructions = []
-    for line in Parser(FILE_NAME).lines():
-        instructions.append(Instruction(line))
-    return instructions
+    return [Instruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':
     main()
-

@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Bridge:
@@ -65,7 +62,7 @@ def get_longest_strongest(statistics):
 
 def get_components():
     components = defaultdict(set)
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         p1, p2 = [int(x) for x in line.split('/')]
         components[p1].add(p2)
         components[p2].add(p1)

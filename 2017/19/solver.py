@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
-
-FILE_NAME = 'data'
 
 UP = Point(0, -1)
 DOWN = Point(0, 1)
@@ -79,7 +77,7 @@ def main():
 
 def get_grid():
     grid = Grid()
-    for y, line in enumerate(Parser(FILE_NAME).nested_lines()):
+    for y, line in enumerate(Parser().nested_lines()):
         for x, value in enumerate(line):
             point = Point(x, y)
             if value != ' ':

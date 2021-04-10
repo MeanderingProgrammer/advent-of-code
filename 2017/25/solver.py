@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
-
-FILE_NAME = 'data'
 
 MOVEMENTS = {
     'left': Point(-1),
@@ -80,7 +78,7 @@ def main():
 
 
 def get_state_rules():
-    groups = Parser(FILE_NAME).line_groups()
+    groups = Parser().line_groups()
     state = get_state(groups[0])
     rules = {}
     for group in groups[1:]:

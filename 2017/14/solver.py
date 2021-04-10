@@ -1,6 +1,6 @@
 import collections
 
-from aoc_board import Point
+from commons.aoc_board import Point
 
 
 SIZE = 256
@@ -82,8 +82,8 @@ def main():
     points = get_enabled_points()
     # Part 1: 8190
     print('Part 1: {}'.format(len(points)))
-    # Part 2: 1134
     groups = group_points(points)
+    # Part 2: 1134
     print('Part 2: {}'.format(len(groups)))
 
 

@@ -83,17 +83,22 @@ class Point:
 
     def adjacent(self):
         adjacent = []
-
         for i in range(len(self.coords)):
-            coords_c1 = list(self.coords)
-            coords_c1[i] -= 1
-            adjacent.append(Point(*coords_c1))
-
-            coords_c2 = list(self.coords)
-            coords_c2[i] += 1
-            adjacent.append(Point(*coords_c2))
-
+            adjacent.append(self.__create_point(i, -1))
+            adjacent.append(self.__create_point(i, 1))
         return adjacent
+
+    def right(self):
+        return self.__create_point(0, 1)
+
+    def left(self):
+        return self.__create_point(0, -1)
+
+    def up(self):
+        return self.__create_point(1, 1)
+
+    def down(self):
+        return self.__create_point(1, -1)
 
     def validate(self, o):
         if len(self.coords) != len(o.coords):
@@ -103,16 +108,14 @@ class Point:
         return sum([abs(c) for c in self.coords])
 
     def __add__(self, o):
-        self.validate(o)
         coords = []
-        for c1, c2 in zip(self.coords, o.coords):
+        for c1, c2 in self.__zip_points(o):
             coords.append(c1 + c2)
         return Point(*coords)
 
     def __sub__(self, o):
-        self.validate(o)
         coords = []
-        for c1, c2 in zip(self.coords, o.coords):
+        for c1, c2 in self.__zip_points(o):
             coords.append(c1 - c2)
         return Point(*coords)
 
@@ -132,16 +135,14 @@ class Point:
         return hash(str(self))
 
     def __lt__(self, o):
-        self.validate(o)
         matches = []
-        for c1, c2 in zip(self.coords, o.coords):
+        for c1, c2 in self.__zip_points(o):
             matches.append(c1 < c2)
         return all(matches)
 
     def __le__(self, o):
-        self.validate(o)
         matches = []
-        for c1, c2 in zip(self.coords, o.coords):
+        for c1, c2 in self.__zip_points(o):
             matches.append(c1 <= c2)
         return all(matches)
 
@@ -150,3 +151,12 @@ class Point:
 
     def __str__(self):
         return str(self.coords)
+
+    def __create_point(self, i, amount):
+        coords = list(self.coords)
+        coords[i] += amount
+        return Point(*coords)
+
+    def __zip_points(self, o):
+        self.validate(o)
+        return zip(self.coords, o.coords)

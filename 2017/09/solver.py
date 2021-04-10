@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Group:
@@ -56,7 +53,7 @@ def main():
 
 
 def get_group():
-    return Group(Parser(FILE_NAME).read())
+    return Group(Parser().string())
 
 
 if __name__ == '__main__':

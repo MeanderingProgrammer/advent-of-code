@@ -1,4 +1,4 @@
-from aoc_board import Grid, Point
+from commons.aoc_board import Grid, Point
 
 
 def main():

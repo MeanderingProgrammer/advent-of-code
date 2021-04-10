@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -12,7 +9,7 @@ def main():
 
 
 def run(f):
-    jumps = Parser(FILE_NAME).int_lines()
+    jumps = Parser().int_lines()
     steps, ip = 0, 0
     while ip >= 0 and ip < len(jumps):
         jump = jumps[ip]

@@ -1,8 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
-DANCERS = 16
+from commons.aoc_parser import Parser
 
 
 class Dance:
@@ -31,7 +27,7 @@ class Dance:
 
 
 def main():
-    dance = Dance(DANCERS)
+    dance = Dance(16)
     moves = get_moves()
     pattern = get_pattern(dance, moves)
 
@@ -69,7 +65,7 @@ def perform_dance(dance, moves):
 
 
 def get_moves():
-    return Parser(FILE_NAME).csv()
+    return Parser().csv()
 
 
 if __name__ == '__main__':

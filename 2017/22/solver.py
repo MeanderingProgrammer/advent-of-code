@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
-
-FILE_NAME = 'data'
 
 CLEAN = '.'
 WEAKENED = 'W'
@@ -94,7 +92,7 @@ def run(n, state_change):
 
 def get_grid():
     grid = Grid()
-    for y, row in enumerate(Parser(FILE_NAME).nested_lines()):
+    for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
             point = Point(x, y)
             grid[point] = value

@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -13,7 +10,7 @@ def main():
 
 def calculate_checksum(f):
     checksums = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         values = [int(value) for value in line.split()]
         checksum = f(values)
         checksums.append(checksum)

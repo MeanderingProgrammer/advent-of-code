@@ -1,10 +1,7 @@
 from collections import defaultdict
 
-import aoc_search
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+import commons.aoc_search as aoc_search
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -36,7 +33,7 @@ def get_ungrouped(graph, grouped):
 
 def get_graph():
     graph = defaultdict(set)
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         parts = line.split(' <-> ')
         start = parts[0]
         for end in parts[1].split(', '):

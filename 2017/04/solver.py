@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Password:
@@ -37,7 +34,7 @@ def main():
 
 def count_valid(check_anagram):
     are_valid = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         valid = Password(line).valid(check_anagram)
         are_valid.append(valid)
     return sum(are_valid)
