@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Memory:
@@ -40,7 +37,7 @@ class Memory:
 
 def main():
     seen = set()
-    memory = Memory([int(v) for v in Parser(FILE_NAME).read().split()])
+    memory = Memory(Parser().int_entries())
 
     cycles = 0
     while memory not in seen:

@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Computer:
@@ -95,10 +92,7 @@ def is_prime(value):
 
 
 def get_instructions():
-    instructions = []
-    for line in Parser(FILE_NAME).lines():
-        instructions.append(Intstruction(line))
-    return instructions
+    return [Intstruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

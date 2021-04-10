@@ -1,11 +1,8 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
-    data = Parser(FILE_NAME).read()
+    data = Parser().string()
     # Part 1: 1136
     print('Part 1: {}'.format(sum_list(data, 1)))
     # Part 2: 1092

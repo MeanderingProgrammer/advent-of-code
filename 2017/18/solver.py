@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Computer:
@@ -48,7 +45,7 @@ class Computer:
                 self.o.run()
 
 
-class Intstruction:
+class Instruction:
 
     def __init__(self, value):
         parts = value.split()
@@ -128,10 +125,7 @@ def run_2_computers():
 
 
 def get_instructions():
-    instructions = []
-    for line in Parser(FILE_NAME).lines():
-        instructions.append(Intstruction(line))
-    return instructions
+    return [Instruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

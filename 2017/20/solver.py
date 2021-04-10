@@ -1,8 +1,5 @@
-from aoc_parser import Parser
-from aoc_board import Point
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 class Particle:
@@ -42,11 +39,11 @@ class Particle:
 
 
 def main():
-    # Part 1: 161
     particles = run_simulation(False)
+    # Part 1: 161
     print('Part 1: {}'.format(particles[0].id))
-    # Part 2: 438
     particles = run_simulation(True)
+    # Part 2: 438
     print('Part 2: {}'.format(len(particles)))
 
 
@@ -66,7 +63,6 @@ def run_simulation(cleanup):
             else:
                 seen.add(pos)
 
-
         delete_particles = set()
         for particle in particles:
             if particle.pos in to_remove:
@@ -80,7 +76,7 @@ def run_simulation(cleanup):
 
 
 def get_particles():
-    return [Particle(line) for line in enumerate(Parser(FILE_NAME).lines())]
+    return [Particle(line) for line in enumerate(Parser().lines())]
 
 
 if __name__ == '__main__':

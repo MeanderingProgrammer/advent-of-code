@@ -1,8 +1,5 @@
-from aoc_parser import Parser
-from aoc_board import Point
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 DIRECTIONS = {
@@ -42,7 +39,7 @@ def steps(position):
     
 
 def get_directions():
-    return Parser(FILE_NAME).csv()
+    return Parser().csv()
 
 
 if __name__ == '__main__':

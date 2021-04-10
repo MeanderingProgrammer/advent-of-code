@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Scanner:
@@ -25,10 +22,10 @@ def main():
     # Part 1: 632
     print('Part 1: {}'.format(get_trip_severity(scanners)))
 
-    # Part 2: 3849742
     offset = 1
     while is_caught(scanners, offset):
         offset += 1
+    # Part 2: 3849742
     print('Part 2: {}'.format(offset))
 
 
@@ -48,10 +45,7 @@ def is_caught(scanners, offset):
 
 
 def get_scanners():
-    scanners = []
-    for line in Parser(FILE_NAME).lines():
-        scanners.append(Scanner(line))
-    return scanners
+    return [Scanner(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

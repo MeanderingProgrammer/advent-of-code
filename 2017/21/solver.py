@@ -1,8 +1,7 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
 
-FILE_NAME = 'data'
 INPUT = '.#./..#/###'
 
 
@@ -117,7 +116,7 @@ def get_matching_pattern(component, patterns):
 
 
 def get_patterns():
-    return [Pattern(line) for line in Parser(FILE_NAME).lines()]
+    return [Pattern(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':
