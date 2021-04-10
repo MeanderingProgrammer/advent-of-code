@@ -1,8 +1,5 @@
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_computer import Computer
+from commons.aoc_parser import Parser
 
 
 class Instruction:
@@ -58,7 +55,7 @@ def run_computer(set_a):
 
 
 def get_instructions():
-    return [Instruction(line) for line in Parser(FILE_NAME).lines()]
+    return [Instruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

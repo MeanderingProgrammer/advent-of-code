@@ -1,9 +1,6 @@
 import itertools
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Character:
@@ -106,7 +103,7 @@ def iter(items, lengths):
 
 
 def get_data():
-    groups = Parser(FILE_NAME).line_groups()
+    groups = Parser().line_groups()
     weapons = get_items(groups[0])
     armors = get_items(groups[1])
     rings = get_items(groups[2])

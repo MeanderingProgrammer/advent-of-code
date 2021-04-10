@@ -1,8 +1,5 @@
-import aoc_util
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+import commons.aoc_util as aoc_util
+from commons.aoc_parser import Parser
 
 
 class Rule:
@@ -49,7 +46,7 @@ def replacements_needed(molecule):
 
 
 def get_data():
-    groups = Parser(FILE_NAME).line_groups()
+    groups = Parser().line_groups()
     rules = [Rule(value) for value in groups[0]]
     return groups[1][0], rules
 

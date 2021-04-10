@@ -1,10 +1,7 @@
 import itertools
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -46,7 +43,7 @@ def get_score(permutation, graph):
 
 def get_graph():
     graph = defaultdict(lambda: defaultdict(int))
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         line = line[:-1].split()
 
         who = line[0]

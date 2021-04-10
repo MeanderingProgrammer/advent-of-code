@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Ingredient:
@@ -74,7 +71,7 @@ def main():
 
 
 def get_ingredients():
-    return [Ingredient(line) for line in Parser(FILE_NAME).lines()]
+    return [Ingredient(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

@@ -1,8 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
-TIME = 2_503
+from commons.aoc_parser import Parser
 
 
 class Reindeer:
@@ -29,21 +25,11 @@ class Reindeer:
 
 
 def main():
-    reindeers = get_reindeers()
+    reindeers, time = get_reindeers(), 2_503
     # Part 1 = 2655
-    print('Part 1: {}'.format(max(get_distance_after(reindeers, TIME))))
+    print('Part 1: {}'.format(max(get_distance_after(reindeers, time))))
     # Part 2 = 1059
-    print('Part 2: {}'.format(max(get_times_in_lead(reindeers))))
-
-
-def get_times_in_lead(reindeers):
-    times_in_lead = [0] * len(reindeers)
-    for seconds in range(1, TIME + 1):
-        distances = get_distance_after(reindeers, seconds)
-        indexes = indexes_of_max(distances)
-        for index in indexes:
-            times_in_lead[index] += 1
-    return times_in_lead
+    print('Part 2: {}'.format(max(get_times_in_lead(reindeers, time))))
 
 
 def get_distance_after(reindeers, time):
@@ -51,6 +37,16 @@ def get_distance_after(reindeers, time):
     for reindeer in reindeers:
         distances.append(reindeer.distance(time))
     return distances
+
+
+def get_times_in_lead(reindeers, time):
+    times_in_lead = [0] * len(reindeers)
+    for seconds in range(1, time + 1):
+        distances = get_distance_after(reindeers, seconds)
+        indexes = indexes_of_max(distances)
+        for index in indexes:
+            times_in_lead[index] += 1
+    return times_in_lead
 
 
 def indexes_of_max(values):
@@ -63,7 +59,7 @@ def indexes_of_max(values):
 
 
 def get_reindeers():
-    return [Reindeer(line) for line in Parser(FILE_NAME).lines()]
+    return [Reindeer(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

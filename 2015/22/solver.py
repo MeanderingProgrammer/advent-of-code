@@ -1,4 +1,4 @@
-import aoc_search
+import commons.aoc_search as aoc_search
 
 
 PLAYER_STATS = (50, 500)
@@ -302,7 +302,7 @@ def play_game(hard):
         Warlock(*ENEMY_STATS),
         hard
     )
-    return aoc_search.bfs(
+    return aoc_search.bfs_complete(
         (0, game),
         lambda current: current.done(),
         lambda mana_used, current: current.get_moves(mana_used)

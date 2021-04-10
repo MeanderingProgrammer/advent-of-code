@@ -1,9 +1,6 @@
 import numpy as np
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Value:
@@ -60,8 +57,8 @@ class Value:
 
 
 def main():
-    # Part 1: 3176
     first = evaluate(None)
+    # Part 1: 3176
     print('Part 1: {}'.format(first))
     # Part 2: 14710
     print('Part 2: {}'.format(evaluate(first)))
@@ -76,7 +73,7 @@ def evaluate(b_override):
 
 def get_diagram():
     diagram = {}
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         line = line.split(' -> ')
         diagram[line[1]] = Value(line[0])
     return diagram

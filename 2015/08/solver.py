@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class String:
@@ -37,16 +34,14 @@ class String:
 
 
 def main():
-    total, decoded, encoded = [], [], []
+    total, decoded, encoded = 0, 0, 0
 
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         s = String(line)
 
-        total.append(s.total())
-        decoded.append(s.decode())
-        encoded.append(s.encode())
-
-    total, decoded, encoded = sum(total), sum(decoded), sum(encoded)
+        total += s.total()
+        decoded += s.decode()
+        encoded += s.encode()
 
     # Part 1: 1350
     print('Part 1: {}'.format(total - decoded))
