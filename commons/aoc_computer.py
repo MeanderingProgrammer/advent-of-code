@@ -1,8 +1,15 @@
 class Computer:
 
-    def __init__(self, registers):
+    def __init__(self, registers, num_outputs=None):
         self.registers = {register: 0 for register in registers}
         self.ip = 0
+        self.instructions = None
+
+        self.num_outputs = num_outputs
+        self.outputs = []
+
+    def output(self, value):
+        self.outputs.append(value)
 
     def get(self, value):
         return self.registers[value] if value in self.registers else int(value)
@@ -14,9 +21,18 @@ class Computer:
         self.ip += amount
 
     def run(self, instructions):
-        while self.in_range(instructions):
+        self.instructions = instructions
+
+        while self.in_range() and not self.met_success():
             instruction = instructions[self.ip]
             instruction.run(self)
 
-    def in_range(self, instructions):
-        return self.ip >= 0 and self.ip < len(instructions)
+        self.instructions = None
+
+    def in_range(self):
+        return self.ip >= 0 and self.ip < len(self.instructions)
+
+    def met_success(self):
+        if self.num_outputs is None:
+            return False
+        return len(self.outputs) >= self.num_outputs

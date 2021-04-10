@@ -1,10 +1,7 @@
 import math
 
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_computer import Computer
+from commons.aoc_parser import Parser
 
 
 class Setter:
@@ -81,7 +78,6 @@ class Toggle:
         return 'Toggle: {}'.format(self.register)
         
 
-
 def main():
     # Part 1: 11662
     print('Part 1: {}'.format(run_computer(7)))
@@ -93,17 +89,16 @@ def main():
 
 def run_computer(num_eggs):
     computer = Computer(
-        ['a', 'b', 'c', 'd'],
-        get_instructions()
+        ['a', 'b', 'c', 'd']
     )
     computer.set('a', num_eggs)
-    computer.run()
+    computer.run(get_instructions())
     return computer.get('a')
 
 
 def get_instructions():
     instructions = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         parts = line.split()
         op = parts[0]
         if op == 'cpy':

@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class DataRange:
@@ -39,12 +36,10 @@ def main():
     data_ranges.sort()
     
     # Part 1: 17348574
-    lowest_unblocked = data_ranges[0].end + 1
-    print('Part 1: {}'.format(lowest_unblocked))
+    print('Part 1: {}'.format(data_ranges[0].end + 1))
 
     # Part 2: 104
-    total_unblocked = get_total_unblocked(data_ranges)
-    print('Part 2: {}'.format(total_unblocked))
+    print('Part 2: {}'.format(get_total_unblocked(data_ranges)))
 
 
 def combine_all(data_ranges):
@@ -99,7 +94,7 @@ def count_between(prev_range, next_range):
 
 def get_data_ranges():
     data_ranges = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         line = line.split('-')
         data_ranges.append(DataRange(
             int(line[0]), int(line[1])
@@ -109,4 +104,3 @@ def get_data_ranges():
 
 if __name__ == '__main__':
     main()
-

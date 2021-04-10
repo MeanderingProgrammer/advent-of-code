@@ -1,8 +1,5 @@
-from aoc_computer import Computer
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_computer import Computer
+from commons.aoc_parser import Parser
 
 
 class Setter:
@@ -49,7 +46,7 @@ def run_instructions(ignite):
 
 def get_instructions():
     instructions = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         parts = line.split()
         op = parts[0]
         if op == 'cpy':

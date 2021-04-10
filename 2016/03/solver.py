@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Triangle:
@@ -29,18 +26,23 @@ def num_valid(triangles):
 
 
 def get_triangles_vertically():
-    return [Triangle(line.split()) for line in Parser(FILE_NAME).lines()]
+    return [Triangle(line.split()) for line in get_lines()]
 
 
 def get_triangles_horizontally():
-    triangles = []
-    lines = Parser(FILE_NAME).lines()
+    triangles, lines = [], get_lines()
+
     for i in range(0, len(lines), 3):
         top_3 = [line.split() for line in lines[i:i+3]]
         for j in range(3):
             sides = [line[j] for line in top_3]
             triangles.append(Triangle(sides))
+
     return triangles
+
+
+def get_lines():
+    return Parser().lines()
 
 
 if __name__ == '__main__':

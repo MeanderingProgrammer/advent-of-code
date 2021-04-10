@@ -1,8 +1,5 @@
-from aoc_parser import Parser
-from aoc_board import Point
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 DIRECTIONS = [
@@ -24,7 +21,7 @@ def traverse():
     index, position = 0, Point(0, 0)
     visited = [position]
 
-    for instruction in Parser(FILE_NAME).csv():
+    for instruction in Parser().csv():
         change = -1 if instruction[0] == 'L' else 1
         index = (index + change) % len(DIRECTIONS)
         amount = int(instruction[1:])

@@ -1,7 +1,7 @@
 import hashlib 
 
-import aoc_search
-from aoc_board import Point
+import commons.aoc_search as aoc_search
+from commons.aoc_board import Point
 
 
 CODE = 'udskfozm'
@@ -16,7 +16,7 @@ DIRECTIONS = [
 
 
 def main():
-    paths = aoc_search.bfs(
+    paths = aoc_search.bfs_paths(
         (Point(-3, 3), CODE), 
         Point(0, 0), 
         get_adjacent

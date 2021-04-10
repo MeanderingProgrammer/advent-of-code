@@ -1,8 +1,8 @@
-import aoc_search
-from aoc_board import Grid, Point
+import commons.aoc_search as aoc_search
+from commons.aoc_board import Grid, Point
 
 
-FAVORITE_NUMBER = 1350
+FAVORITE_NUMBER = 1_350
 GOAL = Point(31, 39)
 
 GRID = Grid()
