@@ -1,6 +1,9 @@
+import sys
+
+
 class Parser:
 
-    def __init__(self, file_name):
+    def __init__(self, file_name='data'):
         self.file_name = '{}.txt'.format(file_name)
 
     def string(self):
@@ -31,11 +34,10 @@ class Parser:
         return [group.split('\n') for group in self.__read(sep='\n\n')]
 
     def __read(self, split=True, sep=None):
-        with open(self.file_name, 'r') as f:
+        with open('{}/{}'.format(sys.path[0], self.file_name), 'r') as f:
             data = f.read()
         return [datum.strip() for datum in data.split(sep)] if split else data
 
     @staticmethod
     def __to_int(values):
         return [int(value) for value in values]
-

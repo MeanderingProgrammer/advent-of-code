@@ -1,8 +1,6 @@
-from aoc_board import Point
-from aoc_parser import Parser
+from commons.aoc_board import Point
+from commons.aoc_parser import Parser
 
-
-FILE_NAME = 'data'
 
 DIRECTIONS = {
     '^': Point(0, 1),
@@ -10,6 +8,7 @@ DIRECTIONS = {
     '<': Point(-1, 0),
     '>': Point(1, 0)
 }
+
 
 def main():
     # Part 1: 2081
@@ -24,7 +23,7 @@ def run(santas):
 
     visited = [location for location in locations]
 
-    for i, direction in enumerate(Parser(FILE_NAME).string()):
+    for i, direction in enumerate(Parser().string()):
         santa_index = i % len(locations)
         locations[santa_index] += DIRECTIONS[direction]
         visited.append(locations[santa_index])
