@@ -1,9 +1,6 @@
 import json
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class SantaData:
@@ -45,7 +42,7 @@ def main():
 
 
 def get_total(ignore_red):
-    santa = SantaData(Parser(FILE_NAME).string(), ignore_red)
+    santa = SantaData(Parser().string(), ignore_red)
     return santa.total()
 
 

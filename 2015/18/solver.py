@@ -1,8 +1,6 @@
-from aoc_board import Grid, Point
-from aoc_parser import Parser
+from commons.aoc_board import Grid, Point
+from commons.aoc_parser import Parser
 
-
-FILE_NAME = 'data'
 
 ON = '#'
 OFF = '.'
@@ -85,7 +83,7 @@ def run(force_corners):
 
 def get_grid():
     grid = Grid()
-    for y, line in enumerate(Parser(FILE_NAME).lines()):
+    for y, line in enumerate(Parser().lines()):
         for x, value in enumerate(line):
             point = Point(x, y)
             grid[point] = value

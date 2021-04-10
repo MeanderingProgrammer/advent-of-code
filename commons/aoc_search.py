@@ -21,6 +21,19 @@ def bfs(start, end, get_adjacent):
                 heapq.heappush(queue, (length + 1, adjacent))
 
 
+def bfs_complete(start, is_done, get_adjacent):
+    queue = [start]
+
+    while len(queue) > 0:
+        length, item = heapq.heappop(queue)
+
+        if is_done(item):
+            return length
+
+        for adjacent in get_adjacent(length, item):
+            heapq.heappush(queue, adjacent)
+
+
 def reachable(start, maximum, get_adjacent):
     queue = [(0, start)]
     seen = set()

@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 CHECKS = {
@@ -63,7 +60,7 @@ def get_aunt(calibrate):
 
 
 def get_data():
-    groups = Parser(FILE_NAME).line_groups()
+    groups = Parser().line_groups()
     return Match(groups[0]), [Aunt(value) for value in groups[1]]
 
 

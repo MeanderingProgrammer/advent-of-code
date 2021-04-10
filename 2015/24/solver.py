@@ -1,13 +1,10 @@
 import itertools
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
-    weights = Parser(FILE_NAME).int_lines()
+    weights = Parser().int_lines()
     # Part 1: 10439961859
     print('Part 1: {}'.format(store_weights(weights, 3)))
     # Part 2: 72050269

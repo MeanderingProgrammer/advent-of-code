@@ -1,9 +1,6 @@
 import itertools
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
@@ -23,7 +20,7 @@ def main():
 
 def get_distances():
     distances = {}
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         line = line.split()
         distances[(line[0], line[2])] = int(line[4])
         distances[(line[2], line[0])] = int(line[4])
