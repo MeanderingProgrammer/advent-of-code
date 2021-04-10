@@ -191,13 +191,39 @@ class Instruction:
 
 
 def main():
+    halt_values = run_analyzed()
     # Part 1: 6619857
-    print('Part 1: {}'.format(run(True)))
+    print('Part 1: {}'.format(halt_values[0]))
     # Part 2: 9547924
-    print('Part 2: {}'.format(run(False)))
+    print('Part 2: {}'.format(halt_values[-1]))
 
 
-def run(until_first):
+def run_analyzed():
+    current_value, seen = run_inner(0), []
+    while current_value not in seen:
+        seen.append(current_value)
+        current_value = run_inner(current_value)
+    return seen
+
+
+def run_inner(previous):
+    # https://github.com/marcodelmastro/AdventOfCode2018/blob/master/Day%2021.ipynb
+    counter = previous | 65536
+    value = 9010242
+
+    while counter > 0:
+        value += counter & 255
+        value &= 16777215
+        value *= 65899
+        value &= 16777215
+        counter //= 256
+
+    return value
+
+
+def run_real(until_first):
+    # This should produce the same result as run_analyzed, but is
+    # way slower as it actually runs each instruction
     pointer, instructions = get_instructions(Parser(FILE_NAME))
     regs = Registers(6, pointer)
 
@@ -218,7 +244,6 @@ def run(until_first):
         # still halt the program.
         if instruction_index == 28:
             value = regs.get(5)
-            print(value)
 
             if until_first:
                 return value
@@ -228,6 +253,7 @@ def run(until_first):
             else:
                 seen.add(value)
                 previous = value
+
 
 def get_instructions(parser):
     lines = parser.lines()
