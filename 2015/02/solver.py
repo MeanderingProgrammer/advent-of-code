@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Box:
@@ -30,7 +27,7 @@ class Box:
 
 def main():
     paper, ribbon = [], []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         box = Box(*line.split('x'))
         paper.append(box.paper_needed())
         ribbon.append(box.ribbon_needed())
@@ -42,4 +39,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

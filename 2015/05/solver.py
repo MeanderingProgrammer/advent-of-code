@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Word:
@@ -84,7 +81,7 @@ def main():
 
 def total_nice_words(new_rules):
     nice_words = 0
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         word = Word(line)
         if word.nice(new_rules):
             nice_words += 1

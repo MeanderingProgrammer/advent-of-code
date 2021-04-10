@@ -1,11 +1,8 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 def main():
-    data = Parser(FILE_NAME).string()
+    data = Parser().string()
     # Part 1: 232
     print('Part 1: {}'.format(get_floor(data, False)))
     # Part 2: 1783

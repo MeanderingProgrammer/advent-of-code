@@ -1,3 +1,75 @@
+class Grid:
+
+    def __init__(self):
+        self.grid = {}
+        self.dimensionality = None
+
+    def get(self, point, default_value):
+        return self[point] if point in self else default_value
+
+    def items(self):
+        return self.grid.items()
+
+    def area(self):
+        width = max(self.xs()) - min(self.xs())
+        height = max(self.ys()) - min(self.ys())
+        return width * height
+
+    def reflect(self):
+        result = Grid()
+        for point, value in self.grid.items():
+            result[point.reflect()] = value
+        return result
+
+    def rotate(self):
+        result = Grid()
+        for point, value in self.grid.items():
+            result[point.rotate()] = value
+        return result
+
+    def xs(self):
+        return set([point.coords[0] for point in self.grid])
+
+    def ys(self):
+        if self.dimensionality < 2:
+            return None
+        return set([point.coords[1] for point in self.grid])
+
+    def __setitem__(self, point, value):
+        if self.dimensionality is None:
+            self.dimensionality = len(point.coords)
+        self.grid[point] = value
+
+    def __getitem__(self, point):
+        return self.grid.get(point, None)
+
+    def __contains__(self, point):
+        return point in self.grid
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        ys = self.ys()
+        if ys is None:
+            return self.make_row()
+        if len(ys) == 0:
+            return ''
+
+        rows = []
+        for y in range(min(ys), max(ys) + 1):
+            rows.append(self.make_row(y))
+        return '\n'.join(rows)
+
+    def make_row(self, y=None):
+        row, xs = [], self.xs()
+        for x in range(min(xs), max(xs) + 1):
+            point = Point(x, y) if y is not None else Point(x)
+            value = str(self[point]) if point in self else '.'
+            row.append(value) 
+        return ''.join(row)
+
+
 class Point:
 
     def __init__(self, *coords):

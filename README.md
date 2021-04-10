@@ -1,6 +1,17 @@
 # Advent of Code
 Public Repo for Advent of Code Solutions
 
+## Getting Started
+
+Because I am not great with packaging things together please run:
+
+```bash
+export PYTHONPATH="<path_to_repo>/advent-of-code"
+export PYTHONPATH="/mnt/c/Users/vsusl/Documents/scripts/advent-of-code"
+```
+
+Once the code is cloned. This is to import the classes located in the commons directory.
+
 ## Take Over 10 Seconds (On My Decent Laptop)
 
 | Year | Day  | Time    |
