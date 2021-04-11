@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Cup:
 
     def __init__(self, value):
@@ -114,12 +117,8 @@ def run(num_cups, loops):
 
 
 def get_cups(num_cups):
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().splitlines()[0]
-
     cups = Cups()
-    for value in data:
+    for value in Parser().string():
         cups.add(int(value))
 
     if num_cups is not None:

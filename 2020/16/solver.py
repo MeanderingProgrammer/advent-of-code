@@ -1,5 +1,7 @@
 from functools import reduce
 
+from commons.aoc_parser import Parser
+
 
 class ValueRange:
 
@@ -128,14 +130,10 @@ def get_possible_rules(rules, values):
 
 
 def process():
-    with open('data.txt', 'r') as f:
-        data = f.read().splitlines()
-
-    splits = [i for i in range(len(data)) if data[i] == '']
-
-    rules = [Rule(rule) for rule in data[:splits[0]]]
-    my_ticket = Ticket(data[splits[0]+2])
-    nearby_tickets = [Ticket(ticket) for ticket in data[splits[1]+2:]]
+    groups = Parser().line_groups()
+    rules = [Rule(rule) for rule in groups[0]]
+    my_ticket = Ticket(groups[1][1])
+    nearby_tickets = [Ticket(ticket) for ticket in groups[2][1:]]
     return rules, my_ticket, nearby_tickets
 
 

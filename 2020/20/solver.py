@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class PuzzleBoard:
 
     def __init__(self):
@@ -219,6 +222,7 @@ class SearchImage:
                     positive_points.append((col, row))
         return positive_points
 
+
 def main():
     board = PuzzleBoard()
     solve_board(board)
@@ -282,26 +286,11 @@ def get_roughness(board):
 
 
 def get_image_tiles():
-    filename = 'data'
-    with open('{}.txt'.format(filename), 'r') as f:
-        data = f.read().splitlines()
-
-    splits = [i for i in range(len(data)) if data[i] == '']
-    image_tiles = []
-
-    previous = 0
-    for split in splits:
-        image_tiles.append(ImageTile(data[previous:split]))
-        previous = split + 1
-    image_tiles.append(ImageTile(data[previous:]))
-
-    return image_tiles
+    return [ImageTile(group) for group in Parser().line_groups()]
 
 
 def get_image_search():
-    with open('sea-monster.txt', 'r') as f:
-        data = f.read().splitlines()
-    return SearchImage(data)
+    return SearchImage(Parser('sea-monster').lines())
 
 
 if __name__ == '__main__':

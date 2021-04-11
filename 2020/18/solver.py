@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Number:
 
     def __init__(self, value):
@@ -95,10 +98,7 @@ def sum_expressions(prefer_addition):
 
 
 def get_expressions():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        expressions = f.read().splitlines()
-    return [Expression(expression.replace(' ', '')) for expression in expressions]
+    return [Expression(line.replace(' ', '')) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

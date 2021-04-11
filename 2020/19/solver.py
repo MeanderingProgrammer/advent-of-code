@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class LetterRule:
 
     def __init__(self, letter):
@@ -103,11 +106,8 @@ def total_matches(is_part2):
 
 
 def process():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().splitlines()
-    split = data.index('')
-    return Rules(data[:split]), data[split+1:]
+    groups = Parser().line_groups()
+    return Rules(groups[0]), groups[1]
 
 
 if __name__ == '__main__':

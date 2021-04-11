@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 LENGTH = 36
 
 
@@ -92,15 +95,14 @@ def main():
 
 def run_computer(version):
     computer = Computer(version)
-    instructions = [Instruction(datum) for datum in process()]
+    instructions = get_instructions()
     for instruction in instructions:
         computer.run(instruction)
     return computer.get_total_memory()
 
 
-def process():
-    with open('data.txt', 'r') as f:
-        return f.read().splitlines()
+def get_instructions():
+    return [Instruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Transformer:
 
     def __init__(self, subject):
@@ -34,10 +37,8 @@ def encryption_key(public_key, other_public_key):
 
 
 def get_keys():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        keys = f.read().splitlines()
-    return int(keys[0]), int(keys[1])
+    keys = Parser().int_lines()
+    return keys[0], keys[1]
 
 
 if __name__ == '__main__':

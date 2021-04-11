@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Tile:
 
     def __init__(self):
@@ -141,10 +144,7 @@ def main():
 
 
 def get_paths():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        instructions = f.read().splitlines()
-    return [Path(instruction) for instruction in instructions]
+    return [Path(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':
