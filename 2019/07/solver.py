@@ -1,9 +1,43 @@
 from itertools import permutations
 
-from program import Program
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
 
-DEBUG = False
+class Amplifier:
+
+    def __init__(self, memory, setting):
+        self.computer = Computer(self)
+        self.computer.set_memory(memory)
+
+        self.inputs = [setting]
+
+        self.outputs = []
+        self.load = False
+
+    def run(self, pause_on_load):
+        self.load = False
+        while self.computer.has_next() and self.check_load(pause_on_load):
+            self.computer.next()
+        return self.computer.has_next()
+
+    def check_load(self, pause_on_load):
+        if not pause_on_load:
+            return True
+        return not self.load
+
+    def add_input(self, value):
+        self.inputs.append(value)
+
+    def get_output(self):
+        return self.outputs[-1]
+
+    def get_input(self):
+        return self.inputs.pop(0)
+
+    def add_output(self, value):
+        self.load = True
+        self.outputs.append(value)
 
 
 def main():
@@ -34,13 +68,11 @@ def run_sequence(sequence, pause_on_load):
 
 
 def get_amplifiers(sequence):
-    return [Program(get_memory(), entry, DEBUG) for entry in sequence]
+    return [Amplifier(get_memory(), entry) for entry in sequence]
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

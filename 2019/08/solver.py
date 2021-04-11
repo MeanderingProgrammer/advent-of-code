@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Layer:
 
     def __init__(self):
@@ -68,9 +71,7 @@ def main():
 
 
 def get_image_data():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return f.read()
+    return Parser().string()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from commons.aoc_parser import Parser
+
 
 class Orbits:
 
@@ -21,7 +23,6 @@ class Orbits:
                 elif adjacent not in explored:
                     to_explore.append((adjacent, value+1))
             explored.add(orbit)
-
 
     def get_adjacent(self, node):
         adjacent = [value for value in self.orbits[node]]
@@ -54,12 +55,8 @@ def main():
 
 
 def get_orbits():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-
     orbits = Orbits()
-    for orbit in data:
+    for orbit in Parser().lines():
         orbits.add(orbit)
     return orbits
 

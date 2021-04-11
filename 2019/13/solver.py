@@ -1,7 +1,6 @@
-from program import Program
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
-
-DEBUG = False
 
 TILE_MAPPING = {
     0: 'empty',
@@ -28,14 +27,15 @@ class Tile:
 class Game:
 
     def __init__(self, memory):
-        self.program = Program(memory, self, DEBUG)
+        self.computer = Computer(self)
+        self.computer.set_memory(memory)
+
         self.score = 0
         self.tiles = []
         self.tile_buffer = []
 
     def play(self):
-        while self.program.has_next():
-            self.program.next()
+        self.computer.run()
 
     def get_input(self):
         ball_x = self.get_tiles('ball')[-1].x_pos
@@ -83,9 +83,7 @@ def play_game(play_for_free):
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

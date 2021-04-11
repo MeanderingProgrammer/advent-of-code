@@ -1,5 +1,7 @@
 import math
 
+from commons.aoc_parser import Parser
+
 
 class Vector:
 
@@ -142,12 +144,8 @@ def lcm(a, b):
 
 
 def get_system():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-
     system = System()
-    [system.add(Body(datum)) for datum in data]
+    [system.add(Body(line)) for line in Parser().lines()]
     return system
 
 

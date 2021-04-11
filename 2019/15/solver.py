@@ -1,7 +1,6 @@
-from computer import Computer
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
-
-DEBUG = False
 
 WALL = 0
 EMPTY = 1
@@ -25,7 +24,9 @@ OPPOSITES = {
 class RepairDroid:
 
     def __init__(self, memory):
-        self.__computer = Computer(memory, self, DEBUG)
+        self.__computer = Computer(self)
+        self.__computer.set_memory(memory)
+
         self.__completed = False
 
         self.__position = (0, 0)
@@ -134,9 +135,7 @@ def time_for_air(droid):
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

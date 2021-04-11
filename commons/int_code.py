@@ -289,9 +289,16 @@ class Instruction:
 
 class Computer:
 
-    def __init__(self, memory, bus, debug=False):
-        self.memory, self.bus = memory, bus
-        self.__debug, self.__pointer, self.__base = debug, 0, 0
+    def __init__(self, bus, debug=False):
+        self.memory, self.__pointer, self.base = None, None, 0
+        self.bus, self.__debug = bus, debug
+
+    def set_memory(self, memory):
+        self.memory, self.__pointer, self.base = memory, 0, 0
+
+    def run(self):
+        while self.has_next():
+            self.next()
 
     def has_next(self):
         return not self.__next_instruction().halt()
@@ -316,4 +323,4 @@ class Computer:
 
     def __adjust_base(self, instruction, result):
         if instruction.base_adjuster() and result is not None:
-            self.__base = result
+            self.base = result

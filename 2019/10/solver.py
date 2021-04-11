@@ -1,6 +1,8 @@
 import math
 from collections import defaultdict
 
+from commons.aoc_parser import Parser
+
 
 class Point:
 
@@ -87,10 +89,7 @@ def main():
 
 
 def get_grid():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-    return Grid(data)
+    return Grid(Parser().lines())
 
 
 if __name__ == '__main__':
