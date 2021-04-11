@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Seat:
 
     def __init__(self, i, j, state):
@@ -126,7 +129,7 @@ def main():
 
 
 def run_until_stable(look):
-    current_chart = SeatingChart(process())
+    current_chart = process()
     next_chart = current_chart.step_forward(look)
 
     while not current_chart == next_chart:
@@ -137,8 +140,7 @@ def run_until_stable(look):
 
 
 def process():
-    with open('data.txt', 'r') as f:
-        return [list(line) for line in f.read().splitlines()]
+    return SeatingChart(Parser().nested_lines())
 
 
 if __name__ == '__main__':

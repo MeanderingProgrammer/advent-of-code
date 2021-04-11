@@ -1,5 +1,7 @@
 import re
 
+from commons.aoc_parser import Parser
+
 
 def in_range(value, minimum, maximum):
     return value >= minimum and value <= maximum
@@ -61,14 +63,12 @@ FIELD_VALIDATORS = {
 
 class Passport:
 
-    def __init__(self):
+    def __init__(self, lines):
         self.data = {}
-
-    def add(self, line):
-        parts = line.split()
-        for part in parts:
-            kv = part.split(':')
-            self.data[kv[0]] = kv[1]
+        for line in lines:
+            for part in line.split():
+                kv = part.split(':')
+                self.data[kv[0]] = kv[1]
 
     def validate(self, run_validation):
         for field in FIELD_VALIDATORS:
@@ -90,21 +90,7 @@ def main():
 
 
 def get_passports():
-    passports = []
-    f = open('data.txt', 'r')
-
-    passport = Passport()
-    for line in f:
-        line = line.strip()
-        if len(line) == 0:
-            passports.append(passport)
-            passport = Passport()
-        else:
-            passport.add(line)
-
-    passports.append(passport)
-    f.close()
-    return passports
+    return [Passport(group) for group in Parser().line_groups()]
 
 
 if __name__ == '__main__':

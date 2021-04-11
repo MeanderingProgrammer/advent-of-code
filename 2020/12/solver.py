@@ -1,10 +1,12 @@
+from commons.aoc_parser import Parser
+
+
 COMMANDS_V1 = {
     'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
     'N': lambda point, pos, amount: (point, pos + Position(0, amount)),
     'E': lambda point, pos, amount: (point, pos + Position(amount, 0)),
     'F': lambda point, pos, amount: (point, pos + point * amount)
 }
-
 
 COMMANDS_V2 = {
     'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
@@ -103,9 +105,7 @@ def move_ship(is_v1):
 
 
 def get_instructions():
-    with open('data.txt', 'r') as f:
-        data = f.read().splitlines()
-    return [Instruction(datum) for datum in data]
+    return [Instruction(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

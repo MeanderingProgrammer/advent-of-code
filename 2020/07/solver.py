@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class RuleGraph:
 
     def __init__(self):
@@ -102,15 +105,7 @@ def get_connected_to(graph, end):
 
 
 def process():
-    bag_rules = []
-    f = open('data.txt', 'r')
-
-    for line in f:
-        line = line.strip()
-        bag_rules.append(BagRule(line[:-1]))
-
-    f.close()
-    return bag_rules
+    return [BagRule(line[:-1]) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

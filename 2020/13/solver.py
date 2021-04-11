@@ -1,5 +1,7 @@
 import math
 
+from commons.aoc_parser import Parser
+
 
 class Bus:
 
@@ -25,7 +27,7 @@ def main():
 
     # Part 1: 296
     print('Part 1: {}'.format(solve_part_1(arrive_time, buses)))
-    # Part 2: 296
+    # Part 2: 535296695251210
     print('Part 2: {}'.format(solve_part_2(buses)))
 
 
@@ -90,8 +92,7 @@ def consecutive_from_start(start_time, buses):
 
 
 def process():
-    with open('data.txt', 'r') as f:
-        return f.read().splitlines()
+   return Parser().lines()
 
 
 if __name__ == '__main__':
