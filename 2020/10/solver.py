@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from commons.aoc_parser import Parser
+
 
 class Adapters:
 
@@ -39,7 +41,7 @@ class Adapters:
 
 
 def main():
-    adapters = Adapters(process())
+    adapters = process()
     
     chains = adapters.get_chains()
     # Part 1: 2343
@@ -51,8 +53,7 @@ def main():
 
 
 def process():
-    with open('data.txt', 'r') as f:
-        return [int(line) for line in f.read().splitlines()]
+    return Adapters(Parser().int_lines())
 
 
 if __name__ == '__main__':

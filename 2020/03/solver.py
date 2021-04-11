@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 def main():
     board = get_board()
     traversals = [
@@ -37,14 +40,7 @@ def traverse(board, r_step, d_step):
 
 
 def get_board():
-    board = []
-    f = open('data.txt', 'r')
-
-    for line in f:
-        board.append(line.strip())
-
-    f.close()
-    return board
+    return Parser().lines()
 
 
 if __name__ == '__main__':

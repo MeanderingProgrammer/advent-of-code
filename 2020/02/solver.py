@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class PasswordEntry:
 
     def __init__(self, raw_value):
@@ -35,12 +38,7 @@ def main():
 
 
 def get_passwords():
-    passwords = []
-    f = open('data.txt', 'r')
-    for line in f:
-        passwords.append(PasswordEntry(line))
-    f.close()
-    return passwords
+    return [PasswordEntry(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

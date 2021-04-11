@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class BoardingPass():
 
     def __init__(self, identifier):
@@ -75,16 +78,7 @@ def to_code(binary, high_values, low_values):
 
 
 def process():
-    data = list()
-    f = open('data.txt', 'r')
-
-    for line in f:
-        line = line.strip()
-        boarding_pass = BoardingPass(line)
-        data.append(boarding_pass.get_id())
-
-    f.close()
-    return data
+    return [BoardingPass(line).get_id() for line in Parser().lines()]
 
 
 if __name__ == '__main__':

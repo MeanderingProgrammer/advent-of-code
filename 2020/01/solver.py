@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 def main():
     values = read_data()
     pair =  find_pair(2020, values)
@@ -29,14 +32,7 @@ def find_pair(goal, values, ignore=None):
 
 
 def read_data():
-    data = []
-    f = open('data.txt', 'r')
-    
-    for line in f:
-        data.append(int(line.strip()))
-    
-    f.close()
-    return data
+    return Parser().int_lines()
 
 
 if __name__ == '__main__':

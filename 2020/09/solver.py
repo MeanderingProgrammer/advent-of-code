@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 PREAMBLE_LENGTH = 25
 
 
@@ -40,7 +43,7 @@ class MaskingInput:
 
 
 def main():
-    masking = MaskingInput(process())
+    masking = process()
 
     invalid_number = masking.get_first_invalid()
     # Part 1: 104054607
@@ -53,15 +56,7 @@ def main():
 
 
 def process():
-    data = []
-    f = open('data.txt', 'r')
-
-    for line in f:
-        line = line.strip()
-        data.append(int(line))
-
-    f.close()
-    return data
+    return MaskingInput(Parser().int_lines())
 
 
 if __name__ == '__main__':

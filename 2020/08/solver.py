@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Acc:
 
     def __init__(self, value):
@@ -92,8 +95,8 @@ class InstructionSet:
 
 def main():
     instructions = get_instructions()
-    # Part 1: 1744
     instructions.execute()
+    # Part 1: 1744
     print('Part 1: {}'.format(instructions.acc))
     # Part 2: 1174
     print('Part 2: {}'.format(instructions.attempt_to_fix()))
@@ -101,13 +104,7 @@ def main():
 
 def get_instructions():
     instructions = InstructionSet()
-    f = open('data.txt', 'r')
-
-    for line in f:
-        line = line.strip()
-        instructions.add(line)
-
-    f.close()
+    [instructions.add(line) for line in Parser().lines()]
     return instructions
 
 
