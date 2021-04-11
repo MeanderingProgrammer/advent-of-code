@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 DEAL = 'deal with increment '
 CUT = 'cut '
 NEW_STACK = 'deal into new stack'
@@ -91,10 +94,7 @@ def process_deck(n):
 
 
 def get_processors():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-    return Processors(data)
+    return Processors(Parser().lines())
 
 
 if __name__ == '__main__':

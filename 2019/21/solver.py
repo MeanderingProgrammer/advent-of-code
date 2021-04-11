@@ -1,12 +1,11 @@
-from computer import Computer
-
-DEBUG = False
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
 
 class JumpDroid:
 
     def __init__(self, actual_program):
-        self.__computer = Computer(self, DEBUG)
+        self.__computer = Computer(self)
         self.__program = self.__transform(actual_program)
         self.buffer = ''
         self.value = None
@@ -15,8 +14,7 @@ class JumpDroid:
         self.__computer.set_memory(memory)
 
     def run(self):
-        while self.__computer.has_next():
-            self.__computer.next()
+        self.__computer.run()
 
     def get_input(self):
         self.buffer = ''
@@ -37,7 +35,6 @@ class JumpDroid:
             real.append('\n')
             program.extend(real)
         return program
-
 
 
 def main():
@@ -91,9 +88,7 @@ def run_droid(actual_program):
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

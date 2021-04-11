@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 INNER_GRID = '?'
 ALIVE = '#'
 EMPTY = '.'
@@ -41,6 +44,7 @@ class Point:
     def __str__(self):
         return '({}, {})'.format(self.x, self.y)
 
+
 class Element:
 
     def __init__(self, value='.'):
@@ -65,6 +69,7 @@ class Element:
 
     def __str__(self):
         return INNER_GRID if self.value is None else self.value
+
 
 class Grid:
 
@@ -218,10 +223,7 @@ def solve_part_2():
 
 
 def get_data():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-    return [[value for value in datum] for datum in data]
+    return Parser().nested_lines()
 
 
 if __name__ == '__main__':
