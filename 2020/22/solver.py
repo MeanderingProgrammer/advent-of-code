@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Game:
 
     def __init__(self, deck1, deck2, recursive=False):
@@ -89,11 +92,8 @@ def run_game(recursive):
 
 
 def get_decks():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().splitlines()
-    split = data.index('')
-    return Deck(data[1:split], 1), Deck(data[split+2:], 2)
+    groups = Parser().line_groups()
+    return Deck(groups[0][1:], 1), Deck(groups[1][1:], 2)
 
 
 if __name__ == '__main__':

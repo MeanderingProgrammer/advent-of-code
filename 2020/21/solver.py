@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Food:
 
     def __init__(self, raw):
@@ -107,10 +110,7 @@ def remove_possibility(allergen_possibilities, ingredient):
 
 
 def get_foods():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        foods = f.read().splitlines()
-    return [Food(food) for food in foods]
+    return [Food(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

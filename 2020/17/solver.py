@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Point:
 
     def __init__(self, dimensions, x, y, z=0, w=0):
@@ -126,13 +129,10 @@ def simulate(dimensions):
 
 
 def get_grid(dimensions):
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().splitlines()
-
+    lines = Parser().lines()
     grid = Grid(dimensions)
-    for y, datum in enumerate(data):
-        y = len(data) - y - 1
+    for y, datum in enumerate(lines):
+        y = len(lines) - y - 1
         for x in range(len(datum)):
             status = datum[x]
             grid.add(Point(dimensions, x, y), Status(status == '#'))

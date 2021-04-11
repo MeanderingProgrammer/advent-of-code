@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Stats:
 
     def __init__(self, turn):
@@ -50,9 +53,7 @@ def run(n):
 
 
 def process():
-    with open('data.txt', 'r') as f:
-        data = f.read().splitlines()
-    return [int(datum) for datum in data[0].split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':
