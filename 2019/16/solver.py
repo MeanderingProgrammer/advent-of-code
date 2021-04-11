@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Transmission:
 
     def __init__(self, raw, apply_offset):
@@ -70,9 +73,7 @@ def apply_fft(repeats, apply_offset):
 
 
 def get_transmission(repeats, apply_offset):
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return Transmission(f.read() * repeats, apply_offset)
+    return Transmission(Parser().string() * repeats, apply_offset)
 
 
 if __name__ == '__main__':

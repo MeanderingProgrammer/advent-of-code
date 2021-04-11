@@ -1,6 +1,7 @@
 import math
-
 from collections import defaultdict
+
+from commons.aoc_parser import Parser
 
 
 class Reactant:
@@ -91,12 +92,8 @@ def binary_search(reactions, goal, start, end):
 
 
 def get_reactions():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read().split('\n')
-
     reactions = Reactions()
-    [reactions.add(datum) for datum in data]
+    [reactions.add(line) for line in Parser().lines()]
     return reactions
 
 

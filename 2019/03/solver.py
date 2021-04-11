@@ -1,28 +1,5 @@
-class Point:
-
-    def __init__(self, x, y):
-        self.x, self.y = x, y
-
-    def __add__(self, other):
-        return Point(
-            self.x+other.x,
-            self.y+other.y,
-        )
-
-    def __len__(self):
-        return abs(self.x) + abs(self.y)
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 POINT_MAPPING = {
@@ -70,10 +47,7 @@ def main():
 
 
 def get_paths():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        data = f.read()
-    data = data.split('\n')
+    data = Parser().lines()
     return Path(data[0]), Path(data[1])
 
 

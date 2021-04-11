@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Instruction:
 
     def __init__(self, parts):
@@ -22,7 +25,7 @@ class Instruction:
 class Memory:
 
     def __init__(self, commands):
-        self.commands = [int(command) for command in commands.split(',')]
+        self.commands = commands
         self.index = 0
 
     def get(self, i):
@@ -83,8 +86,7 @@ def set_memory_and_run(v1, v2):
 
 
 def get_memory():
-    with open('data.txt', 'r') as f:
-        return Memory(f.read())
+    return Memory(Parser().int_csv())
 
 
 if __name__ == '__main__':

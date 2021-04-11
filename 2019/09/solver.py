@@ -1,7 +1,28 @@
-from program import Program
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
 
-DEBUG = False
+class BoostProgram:
+
+    def __init__(self, memory, setting):
+        self.computer = Computer(self)
+        self.computer.set_memory(memory)
+
+        self.inputs = [setting]
+        self.outputs = []
+
+    def run(self):
+        self.computer.run()
+
+    def get_output(self):
+        return self.outputs[0]
+
+    def get_input(self):
+        return self.inputs.pop(0)
+
+    def add_output(self, value):
+        self.load = True
+        self.outputs.append(value)
 
 
 def main():
@@ -14,17 +35,15 @@ def main():
 def run(setting):
     program = get_program(setting)
     program.run()
-    return program.outputs[0]
+    return program.get_output()
 
 
 def get_program(param):
-    return Program(get_memory(), param, DEBUG)
+    return BoostProgram(get_memory(), param)
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

@@ -1,3 +1,6 @@
+from commons.aoc_parser import Parser
+
+
 class Module:
 
     def __init__(self, value):
@@ -25,9 +28,7 @@ def get_fuel(recursive):
 
 
 def get_modules():
-    with open('data.txt', 'r') as f:
-        data = f.read()
-    return [Module(datum) for datum in data.split('\n')]
+    return [Module(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

@@ -1,7 +1,5 @@
-from program import Program
-
-
-DEBUG = False
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
 
 class Direction:
@@ -26,7 +24,9 @@ class Direction:
 class PaintBot:
 
     def __init__(self, memory, starting_color):
-        self.program = Program(get_memory(), self, DEBUG)
+        self.computer = Computer(self)
+        self.computer.set_memory(memory)
+
         self.color = True
         
         self.direction = Direction()
@@ -35,8 +35,7 @@ class PaintBot:
         self.grid[self.position] = starting_color
 
     def run(self):
-        while self.program.has_next():
-            self.program.next()
+        self.computer.run()
 
     def get_input(self):
         return self.grid[self.position] if self.position in self.grid else 0
@@ -80,9 +79,7 @@ def run(setting, print_grid):
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':
