@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
-
-FILE_NAME = 'data'
 
 OR = '|'
 OPEN_PAREN = '('
@@ -59,7 +57,7 @@ class Regex:
 
 
 def main():
-    data = Parser(FILE_NAME).read()
+    data = Parser().string()
     regex = Regex(data[1:-1])
     regex.calculate_distances()
     # Part 1: 3930

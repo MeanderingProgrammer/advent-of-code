@@ -35,6 +35,7 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2017 | 25   | 1:09.87 |
 | 2018 | 5    | 0:10.89 |
 | 2018 | 6    | 0:20.15 |
+| 2018 | 10   | 0:10.61 |
 | 2018 | 11   | 1:28.29 |
 | 2018 | 14   | 0:35.87 |
 | 2018 | 15   | 3:41.72 |
@@ -52,3 +53,7 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2020 | 15   | 0:58.97 |
 | 2020 | 23   | 0:21.99 |
 | 2020 | 24   | 0:13.45 |
+
+## TODO
+
+* Transition 2018 Day 15 to use commons board

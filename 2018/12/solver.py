@@ -1,4 +1,4 @@
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 RULE_LENGTH = 5
@@ -81,10 +81,8 @@ class Rule:
 
 
 def main():
-    file_name = 'data'
-    state, rules = get(file_name)
     # Part 1: 1816
-    print('Part 1: {}'.format(run_for(get(file_name), 20)))
+    print('Part 1: {}'.format(run_for(get(), 20)))
     # Part 2: 399999999957
     print('Part 2: {}'.format(solve_known(50_000_000_000)))
 
@@ -104,8 +102,8 @@ def solve_known(generations):
     return (num_constant * 8) + 1_205
 
 
-def get(file_name):
-    groups = Parser(file_name).line_groups()
+def get():
+    groups = Parser().line_groups()
     state = State(groups[0][0])
     rules = [Rule(rule) for rule in groups[1]]
     return state, rules

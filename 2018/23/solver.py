@@ -1,10 +1,8 @@
 import heapq
 from collections import defaultdict
-from aoc_parser import Parser
-from aoc_board import Point
 
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 class NanoBot:
@@ -71,11 +69,7 @@ def distance_of_most_overlap(bots):
 
 
 def get_bots():
-    bots = []
-    for line in Parser(FILE_NAME).lines():
-        bot = NanoBot(line)
-        bots.append(bot)
-    return bots
+    return [NanoBot(line) for line in Parser().lines()]
 
 
 if __name__ == '__main__':

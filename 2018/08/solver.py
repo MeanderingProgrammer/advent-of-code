@@ -1,4 +1,4 @@
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 class Node:
@@ -44,8 +44,7 @@ class Node:
 
 
 def main():
-    file_name = 'data'
-    tree = Node(Parser(file_name).int_entries())
+    tree = Node(Parser().int_entries())
     # Part 1: 42472
     print('Part 1: {}'.format(tree.sum_metadata()))
     # Part 2: 21810

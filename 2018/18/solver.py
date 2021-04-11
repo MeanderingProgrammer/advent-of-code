@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
-
-FILE_NAME = 'data'
 
 OPEN = '.'
 TREES = '|'
@@ -38,7 +36,10 @@ class Landscape:
         return sum([self.grid[adjacent] == value for adjacent in point.all_adjacent()])
 
     def resource_value(self):
-        return self.grid.count(TREES) * self.grid.count(YARD)
+        return self.resource_count(TREES) * self.resource_count(YARD)
+
+    def resource_count(self, goal):
+        return sum([resource == goal for point, resource in self.grid.items()])
 
     def __repr__(self):
         return str(self)
@@ -101,7 +102,7 @@ def get_end_index(values, start, pattern):
 
 def get_grid():
     grid = Grid()
-    for y, row in enumerate(Parser(FILE_NAME).nested_array()):
+    for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
             point = Point(x, y)
             grid[point] = value

@@ -1,6 +1,6 @@
 import heapq 
 
-from aoc_board import Grid, Point
+from commons.aoc_board import Grid, Point
 
 
 class Region:
@@ -22,10 +22,10 @@ class Region:
 
         if self.location in [Point(0, 0), self.target]:
             self.geo = 0
-        elif self.location.y == 0:
-            self.geo = self.location.x * 16_807
-        elif self.location.x == 0:
-            self.geo = self.location.y * 48_271
+        elif self.location.y() == 0:
+            self.geo = self.location.x() * 16_807
+        elif self.location.x() == 0:
+            self.geo = self.location.y() * 48_271
         else:
             self.geo = self.left.erosion_level() * self.below.erosion_level()
 
@@ -90,15 +90,15 @@ def main():
 def build_out_cave(depth, target):
     buff = 30
     grid = Grid()
-    for x in range(target.x + 1 + buff):
-        for y in range(target.y + 1 + buff):
+    for x in range(target.x() + 1 + buff):
+        for y in range(target.y() + 1 + buff):
             location = Point(x, y)
             grid[location] = Region(
                 depth,
                 target,
                 location,
                 grid[location.left()],
-                grid[location.up()]
+                grid[location.down()]
             )
     return grid
 

@@ -28,16 +28,16 @@ class Grid:
         return result
 
     def xs(self):
-        return set([point.coords[0] for point in self.grid])
+        return set([point.x() for point in self.grid])
 
     def ys(self):
         if self.dimensionality < 2:
             return None
-        return set([point.coords[1] for point in self.grid])
+        return set([point.y() for point in self.grid])
 
     def __setitem__(self, point, value):
         if self.dimensionality is None:
-            self.dimensionality = len(point.coords)
+            self.dimensionality = point.dimensions()
         self.grid[point] = value
 
     def __getitem__(self, point):
@@ -75,6 +75,18 @@ class Point:
     def __init__(self, *coords):
         self.coords = coords
 
+    def dimensions(self):
+        return len(self.coords)
+
+    def x(self):
+        return self.__get_coord(0)
+
+    def y(self):
+        return self.__get_coord(1)
+
+    def z(self):
+        return self.__get_coord(2)
+
     def reflect(self):
         return Point(-self.coords[0], self.coords[1])
 
@@ -87,6 +99,16 @@ class Point:
             adjacent.append(self.__create_point(i, -1))
             adjacent.append(self.__create_point(i, 1))
         return adjacent
+
+    def all_adjacent(self):
+        adjacent = [self]
+        for i in range(len(self.coords)):
+            to_add = []
+            for point in adjacent:
+                to_add.append(point.__create_point(i, -1))
+                to_add.append(point.__create_point(i, 1))
+            adjacent.extend(to_add)
+        return adjacent[1:]
 
     def right(self):
         return self.__create_point(0, 1)
@@ -151,6 +173,9 @@ class Point:
 
     def __str__(self):
         return str(self.coords)
+
+    def __get_coord(self, i):
+        return self.coords[i]
 
     def __create_point(self, i, amount):
         coords = list(self.coords)

@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Parameter:
@@ -214,8 +211,8 @@ class SampleInstruction:
 
 
 def main():
-    parser = Parser(FILE_NAME)
-    instructions = get_sample_instructions(parser)
+    groups = Parser().line_groups()
+    instructions = get_sample_instructions(groups)
 
     mapping, behave_as_at_least_3 = {}, 0
     for instruction in instructions:
@@ -232,17 +229,15 @@ def main():
 
     mapping = collapse(mapping)
     regs = Registers([0, 0, 0, 0], False)
-    for instruction in parser.line_groups()[-1]:
+    for instruction in groups[-1]:
         instruction = Instruction(instruction)
         ALL_INSTRUCTIONS[mapping[instruction.opcode()]].process(instruction, regs)
     # Part 2: 622
     print('Part 2: {}'.format(regs.get(0)))
 
 
-def get_sample_instructions(parser):
-    groups = parser.line_groups()
-    instructions = groups[:-2]
-    return [SampleInstruction(instruction) for instruction in instructions]
+def get_sample_instructions(groups):
+    return [SampleInstruction(instruction) for instruction in groups[:-2]]
 
 
 def collapse(mapping):

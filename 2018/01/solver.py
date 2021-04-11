@@ -1,9 +1,8 @@
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 def main():
-    file_name = 'data'
-    frequencies = Parser('{}.txt'.format(file_name)).int_lines()
+    frequencies = Parser().int_lines()
     # Part 1: 540
     print('Part 1: {}'.format(sum(frequencies)))
     # Part 2: 73056

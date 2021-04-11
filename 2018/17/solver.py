@@ -1,12 +1,10 @@
 import sys
 
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
 sys.setrecursionlimit(10_000)
 
-
-FILE_NAME = 'data'
 
 CLAY = '#'
 DOWN = 'd'
@@ -53,6 +51,11 @@ class GroundReservoir:
 
     def __init__(self, grid):
         self.grid = grid
+
+        ys = self.grid.ys()
+        self.min_y = min(ys)
+        self.max_y = max(ys)
+
         self.flowing = set()
         self.settled = set()
 
@@ -62,9 +65,9 @@ class GroundReservoir:
 
         self.flowing.add(point)
 
-        down = point.down()
+        down = point.up()
         if not self.grid[down] == CLAY:
-            if down not in self.flowing and self.grid.in_range(down, False):
+            if down not in self.flowing and self.in_range(down, False):
                 self.fill(down)
             if down not in self.settled:
                 return False
@@ -87,6 +90,11 @@ class GroundReservoir:
 
         return (direction == LEFT and left_filled) or (direction == RIGHT and right_filled)
 
+    def in_range(self, point, use_min=True):
+        y = point.y()
+        min_value = self.min_y if use_min else 1
+        return y >= min_value and y <= self.max_y
+
     def __repr__(self):
         return str(self)
 
@@ -103,17 +111,17 @@ def main():
     reservoir.fill(start)
     # Part 1: 38409
     print('Part 1: {}'.format(
-        len([point for point in reservoir.flowing if grid.in_range(point)])
+        len([point for point in reservoir.flowing if reservoir.in_range(point)])
     ))
     # Part 2: 32288
     print('Part 2: {}'.format(
-        len([point for point in reservoir.settled if grid.in_range(point)])
+        len([point for point in reservoir.settled if reservoir.in_range(point)])
     ))
 
 
 def get_grid():
     grid = Grid()
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         point_range = PointRange(line)
         for point in point_range.get_points():
             grid[point] = CLAY

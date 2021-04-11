@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Parameter:
@@ -198,7 +195,7 @@ def main():
 
 
 def solve_part_1():
-    pointer, instructions = get_instructions(Parser(FILE_NAME))
+    pointer, instructions = get_instructions()
     regs = Registers(6, pointer)
 
     while regs.instruction() < len(instructions):
@@ -219,8 +216,8 @@ def solve_part_2(value):
     return result
 
 
-def get_instructions(parser):
-    lines = parser.lines()
+def get_instructions():
+    lines = Parser().lines()
     pointer = int(lines[0].split()[1])
     instructions = [Instruction(line) for line in lines[1:]]
     return pointer, instructions

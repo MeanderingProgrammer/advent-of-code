@@ -1,60 +1,103 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+import math
+from collections import defaultdict
+
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
+
+
+class PointGrid:
+
+    def __init__(self, points):
+        self.points = points
+
+        xs = self.get_coord(0)
+        self.min_x = min(xs)
+        self.max_x = max(xs)
+
+        ys = self.get_coord(1)
+        self.min_y = min(ys)
+        self.max_y = max(ys)
+
+    def largest_finite(self):
+        point_to_closest = defaultdict(set)
+        for point in self.point_generator(0):
+            single_closest = self.get_single_closest_point(point)
+            if single_closest is not None:
+                point_to_closest[single_closest].add(point)
+
+        infinite_points = self.get_infinte(point_to_closest)
+
+        finite_sizes = set()
+        for point, closest in point_to_closest.items():
+            if point not in infinite_points:
+                finite_sizes.add(len(closest))
+
+        return max(finite_sizes)
+
+    def get_single_closest_point(self, point):
+        distances = self.get_distances(point)
+        min_distance = min(distances.values())
+
+        closest_points = []
+        for option, distance in distances.items():
+            if distance == min_distance:
+                closest_points.append(option)
+
+        return closest_points[0] if len(closest_points) == 1 else None
+
+    def get_infinte(self, point_to_closest):
+        infinite = set()
+        for point, closest in point_to_closest.items():
+            for closest_point in closest:
+                if self.on_boarder(closest_point):
+                    infinite.add(point)
+        return infinite
+
+    def on_boarder(self, point):
+        x = point.coords[0]
+        y = point.coords[1]
+        return x in [self.min_x, self.max_x] or y in [self.min_y, self.max_y]
+
+    def within_max_distance(self, max_distance):
+        within = 0
+        offset = math.ceil(max_distance / len(self.points))
+        for point in self.point_generator(offset):
+            distances = self.get_distances(point)
+            total_distance = sum(distances.values())
+            if total_distance < max_distance:
+                within += 1
+        return within
+
+    def get_distances(self, end):
+        distances = {}
+        for start in self.points:
+            distances[start] = len(start - end)
+        return distances
+
+    def point_generator(self, offset):
+        for x in range(self.min_x - offset, self.max_x + offset + 1):
+            for y in range(self.min_y - offset, self.max_y + offset + 1):
+                yield Point(x, y)
+
+    def get_coord(self, i):
+        return [point.coords[i] for point in self.points]
 
 
 def main():
-    file_name = 'data'
-    grid = get_grid(file_name)
+    point_grid = get_point_grid()
     # Part 1: 3251
-    print('Part 1: {}'.format(solve_part_1(grid)))
+    print('Part 1: {}'.format(point_grid.largest_finite()))
     # Part 2: 47841
-    print('Part 2: {}'.format(solve_part_2(grid, 10_000)))
+    print('Part 2: {}'.format(point_grid.within_max_distance(10_000)))
 
 
-def solve_part_1(grid):
-    closest_points = grid.closest_points()
-    point_counts = get_point_counts(closest_points)
-    infinite_points = get_infinite_points(closest_points, grid.max_x(), grid.max_y())
-
-    for infinite_point in infinite_points:
-        del point_counts[infinite_point]
-    
-    sizes = [point_count[1] for point_count in point_counts.items()]
-    return max(sizes)
-
-
-def solve_part_2(grid, max_distance):
-    return grid.points_with_max_distance(max_distance)
-
-
-def get_point_counts(closest_points):
-    point_counts = {}
-    for point, closest in closest_points:
-        if len(closest) == 1:
-            closest = closest[0]
-            if closest not in point_counts:
-                point_counts[closest] = 0
-            point_counts[closest] += 1
-    return point_counts
-
-
-def get_infinite_points(closest_points, max_x, max_y):
-    infinite_points = set()
-    for point, closest in closest_points:
-        if point.x in [0, max_x] or point.y in [0, max_y]:
-            if len(closest) == 1:
-                closest = closest[0]
-                infinite_points.add(closest)
-    return infinite_points
-
-
-def get_grid(file_name):
-    grid = Grid()
-    for line in Parser(file_name).lines():
+def get_point_grid():
+    points = set()
+    for line in Parser().lines():
         parts = line.split(', ')
         point = Point(int(parts[0]), int(parts[1]))
-        grid.add(point)
-    return grid
+        points.add(point)
+    return PointGrid(points)
 
 
 if __name__ == '__main__':
