@@ -1,7 +1,4 @@
-from aoc_parser import Parser
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
 
 
 class Group:
@@ -213,7 +210,7 @@ def solve_part_2():
 
 def get_armies():
     armies = []
-    for i, group in enumerate(Parser(FILE_NAME).line_groups()):
+    for i, group in enumerate(Parser().line_groups()):
         armies.append([Group(i, j, g) for j, g in enumerate(group[1:])])
     return armies
 

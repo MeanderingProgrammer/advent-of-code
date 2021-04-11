@@ -1,15 +1,14 @@
 from collections import defaultdict
 
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 def main():
-    file_name = 'data'
-    box_ids = Parser(file_name).lines()
+    box_ids = Parser().lines()
 
-    # Part 1: 5434
     contain_2 = count_contain_exactly(box_ids, 2)
     contain_3 = count_contain_exactly(box_ids, 3)
+    # Part 1: 5434
     print('Part 1: {}'.format(contain_2 * contain_3))
 
     # Part 2: agimdjvlhedpsyoqfzuknpjwt

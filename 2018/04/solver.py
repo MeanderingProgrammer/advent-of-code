@@ -1,6 +1,6 @@
 import re
 
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 EVENT_PATTERN = '^\[(.*)-(.*)-(.*) (.*):(.*)\] (.*)$'
@@ -80,7 +80,7 @@ def main():
     guard_events = {}
     guard_id = None
 
-    for line in sorted(Parser('data').lines()):
+    for line in sorted(Parser().lines()):
         event = Event(line)
         if event.guard_id() is not None:
             guard_id = event.guard_id()
@@ -110,7 +110,6 @@ def solve_strategy_1(guard_events):
 
 
 def solve_strategy_2(guard_events):
-    
     chosen_guard, chosen_minute, frequncy = None, None, 0
     for guard_id in guard_events:
         events = guard_events[guard_id]

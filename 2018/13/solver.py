@@ -1,8 +1,6 @@
-from aoc_parser import Parser
-from aoc_board import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
-
-FILE_NAME = 'data'
 
 LEFT = '<'
 RIGHT = '>'
@@ -77,9 +75,9 @@ class Cart:
         return hash(str(self))
 
     def __lt__(self, o):
-        if self.position.y == o.position.y:
-            return self.position.x < o.position.y
-        return self.position.y < o.position.y
+        if self.position.y() == o.position.y():
+            return self.position.x() < o.position.x()
+        return self.position.y() < o.position.y()
 
     def __repr__(self):
         return str(self)
@@ -110,7 +108,7 @@ class CartSystem:
         carts_crashed = []
         self.carts.sort()
         for cart in self.carts:
-            adjacent = cart.position.adjacent(self.track)
+            adjacent = self.adjacent(cart.position)
             cart.go(adjacent)
             new_position = cart.position
             carts_at_same_position = self.carts_at(new_position)
@@ -120,6 +118,50 @@ class CartSystem:
         for cart_crashed in carts_crashed:
             self.carts.remove(cart_crashed)
         return crash_positions
+
+    def adjacent(self, point):
+        value = self.track[point]
+        if value == '+':
+            return [
+                point.left(), 
+                point.right(), 
+                point.up(), 
+                point.down()
+            ]
+        elif value == '|':
+            return [
+                point.up(), 
+                point.down()
+            ]
+        elif value == '-':
+            return [
+                point.left(), 
+                point.right()
+            ]
+        elif value == '/':
+            if self.track[point.up()] in ['|', '+']:
+                return [
+                    point.up(), 
+                    point.right()
+                ]
+            else:
+                return [
+                    point.down(), 
+                    point.left()
+                ]
+        elif value == '\\':
+            if self.track[point.up()] in ['|', '+']:
+                return [
+                    point.up(), 
+                    point.left()
+                ]
+            else:
+                return [
+                    point.down(), 
+                    point.right()
+                ]
+        else:
+            raise Exception('Unknown value at point')
 
     def carts_at(self, position):
         return [cart for cart in self.carts if cart.position == position]
@@ -150,8 +192,7 @@ def main():
 
 def get_data():
     data = {}
-    parser = Parser(FILE_NAME)
-    for y, row in enumerate(parser.nested_array()):
+    for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
             data[Point(x, y)] = value
     return data
@@ -164,7 +205,7 @@ def get_track(data):
         if value != ' ':
             value = '-' if value in [LEFT, RIGHT] else value
             value = '|' if value in [UP, DOWN] else value
-            track.add(point, value)
+            track[point] = value
     return track
 
 

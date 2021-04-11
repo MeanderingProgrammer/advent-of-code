@@ -1,4 +1,4 @@
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 
 
 class Polymer:
@@ -52,8 +52,7 @@ class Polymer:
 
 
 def main():
-    file_name = 'data'
-    polymer = Polymer(Parser(file_name).read())
+    polymer = Polymer(Parser().string())
     # Part 1: 11242
     print('Part 1: {}'.format(solve_part_1(polymer)))
     # Part 2: 5492

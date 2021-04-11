@@ -1,10 +1,7 @@
 from operator import attrgetter
 
-from aoc_parser import Parser
+from commons.aoc_parser import Parser
 from aoc_board import Grid, Point
-
-
-FILE_NAME = 'data'
 
 
 class Wall:
@@ -209,7 +206,7 @@ class Game:
 
 
 def main():
-    data = Parser(FILE_NAME).nested_array()
+    data = Parser().nested_lines()
     # Part 1: 214731
     print('Part 1: {}'.format(play_game(data, False)))
     # Part 2: 53222

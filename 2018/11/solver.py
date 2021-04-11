@@ -1,4 +1,4 @@
-from aoc_board import Point
+from commons.aoc_board import Point
 
 
 class PowerGrid:
@@ -26,7 +26,7 @@ class PowerGrid:
             largest = self.get_largest(sub_grid_size)
             if largest_any is None or largest[1] > largest_any[0][1]:
                 largest_any = largest, sub_grid_size
-        return largest_any[0][0].x, largest_any[0][0].y, largest_any[1]
+        return largest_any[0][0], largest_any[1]
 
     def get_largest(self, size):
         largest = None
@@ -39,15 +39,27 @@ class PowerGrid:
         return largest
 
     def get_total_power(self, point, size):
-        total = self.grid[Point(point.x + size - 1, point.y + size - 1)]
-        above = self.grid.get(Point(point.x + size - 1, point.y - 1), 0)
-        left = self.grid.get(Point(point.x - 1, point.y + size - 1), 0)
-        overlap = self.grid.get(Point(point.x - 1, point.y - 1), 0)
+        total = self.grid[Point(
+            point.coords[0] + size - 1, 
+            point.coords[1] + size - 1
+        )]
+        above = self.grid.get(Point(
+            point.coords[0] + size - 1, 
+            point.coords[1] - 1
+        ), 0)
+        left = self.grid.get(Point(
+            point.coords[0] - 1, 
+            point.coords[1] + size - 1
+        ), 0)
+        overlap = self.grid.get(Point(
+            point.coords[0] - 1, 
+            point.coords[1] - 1
+        ), 0)
         return total - above - left + overlap
 
     def get_power_level(self, point):
-        rack_id = point.x + 10
-        initial_power_level = rack_id * point.y
+        rack_id = point.coords[0] + 10
+        initial_power_level = rack_id * point.coords[1]
         power_level = initial_power_level + self.serial_number
         power_level *= rack_id
         power_level //= 100

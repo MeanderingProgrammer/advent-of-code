@@ -1,7 +1,7 @@
 import re
 
-from aoc_parser import Parser
-from grid import Grid, Point
+from commons.aoc_parser import Parser
+from commons.aoc_board import Grid, Point
 
 
 CLAIM_PATTERN = '^#(.*) @ (.*),(.*): (.*)x(.*)$'
@@ -36,15 +36,16 @@ def main():
     grid = Grid()
     all_claims = set()
 
-    for line in Parser('data').lines():
+    for line in Parser().lines():
         claim = Claim(line)
         for point in claim.get_points():
             all_claims.add(claim.claim_id)
-            grid.add(point, claim.claim_id)
+            if point not in grid:
+                grid[point] = []
+            grid[point].append(claim.claim_id)
 
     multiple_claims = 0
-    for point in grid.grid:
-        claims_on_point = grid.grid[point]
+    for point, claims_on_point in grid.items():
         if len(claims_on_point) > 1:
             multiple_claims += 1
             for claim_on_point in claims_on_point:

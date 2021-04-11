@@ -1,8 +1,5 @@
-from aoc_parser import Parser
-from aoc_board import Point
-
-
-FILE_NAME = 'data'
+from commons.aoc_parser import Parser
+from commons.aoc_board import Point
 
 
 class Constallation:
@@ -72,7 +69,7 @@ def merge(point, options):
 
 def get_points():
     points = []
-    for line in Parser(FILE_NAME).lines():
+    for line in Parser().lines():
         point = Point(*[int(c) for c in line.split(',')])
         points.append(point)
     return points
