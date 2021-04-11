@@ -6,6 +6,10 @@ then
     exit 1
 fi
 
+# Setup PYTHONPATH so commons imports work
+current_directory=$(pwd)
+export PYTHONPATH=${current_directory}
+
 time_run() {
     command time -f "Runtime: %E" $@
 }
