@@ -1,7 +1,5 @@
-from computer import Computer
-
-
-DEBUG = False
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
 
 class Network:
@@ -50,7 +48,7 @@ class Network:
 class Node:
 
     def __init__(self, memory, address, network):
-        self.__computer = Computer(self, DEBUG)
+        self.__computer = Computer(self)
         self.__computer.set_memory(memory)
         self.__network = network
         self.__address = address
@@ -90,14 +88,14 @@ class Packet:
 def main():
     network = Network(get_memory())
     nat_history = network.run_until_nat_repeat()
+    # Part 1: 16549
     print('Part 1: {}'.format(nat_history[0]))
+    # Part 2: 11462
     print('Part 2: {}'.format(nat_history[-1]))
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

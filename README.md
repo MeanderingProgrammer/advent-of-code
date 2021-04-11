@@ -57,3 +57,4 @@ Once the code is cloned. This is to import the classes located in the commons di
 ## TODO
 
 * Transition 2018 Day 15 to use commons board
+* Fix 2019 Day 24 Part 1, seems to generate incorrect answer

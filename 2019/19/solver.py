@@ -1,35 +1,16 @@
-from computer import Computer
-
-
-DEBUG = False
-
-
-class Point:
-
-    def __init__(self, x, y):
-        self.x, self.y = x, y
-        self.called = False
-
-    def next(self):
-        value = self.x if not self.called else self.y
-        self.called = not self.called
-        return value
-
-    def get(self):
-        return (10_000 * self.x) + self.y
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
+from commons.aoc_board import Point
 
 
 class Beam:
 
     def __init__(self):
-        self.__computer = Computer(self, DEBUG)
+        self.__computer = Computer(self)
+
         self.__point = None
+        self.__called = False
+
         self.value = None
 
     def set_memory(self, memory, point):
@@ -37,11 +18,12 @@ class Beam:
         self.__point = point
 
     def run(self):
-        while self.__computer.has_next():
-            self.__computer.next()
+        self.__computer.run()
 
     def get_input(self):
-        return self.__point.next()
+        value = self.__point.x() if not self.__called else self.__point.y()
+        self.__called = not self.__called
+        return value
 
     def add_output(self, value):
         self.value = value
@@ -63,7 +45,7 @@ class Tester:
 
     def can_bound(self, point, size):
         size -= 1
-        edge = Point(point.x + size, point.y - size)
+        edge = Point(point.x() + size, point.y() - size)
         return self.test(edge) == 1
 
     def test(self, point):
@@ -88,18 +70,17 @@ def affected_points(tester, x_start, y_start, amount):
             affected.append(result)
     return sum(affected)
 
+
 def bounding_point(tester, size):
     row = 1_000
     while not tester.can_bound(tester.get_left_most_point(row), size):
         row += 1
-    top_left = Point(tester.get_left_most_point(row).x, row-99)
-    return top_left.get()
+    x, y = tester.get_left_most_point(row).x(), row - 99
+    return (10_000 * x) + y
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

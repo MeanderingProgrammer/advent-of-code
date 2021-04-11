@@ -1,65 +1,29 @@
-from computer import Computer
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
+from commons.aoc_board import Point
 
 
-DEBUG = False
+STATE_MAPPING = {
+    '^': 0,
+    '>': 1,
+    'v': 2,
+    '<': 3
+}
 
-
-class Point:
-
-    def __init__(self, x=0, y=0):
-        self.__x, self.__y = x, y
-
-    def right(self):
-        return Point(self.__x + 1, self.__y)
-
-    def down(self):
-        return Point(0, self.__y + 1)
-
-    def adjacent(self):
-        return [
-            Point(self.__x + 1, self.__y),
-            Point(self.__x - 1, self.__y),
-            Point(self.__x, self.__y + 1),
-            Point(self.__x, self.__y - 1)
-        ]
-
-    def alignment(self):
-        return self.__x * self.__y
-
-    def __add__(self, other):
-        return Point(self.__x + other.__x, self.__y + other.__y)
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '({}, {})'.format(self.__x, self.__y)
+DIRECTIONS = [
+    Point(0, -1),
+    Point(1, 0),
+    Point(0, 1),
+    Point(-1, 0)
+]
 
 
 class DroidState:
 
     def __init__(self, location, scafolding, direction):
-        self.directions = [
-            Point(0, -1),
-            Point(1, 0),
-            Point(0, 1),
-            Point(-1, 0)
-        ]
-        mapping = {
-            '^': 0,
-            '>': 1,
-            'v': 2,
-            '<': 3
-        }
         self.location = location
         self.scafolding = scafolding
-        self.direction = self.directions[mapping[direction]]
+        self.direction = DIRECTIONS[STATE_MAPPING[direction]]
 
     def has_next(self):
         return self.get_direction() is not None
@@ -69,10 +33,10 @@ class DroidState:
         return code, self.move_until_end()
 
     def get_direction(self):
-        direction_index = self.directions.index(self.direction)
+        direction_index = DIRECTIONS.index(self.direction)
 
-        left = self.directions[direction_index - 1]
-        right = self.directions[(direction_index + 1) % len(self.directions)]
+        left = DIRECTIONS[direction_index - 1]
+        right = DIRECTIONS[(direction_index + 1) % len(DIRECTIONS)]
 
         if (self.location + left) in self.scafolding:
             return 'L', left
@@ -95,8 +59,9 @@ class DroidState:
 class VacuumDroid:
 
     def __init__(self):
-        self.__computer = Computer(self, DEBUG)
-        self.__current = Point()
+        self.__computer = Computer(self)
+
+        self.__current = Point(0, 0)
         self.__state = None
         self.__scafolding = set()
 
@@ -109,8 +74,7 @@ class VacuumDroid:
         self.__computer.set_memory(memory)
 
     def run(self):
-        while self.__computer.has_next():
-            self.__computer.next()
+        self.__computer.run()
 
     def get_input(self):
         if self.__index >= len(self.__instructions):
@@ -125,7 +89,7 @@ class VacuumDroid:
             return
         value = chr(value)
         if value == '\n':
-            self.__current = self.__current.down()
+            self.__current = Point(0, self.__current.y() + 1)
         else:
             if value != '.':
                 self.__scafolding.add(self.__current)
@@ -260,8 +224,12 @@ def main():
 def total_alignment(droid):
     run_droid(droid, False)
     intersections = droid.get_intersections()
-    alignments = [intersection.alignment() for intersection in intersections]
+    alignments = [get_alignment(intersection) for intersection in intersections]
     return sum(alignments)
+
+
+def get_alignment(point):
+    return point.x() * point.y()
 
 
 def dust_collected(droid):
@@ -281,9 +249,7 @@ def run_droid(droid, prompt):
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':

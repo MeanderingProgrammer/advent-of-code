@@ -1,8 +1,8 @@
 import itertools
-from computer import Computer
 
+from commons.aoc_parser import Parser
+from commons.int_code import Computer
 
-DEBUG = False
 
 BAD_ITEMS = [
   'giant electromagnet',
@@ -134,7 +134,7 @@ class Droid:
 
     def __init__(self, memory):
         # Computer setup, to run instructions
-        self.__computer = Computer(self, DEBUG)
+        self.__computer = Computer(self)
         self.__computer.set_memory(memory)
 
         # Storing output of game and move to make
@@ -154,8 +154,7 @@ class Droid:
         self.item_generator = self.items.next()
 
     def run(self):
-        while self.__computer.has_next():
-            self.__computer.next()
+        self.__computer.run()
 
     def get_input(self):
         if len(self.move) == 0:
@@ -235,9 +234,7 @@ def main():
 
 
 def get_memory():
-    file_name = 'data'
-    with open('{}.txt'.format(file_name), 'r') as f:
-        return [int(datum) for datum in f.read().split(',')]
+    return Parser().int_csv()
 
 
 if __name__ == '__main__':
