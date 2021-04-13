@@ -56,7 +56,7 @@ def main():
 
 
 def lit(display):
-    return sum([value == '#' for value in display.grid.values()])
+    return sum([value == '#' for point, value in display.items()])
 
 
 def create_display(size):

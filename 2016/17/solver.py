@@ -41,8 +41,8 @@ def get_adjacent(item):
 
 
 def is_legal(point):
-    x = point.coords[0]
-    y = point.coords[1]
+    x = point.x()
+    y = point.y()
     return x >= -3 and x <= 0 and y <=3 and y >= 0
 
 
