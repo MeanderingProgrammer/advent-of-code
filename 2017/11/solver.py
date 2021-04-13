@@ -33,8 +33,8 @@ def move_to_end(directions):
 
 
 def steps(position):
-    x_steps = abs(position.coords[0])
-    y_teps = (abs(position.coords[1]) - x_steps) // 2
+    x_steps = abs(position.x())
+    y_teps = (abs(position.y()) - x_steps) // 2
     return x_steps + max(0, y_teps)
     
 
