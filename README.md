@@ -38,7 +38,7 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2018 | 10   | 0:10.61 |
 | 2018 | 11   | 1:28.29 |
 | 2018 | 14   | 0:35.87 |
-| 2018 | 15   | 3:41.72 |
+| 2018 | 15   | 3:59.39 |
 | 2018 | 18   | 1:09.36 |
 | 2018 | 19   | 0:16.66 |
 | 2018 | 24   | 0:10.01 |
@@ -56,5 +56,4 @@ Once the code is cloned. This is to import the classes located in the commons di
 
 ## TODO
 
-* Transition 2018 Day 15 to use commons board
 * Fix 2019 Day 24 Part 1, seems to generate incorrect answer
