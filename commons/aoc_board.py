@@ -157,16 +157,16 @@ class Point:
         return hash(str(self))
 
     def __lt__(self, o):
-        matches = []
-        for c1, c2 in self.__zip_points(o):
-            matches.append(c1 < c2)
-        return all(matches)
+        for c1, c2 in self.__zip_compare(o):
+            if c1 != c2:
+                return c1 < c2
+        return False
 
     def __le__(self, o):
-        matches = []
-        for c1, c2 in self.__zip_points(o):
-            matches.append(c1 <= c2)
-        return all(matches)
+        for c1, c2 in self.__zip_compare(o):
+            if c1 != c2:
+                return c1 < c2
+        return True
 
     def __repr__(self):
         return str(self)
@@ -185,3 +185,10 @@ class Point:
     def __zip_points(self, o):
         self.validate(o)
         return zip(self.coords, o.coords)
+        zipped.reverse()
+        return zipped
+
+    def __zip_compare(self, o):
+        zipped = list(self.__zip_points(o))
+        zipped.reverse()
+        return zipped

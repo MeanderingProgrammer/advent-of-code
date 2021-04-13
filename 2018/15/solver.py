@@ -1,31 +1,7 @@
 from operator import attrgetter
 
 from commons.aoc_parser import Parser
-from aoc_board import Grid, Point
-
-
-class Wall:
-
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '#'
-
-
-class Empty:
-
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '.'
+from commons.aoc_board import Grid, Point
 
 
 class Character:
@@ -126,16 +102,6 @@ class Game:
         to_attack.sort(key = attrgetter('hp', 'position'))
         return to_attack
 
-    def get_possibilities(self, character, seen):
-        opponents = self.opponents(character)
-        if len(opponents) == 0:
-            return None
-
-        possibilities = []
-        for opponent in opponents:
-            possibilities.extend(self.grid.adjacent(opponent.position, set(seen)))
-        return possibilities
-
     def move(self, character):
         seen = [other.position for other in self.characters()]
         possibilities = self.get_possibilities(character, seen)
@@ -147,16 +113,36 @@ class Game:
             if closest is not None:
                 next_position = self.get_closest(
                     closest, 
-                    self.grid.adjacent(character.position, set(seen)), 
+                    self.adjacent(character.position, set(seen)),
                     seen
                 )
                 character.position = next_position
         return True
+
+    def get_possibilities(self, character, seen):
+        opponents = self.opponents(character)
+        if len(opponents) == 0:
+            return None
+
+        possibilities = []
+        for opponent in opponents:
+            possibilities.extend(self.adjacent(opponent.position, set(seen)))
+        return possibilities
+
+    def adjacent(self, position, seen=None):
+        if seen is None:
+            seen = set()
+
+        result = []
+        for adjacent in position.adjacent():
+            if self.grid[adjacent] == '.' and adjacent not in seen:
+                result.append(adjacent)
+        return result
     
     def get_closest(self, start, possibilities, seen):
         distances = []
         for possibility in possibilities:
-            distance = self.grid.distance(start, possibility, set(seen))
+            distance = self.distance(start, possibility, set(seen))
             if distance is not None:
                 distances.append((possibility, distance))
         
@@ -165,6 +151,18 @@ class Game:
             minimums = [distance[0] for distance in distances if distance[1] == min_dist]
             minimums.sort()
             return minimums[0]
+
+    def distance(self, start, end, seen):
+        queue = [(start, 0)]
+        current = (None, None)
+
+        while len(queue) > 0 and current[0] != end:
+            current = queue.pop(0)
+            for adjacent in self.adjacent(current[0], seen):
+                queue.append((adjacent, current[1] + 1))
+                seen.add(adjacent)
+
+        return current[1] if current[0] == end else None
 
     def attack(self, character, to_attack):
         to_attack = to_attack[0]
@@ -239,8 +237,8 @@ def get_grid(data):
     for y, row in enumerate(data):
         for x, value in enumerate(row):
             point = Point(x, y)
-            value = Wall() if value == '#' else Empty()
-            grid.add(point, value)
+            value = '#' if value == '#' else '.'
+            grid[point] = value
     return grid
 
 
