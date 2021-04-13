@@ -30,7 +30,6 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2017 | 14   | 0:14.21 |
 | 2017 | 15   | 1:21.71 |
 | 2017 | 17   | 0:38.75 |
-| 2017 | 19   | 0:11.99 |
 | 2017 | 22   | 1:02.91 |
 | 2017 | 25   | 1:09.87 |
 | 2018 | 5    | 0:10.89 |

@@ -65,7 +65,7 @@ class TuringMachine:
         self.state = transition.next_state
 
     def checksum(self):
-        return sum(self.tape.grid.values())
+        return sum([value for point, value in self.tape.items()])
 
 
 def main():
