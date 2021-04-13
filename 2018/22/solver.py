@@ -76,9 +76,9 @@ def main():
     cave = build_out_cave(11_541, target)
 
     risk_levels = []
-    for point in cave.grid:
+    for point, value in cave.items():
         if point <= target:
-            risk_levels.append(cave[point].type())
+            risk_levels.append(value.type())
     # Part 1: 11575
     print('Part 1: {}'.format(sum(risk_levels)))
 

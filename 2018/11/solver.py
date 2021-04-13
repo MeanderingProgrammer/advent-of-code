@@ -40,26 +40,26 @@ class PowerGrid:
 
     def get_total_power(self, point, size):
         total = self.grid[Point(
-            point.coords[0] + size - 1, 
-            point.coords[1] + size - 1
+            point.x() + size - 1, 
+            point.y() + size - 1
         )]
         above = self.grid.get(Point(
-            point.coords[0] + size - 1, 
-            point.coords[1] - 1
+            point.x() + size - 1, 
+            point.y() - 1
         ), 0)
         left = self.grid.get(Point(
-            point.coords[0] - 1, 
-            point.coords[1] + size - 1
+            point.x() - 1, 
+            point.y() + size - 1
         ), 0)
         overlap = self.grid.get(Point(
-            point.coords[0] - 1, 
-            point.coords[1] - 1
+            point.x() - 1, 
+            point.y() - 1
         ), 0)
         return total - above - left + overlap
 
     def get_power_level(self, point):
-        rack_id = point.coords[0] + 10
-        initial_power_level = rack_id * point.coords[1]
+        rack_id = point.x() + 10
+        initial_power_level = rack_id * point.y()
         power_level = initial_power_level + self.serial_number
         power_level *= rack_id
         power_level //= 100
