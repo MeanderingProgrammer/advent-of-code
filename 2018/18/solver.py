@@ -14,8 +14,7 @@ class Landscape:
 
     def step(self):
         new_grid = {}
-        for point in self.grid.grid:
-            value = self.grid[point]
+        for point, value in self.grid.items():
             if value == OPEN:
                 if self.count(point, TREES) >= 3:
                     new_grid[point] = TREES
@@ -33,7 +32,7 @@ class Landscape:
 
 
     def count(self, point, value):
-        return sum([self.grid[adjacent] == value for adjacent in point.all_adjacent()])
+        return sum([self.grid[adjacent] == value for adjacent in point.adjacent(True)])
 
     def resource_value(self):
         return self.resource_count(TREES) * self.resource_count(YARD)

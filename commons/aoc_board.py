@@ -198,7 +198,7 @@ class Point:
     # Basic Equality, Hash, and to String implementations
 
     def __eq__(self, o):
-        return self.__coords == o.__coords
+        return isinstance(o, Point) and self.__coords == o.__coords
 
     def __hash__(self):
         return hash(str(self))

@@ -10,11 +10,11 @@ class PointGrid:
     def __init__(self, points):
         self.points = points
 
-        xs = self.get_coord(0)
+        xs = self.get_coord(lambda point: point.x())
         self.min_x = min(xs)
         self.max_x = max(xs)
 
-        ys = self.get_coord(1)
+        ys = self.get_coord(lambda point: point.y())
         self.min_y = min(ys)
         self.max_y = max(ys)
 
@@ -54,9 +54,7 @@ class PointGrid:
         return infinite
 
     def on_boarder(self, point):
-        x = point.coords[0]
-        y = point.coords[1]
-        return x in [self.min_x, self.max_x] or y in [self.min_y, self.max_y]
+        return point.x() in [self.min_x, self.max_x] or point.y() in [self.min_y, self.max_y]
 
     def within_max_distance(self, max_distance):
         within = 0
@@ -79,8 +77,8 @@ class PointGrid:
             for y in range(self.min_y - offset, self.max_y + offset + 1):
                 yield Point(x, y)
 
-    def get_coord(self, i):
-        return [point.coords[i] for point in self.points]
+    def get_coord(self, f):
+        return [f(point) for point in self.points]
 
 
 def main():
