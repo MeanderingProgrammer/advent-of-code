@@ -27,15 +27,13 @@ def get_adjacent(position):
     return result
 
 
-def is_valid(position):
-    x = position.coords[0]
-    y = position.coords[1]
-    return x >= 0 and y >= 0 
+def is_valid(point):
+    return point.x() >= 0 and point.y() >= 0 
 
 
-def is_wall(position):
-    x = position.coords[0]
-    y = position.coords[1]
+def is_wall(point):
+    x = point.x()
+    y = point.y()
     value = (x*x) + (3*x) + (2*x*y) + y + y*y
     value += FAVORITE_NUMBER
     value = bin(value)[2:]

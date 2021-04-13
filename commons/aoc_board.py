@@ -188,7 +188,7 @@ class Point:
 
     def __compare(self, o, f):
         self.validate(o)
-        zipped = zip(self.__coords, o.__coords)
+        zipped = list(zip(self.__coords, o.__coords))
         zipped.reverse()
         for coord_1, coord_2 in zipped:
             if coord_1 != coord_2:
