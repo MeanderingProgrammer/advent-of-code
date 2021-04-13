@@ -5,17 +5,6 @@ from commons.aoc_parser import Parser
 ON = '#'
 OFF = '.'
 
-ADJACENTS = [
-    Point(0, 1),
-    Point(1, 1),
-    Point(1, 0),
-    Point(-1, 1),
-    Point(-1, 0),
-    Point(-1, -1),
-    Point(0, -1),
-    Point(1, -1)
-]
-
 
 class Animator:
 
@@ -56,12 +45,7 @@ class Animator:
         self.flip_corners()
 
     def neighbors_on(self, point):
-        on = 0
-        for adjacent in ADJACENTS:
-            adjacent += point
-            if self.grid[adjacent] == ON:
-                on += 1
-        return on
+        return sum([self.grid[adjacent] == ON for adjacent in point.adjacent(True)])
 
     def lights_on(self):
         return sum([value == ON for (key, value) in self.grid.items()])
