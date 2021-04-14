@@ -72,19 +72,15 @@ VALID_TOOL = {
 
 
 def main():
+    start = Point(0, 0)
     target = Point(14, 778)
     cave = build_out_cave(11_541, target)
 
-    risk_levels = []
-    for point, value in cave.items():
-        if point <= target:
-            risk_levels.append(value.type())
     # Part 1: 11575
-    print('Part 1: {}'.format(sum(risk_levels)))
+    print('Part 1: {}'.format(risk_within(cave, target)))
 
-    took = traverse(cave, Point(0, 0), target, TORCH)
     # Part 2: 1068
-    print('Part 2: {}'.format(took))
+    print('Part 2: {}'.format(traverse(cave, start, target, TORCH)))
 
 
 def build_out_cave(depth, target):
@@ -101,6 +97,14 @@ def build_out_cave(depth, target):
                 grid[location.down()]
             )
     return grid
+
+
+def risk_within(cave, target):
+    risk_levels = []
+    for point, value in cave.items():
+        if point.x() <= target.x() and point.y() <= target.y():
+            risk_levels.append(value.type())
+    return sum(risk_levels)
 
 
 def traverse(cave, start, end, equipped):
