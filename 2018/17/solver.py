@@ -52,7 +52,7 @@ class GroundReservoir:
     def __init__(self, grid):
         self.grid = grid
 
-        ys = self.grid.ys()
+        ys = list(self.grid.ys())[1:]
         self.min_y = min(ys)
         self.max_y = max(ys)
 
