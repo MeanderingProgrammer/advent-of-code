@@ -54,7 +54,6 @@ Once the code is cloned. This is to import the classes located in the commons di
 
 ## TODO
 
-* Fix 2018 Day 17 Part 1, slightly off
 * Fix 2018 Day 22 Part 1, likely to do with new definition for lt / lte for a Point
 * Fix 2019 Day 24 Part 1, seems to generate incorrect answer
 * Have verified that all other solutions to all other dates still produce correct solutions
