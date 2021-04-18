@@ -1,5 +1,7 @@
 import sys
 
+from commons.aoc_board import Point, Grid
+
 
 class Parser:
 
@@ -35,6 +37,26 @@ class Parser:
     
     def line_groups(self):
         return [group.split('\n') for group in self.__read(sep='\n\n')]
+
+    def as_grid(self):
+        '''
+        Grids are often created bottom up, where an increase in y leads a value that is
+        up more. However files are read top down where an increased index means the value
+        is lower in the file. Because I have found that directions being intuitive,
+        i.e. up increases y and goes higher up on our grid I have chosen to create for
+        line, offset, such that the last line in our file has y = 0. This is not typical as
+        often in these scenarios you simply build a grid such that a higher y goes further
+        down, but I dislike the directional semantics around that approach.
+        '''
+        grid = Grid()
+        lines = self.lines()
+        max_y = len(lines) - 1
+        for y, line in enumerate(lines):
+            y = max_y - y
+            for x, value in enumerate(line):
+                point = Point(x, y)
+                grid[point] = value
+        return grid
 
     def __read(self, split=True, sep=None, strip=False):
         file_path = '{}/{}'.format(sys.path[0], self.file_name)

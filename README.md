@@ -46,13 +46,9 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2019 | 18   | 0:15.01 |
 | 2019 | 19   | 0:17.07 |
 | 2019 | 21   | 0:10.37 |
+| 2019 | 24   | 0:20:31 |
 | 2019 | 25   | 1:52.72 |
 | 2020 | 11   | 0:14.67 |
 | 2020 | 15   | 0:58.97 |
 | 2020 | 23   | 0:21.99 |
 | 2020 | 24   | 0:13.45 |
-
-## TODO
-
-* Fix 2019 Day 24 Part 1, seems to generate incorrect answer
-* Have verified that all other solutions to all other dates still produce correct solutions
