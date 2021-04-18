@@ -59,7 +59,7 @@ class Grid:
             return ''
 
         rows = []
-        for y in range(min(ys), max(ys) + 1):
+        for y in range(max(ys), min(ys) - 1, -1):
             rows.append(self.__make_row(y))
         return '\n'.join(rows)
 
