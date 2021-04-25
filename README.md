@@ -16,7 +16,7 @@ Once the code is cloned. This is to import the classes located in the commons di
 | Year | Day  | Time    |
 | ---- | ---- | ------- |
 | 2015 | 10   | 0:15.86 |
-| 2015 | 18   | 0:58.79 |
+| 2015 | 18   | 0:26.12 |
 | 2015 | 20   | 0:14.64 |
 | 2015 | 22   | 0:22.70 |
 | 2015 | 24   | 0:12.34 |
