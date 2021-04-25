@@ -2,76 +2,81 @@ from commons.aoc_board import Grid, Point
 from commons.aoc_parser import Parser
 
 
-ON = '#'
-OFF = '.'
-
-
 class Animator:
 
-    def __init__(self, grid, force_corners):
-        self.grid = grid
+    def __init__(self, force_corners, on, min_x, max_x, min_y, max_y):
         self.force_corners = force_corners
+        self.on = on
 
-        xs = self.grid.xs()
-        ys = self.grid.ys()
+        self.min_x = min_x
+        self.max_x = max_x
 
-        self.corners = [
-            Point(min(xs), min(ys)),
-            Point(min(xs), max(ys)),
-            Point(max(xs), min(ys)),
-            Point(max(xs), max(ys))
-        ]
-        self.flip_corners()
+        self.min_y = min_y
+        self.max_y = max_y
 
-    def flip_corners(self):
-        if not self.force_corners:
-            return
-        for corner in self.corners:
-            self.grid[corner] = ON
+        self.add_corners()
+
+    def add_corners(self):
+        if self.force_corners:
+            self.on.add(Point(self.min_x, self.min_y))
+            self.on.add(Point(self.min_x, self.max_y))
+            self.on.add(Point(self.max_x, self.min_y))
+            self.on.add(Point(self.max_x, self.max_y))
 
     def step(self):
-        next_grid = Grid()
-        for point, value in self.grid.items():
-            new_value = OFF
+        next_on = set()
+
+        for point in self.get_points():
             neighbors_on = self.neighbors_on(point)
+            neighbors_needed = [2, 3] if point in self.on else [3]
+            if neighbors_on in neighbors_needed:
+                next_on.add(point)
 
-            if value == ON and neighbors_on in [2, 3]:
-                new_value = ON
-            elif value == OFF and neighbors_on == 3:
-                new_value = ON
+        self.on = next_on
+        self.add_corners()
 
-            next_grid[point] = new_value
-        self.grid = next_grid
-        self.flip_corners()
+    def get_points(self):
+        for x in range(self.min_x, self.max_x + 1):
+            for y in range(self.min_y, self.max_y + 1):
+                yield Point(x, y)
 
     def neighbors_on(self, point):
-        return sum([self.grid[adjacent] == ON for adjacent in point.adjacent(True)])
+        return sum([adjacent in self.on for adjacent in point.adjacent(True)])
 
     def lights_on(self):
-        return sum([value == ON for (key, value) in self.grid.items()])
+        return len(self.on)
 
 
 def main():
+    grid = Parser().as_grid()
+
     # Part 1: 1061
-    print('Part 1: {}'.format(run(False)))
+    print('Part 1: {}'.format(run(False, grid)))
     # Part 2: 1006
-    print('Part 2: {}'.format(run(True)))
+    print('Part 2: {}'.format(run(True, grid)))
 
 
-def run(force_corners):
-    animator = Animator(get_grid(), force_corners)
+def run(force_corners, grid):
+    on = points_on(grid)
+    min_x, max_x = min_max(grid.xs())
+    min_y, max_y = min_max(grid.ys())
+
+    animator = Animator(force_corners, on, min_x, max_x, min_y, max_y)
     for i in range(100):
         animator.step()
     return animator.lights_on()
 
 
-def get_grid():
-    grid = Grid()
-    for y, line in enumerate(Parser().lines()):
-        for x, value in enumerate(line):
-            point = Point(x, y)
-            grid[point] = value
-    return grid
+def points_on(grid):
+    on = set()
+    for point, value in grid.items():
+        if value == '#':
+            on.add(point)
+    return on
+
+
+def min_max(values):
+    return min(values), max(values)
 
 
 if __name__ == '__main__':
