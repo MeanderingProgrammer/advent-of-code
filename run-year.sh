@@ -15,59 +15,38 @@ time_run() {
 }
 
 JAVA="java"
-PYTHON="python"
-
-JAVA_DAYS=(
-    "2019:18"
-    "2019:20"
-)
-
-language () {
-    year_day="${1}:${2}"    
-    runner="${PYTHON}"
-
-    for java_day in "${JAVA_DAYS[@]}"
-    do
-        if [[ ${year_day} == ${java_day} ]]
-        then
-            runner="${JAVA}"
-        fi
-    done
-
-    echo "${runner}"
-}
+PYTHON="py"
+GO="go"
 
 year=${1}
 
 echo "Runing year ${year}"
 cd ${year}
 
-for i in $(seq 1 25)
+days=$(ls | sort)
+for day in ${days}
 do
-    
-    if [[ ${#i} -eq 1 ]]
-    then
-        folder="0${i}"
-    else
-        folder="${i}"
-    fi
+    cd ${day}
 
-    to_run=$(language ${year} ${i})
+    solution_file=$(ls *olver* | tail -1)
+    extension="${solution_file#*.}"
 
-    echo "Running day ${i} with ${to_run}"
+    echo "Running day ${day} with ${extension}"
 
-    cd ${folder}
-
-    if [[ ${to_run} == ${JAVA} ]]
+    if [[ ${extension} == ${JAVA} ]]
     then
         javac Solver.java
         time_run java Solver
-    elif [[ ${to_run} == ${PYTHON} ]]
-    then 
+    elif [[ ${extension} == ${PYTHON} ]]
+    then
         time_run python3 solver.py
+    elif [[ ${extension} == ${GO} ]]
+    then
+        time_run go run solver.go
+    else
+        echo "Unhandled extension: ${extension}"
+        exit 1
     fi
 
     cd ..
-
 done
-
