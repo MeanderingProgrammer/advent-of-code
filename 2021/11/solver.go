@@ -14,14 +14,14 @@ type Position struct {
 
 func (position Position) adjacent() []Position {
     return []Position {
-        Position{position.x - 1, position.y},
-        Position{position.x + 1, position.y},
-        Position{position.x, position.y - 1},
-        Position{position.x, position.y + 1},
-        Position{position.x + 1, position.y + 1},
-        Position{position.x - 1, position.y - 1},
-        Position{position.x + 1, position.y - 1},
-        Position{position.x - 1, position.y + 1},
+        {position.x - 1, position.y},
+        {position.x + 1, position.y},
+        {position.x, position.y - 1},
+        {position.x, position.y + 1},
+        {position.x + 1, position.y + 1},
+        {position.x - 1, position.y - 1},
+        {position.x + 1, position.y - 1},
+        {position.x - 1, position.y + 1},
     }
 }
 
