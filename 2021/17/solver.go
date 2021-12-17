@@ -12,18 +12,6 @@ type TargetArea struct {
     yRange [2]int
 }
 
-func (targetArea TargetArea) minStepsToReach() int {
-    // If we start with an x velocity of 6 the max position we can reach
-    // is 21 before we slow down to 0, hence we should not check anything
-    // below 6
-    sum, step := 0, 0
-    for sum < targetArea.xRange[0] {
-        step++
-        sum += step
-    }
-    return step
-}
-
 type Position struct {
     x int
     y int
@@ -98,44 +86,26 @@ func (targetArea TargetArea) shoot(velocity Velocity) Trajectory {
 func main() {
     targetArea := getData()
 
-    // 990 is too low
-    fmt.Printf("Part 1 = %d \n", getMaxHeight(targetArea))
+	maxHeight, numValid := getMaxHeight(targetArea)
+    fmt.Printf("Part 1 = %d \n", maxHeight)
+	fmt.Printf("Part 2 = %d \n", numValid)
 }
 
-func getMaxHeight(targetArea TargetArea) int {
-    maxHeight := 0
-    for x := targetArea.minStepsToReach(); x < targetArea.xRange[0]; x++ {
-        fmt.Println(x)
-        y := firstIn(targetArea, x)
-        if y < 0 {
-            return maxHeight
-        }
-
-        trajectory := targetArea.shoot(Velocity{x, y})
-        fmt.Println(y)
-        fmt.Println(trajectory)
-        for trajectory.in(targetArea) {
-            fmt.Println(trajectory.maxHeight())
-            if trajectory.maxHeight() > maxHeight {
-                maxHeight = trajectory.maxHeight()
+func getMaxHeight(targetArea TargetArea) (int, int) {
+    maxHeight, numValid := 0, 0
+    for x := 1; x <= targetArea.xRange[1]; x++ {
+        for y := -100; y < 100; y++ {
+            trajectory := targetArea.shoot(Velocity{x, y})
+            if trajectory.in(targetArea) {
+				numValid++
+				height := trajectory.maxHeight()
+                if height > maxHeight {
+                    maxHeight = height
+                }
             }
-            y++
-            trajectory = targetArea.shoot(Velocity{x, y})
-            fmt.Println(y)
-            fmt.Println(trajectory)
         }
     }
-    return maxHeight
-}
-
-func firstIn(targetArea TargetArea, x int) int {
-    for y := 0; y < 100; y++ {
-        trajectory := targetArea.shoot(Velocity{x, y})
-        if trajectory.in(targetArea) {
-            return y
-        }
-    }
-    return -1
+    return maxHeight, numValid
 }
 
 func getData() TargetArea {
@@ -147,7 +117,6 @@ func getData() TargetArea {
         yRange: parseRange(components[1]),
     }
 }
-
 
 func parseRange(raw string) [2]int {
     values := strings.Split(raw, "=")[1]
