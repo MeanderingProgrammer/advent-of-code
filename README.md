@@ -51,3 +51,4 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2020 | 15   | 0:58.97 |
 | 2020 | 23   | 0:21.99 |
 | 2020 | 24   | 0:13.45 |
+| 2021 | 18   | 0:30.15 |
