@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]
+if [[ $# -ne 1 && $# -ne 2 ]]
 then
-    echo 'Usage: <year>'
+    echo 'Usage: <year> <day>?'
     exit 1
 fi
 
@@ -18,14 +18,9 @@ JAVA="java"
 PYTHON="py"
 GO="go"
 
-year=${1}
+run_day() {
+    day=${1}
 
-echo "Runing year ${year}"
-cd ${year}
-
-days=$(ls | sort)
-for day in ${days}
-do
     cd ${day}
 
     solution_file=$(ls *olver* | tail -1)
@@ -48,5 +43,23 @@ do
         exit 1
     fi
 
+    # If this is being executed in a for loop then we need to make sure
+    # to change out of the directory before running the next iteration
     cd ..
-done
+}
+
+year=${1}
+
+echo "Runing year ${year}"
+cd ${year}
+
+if [[ $# -eq 1 ]]
+then
+    days=$(ls | sort)
+    for day in ${days}
+    do
+        run_day ${day}
+    done
+else
+    run_day ${2}
+fi
