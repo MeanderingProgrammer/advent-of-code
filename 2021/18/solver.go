@@ -14,11 +14,15 @@ type SnailNumber struct {
     right *SnailNumber
 }
 
-func (snailNumber SnailNumber) isLeaf() bool {
+func (snailNumber *SnailNumber) isRoot() bool {
+    return snailNumber.parent == nil
+}
+
+func (snailNumber *SnailNumber) isLeaf() bool {
     return snailNumber.left == nil && snailNumber.right == nil
 }
 
-func (snailNumber SnailNumber) toString() string {
+func (snailNumber *SnailNumber) toString() string {
     if snailNumber.isLeaf() {
         return strconv.FormatInt(int64(snailNumber.value), 10)
     } else {
@@ -33,15 +37,52 @@ func (snailNumber SnailNumber) toString() string {
 }
 
 func (v1 *SnailNumber) add(v2 *SnailNumber) *SnailNumber {
-    result := SnailNumber{}
-    
-    result.left = v1
+    result := SnailNumber{
+        left: v1,
+        right: v2,
+    }
     v1.parent = &result
-    
-    result.right = v2
     v2.parent = &result
+    result.reduce()
+    return &result
+}
 
-    return result.reduce()
+func (snailNumber *SnailNumber) reduce() {
+    didReduce := true
+    for didReduce {
+        atDepth := snailNumber.getAtDepth(4)
+        if atDepth != nil {
+            atDepth.explode()
+        } else {
+            minValue := snailNumber.getWithMinValue(10)
+            if minValue != nil {
+                minValue.split()
+            } else {
+                didReduce = false
+            }
+        }
+    }
+}
+
+func (snailNumber *SnailNumber) getAtDepth(goal int) *SnailNumber {
+    if snailNumber.isLeaf() {
+        return nil
+    } else if goal == 0 {
+        return snailNumber
+    } else {
+        result := snailNumber.left.getAtDepth(goal-1)
+        if result == nil {
+            result = snailNumber.right.getAtDepth(goal-1)
+        }
+        return result
+    }
+}
+
+func (snailNumber *SnailNumber) explode() {
+    snailNumber.updateClosestNode(Left, snailNumber.left.value)
+    snailNumber.updateClosestNode(Right, snailNumber.right.value)
+    snailNumber.left = nil
+    snailNumber.right = nil
 }
 
 type Direction int64
@@ -51,133 +92,61 @@ const (
 	Right
 )
 
-func (direction Direction) getNumber(snailNumber *SnailNumber) *SnailNumber {
+func (snailNumber *SnailNumber) updateClosestNode(direction Direction, value int) {
+    if snailNumber.isRoot() {
+        return
+    }
+
+    closestNode := snailNumber.parent.right
     if direction == Left {
-        return snailNumber.left
-    } else {
-        return snailNumber.right
-    }
-}
-
-func (direction Direction) getOpposite(snailNumber *SnailNumber) *SnailNumber {
-    if direction == Left {
-        return snailNumber.right
-    } else {
-        return snailNumber.left
-    }
-}
-
-func (snailNumber *SnailNumber) reduce() *SnailNumber {
-    didExplode, didSplit := true, true
-    for didExplode || didSplit {
-        didExplode = snailNumber.explode()
-        if !didExplode {
-            didSplit = snailNumber.split()
-        }
-    }
-    return snailNumber
-}
-
-func (snailNumber *SnailNumber) explode() bool {
-    atDepth := snailNumber.getAtDepth(0, 4)
-    if atDepth == nil {
-        return false
-    }
-
-    toLeft := atDepth.get(Left)
-    if toLeft != nil {
-        newValue := SnailNumber{}
-        newValue.value = toLeft.value + atDepth.left.value
-        newValue.parent = toLeft.parent
-        *toLeft = newValue
-    }
-
-    toRight := atDepth.get(Right)
-    if toRight != nil {
-        newValue := SnailNumber{}
-        newValue.value = toRight.value + atDepth.right.value
-        newValue.parent = toRight.parent
-        *toRight = newValue
-    }
-
-    newNode := SnailNumber{}
-    newNode.parent = atDepth.parent
-    *atDepth = newNode
-
-    return true
-}
-
-func (snailNumber *SnailNumber) getAtDepth(current int, goal int) *SnailNumber {
-    if snailNumber.isLeaf() {
-        return nil
-    } else if current == goal {
-        return snailNumber
-    } else {
-        fromLeft := snailNumber.left.getAtDepth(current + 1, goal)
-        if fromLeft != nil {
-            return fromLeft
-        } else {
-            return snailNumber.right.getAtDepth(current + 1, goal)
-        }
-    }
-}
-
-func (snailNumber *SnailNumber) get(direction Direction) *SnailNumber {
-    if snailNumber.parent == nil {
-        return nil
+        closestNode = snailNumber.parent.left
     }
     
-    numberInDirection := direction.getNumber(snailNumber.parent)
-    if *snailNumber == *numberInDirection {
-        return snailNumber.parent.get(direction)
+    if *snailNumber == *closestNode {
+        snailNumber.parent.updateClosestNode(direction, value)
     } else {
-        for !numberInDirection.isLeaf() {
-            numberInDirection = direction.getOpposite(numberInDirection)
+        for !closestNode.isLeaf() {
+            if direction == Left {
+                closestNode = closestNode.right
+            } else {
+                closestNode = closestNode.left
+            }
         }
-        return numberInDirection
+        closestNode.value += value
     }
-}
-
-func (snailNumber *SnailNumber) split() bool {
-    minValue := snailNumber.getWithMinValue(10)
-    if minValue == nil {
-        return false
-    }
-
-    newNode := SnailNumber{}
-    newNode.parent = minValue.parent
-    newNode.left = &SnailNumber{
-        value: minValue.value / 2,
-        parent: &newNode,
-    }
-    newNode.right = &SnailNumber{
-        value: (minValue.value + 1) / 2,
-        parent: &newNode,
-    }
-
-    *minValue = newNode
-
-    return true
 }
 
 func (snailNumber *SnailNumber) getWithMinValue(goal int) *SnailNumber {
     if snailNumber.isLeaf() {
-        if snailNumber.value >= goal {
-            return snailNumber
-        } else {
-            return nil
+        result := snailNumber
+        if snailNumber.value < goal {
+            result = nil
         }
+        return result
     } else {
-        fromLeft := snailNumber.left.getWithMinValue(goal)
-        if fromLeft != nil {
-            return fromLeft
-        } else {
-            return snailNumber.right.getWithMinValue(goal)
+        result := snailNumber.left.getWithMinValue(goal)
+        if result == nil {
+            result = snailNumber.right.getWithMinValue(goal)
         }
+        return result
     }
 }
 
-func (snailNumber SnailNumber) magnitude() int {
+func (snailNumber *SnailNumber) split() {
+    newNode := SnailNumber{}
+    newNode.parent = snailNumber.parent
+    newNode.left = &SnailNumber{
+        value: snailNumber.value / 2,
+        parent: &newNode,
+    }
+    newNode.right = &SnailNumber{
+        value: (snailNumber.value + 1) / 2,
+        parent: &newNode,
+    }
+    *snailNumber = newNode
+}
+
+func (snailNumber *SnailNumber) magnitude() int {
     if snailNumber.isLeaf() {
         return snailNumber.value
     } else {
@@ -188,26 +157,27 @@ func (snailNumber SnailNumber) magnitude() int {
 }
 
 func main() {
-    numbers := getData()
+    rawNumbers := getData()
 
-    fmt.Printf("Part 1 = %d \n", sumAll(numbers))
-    fmt.Printf("Part 2 = %d \n", sumAny(numbers))
+    fmt.Printf("Part 1 = %d \n", sumAll(rawNumbers))
+    fmt.Printf("Part 2 = %d \n", sumAny(rawNumbers))
 }
 
-func sumAll(numbers []*SnailNumber) int {
-    sum := numbers[0]
-    for _, value := range numbers[1:] {
-        sum = sum.add(value)
+func sumAll(rawNumbers []string) int {
+    sum := parseNumber(rawNumbers[0])
+    for _, rawNumber := range rawNumbers[1:] {
+        sum = sum.add(parseNumber(rawNumber))
     }
     return sum.magnitude()
 }
 
-func sumAny(numbers []*SnailNumber) int {
-    max, length := 0, len(numbers)
-    for i := 0; i < length; i++ {
-        for j := 0; j < length; j++ {
+func sumAny(rawNumbers []string) int {
+    max := 0
+    for i, v1 := range rawNumbers {
+        for j, v2 := range rawNumbers {
             if i != j {
-                magnitude := getData()[i].add(getData()[j]).magnitude()
+                sum := parseNumber(v1).add(parseNumber(v2))
+                magnitude := sum.magnitude()
                 if magnitude > max {
                     max = magnitude
                 }
@@ -217,25 +187,23 @@ func sumAny(numbers []*SnailNumber) int {
     return max
 }
 
-func getData() []*SnailNumber {
+func getData() []string {
     data, _ := ioutil.ReadFile("data.txt")
-    rawNumbers := strings.Split(string(data), "\r\n")
-    var result []*SnailNumber
-    for _, rawNumber := range rawNumbers {
-        snailNumber := parseSnailNumber(rawNumber, nil)
-        result = append(result, snailNumber)
-    }
-    return result
+    return strings.Split(string(data), "\r\n")
 }
 
-func parseSnailNumber(rawNumber string, parent *SnailNumber) *SnailNumber {
+func parseNumber(rawNumber string) *SnailNumber {
+    return parse(rawNumber, nil)
+}
+
+func parse(rawNumber string, parent *SnailNumber) *SnailNumber {
     result := SnailNumber{}
     result.parent = parent
     if rawNumber[0] == '[' {
         unnested := rawNumber[1:len(rawNumber) - 1]
         split := getSplit(unnested)
-        result.left = parseSnailNumber(unnested[:split], &result)
-        result.right = parseSnailNumber(unnested[split + 1:], &result)
+        result.left = parse(unnested[:split], &result)
+        result.right = parse(unnested[split + 1:], &result)
     } else {
         value, _ := strconv.Atoi(rawNumber)
         result.value = value
