@@ -1,48 +1,21 @@
 package main
 
-import(
-    "fmt"
-    "io/ioutil"
-    "strings"
+import (
+	"container/heap"
+	"fmt"
+	"io/ioutil"
+	"strings"
 )
 
-type LocationType int
+type Location int
 const (
-	Hallway LocationType = iota
+	Hallway Location = iota
     Doorway
 	AGoal
 	BGoal
 	CGoal
     DGoal
 )
-
-type CharacterType int
-const (
-	A CharacterType = iota
-    B
-	C
-    D
-)
-
-func (characterType CharacterType) cost() int {
-    switch characterType {
-    case A: return 1
-    case B: return 10
-    case C: return 100
-    case D: return 1000
-    default: return 0
-    }
-}
-
-func (characterType CharacterType) goal() LocationType {
-    switch characterType {
-    case A: return AGoal
-    case B: return BGoal
-    case C: return CGoal
-    case D: return DGoal
-    default: return 0
-    }
-}
 
 type Position struct {
     x int
@@ -58,170 +31,285 @@ func (position Position) adjacent() []Position {
     }
 }
 
-type PositionCost map[Position]int
+type Character int
+const (
+	A Character = iota
+    B
+	C
+    D
+)
 
-type Character struct {
-    characterType CharacterType
+type CharacterState struct {
     position Position
+    moved bool
+    character Character
 }
 
-func (character Character) legalMoves(board Board, state State) PositionCost {
-    fmt.Println(character)
-    positionCost := character.reachable(board, state)
-    var toDelete []Position
-    for position := range positionCost {
-        locationType, shouldDelete := board[position], false
-        if locationType == Doorway {
-            // Can never stop outside of a room
-            shouldDelete = true
-        } else if locationType == Hallway {
-            // Can not move once we are already in the hallway
-            // must go to a reom
-            if board[character.position] == Hallway {
-                shouldDelete = true
-            }
-        } else {
-            // Destination must now be a goal, i.e. a room
-            if character.characterType.goal() != locationType {
-                // If this is for another character then we cannot
-                // enter their reoom
-                shouldDelete = true
-            } else {
-                // Otherwise it is the room for this character, we need
-                // to make sure that only valid characters are in the room
-                for _, inRoom := range state.charactersInRoom(board, character.characterType.goal()) {
-                    if inRoom != character.characterType {
-                        shouldDelete = true
-                    }
-                }
-            }
-        }
-        if shouldDelete {
-            toDelete = append(toDelete, position)
-        }
+func (characterState *CharacterState) atGoal(board *Board) bool {
+    current := board.positionDetails[characterState.position]
+    return current == characterState.character.goal()
+}
+
+func (character Character) cost() int {
+    switch character {
+    case A: return 1
+    case B: return 10
+    case C: return 100
+    case D: return 1000
+    default: panic(fmt.Sprintf("Unknown character type: %d", character))
     }
-    for _, position := range toDelete {
-        delete(positionCost, position)
+}
+
+func (character Character) goal() Location {
+    switch character {
+    case A: return AGoal
+    case B: return BGoal
+    case C: return CGoal
+    case D: return DGoal
+    default: panic(fmt.Sprintf("Unknown character type: %d", character))
     }
-    return positionCost
 }
 
-func (character Character) reachable(board Board, state State) PositionCost {
-    positionCost, toExplore := make(PositionCost), []Position{character.position}
-    positionCost[character.position] = 0
-
-    for len(toExplore) > 0 {
-        position, baseCost := toExplore[0], positionCost[toExplore[0]]        
-        toExplore = toExplore[1:]
-        for _, adjacent := range position.adjacent() {
-            _, explored := positionCost[adjacent]
-            if explored {
-                continue
-            }
-            _, onBoard := board[adjacent]
-            if !onBoard {
-                continue
-            }
-            _, occupied := state.positions[adjacent]
-            if occupied {
-                continue
-            }
-            positionCost[adjacent] = baseCost + character.characterType.cost()
-            toExplore = append(toExplore, adjacent)
-        }
-    }
-
-    delete(positionCost, character.position)
-    return positionCost
+type Board struct {
+    positionDetails map[Position]Location
+    graph map[Position][]Position
 }
 
-type Board map[Position]LocationType
-
-type Characters []Character
-
-func (characters Characters) shuffle(board Board) {
-    state := characters.state()
-    characters.legalMoves(board, state)
-}
-
-type State struct {
-    positions map[Position]Character
+type BoardState struct {
+    characterStates []CharacterState
     cost int
 }
 
-func (state State) charactersInRoom(board Board, goal LocationType) []CharacterType {
-    var inRoom []CharacterType
-    for position, locationType := range board {
-        if goal != locationType {
-            continue
+func (boardState *BoardState) String() *string {
+    result := fmt.Sprintf("%v", boardState)
+    return &result
+}
+
+func (boardState *BoardState) complete(board *Board) bool {
+    for _, characterState := range boardState.characterStates {
+        if !characterState.atGoal(board) {
+            return false
         }
-        character, present := state.positions[position]
-        if !present {
-            continue
+    }
+    return true
+}
+
+func (boardState *BoardState) occupied(position Position) bool {
+    for _, characterState := range boardState.characterStates {
+        if characterState.position == position {
+            return true
         }
-        inRoom = append(inRoom, character.characterType)
+    }
+    return false
+}
+
+func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Character {
+    var inRoom []Character
+    for _, characterState := range boardState.characterStates {
+        location := board.positionDetails[characterState.position]
+        if location == goal {
+            inRoom = append(inRoom, characterState.character)
+        }
     }
     return inRoom
 }
 
-func (characters Characters) state() State {
-    state := make(map[Position]Character)
-    for _, character := range characters {
-        state[character.position] = character
+func (boardState *BoardState) update(characterIndex int, position Position, moves int) *BoardState {
+    var newStates []CharacterState
+    newCost := boardState.cost
+    for i, characterState := range boardState.characterStates {
+        if i == characterIndex {
+            character := characterState.character
+            newCost += (character.cost() * moves)
+            newCharacterState := CharacterState{position, true, character}
+            newStates = append(newStates, newCharacterState)
+        } else {
+            newStates = append(newStates, characterState)
+        }
     }
-    return State{state, 0}
+    result := BoardState{newStates, newCost}
+    return &result
 }
 
-func (characters Characters) legalMoves(board Board, state State) {
-    fmt.Println(state)
-    for _, character := range characters {
-        options := character.legalMoves(board, state)
-        fmt.Println(options)
-    }
+type Queue []BoardState
+
+func (q Queue) Len() int {
+    return len(q)
 }
 
-func main() {
-    board, characters := getData()
-    fmt.Println(board)
-    fmt.Println(characters)
-    // 18342 too high
-    characters.shuffle(board)
+func (q Queue) Less(i, j int) bool {
+    return q[i].cost < q[j].cost
 }
 
-func getData() (Board, Characters) {
-    data, _ := ioutil.ReadFile("sample.txt")
-    rows := strings.Split(string(data), "\r\n")
-    var characters []Character
-    board := make(Board)
-    for y, row := range rows {
-        for x, value := range row {
-            if value != '#' && value != ' ' {
-                position := Position{x, y}
-                board[position] = getLocationType(position)
-                if value != '.' {
-                    characters = append(characters,  getCharacter(position, value))
-                }
+func (q Queue) Swap(i, j int) { 
+    q[i], q[j] = q[j], q[i] 
+}
+
+func (q *Queue) Pop() interface{} {
+    length := len(*q)
+    result := (*q)[length -1]
+	*q = (*q)[:length - 1]
+	return result
+}
+
+func (q *Queue) Push(state interface{}) {
+	*q = append(*q, state.(BoardState))
+}
+
+func (board *Board) solve(initial *BoardState) int {
+    queue, seen := &Queue{*initial}, make(map[string]bool)
+
+    for queue.Len() > 0 {
+        currentState := heap.Pop(queue).(BoardState)
+        if currentState.complete(board) {
+            return currentState.cost
+        }
+        legalMoves := board.legalMoves(&currentState)
+        if legalMoves == nil {
+            continue
+        }
+        for _, state := range *legalMoves {
+            asString := *state.String()
+            if !seen[asString] {
+                seen[asString] = true
+                heap.Push(queue, state)
             }
         }
     }
-    return board, characters
+
+    return -1
 }
 
-func getCharacter(position Position, value rune) Character {
-    chacter := Character{position: position}
-    if value == 'A' {
-        chacter.characterType = A
-    } else if value == 'B' {
-        chacter.characterType = B
-    } else if value == 'C' {
-        chacter.characterType = C
-    } else if value == 'D' {
-        chacter.characterType = D
+func (board *Board) legalMoves(boardState *BoardState) *[]BoardState {
+    var legalMoves []BoardState
+    for i := range boardState.characterStates {
+        positionMoves := board.characterLegalMoves(boardState, i)
+        if positionMoves == nil {
+            continue
+        }
+        for position, moves := range *positionMoves {
+            newState := boardState.update(i, position, moves)
+            legalMoves = append(legalMoves, *newState)
+        }
     }
-    return chacter
+    return &legalMoves
 }
 
-func getLocationType(position Position) LocationType {
+type PositionMoves map[Position]int
+
+func (board *Board) characterLegalMoves(boardState *BoardState, i int) *PositionMoves {
+    characterState := boardState.characterStates[i]
+    if characterState.atGoal(board) && characterState.moved {
+        // If we're already at the goal state, then there is nowhere else to go
+        return nil
+    }
+
+    reachable := *board.reachable(boardState, characterState.position)
+
+    var toDelete []Position
+    for destination := range reachable {
+        destinationType, shouldDelete := board.positionDetails[destination], false
+        if destination == characterState.position {
+            // Remove moving nowhere as an option
+            shouldDelete = true
+        } else if destinationType == Doorway {
+            // Can never stop outside of a room
+            shouldDelete = true
+        } else if destinationType == Hallway {
+            // Can not move to hallway once we are already in the hallway  must go to a room
+            if board.positionDetails[characterState.position] == Hallway {
+                shouldDelete = true
+            }
+        } else {
+            // Destination must now be a room
+            if characterState.character.goal() != destinationType {
+                // If this room is for another character then we cannot enter
+                shouldDelete = true
+            } else {
+                // Otherwise it is the room for this character, we need to make sure that:
+                // 1) Only valid characters are in the room
+                // 2) That we go to the correct position in the room, i.e. if no one is in the room we need to go to the back
+                inRoom := boardState.charactersInRoom(board, characterState.character.goal())
+                if len(inRoom) == 0 {
+                    // No one in room so we must go to the back
+                    if destination.y != 3 {
+                        shouldDelete = true
+                    }
+                } else if len(inRoom) == 1 {
+                    // If one in the room need to make sure they are valid
+                    if inRoom[0] != characterState.character {
+                        shouldDelete = true
+                    }
+                } else {
+                    panic(fmt.Sprintf("Should never see %d in room", len(inRoom)))
+                }
+            }
+        }
+        if shouldDelete {
+            toDelete = append(toDelete, destination)
+        }
+    }
+
+    for _, position := range toDelete {
+        delete(reachable, position)
+    }
+
+    return &reachable
+}
+
+func (board *Board) reachable(boardState *BoardState, position Position) *PositionMoves {
+    positionMoves, toExplore := PositionMoves{position: 0}, []Position{position}
+
+    for len(toExplore) > 0 {
+        currentPosition, currentMoves := toExplore[0], positionMoves[toExplore[0]]        
+        toExplore = toExplore[1:]
+
+        for _, adjacent := range board.graph[currentPosition] {
+            _, explored := positionMoves[adjacent]
+            if explored {
+                continue
+            }
+            if boardState.occupied(adjacent) {
+                continue
+            }
+            positionMoves[adjacent] = currentMoves + 1
+            toExplore = append(toExplore, adjacent)
+        }
+    }
+
+    return &positionMoves
+}
+
+func main() {
+    board, boardState := getData()
+
+    fmt.Printf("Part 1 = %d \n", board.solve(&boardState))
+}
+
+func getData() (Board, BoardState) {
+    data, _ := ioutil.ReadFile("data.txt")
+    rows := strings.Split(string(data), "\r\n")
+
+    positionDetails := make(map[Position]Location)
+    var characterStates []CharacterState
+    
+    for y, row := range rows {
+        for x, value := range row {
+            if value == '#' || value == ' ' {
+                continue
+            }
+            position := Position{x, y}
+            positionDetails[position] = location(position)
+            if value != '.' {
+                characterStates = append(characterStates, CharacterState{position, false, character(value)})
+            }
+        }
+    }
+
+    return Board{positionDetails, graph(positionDetails)}, BoardState{characterStates, 0}
+}
+
+func location(position Position) Location {
     x, y := position.x, position.y
     if y == 1 {
         if x == 3 || x == 5 || x == 7 || x == 9 {
@@ -237,7 +325,36 @@ func getLocationType(position Position) LocationType {
         return CGoal
     } else if x == 9 {
         return DGoal
+    } else {
+        panic(fmt.Sprintf("Can't figure out location for: (%d, %d)", x, y))
     }
-    fmt.Println("UNEXPECTED")
-    return Hallway
+}
+
+func character(value rune) Character {
+    if value == 'A' {
+        return A
+    } else if value == 'B' {
+        return B
+    } else if value == 'C' {
+        return C
+    } else if value == 'D' {
+        return D
+    } else {
+        panic(fmt.Sprintf("Can't figure out character for: %v", value))
+    }
+}
+
+func graph(positionDetails map[Position]Location) map[Position][]Position {
+    result := make(map[Position][]Position)
+    for position := range positionDetails {
+        var connected []Position
+        for _, adjacent := range position.adjacent() {
+            _, exists := positionDetails[adjacent]
+            if exists {
+                connected = append(connected, adjacent)
+            }
+        }
+        result[position] = connected
+    }
+    return result
 }
