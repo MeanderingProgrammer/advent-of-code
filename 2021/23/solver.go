@@ -45,7 +45,7 @@ type CharacterState struct {
     character Character
 }
 
-func (characterState *CharacterState) atGoal(board *Board) bool {
+func (characterState CharacterState) atGoal(board Board) bool {
     current := board.positionDetails[characterState.position]
     return current == characterState.character.goal()
 }
@@ -73,6 +73,7 @@ func (character Character) goal() Location {
 type Board struct {
     positionDetails map[Position]Location
     graph map[Position][]Position
+    roomSize int
 }
 
 type BoardState struct {
@@ -85,7 +86,7 @@ func (boardState *BoardState) String() *string {
     return &result
 }
 
-func (boardState *BoardState) complete(board *Board) bool {
+func (boardState *BoardState) complete(board Board) bool {
     for _, characterState := range boardState.characterStates {
         if !characterState.atGoal(board) {
             return false
@@ -156,19 +157,16 @@ func (q *Queue) Push(state interface{}) {
 	*q = append(*q, state.(BoardState))
 }
 
-func (board *Board) solve(initial *BoardState) int {
-    queue, seen := &Queue{*initial}, make(map[string]bool)
+func (board *Board) solve(initial BoardState) int {
+    queue, seen := &Queue{initial}, make(map[string]bool)
 
     for queue.Len() > 0 {
         currentState := heap.Pop(queue).(BoardState)
-        if currentState.complete(board) {
+        if currentState.complete(*board) {
             return currentState.cost
         }
-        legalMoves := board.legalMoves(&currentState)
-        if legalMoves == nil {
-            continue
-        }
-        for _, state := range *legalMoves {
+        legalMoves := board.legalMoves(currentState)
+        for _, state := range legalMoves {
             asString := *state.String()
             if !seen[asString] {
                 seen[asString] = true
@@ -180,31 +178,28 @@ func (board *Board) solve(initial *BoardState) int {
     return -1
 }
 
-func (board *Board) legalMoves(boardState *BoardState) *[]BoardState {
+func (board *Board) legalMoves(boardState BoardState) []BoardState {
     var legalMoves []BoardState
     for i := range boardState.characterStates {
         positionMoves := board.characterLegalMoves(boardState, i)
-        if positionMoves == nil {
-            continue
-        }
-        for position, moves := range *positionMoves {
+        for position, moves := range positionMoves {
             newState := boardState.update(i, position, moves)
             legalMoves = append(legalMoves, *newState)
         }
     }
-    return &legalMoves
+    return legalMoves
 }
 
 type PositionMoves map[Position]int
 
-func (board *Board) characterLegalMoves(boardState *BoardState, i int) *PositionMoves {
+func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMoves {
     characterState := boardState.characterStates[i]
-    if characterState.atGoal(board) && characterState.moved {
+    if characterState.atGoal(*board) && characterState.moved {
         // If we're already at the goal state, then there is nowhere else to go
         return nil
     }
 
-    reachable := *board.reachable(boardState, characterState.position)
+    reachable := board.reachable(boardState, characterState.position)
 
     var toDelete []Position
     for destination := range reachable {
@@ -228,20 +223,21 @@ func (board *Board) characterLegalMoves(boardState *BoardState, i int) *Position
             } else {
                 // Otherwise it is the room for this character, we need to make sure that:
                 // 1) Only valid characters are in the room
-                // 2) That we go to the correct position in the room, i.e. if no one is in the room we need to go to the back
-                inRoom := boardState.charactersInRoom(board, characterState.character.goal())
-                if len(inRoom) == 0 {
-                    // No one in room so we must go to the back
-                    if destination.y != 3 {
-                        shouldDelete = true
+                // 2) That we go to the correct position in the room, i.e. as far back as possible
+                charactersInRoom, allValid := boardState.charactersInRoom(board, characterState.character.goal()), true
+                for _, characterInRoom := range charactersInRoom {
+                    if characterInRoom != characterState.character {
+                        allValid = false
                     }
-                } else if len(inRoom) == 1 {
-                    // If one in the room need to make sure they are valid
-                    if inRoom[0] != characterState.character {
+                }
+                if allValid {
+                    // Must go to back of room
+                    if destination.y != board.roomSize - len(charactersInRoom) + 1 {
                         shouldDelete = true
                     }
                 } else {
-                    panic(fmt.Sprintf("Should never see %d in room", len(inRoom)))
+                    // At least one character in the room needs to leave
+                    shouldDelete = true
                 }
             }
         }
@@ -254,10 +250,10 @@ func (board *Board) characterLegalMoves(boardState *BoardState, i int) *Position
         delete(reachable, position)
     }
 
-    return &reachable
+    return reachable
 }
 
-func (board *Board) reachable(boardState *BoardState, position Position) *PositionMoves {
+func (board *Board) reachable(boardState BoardState, position Position) PositionMoves {
     positionMoves, toExplore := PositionMoves{position: 0}, []Position{position}
 
     for len(toExplore) > 0 {
@@ -277,18 +273,33 @@ func (board *Board) reachable(boardState *BoardState, position Position) *Positi
         }
     }
 
-    return &positionMoves
+    return positionMoves
 }
 
 func main() {
-    board, boardState := getData()
-
-    fmt.Printf("Part 1 = %d \n", board.solve(&boardState))
+    fmt.Printf("Part 1 = %d \n", solve(false))
+    fmt.Printf("Part 2 = %d \n", solve(true))
 }
 
-func getData() (Board, BoardState) {
+func solve(extend bool) int {
+    board, boardState := getData(extend)
+    return board.solve(boardState)
+}
+
+func getData(extend bool) (Board, BoardState) {
     data, _ := ioutil.ReadFile("data.txt")
     rows := strings.Split(string(data), "\r\n")
+
+    if extend {
+        length := len(rows)
+        lastRows := []string{
+            rows[length - 2],
+            rows[length - 1],
+        }
+        rows[length - 2] = "  #D#C#B#A#"
+        rows[length - 1] = "  #D#B#A#C#"
+        rows = append(rows, lastRows...)
+    }
 
     positionDetails := make(map[Position]Location)
     var characterStates []CharacterState
@@ -306,7 +317,14 @@ func getData() (Board, BoardState) {
         }
     }
 
-    return Board{positionDetails, graph(positionDetails)}, BoardState{characterStates, 0}
+    return Board{
+        positionDetails: positionDetails, 
+        graph: graph(positionDetails), 
+        roomSize: len(rows) - 3,
+    }, BoardState{
+        characterStates: characterStates, 
+        cost: 0,
+    }
 }
 
 func location(position Position) Location {
