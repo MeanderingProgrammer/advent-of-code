@@ -53,7 +53,6 @@ func main() {
         program.nth(15), 
         program.nth(5),
     )
-    fmt.Println(constrainedNumber)
 
     fmt.Printf("Part 1 = %d \n", constrainedNumber.bound(true))
     fmt.Printf("Part 2 = %d \n", constrainedNumber.bound(false))
