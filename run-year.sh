@@ -11,7 +11,12 @@ current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
 
 time_run() {
-    command time -f "Runtime: %E" $@
+    start=$(date -u +%s.%N)
+    $@
+    end=$(date -u +%s.%N)
+    runtime=$(echo "$end - $start" | bc)
+
+    echo "Runtime: ${runtime}"
 }
 
 JAVA="java"
