@@ -60,8 +60,6 @@ year=${1}
 echo "Runing year ${year}"
 cd ${year}
 
-
-
 if [[ $# -eq 1 ]]
 then
     days=$(ls | sort)
