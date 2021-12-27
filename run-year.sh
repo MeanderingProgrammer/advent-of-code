@@ -10,12 +10,14 @@ fi
 current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
 
+# Store array of runtimes
+runtimes=()
+
 time_run() {
     start=$(date -u +%s.%N)
     $@
     end=$(date -u +%s.%N)
     runtime=$(echo "$end - $start" | bc)
-
     echo "Runtime: ${runtime}"
 }
 
@@ -58,13 +60,17 @@ year=${1}
 echo "Runing year ${year}"
 cd ${year}
 
+
+
 if [[ $# -eq 1 ]]
 then
     days=$(ls | sort)
-    for day in ${days}
-    do
-        run_day ${day}
-    done
 else
-    run_day ${2}
+    days=(${2})
 fi
+
+for day in ${days}
+do
+    run_day ${day}
+    runtimes+=(${runtime})
+done
