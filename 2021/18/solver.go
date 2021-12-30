@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strconv"
     "strings"
@@ -159,10 +159,8 @@ func (snailNumber *SnailNumber) magnitude() int {
 func main() {
     rawNumbers := getData()
 
-    // Part 1: 3892
-    fmt.Printf("Part 1: %d \n", sumAll(rawNumbers))
-    // Part 2: 4909
-    fmt.Printf("Part 2: %d \n", sumAny(rawNumbers))
+    answers.Part1(3892, sumAll(rawNumbers))
+    answers.Part2(4909, sumAny(rawNumbers))
 }
 
 func sumAll(rawNumbers []string) int {

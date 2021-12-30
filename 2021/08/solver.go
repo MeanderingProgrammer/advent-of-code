@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+    "advent-of-code/commons/go/answers"
 	"io/ioutil"
 	"math"
 	"sort"
@@ -115,10 +115,8 @@ func main() {
         part2Solution += trackPart2(outputDigits)
     }
 
-    // Part 1: 344
-    fmt.Printf("Part 1: %d \n", part1Solution)
-    // Part 2: 1048410
-    fmt.Printf("Part 2: %d \n", part2Solution)
+    answers.Part1(344, part1Solution)
+    answers.Part2(1048410, part2Solution)
 }
 
 func trackPart1(outputDigits []int) int {

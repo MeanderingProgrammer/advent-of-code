@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strings"
@@ -37,10 +38,8 @@ func (school *School) print() {
 }
 
 func main() {
-    // Part 1: 345793
-    fmt.Printf("Part 1: %d \n", fishAfter(80))
-    // Part 2: 1572643095893
-    fmt.Printf("Part 2: %d \n", fishAfter(256))
+    answers.Part1(345793, fishAfter(80))
+    answers.Part2(1572643095893, fishAfter(256))
 }
 
 func fishAfter(days int) int {

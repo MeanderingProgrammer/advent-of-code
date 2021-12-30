@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strings"
@@ -87,10 +88,8 @@ func main() {
     order, boards := getData()
 
     completeScores := runToComplete(order, boards)
-    // Part 1: 44088
-    fmt.Printf("Part 1: %d \n", completeScores[0])
-    // Part 2: 23670
-    fmt.Printf("Part 2: %d \n", completeScores[len(completeScores) - 1])
+    answers.Part1(44088, completeScores[0])
+    answers.Part2(23670, completeScores[len(completeScores) - 1])
 }
 
 func runToComplete(order []int, boards []*Board) []int {

@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strings"
@@ -94,10 +95,8 @@ func (graph Graph) print() {
 }
 
 func main() {
-    // Part 1: 656
-    fmt.Printf("Part 1: %d \n", getData(false).solve())
-    // Part 2: 2979
-    fmt.Printf("Part 2: %d \n", getData(true).solve())
+    answers.Part1(656, getData(false).solve())
+    answers.Part2(2979, getData(true).solve())
 }
 
 func getData(wrap bool) Graph {

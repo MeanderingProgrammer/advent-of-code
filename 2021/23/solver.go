@@ -1,6 +1,7 @@
 package main
 
 import (
+    "advent-of-code/commons/go/answers"
 	"container/heap"
 	"fmt"
 	"io/ioutil"
@@ -277,10 +278,8 @@ func (board *Board) reachable(boardState BoardState, position Position) Position
 }
 
 func main() {
-    // Part 1: 18282
-    fmt.Printf("Part 1: %d \n", solve(false))
-    // Part 2: 50132
-    fmt.Printf("Part 2: %d \n", solve(true))
+    answers.Part1(18282, solve(false))
+    answers.Part2(50132, solve(true))
 }
 
 func solve(extend bool) int {

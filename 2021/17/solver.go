@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strconv"
     "strings"
@@ -87,10 +87,8 @@ func main() {
     targetArea := getData()
 
 	maxHeight, numValid := getMaxHeight(targetArea)
-    // Part 1: 4095
-    fmt.Printf("Part 1: %d \n", maxHeight)
-    // Part 2: 3773
-    fmt.Printf("Part 2: %d \n", numValid)
+    answers.Part1(4095, maxHeight)
+    answers.Part2(3773, numValid)
 }
 
 func getMaxHeight(targetArea TargetArea) (int, int) {

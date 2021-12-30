@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strconv"
     "strings"
@@ -107,13 +107,11 @@ func main() {
     data := getData()
 
     minimums := data.minimums()
-    // Part 1: 506
-    fmt.Printf("Part 1: %d \n", minimums.riskLevel())
+    answers.Part1(506, minimums.riskLevel())
 
     basinSizes := minimums.basinSizes(data)
     sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
-    // Part 2: 931200
-    fmt.Printf("Part 2: %d \n", basinSizes[0] * basinSizes[1] * basinSizes[2])
+    answers.Part2(931200, basinSizes[0] * basinSizes[1] * basinSizes[2])
 }
 
 func getData() HeightMap {
