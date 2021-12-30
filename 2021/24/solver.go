@@ -54,8 +54,10 @@ func main() {
         program.nth(5),
     )
 
-    fmt.Printf("Part 1 = %d \n", constrainedNumber.bound(true))
-    fmt.Printf("Part 2 = %d \n", constrainedNumber.bound(false))
+    // Part 1: 92928914999991
+    fmt.Printf("Part 1: %d \n", constrainedNumber.bound(true))
+    // Part 2: 91811211611981
+    fmt.Printf("Part 2: %d \n", constrainedNumber.bound(false))
 }
 
 type ConstrainedNumber []ConstrainedPair

@@ -22,9 +22,10 @@ func (positions Positions) difference(f func(int) int, value int) int {
 func main() {
     positions := getData()
 
-    fmt.Printf("Part 1 = %d \n", minimize(positions, absolute))
-    fmt.Printf("Part 2 = %d \n", minimize(positions, cumulative))
-
+    // Part 1: 352331
+    fmt.Printf("Part 1: %d \n", minimize(positions, absolute))
+    // Part 2: 99266250
+    fmt.Printf("Part 2: %d \n", minimize(positions, cumulative))
 }
 
 func absolute(difference int) int {

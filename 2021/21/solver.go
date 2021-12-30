@@ -141,7 +141,7 @@ type StateSpace map[int]int
 
 func (dice QuantumDice) computeStateSpace() StateSpace {
     states := [][]int{
-        []int{},
+        {},
     }
     for i := 1; i <= dice.rolls; i++ {
         newStates := [][]int{}
@@ -166,8 +166,10 @@ func (dice QuantumDice) computeStateSpace() StateSpace {
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", part1())
-    fmt.Printf("Part 2 = %d \n", part2())
+    // Part 1: 571032
+    fmt.Printf("Part 1: %d \n", part1())
+    // Part 2: 49975322685009
+    fmt.Printf("Part 2: %d \n", part2())
 }
 
 func part1() int {

@@ -55,8 +55,10 @@ func (template Template) frequencies() Frequencies {
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", diffAfter(10))
-    fmt.Printf("Part 2 = %d \n", diffAfter(40))
+    // Part 1: 2899
+    fmt.Printf("Part 1: %d \n", diffAfter(10))
+    // Part 2: 3528317079545
+    fmt.Printf("Part 2: %d \n", diffAfter(40))
 }
 
 func diffAfter(n int) int {

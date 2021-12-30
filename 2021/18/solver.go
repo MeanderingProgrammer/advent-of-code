@@ -159,8 +159,10 @@ func (snailNumber *SnailNumber) magnitude() int {
 func main() {
     rawNumbers := getData()
 
-    fmt.Printf("Part 1 = %d \n", sumAll(rawNumbers))
-    fmt.Printf("Part 2 = %d \n", sumAny(rawNumbers))
+    // Part 1: 3892
+    fmt.Printf("Part 1: %d \n", sumAll(rawNumbers))
+    // Part 2: 4909
+    fmt.Printf("Part 2: %d \n", sumAny(rawNumbers))
 }
 
 func sumAll(rawNumbers []string) int {

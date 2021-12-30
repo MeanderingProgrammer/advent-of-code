@@ -119,8 +119,10 @@ func (graph Graph) print() {
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", litAfter(2))
-    fmt.Printf("Part 2 = %d \n", litAfter(50))
+    // Part 1: 5437
+    fmt.Printf("Part 1: %d \n", litAfter(2))
+    // Part 2: 19340
+    fmt.Printf("Part 2: %d \n", litAfter(50))
 }
 
 func litAfter(times int) int {

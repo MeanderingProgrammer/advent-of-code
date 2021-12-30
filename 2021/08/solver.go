@@ -115,8 +115,10 @@ func main() {
         part2Solution += trackPart2(outputDigits)
     }
 
-    fmt.Printf("Part 1 = %d \n", part1Solution)
-    fmt.Printf("Part 2 = %d \n", part2Solution)
+    // Part 1: 344
+    fmt.Printf("Part 1: %d \n", part1Solution)
+    // Part 2: 1048410
+    fmt.Printf("Part 2: %d \n", part2Solution)
 }
 
 func trackPart1(outputDigits []int) int {

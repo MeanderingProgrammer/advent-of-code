@@ -107,11 +107,13 @@ func main() {
     data := getData()
 
     minimums := data.minimums()
-    fmt.Printf("Part 1 = %d \n", minimums.riskLevel())
+    // Part 1: 506
+    fmt.Printf("Part 1: %d \n", minimums.riskLevel())
 
     basinSizes := minimums.basinSizes(data)
     sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
-    fmt.Printf("Part 2 = %d \n", basinSizes[0] * basinSizes[1] * basinSizes[2])
+    // Part 2: 931200
+    fmt.Printf("Part 2: %d \n", basinSizes[0] * basinSizes[1] * basinSizes[2])
 }
 
 func getData() HeightMap {

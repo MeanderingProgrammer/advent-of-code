@@ -67,8 +67,10 @@ func coordinateRange(v1 int, v2 int) []int {
 func main() {
     data := getData()
 
-    fmt.Printf("Part 1 = %d \n", numPointsWithOverlap(data, false))
-    fmt.Printf("Part 2 = %d \n", numPointsWithOverlap(data, true))
+    // Part 1: 6666
+    fmt.Printf("Part 1: %d \n", numPointsWithOverlap(data, false))
+    // Part 2: 19081
+    fmt.Printf("Part 2: %d \n", numPointsWithOverlap(data, true))
 }
 
 func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {

@@ -159,8 +159,10 @@ func (s1 Scanner) getTransformation(s2 Scanner) Transformation {
 func main() {
     joined := joinScanners()
 
-    fmt.Printf("Part 1 = %d \n", len(joined.points))
-    fmt.Printf("Part 2 = %d \n", joined.positions.largestDistance())
+    // Part 1: 512
+    fmt.Printf("Part 1: %d \n", len(joined.points))
+    // Part 2: 16802
+    fmt.Printf("Part 2: %d \n", joined.positions.largestDistance())
 }
 
 func joinScanners() Scanner {
@@ -197,7 +199,7 @@ func getData() []Scanner {
         scanner := Scanner{
             id: i,
             positions: []Point{
-                Point{0,0,0},
+                {0,0,0},
             },
             points: points,
         }

@@ -94,8 +94,10 @@ func (graph Graph) print() {
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", getData(false).solve())
-    fmt.Printf("Part 2 = %d \n", getData(true).solve())
+    // Part 1: 656
+    fmt.Printf("Part 1: %d \n", getData(false).solve())
+    // Part 2: 2979
+    fmt.Printf("Part 2: %d \n", getData(true).solve())
 }
 
 func getData(wrap bool) Graph {

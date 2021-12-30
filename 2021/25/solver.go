@@ -100,7 +100,8 @@ func (grid Grid) print() {
 func main() {
     cucumbers := getData()
     
-    fmt.Printf("Part 1 = %d \n", cucumbers.untilStop())
+    // Part 1: 492
+    fmt.Printf("Part 1: %d \n", cucumbers.untilStop())
 }
 
 func getData() Grid {
