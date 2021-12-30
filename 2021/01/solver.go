@@ -1,46 +1,31 @@
 package main
 
 import(
-    "fmt"
-    "io/ioutil"
-    "strconv"
-    "strings"
+    "advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/files"
 )
 
 func main() {
-    content := getContent()
+    content := files.ReadInt()
 
-    // Part 1: 1292
-    fmt.Printf("Part 1: %d \n", windowIncreases(content, 1))
-    // Part 2: 1262
-    fmt.Printf("Part 2: %d \n", windowIncreases(content, 3))
+    answers.Part1(1292, windowIncreases(content, 1))
+    answers.Part2(1262, windowIncreases(content, 3))
 }
 
-func getContent() []string {
-    content, _ := ioutil.ReadFile("data.txt")
-    return strings.Split(string(content), "\r\n")
-}
-
-func windowIncreases(content []string, windowSize int) int {
+func windowIncreases(content []int, windowSize int) int {
     increases := 0
-
-    slidingContent := content[1:]
-    for i := range slidingContent[:len(slidingContent) - windowSize + 1] {
-        v1 := sum(content[i:i+windowSize])
-        v2 := sum(slidingContent[i:i+windowSize])
-        if (v2 > v1) {
+    for i := range content[:len(content) - windowSize] {
+        if (sum(content, windowSize, i+1) > sum(content, windowSize, i)) {
             increases++
         }
     }
-
     return increases
 }
 
-func sum(values []string) int {
+func sum(values []int, windowSize int, start int) int {
     result := 0
-    for _, value := range values {
-        v, _ := strconv.Atoi(value)
-        result += v
+    for _, value := range values[start:start+windowSize] {
+        result += value
     }
     return result
 }
