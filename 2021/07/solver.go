@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "sort"
     "strings"
@@ -22,10 +22,8 @@ func (positions Positions) difference(f func(int) int, value int) int {
 func main() {
     positions := getData()
 
-    // Part 1: 352331
-    fmt.Printf("Part 1: %d \n", minimize(positions, absolute))
-    // Part 2: 99266250
-    fmt.Printf("Part 2: %d \n", minimize(positions, cumulative))
+    answers.Part1(352331, minimize(positions, absolute))
+    answers.Part2(99266250, minimize(positions, cumulative))
 }
 
 func absolute(difference int) int {

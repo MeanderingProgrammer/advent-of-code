@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+    "advent-of-code/commons/go/answers"
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -76,10 +76,8 @@ func (systems Systems) autocompleteScore() int {
 func main() {
     systems := getData()
 
-    // Part 1: 321237
-    fmt.Printf("Part 1: %d \n", systems.mismatchScore())
-    // Part 2: 2360030859
-    fmt.Printf("Part 2: %d \n", systems.autocompleteScore())
+    answers.Part1(321237, systems.mismatchScore())
+    answers.Part2(2360030859, systems.autocompleteScore())
 }
 
 func checkSyntax(system string) (string, Stack) {

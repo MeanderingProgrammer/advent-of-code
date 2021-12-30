@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strconv"
     "strings"
@@ -159,10 +159,8 @@ func (s1 Scanner) getTransformation(s2 Scanner) Transformation {
 func main() {
     joined := joinScanners()
 
-    // Part 1: 512
-    fmt.Printf("Part 1: %d \n", len(joined.points))
-    // Part 2: 16802
-    fmt.Printf("Part 2: %d \n", joined.positions.largestDistance())
+    answers.Part1(512, len(joined.points))
+    answers.Part2(16802, joined.positions.largestDistance())
 }
 
 func joinScanners() Scanner {

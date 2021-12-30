@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+    "advent-of-code/commons/go/answers"
 	"io/ioutil"
 	"strings"
 )
@@ -55,10 +55,8 @@ func (template Template) frequencies() Frequencies {
 }
 
 func main() {
-    // Part 1: 2899
-    fmt.Printf("Part 1: %d \n", diffAfter(10))
-    // Part 2: 3528317079545
-    fmt.Printf("Part 2: %d \n", diffAfter(40))
+    answers.Part1(2899, diffAfter(10))
+    answers.Part2(3528317079545, diffAfter(40))
 }
 
 func diffAfter(n int) int {

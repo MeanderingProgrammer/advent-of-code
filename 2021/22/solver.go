@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strconv"
     "strings"
@@ -85,10 +85,9 @@ func (bounds Bounds) area() int {
 
 func main() {
     finalBounds := getFinalBounds()
-    // Part 1: 561032
-    fmt.Printf("Part 1: %d \n", limitedBoundsArea(finalBounds))
-    // Part 2: 1322825263376414
-    fmt.Printf("Part 2: %d \n", finalBounds.area())
+
+    answers.Part1(561032, limitedBoundsArea(finalBounds))
+    answers.Part2(1322825263376414, finalBounds.area())
 }
 
 func getFinalBounds() Bounds {

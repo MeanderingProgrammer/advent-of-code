@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strconv"
@@ -97,10 +98,8 @@ func (grid OctopusGrid) print() {
 }
 
 func main() {
-    // Part 1: 1732
-    fmt.Printf("Part 1: %d \n", getData().runFor(100))
-    // Part 2: 290
-    fmt.Printf("Part 2: %d \n", getData().runUntilAll())
+    answers.Part1(1732, getData().runFor(100))
+    answers.Part2(290, getData().runUntilAll())
 }
 
 func getData() OctopusGrid {

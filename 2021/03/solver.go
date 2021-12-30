@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+	"advent-of-code/commons/go/answers"
 	"io/ioutil"
 	"strings"
 	"strconv"
@@ -9,9 +9,9 @@ import(
 
 type Binary string
 
-func (binary Binary) toInt() int64 {
+func (binary Binary) toInt() int {
 	result, _ := strconv.ParseInt(string(binary), 2, 64)
-	return result
+	return int(result)
 }
 
 type Binaries []Binary
@@ -39,10 +39,8 @@ func (binaries Binaries) filter(position int, value string) Binaries {
 func main() {
 	binaries := getBinaries()
 
-	// Part 1: 4006064
-	fmt.Printf("Part 1: %d \n", calculatePowerConsumption(binaries))
-	// Part 2: 5941884
-	fmt.Printf("Part 2: %d \n", calculateLifeSupport(binaries))
+	answers.Part1(4006064, calculatePowerConsumption(binaries))
+	answers.Part2(5941884, calculateLifeSupport(binaries))
 }
 
 func getBinaries() Binaries {
@@ -55,7 +53,7 @@ func getBinaries() Binaries {
     return binaries
 }
 
-func calculatePowerConsumption(binaries Binaries) int64 {
+func calculatePowerConsumption(binaries Binaries) int {
 	gammaRate := ""
 	epsilonRate := ""
 	for i := 0; i < len(binaries[0]); i++ {
@@ -66,7 +64,7 @@ func calculatePowerConsumption(binaries Binaries) int64 {
 	return Binary(gammaRate).toInt() * Binary(epsilonRate).toInt()
 }
 
-func calculateLifeSupport(binaries Binaries) int64 {
+func calculateLifeSupport(binaries Binaries) int {
 	return filterRating(binaries, true).toInt() * filterRating(binaries, false).toInt()
 }
 

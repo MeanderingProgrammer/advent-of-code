@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+	"advent-of-code/commons/go/answers"
 	"io/ioutil"
 	"strings"
 	"strconv"
@@ -45,10 +45,8 @@ func main() {
 	position1 := instructions.follow(move1)
 	position2 := instructions.follow(move2)
 
-	// Part 1: 1459206
-	fmt.Printf("Part 1: %d \n", position1.magicNumber())
-	// Part 2: 1320534480
-	fmt.Printf("Part 2: %d \n", position2.magicNumber())
+	answers.Part1(1459206, position1.magicNumber())
+	answers.Part2(1320534480, position2.magicNumber())
 }
 
 func getInstructions() Instructions {

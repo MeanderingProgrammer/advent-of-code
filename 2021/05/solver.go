@@ -1,7 +1,7 @@
 package main
 
 import(
-    "fmt"
+    "advent-of-code/commons/go/answers"
     "io/ioutil"
     "strings"
     "strconv"
@@ -67,10 +67,8 @@ func coordinateRange(v1 int, v2 int) []int {
 func main() {
     data := getData()
 
-    // Part 1: 6666
-    fmt.Printf("Part 1: %d \n", numPointsWithOverlap(data, false))
-    // Part 2: 19081
-    fmt.Printf("Part 2: %d \n", numPointsWithOverlap(data, true))
+    answers.Part1(6666, numPointsWithOverlap(data, false))
+    answers.Part2(19081, numPointsWithOverlap(data, true))
 }
 
 func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {

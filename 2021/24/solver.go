@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strconv"
@@ -54,10 +55,8 @@ func main() {
         program.nth(5),
     )
 
-    // Part 1: 92928914999991
-    fmt.Printf("Part 1: %d \n", constrainedNumber.bound(true))
-    // Part 2: 91811211611981
-    fmt.Printf("Part 2: %d \n", constrainedNumber.bound(false))
+    answers.Part1(92928914999991, constrainedNumber.bound(true))
+    answers.Part2(91811211611981, constrainedNumber.bound(false))
 }
 
 type ConstrainedNumber []ConstrainedPair

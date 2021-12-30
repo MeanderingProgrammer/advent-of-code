@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strings"
@@ -77,8 +78,7 @@ func main() {
     graph, folds := getData()
 
     graph = graph.apply(folds[0])
-    // Part 1: 737
-    fmt.Printf("Part 1: %d \n", len(graph.grid))
+    answers.Part1(737, len(graph.grid))
     // Part 2: ZUJUAFHP
     fmt.Println("Part 2")
     for _, fold := range folds[1:] {

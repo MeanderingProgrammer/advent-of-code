@@ -1,6 +1,7 @@
 package main
 
 import(
+    "advent-of-code/commons/go/answers"
     "fmt"
     "io/ioutil"
     "strings"
@@ -99,9 +100,8 @@ func (grid Grid) print() {
 
 func main() {
     cucumbers := getData()
-    
-    // Part 1: 492
-    fmt.Printf("Part 1: %d \n", cucumbers.untilStop())
+
+    answers.Part1(492, cucumbers.untilStop())
 }
 
 func getData() Grid {
