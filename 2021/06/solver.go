@@ -37,8 +37,10 @@ func (school *School) print() {
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", fishAfter(80))
-    fmt.Printf("Part 2 = %d \n", fishAfter(256))
+    // Part 1: 345793
+    fmt.Printf("Part 1: %d \n", fishAfter(80))
+    // Part 2: 1572643095893
+    fmt.Printf("Part 2: %d \n", fishAfter(256))
 }
 
 func fishAfter(days int) int {

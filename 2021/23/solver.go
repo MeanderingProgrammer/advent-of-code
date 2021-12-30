@@ -277,8 +277,10 @@ func (board *Board) reachable(boardState BoardState, position Position) Position
 }
 
 func main() {
-    fmt.Printf("Part 1 = %d \n", solve(false))
-    fmt.Printf("Part 2 = %d \n", solve(true))
+    // Part 1: 18282
+    fmt.Printf("Part 1: %d \n", solve(false))
+    // Part 2: 50132
+    fmt.Printf("Part 2: %d \n", solve(true))
 }
 
 func solve(extend bool) int {

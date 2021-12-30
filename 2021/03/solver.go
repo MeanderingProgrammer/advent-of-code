@@ -39,8 +39,10 @@ func (binaries Binaries) filter(position int, value string) Binaries {
 func main() {
 	binaries := getBinaries()
 
-	fmt.Printf("Part 1 = %d \n", calculatePowerConsumption(binaries))
-	fmt.Printf("Part 2 = %d \n", calculateLifeSupport(binaries))
+	// Part 1: 4006064
+	fmt.Printf("Part 1: %d \n", calculatePowerConsumption(binaries))
+	// Part 2: 5941884
+	fmt.Printf("Part 2: %d \n", calculateLifeSupport(binaries))
 }
 
 func getBinaries() Binaries {

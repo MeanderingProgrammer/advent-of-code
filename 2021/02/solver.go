@@ -45,8 +45,10 @@ func main() {
 	position1 := instructions.follow(move1)
 	position2 := instructions.follow(move2)
 
-	fmt.Printf("Part 1 = %d \n", position1.magicNumber())
-	fmt.Printf("Part 2 = %d \n", position2.magicNumber())
+	// Part 1: 1459206
+	fmt.Printf("Part 1: %d \n", position1.magicNumber())
+	// Part 2: 1320534480
+	fmt.Printf("Part 2: %d \n", position2.magicNumber())
 }
 
 func getInstructions() Instructions {

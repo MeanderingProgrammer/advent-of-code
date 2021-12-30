@@ -87,8 +87,10 @@ func main() {
     order, boards := getData()
 
     completeScores := runToComplete(order, boards)
-    fmt.Printf("Part 1 = %d \n", completeScores[0])
-    fmt.Printf("Part 2 = %d \n", completeScores[len(completeScores) - 1])
+    // Part 1: 44088
+    fmt.Printf("Part 1: %d \n", completeScores[0])
+    // Part 2: 23670
+    fmt.Printf("Part 2: %d \n", completeScores[len(completeScores) - 1])
 }
 
 func runToComplete(order []int, boards []*Board) []int {

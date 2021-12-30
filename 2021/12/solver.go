@@ -98,8 +98,10 @@ func (graph Graph) paths(canGo func(Path, Cave) bool) Paths {
 func main() {
     graph := getData()
 
-    fmt.Printf("Part 1 = %d \n", len(graph.paths(part1)))
-    fmt.Printf("Part 2 = %d \n", len(graph.paths(part2)))
+    // Part 1: 3497
+    fmt.Printf("Part 1: %d \n", len(graph.paths(part1)))
+    // Part 2: 93686
+    fmt.Printf("Part 2: %d \n", len(graph.paths(part2)))
 }
 
 func part1(path Path, destination Cave) bool {

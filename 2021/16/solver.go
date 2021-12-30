@@ -75,8 +75,10 @@ func main() {
     packets, _ := parsePackets(getData(), -1)
     packet := packets[0]
 
-    fmt.Printf("Part 1 = %d \n", packet.versionSum())
-    fmt.Printf("Part 2 = %d \n", packet.calculate())
+    // Part 1: 929
+    fmt.Printf("Part 1: %d \n", packet.versionSum())
+    // Part 2: 911945136934
+    fmt.Printf("Part 2: %d \n", packet.calculate())
 }
 
 func parsePackets(packets string, max int) ([]Packet, int) {

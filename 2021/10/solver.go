@@ -76,8 +76,10 @@ func (systems Systems) autocompleteScore() int {
 func main() {
     systems := getData()
 
-    fmt.Printf("Part 1 = %d \n", systems.mismatchScore())
-    fmt.Printf("Part 2 = %d \n", systems.autocompleteScore())
+    // Part 1: 321237
+    fmt.Printf("Part 1: %d \n", systems.mismatchScore())
+    // Part 2: 2360030859
+    fmt.Printf("Part 2: %d \n", systems.autocompleteScore())
 }
 
 func checkSyntax(system string) (string, Stack) {

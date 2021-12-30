@@ -87,8 +87,10 @@ func main() {
     targetArea := getData()
 
 	maxHeight, numValid := getMaxHeight(targetArea)
-    fmt.Printf("Part 1 = %d \n", maxHeight)
-	fmt.Printf("Part 2 = %d \n", numValid)
+    // Part 1: 4095
+    fmt.Printf("Part 1: %d \n", maxHeight)
+    // Part 2: 3773
+    fmt.Printf("Part 2: %d \n", numValid)
 }
 
 func getMaxHeight(targetArea TargetArea) (int, int) {

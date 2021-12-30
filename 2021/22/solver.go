@@ -85,8 +85,10 @@ func (bounds Bounds) area() int {
 
 func main() {
     finalBounds := getFinalBounds()
-    fmt.Printf("Part 1 = %d \n", limitedBoundsArea(finalBounds))
-    fmt.Printf("Part 2 = %d \n", finalBounds.area())
+    // Part 1: 561032
+    fmt.Printf("Part 1: %d \n", limitedBoundsArea(finalBounds))
+    // Part 2: 1322825263376414
+    fmt.Printf("Part 2: %d \n", finalBounds.area())
 }
 
 func getFinalBounds() Bounds {

@@ -10,8 +10,10 @@ import(
 func main() {
     content := getContent()
 
-    fmt.Printf("Part 1 = %d \n", windowIncreases(content, 1))
-    fmt.Printf("Part 2 = %d \n", windowIncreases(content, 3))
+    // Part 1: 1292
+    fmt.Printf("Part 1: %d \n", windowIncreases(content, 1))
+    // Part 2: 1262
+    fmt.Printf("Part 2: %d \n", windowIncreases(content, 3))
 }
 
 func getContent() []string {
