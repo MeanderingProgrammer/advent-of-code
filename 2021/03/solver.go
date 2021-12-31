@@ -2,34 +2,28 @@ package main
 
 import(
 	"advent-of-code/commons/go/answers"
-	"io/ioutil"
-	"strings"
-	"strconv"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
 )
 
-type Binary string
-
-func (binary Binary) toInt() int {
-	result, _ := strconv.ParseInt(string(binary), 2, 64)
-	return int(result)
-}
-
-type Binaries []Binary
+type Binaries []string
 
 func (binaries Binaries) mostCommonAt(position int) string {
 	frequency := make(map[string]int)
 	for _, binary := range binaries {
-		char := string(binary[position])
-		frequency[char]++
+		frequency[string(binary[position])]++
 	}
-	return asBit(frequency["1"] >= frequency["0"])
+	if frequency["1"] >= frequency["0"] {
+		return "1"
+	} else {
+		return "0"
+	}
 }
 
 func (binaries Binaries) filter(position int, value string) Binaries {
 	var filtered Binaries
 	for _, binary := range binaries {
-		char := string(binary[position])
-		if char == value {
+		if string(binary[position]) == value {
 			filtered = append(filtered, binary)
 		}
 	}
@@ -44,47 +38,44 @@ func main() {
 }
 
 func getBinaries() Binaries {
-	content, _ := ioutil.ReadFile("data.txt")
-
-	var binaries Binaries
-	for _, binary := range strings.Split(string(content), "\r\n") {
-		binaries = append(binaries, Binary(binary))
-	}
-    return binaries
+    return files.ReadLines()
 }
 
 func calculatePowerConsumption(binaries Binaries) int {
-	gammaRate := ""
-	epsilonRate := ""
-	for i := 0; i < len(binaries[0]); i++ {
-		result := binaries.mostCommonAt(i)
-		gammaRate += result
-		epsilonRate += asBit(result == "0")
+	return constructedValue(binaries, true) * constructedValue(binaries, false)
+}
+
+func constructedValue(binaries Binaries, mostCommon bool) int {
+	rate := ""
+	for i := 0; i < len(binaries[0]) && len(binaries) > 1; i++ {
+		value := binaries.mostCommonAt(i)
+		if !mostCommon {
+			value = invertBit(value)
+		}
+		rate += value
 	}
-	return Binary(gammaRate).toInt() * Binary(epsilonRate).toInt()
+	return conversions.BinaryToDecimal(rate)
 }
 
 func calculateLifeSupport(binaries Binaries) int {
-	return filterRating(binaries, true).toInt() * filterRating(binaries, false).toInt()
+	return filteredValue(binaries, true) * filteredValue(binaries, false)
 }
 
-func filterRating(binaries Binaries, mostCommon bool) Binary {
-	position := 0
-	for len(binaries) > 1 {
-		value := binaries.mostCommonAt(position)
+func filteredValue(binaries Binaries, mostCommon bool) int {
+	for i := 0; len(binaries) > 1; i++ {
+		value := binaries.mostCommonAt(i)
 		if !mostCommon {
-			value = asBit(value == "0")
+			value = invertBit(value)
 		}
-		binaries = binaries.filter(position, value)
-		position++;
+		binaries = binaries.filter(i, value)
 	}
-	return binaries[0]
+	return conversions.BinaryToDecimal(binaries[0])
 }
 
-func asBit(value bool) string {
-	if value {
-		return "1"
-	} else {
+func invertBit(value string) string {
+	if value == "1" {
 		return "0"
+	} else {
+		return "1"
 	}
 }
