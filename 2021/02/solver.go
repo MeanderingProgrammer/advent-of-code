@@ -2,14 +2,14 @@ package main
 
 import(
 	"advent-of-code/commons/go/answers"
-	"io/ioutil"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
 	"strings"
-	"strconv"
 )
 
 type Position struct {
-    horizontal int
-    depth  int
+	horizontal int
+	depth  int
 	aim int
 }
 
@@ -50,17 +50,17 @@ func main() {
 }
 
 func getInstructions() Instructions {
-	var instructions Instructions
-
-	content, _ := ioutil.ReadFile("data.txt")
-    lines := strings.Split(string(content), "\r\n")
-	for _, line := range lines {
-		parts := strings.Split(line, " ")
-		amount, _ := strconv.Atoi(parts[1])
-		instruction := Instruction{Direction(parts[0]), amount}
-		instructions = append(instructions, instruction)
+	toInstruction := func(line string) interface{} {
+		parts := strings.Fields(line)
+		return Instruction{
+			direction: Direction(parts[0]), 
+			amount: conversions.ToInt(parts[1]),
+		}
 	}
-
+	var instructions Instructions
+	for _, instruction := range files.Read(toInstruction) {
+		instructions = append(instructions, instruction.(Instruction))
+	}
 	return instructions
 }
 

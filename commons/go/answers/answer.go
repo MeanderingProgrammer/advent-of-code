@@ -1,6 +1,8 @@
 package answers
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func Part1(expected, result int) {
 	part(1, expected, result)
