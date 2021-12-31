@@ -32,21 +32,19 @@ type Instruction struct {
 
 type Instructions []Instruction
 
-func (instructions Instructions) follow(f func(*Position, Instruction)) Position {
-	position := Position{}
+func (instructions Instructions) follow(f func(*Position, int, Direction)) int {
+	position := &Position{}
 	for _, instruction := range instructions {
-		f(&position, instruction)
+		f(position, instruction.amount, instruction.direction)
 	}
-	return position
+	return position.magicNumber()
 }
 
 func main() {
 	instructions := getInstructions()
-	position1 := instructions.follow(move1)
-	position2 := instructions.follow(move2)
 
-	answers.Part1(1459206, position1.magicNumber())
-	answers.Part2(1320534480, position2.magicNumber())
+	answers.Part1(1459206, instructions.follow(part1))
+	answers.Part2(1320534480, instructions.follow(part2))
 }
 
 func getInstructions() Instructions {
@@ -64,18 +62,16 @@ func getInstructions() Instructions {
 	return instructions
 }
 
-func move1(position *Position, instruction Instruction) {
-	amount := instruction.amount
-	switch instruction.direction {
+func part1(position *Position, amount int, direction Direction) {
+	switch direction {
 	case Forward: position.horizontal += amount
 	case Down: position.depth += amount
 	case Up: position.depth -= amount
 	}
 }
 
-func move2(position *Position, instruction Instruction) {
-	amount := instruction.amount
-	switch instruction.direction {
+func part2(position *Position, amount int, direction Direction) {
+	switch direction {
 	case Forward: {
 		position.horizontal += amount
 		position.depth += (position.aim * amount)
