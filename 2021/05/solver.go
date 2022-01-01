@@ -1,53 +1,40 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strings"
-    "strconv"
+import (
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
+	"strings"
 )
 
-type Point struct {
-    x int
-    y int
-}
-
 type Line struct {
-    p1 Point
-    p2 Point
+    p1 parsers.Point
+    p2 parsers.Point
 }
 
-func (line Line) pointsBetween(includeDiagonal bool) []Point {
-    var points []Point
+func (line Line) pointsBetween(includeDiagonal bool) []parsers.Point {
+    var points []parsers.Point
 
-    xRange := coordinateRange(line.p1.x, line.p2.x)
-    yRange := coordinateRange(line.p1.y, line.p2.y)
+    xRange := coordinateRange(line.p1.X, line.p2.X)
+    yRange := coordinateRange(line.p1.Y, line.p2.Y)
 
     if len(xRange) == 1 || len(yRange) == 1 {
         // Get vertical / horizontal points
         for _, x := range xRange {
             for _, y := range yRange {
-                point := Point{x, y}
+                point := parsers.Point{X: x, Y: y}
                 points = append(points, point)
             }
         }
-    } else if includeDiagonal && len(xRange) == len(yRange) {
-        // Get diagonal points if allow
+    } else if includeDiagonal {
+        // Get diagonal points if allowed
         for i := 0; i < len(xRange); i++ {
-            point := Point{xRange[i], yRange[i]}
+            point := parsers.Point{X: xRange[i], Y: yRange[i]}
             points = append(points, point)
         }
     }
 
     return points
-}
-
-func abs(value int) int {
-    if value < 0 {
-        return value * -1
-    } else {
-        return value
-    }
 }
 
 func coordinateRange(v1 int, v2 int) []int {
@@ -72,13 +59,12 @@ func main() {
 }
 
 func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
-    frequencies := make(map[Point]int)
+    frequencies := make(map[parsers.Point]int)
     for _, line := range lines {
         for _, point := range line.pointsBetween(includeDiagonal) {
             frequencies[point]++
         }
     }
-
     totalOverlap := 0
     for _, overlap := range frequencies {
         if overlap >= 2 {
@@ -90,21 +76,21 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 
 func getData() []Line {
     var result []Line
-    data, _ := ioutil.ReadFile("data.txt")
-    for _, line := range strings.Split(string(data), "\r\n") {
-        result = append(result, parseLine(line))
+    for _, line := range files.Read(parseLine) {
+        result = append(result, line.(Line))
     }
     return result
 }
 
-func parseLine(line string) Line {
+func parseLine(line string) interface{} {
     points := strings.Split(line, " -> ")
-    return Line{parsePoint(points[0]), parsePoint(points[1])}
+    return Line{
+        p1: parsePoint(points[0]), 
+        p2: parsePoint(points[1]),
+    }
 }
 
-func parsePoint(point string) Point {
+func parsePoint(point string) parsers.Point {
     coords := strings.Split(point, ",")
-    x, _ := strconv.Atoi(coords[0])
-    y, _ := strconv.Atoi(coords[1])
-    return Point{x, y}
+    return parsers.ConstructPoint(coords[0], coords[1])
 }
