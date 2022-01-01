@@ -1,6 +1,7 @@
 package parsers
 
 import(
+    "advent-of-code/commons/go/conversions"
 	"fmt"
 	"strings"
 )
@@ -8,6 +9,13 @@ import(
 type Point struct {
     X int
     Y int
+}
+
+func ConstructPoint(x, y string) Point {
+    return Point{
+        X: conversions.ToInt(x), 
+        Y: conversions.ToInt(y),
+    }
 }
 
 type Graph struct {
