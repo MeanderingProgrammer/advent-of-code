@@ -27,12 +27,24 @@ func Read(f func(string)interface{}) []interface{} {
 		result = append(result, f(line))
 	}
 	return result
-} 
+}
+
+func ReadGroups() []string {
+	return SplitContent("\r\n\r\n")
+}
 
 func ReadLines() []string {
+	return SplitContent("\r\n")
+}
+
+func SplitContent(splitter string) []string {
+	return strings.Split(Content(), splitter)
+}
+
+func Content() string {
 	content, err := ioutil.ReadFile(fileName())
 	utils.CheckError(err)
-	return strings.Split(string(content), "\r\n")
+	return string(content)
 }
 
 func fileName() string {
