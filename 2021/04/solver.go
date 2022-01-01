@@ -1,103 +1,21 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "fmt"
-    "io/ioutil"
-    "strings"
-    "strconv"
+import (
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
+	"strings"
 )
 
-type Position struct {
-    row int
-    column int
-}
+type Boards []*Board
 
-type Cell struct {
-    value int
-    marked bool
-}
-
-type Board struct {
-    boardMap map[Position]*Cell
-    numRows int
-    numCols int
-    complete *[]int
-    markOrder []int
-}
-
-func (board *Board) mark(value int) {
-    for position, cell := range board.boardMap {
-        if (cell.value == value) {
-            cell.marked = true
-            board.markOrder = append(board.markOrder, value)
-
-            completeRow := board.getComplete(position, func(pos Position) int {return pos.row})
-            if completeRow != nil {
-                board.complete = completeRow
-            }
-
-            completeColumn := board.getComplete(position, func(pos Position) int {return pos.column})
-            if completeColumn != nil {
-                board.complete = completeColumn
-            }
-        }
-    }
-}
-
-func (board Board) getComplete(position Position, f func(Position) int) *[]int {
-    var complete []int
-    target := f(position)
-    for pos, cell := range board.boardMap {
-        if f(pos) == target {
-            if cell.marked {
-                complete = append(complete, cell.value)
-            } else {
-                return nil
-            }
-        }
-    }
-    return &complete
-}
-
-func (board Board) score() int {
-    total := 0
-    for _, cell := range board.boardMap {
-        if !cell.marked {
-            total += cell.value
-        }
-    }
-    lastMarked := board.markOrder[len(board.markOrder) - 1]
-    return total * lastMarked
-}
-
-func (board Board) print() {
-    for r := 0; r < board.numRows; r++ {
-        for c := 0; c < board.numCols; c++ {
-            position := Position{r, c}
-            cell := board.boardMap[position]
-            fmt.Print(*cell)
-        }
-        fmt.Println()
-    }
-    fmt.Printf("Is complete = %v \n", *board.complete)
-    fmt.Printf("Marked = %v \n", board.markOrder)
-}
-
-func main() {
-    order, boards := getData()
-
-    completeScores := runToComplete(order, boards)
-    answers.Part1(44088, completeScores[0])
-    answers.Part2(23670, completeScores[len(completeScores) - 1])
-}
-
-func runToComplete(order []int, boards []*Board) []int {
+func (boards Boards) runToComplete(order []string) []int {
     var result []int
     for _, value := range order {
-        for _, board := range incomplete(boards) {
+        for _, board := range boards.incomplete() {
             board.mark(value)
-            if board.complete != nil {
+            if board.complete {
                 result = append(result, board.score()) 
             }
         }
@@ -105,62 +23,84 @@ func runToComplete(order []int, boards []*Board) []int {
     return result
 }
 
-func incomplete(boards []*Board) []*Board {
-    var result []*Board
+func (boards Boards) incomplete() Boards {
+    var result Boards
     for _, board := range boards {
-        if board.complete == nil {
+        if !board.complete {
             result = append(result, board)
         }
     }
     return result
 }
 
-func getData() ([]int, []*Board) {
-    data, _ := ioutil.ReadFile("data.txt")
-    orderBoards := strings.Split(string(data), "\r\n\r\n")
-    order, boards := orderBoards[0], orderBoards[1:]
-    return parseOrder(order), parseBoards(boards)
+type Board struct {
+    graph parsers.Graph
+    marked map[parsers.Point]bool
+    order []int
+    complete bool
 }
 
-func parseOrder(order string) []int {
-    var result []int
-    for _, value := range strings.Split(order, ",") {
-        parsed, _ := strconv.Atoi(value)
-        result = append(result, parsed)
+func (board *Board) mark(value string) {
+    point, exists := board.graph.GetPoint(value)
+    if !exists {
+        return
     }
-    return result
-}
 
-func parseBoards(boards []string) []*Board {
-    var result []*Board
-    for _, board := range boards {
-        result = append(result, parseBoard(board))
+    board.marked[point] = true
+    board.order = append(board.order, conversions.ToInt(value))
+
+    rowComplete := board.isComplete(point, func(p parsers.Point) int {return p.Y})
+    columnComplete := board.isComplete(point, func(p parsers.Point) int {return p.X})
+    if rowComplete || columnComplete {
+        board.complete = true
     }
-    return result
 }
 
-func parseBoard(board string) *Board {
-    boardMap := make(map[Position]*Cell)
-    rows, numRows, numCols := parseBoardSimple(board)
-    for r, row := range rows {
-        for c, column := range row {
-            positon := Position{r, c}
-            value, _ := strconv.Atoi(column)
-            cell := Cell{value: value}
-            boardMap[positon] = &cell
+func (board Board) isComplete(targetPoint parsers.Point, f func(parsers.Point) int) bool {
+    targetCoord := f(targetPoint)
+    for point := range board.graph.Grid {
+        if f(point) == targetCoord && !board.marked[point] {
+            return false
         }
     }
-    return &Board{
-        boardMap: boardMap, 
-        numRows: numRows, 
-        numCols: numCols, 
-    }
+    return true
 }
 
-func parseBoardSimple(board string) ([][]string, int, int) {
-    var simpleBoard [][]string
-    for _, row := range strings.Split(board, "\r\n") {
-        simpleBoard = append(simpleBoard, strings.Fields(row))
+func (board Board) score() int {
+    total := 0
+    for point, value := range board.graph.Grid {
+        if !board.marked[point] {
+            total += conversions.ToInt(value)
+        }
     }
-    return simpleBoard, len(simpleBoard), len(simpleBoard[0])
+    lastMarked := board.order[len(board.order) - 1]
+    return total * lastMarked
+}
+
+func main() {
+    order, boards := getData()
+
+    scores := boards.runToComplete(order)
+    answers.Part1(44088, scores[0])
+    answers.Part2(23670, scores[len(scores) - 1])
+}
+
+func getData() ([]string, Boards) {
+    orderBoards := files.ReadGroups()
+    return strings.Split(orderBoards[0], ","), parseBoards(orderBoards[1:])
+}
+
+func parseBoards(boards []string) Boards {
+    var result Boards
+    for _, board := range boards {
+        graph := parsers.ConstructGraph(strings.Split(board, "\r\n"), parsers.Field)
+        board := Board{
+            graph: graph,
+            marked: make(map[parsers.Point]bool),
+            order: nil,
+            complete: false,
+        }
+        result = append(result, &board)
+    }
+    return result
 }
