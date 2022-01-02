@@ -2,10 +2,8 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "fmt"
-    "io/ioutil"
-    "strings"
-    "strconv"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
 )
 
 type School map[int]int
@@ -25,16 +23,12 @@ func (school *School) runDay() {
     *school = nextSchool
 }
 
-func (school *School) totalFish() int {
+func (school School) totalFish() int {
     result := 0
-    for _, numFish := range *school {
+    for _, numFish := range school {
         result += numFish
     }
     return result
-}
-
-func (school *School) print() {
-    fmt.Println(*school)
 }
 
 func main() {
@@ -43,22 +37,18 @@ func main() {
 }
 
 func fishAfter(days int) int {
-    school := getData()
+    school := getSchool()
     for i := 0; i < days; i++ {
         school.runDay()
     }
     return school.totalFish()
 }
 
-func getData() School {
-    data, _ := ioutil.ReadFile("data.txt")
-    rawFishes := strings.Split(string(data), ": ")[1]
-    fishes := strings.Split(rawFishes, ",")
-
-    result := make(map[int]int)
-    for _, fish := range fishes {
-        counter, _ := strconv.Atoi(fish)
-        result[counter]++
+func getSchool() School {
+    school := make(map[int]int)
+    fishes := parsers.SubstringAfter(files.Content(), ": ")
+    for _, fish := range parsers.IntCsv(fishes) {
+        school[fish]++
     }
-    return result
+    return school
 }
