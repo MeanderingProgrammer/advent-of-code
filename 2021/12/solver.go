@@ -2,7 +2,7 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "io/ioutil"
+    "advent-of-code/commons/go/files"
     "strings"
     "unicode"
 )
@@ -96,7 +96,7 @@ func (graph Graph) paths(canGo func(Path, Cave) bool) Paths {
 }
 
 func main() {
-    graph := getData()
+    graph := getGraph()
 
     answers.Part1(3497, len(graph.paths(part1)))
     answers.Part2(93686, len(graph.paths(part2)))
@@ -122,12 +122,9 @@ func part2(path Path, destination Cave) bool {
     }
 }
 
-func getData() Graph {
-    data, _ := ioutil.ReadFile("data.txt")
-    creationRules := strings.Split(string(data), "\r\n")
-
-    graph := Graph(make(map[Cave][]Cave))
-    for _, creationRule := range creationRules {
+func getGraph() Graph {
+    graph := make(Graph)
+    for _, creationRule := range files.ReadLines() {
         startEnd := strings.Split(creationRule, "-")
         start, end := Cave(startEnd[0]), Cave(startEnd[1])
         graph.add(start, end)
