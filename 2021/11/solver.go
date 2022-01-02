@@ -1,40 +1,15 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "fmt"
-    "io/ioutil"
-    "strconv"
-    "strings"
+import (
+	"advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
 )
 
-type Position struct {
-    x int
-    y int
-}
-
-func (position Position) adjacent() []Position {
-    return []Position {
-        {position.x - 1, position.y},
-        {position.x + 1, position.y},
-        {position.x, position.y - 1},
-        {position.x, position.y + 1},
-        {position.x + 1, position.y + 1},
-        {position.x - 1, position.y - 1},
-        {position.x + 1, position.y - 1},
-        {position.x - 1, position.y + 1},
-    }
-}
-
-type Octopus struct {
-    energy int
-    flashed bool
-}
-
 type OctopusGrid struct {
-    grid map[Position]*Octopus
-    rows int
-    columns int
+    graph parsers.Graph
+    flashed map[parsers.Point]bool
 }
 
 func (grid OctopusGrid) runFor(steps int) int {
@@ -46,8 +21,7 @@ func (grid OctopusGrid) runFor(steps int) int {
 }
 
 func (grid OctopusGrid) runUntilAll() int {
-    target := len(grid.grid)
-    steps := 1
+    target, steps := len(grid.graph.Grid), 1
     for grid.step() != target {
         steps++
     }
@@ -55,64 +29,45 @@ func (grid OctopusGrid) runUntilAll() int {
 }
 
 func (grid OctopusGrid) step() int {
-    for position := range grid.grid {
-        grid.flash(position)
+    for point := range grid.graph.Grid {
+        grid.flash(point)
     }
-
-    flashed := 0
-    for _, octopus := range grid.grid {
-        if octopus.flashed {
-            octopus.energy = 0
-            octopus.flashed = false
-            flashed++
-        }
+    flashed := len(grid.flashed)
+    for point := range grid.flashed {
+        grid.graph.Grid[point] = "0"
+        delete(grid.flashed, point)
     }
     return flashed
 }
 
-func (grid OctopusGrid) flash(position Position) {
-    octopus, exists := grid.grid[position]
-    if !exists {
+func (grid OctopusGrid) flash(point parsers.Point) {
+    if !grid.graph.Contains(point) {
         return
     }
-    octopus.energy++
-    if octopus.energy > 9 && !octopus.flashed {
-        octopus.flashed = true
-        for _, adjacent := range position.adjacent() {
+    energy := grid.increment(point)
+    if energy > 9 && !grid.flashed[point] {
+        grid.flashed[point] = true
+        for _, adjacent := range point.Adjacent(true) {
             grid.flash(adjacent)
         }
     }
 }
 
-func (grid OctopusGrid) print() {
-    fmt.Println(strings.Repeat("=", 20))
-    for y := 0; y < grid.rows; y++ {
-        for x := 0; x < grid.columns; x++ {
-            position := Position{x, y}
-            octopus := grid.grid[position]
-            fmt.Print(octopus.energy)
-        }
-        fmt.Println()
-    }
-    fmt.Println(strings.Repeat("=", 20))
+func (grid OctopusGrid) increment(point parsers.Point) int {
+    previousValue := grid.graph.Grid[point]
+    newValue := conversions.ToInt(previousValue) + 1
+    grid.graph.Grid[point] = conversions.ToString(newValue)
+    return newValue
 }
 
 func main() {
-    answers.Part1(1732, getData().runFor(100))
-    answers.Part2(290, getData().runUntilAll())
+    answers.Part1(1732, getGrid().runFor(100))
+    answers.Part2(290, getGrid().runUntilAll())
 }
 
-func getData() OctopusGrid {
-    data, _ := ioutil.ReadFile("data.txt")
-    rows := strings.Split(string(data), "\r\n")
-
-    grid := make(map[Position]*Octopus)
-    for y, row := range rows {
-        for x, rawEnergy := range row {
-            position := Position{x, y}
-            energy, _ := strconv.Atoi(string(rawEnergy))
-            grid[position] = &Octopus{energy, false}
-        }
+func getGrid() OctopusGrid {
+    return OctopusGrid{
+        graph: parsers.ConstructGraph(files.ReadLines(), parsers.Character),
+        flashed: make(map[parsers.Point]bool),
     }
-    return OctopusGrid{grid, len(rows), len(rows[0])}
 }

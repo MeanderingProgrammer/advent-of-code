@@ -38,7 +38,7 @@ func (points Points) basinSizes(graph parsers.Graph) []int {
 func basinSize(graph parsers.Graph, point parsers.Point) int {
     basin := Points{point}
     for i := 0; i < len(basin); i++ {
-        for _, adjacent := range basin[i].Adjacent() {
+        for _, adjacent := range basin[i].Adjacent(false) {
             adjacentValue, exists := graph.Grid[adjacent]
             if exists && conversions.ToInt(adjacentValue) < 9 && !basin.contains(adjacent) {
                 basin = append(basin, adjacent)
@@ -71,7 +71,7 @@ func minimums(graph parsers.Graph) Points {
 
 func isMinimum(graph parsers.Graph, point parsers.Point) bool {
     value := conversions.ToInt(graph.Grid[point])
-    for _, adjacent := range point.Adjacent() {
+    for _, adjacent := range point.Adjacent(false) {
         adjacentValue, exists := graph.Grid[adjacent]
         if exists && conversions.ToInt(adjacentValue) <= value {
             return false

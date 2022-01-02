@@ -11,13 +11,23 @@ type Point struct {
     Y int
 }
 
-func (point Point) Adjacent() []Point {
-    return []Point{
+func (point Point) Adjacent(includeDiagonal bool) []Point {
+    adjacent := []Point{
         {X: point.X - 1, Y: point.Y},
         {X: point.X + 1, Y: point.Y},
         {X: point.X, Y: point.Y - 1},
         {X: point.X, Y: point.Y + 1},
     }
+    if includeDiagonal {
+        diagonals := []Point{
+            {X: point.X + 1, Y: point.Y + 1},
+            {X: point.X - 1, Y: point.Y - 1},
+            {X: point.X + 1, Y: point.Y - 1},
+            {X: point.X - 1, Y: point.Y + 1},
+        }
+        adjacent = append(adjacent, diagonals...)
+    }
+    return adjacent
 }
 
 func ConstructPoint(x, y string) Point {
@@ -32,6 +42,11 @@ type Graph struct {
     height int
     width int
 }
+
+func (graph Graph) Contains(point Point) bool {
+    _, exists := graph.Grid[point]
+    return exists
+} 
 
 func (graph Graph) GetPoint(target string) (Point, bool) {
     for point, value := range graph.Grid {
