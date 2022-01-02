@@ -1,136 +1,85 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strconv"
-    "strings"
-    "sort"
+import (
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
+	"sort"
 )
 
-type Position struct {
-    x int
-    y int
-}
+type Points []parsers.Point
 
-func (position Position) adjacent() []Position {
-    var result []Position
-    result = append(result, Position{position.x - 1, position.y})
-    result = append(result, Position{position.x + 1, position.y})
-    result = append(result, Position{position.x, position.y - 1})
-    result = append(result, Position{position.x, position.y + 1})
-    return result
-}
-
-type HeightPoint struct {
-    position Position
-    height int
-}
-
-func (heightPoint HeightPoint) riskLevel() int {
-    return heightPoint.height + 1
-}
-
-func (heightPoint HeightPoint) basinSize(heightMap HeightMap) int {
-    var basin HeightPoints
-    basin = append(basin, heightPoint)
-
-    for i := 0; i < len(basin); i++ {
-        for _, adjacent := range basin[i].position.adjacent() {
-            adjacentValue, exists := heightMap.mapping[adjacent]
-            adjacentHeightPoint := HeightPoint{adjacent, adjacentValue}
-            if exists && adjacentValue < 9 && !basin.contains(adjacentHeightPoint) {
-                basin = append(basin, adjacentHeightPoint)
-            }
-        }
-    }
-
-    return len(basin)
-}
-
-type HeightPoints []HeightPoint
-
-func (heightPoints HeightPoints) contains(heightPoint HeightPoint) bool {
-    for _, contained := range heightPoints {
-        if contained == heightPoint {
+func (points Points) contains(point parsers.Point) bool {
+    for _, contained := range points {
+        if contained == point {
             return true
         }
     }
     return false
 }
 
-func (heightPoints HeightPoints) riskLevel() int {
+func (points Points) riskLevel(graph parsers.Graph) int {
     result := 0
-    for _, heightPoint := range heightPoints {
-        result += heightPoint.riskLevel()
+    for _, point := range points {        
+        result += conversions.ToInt(graph.Grid[point]) + 1
     }
     return result
 }
 
-func (heightPoints HeightPoints) basinSizes(heightMap HeightMap) []int {
+func (points Points) basinSizes(graph parsers.Graph) []int {
     var basinSizes []int
-    for _, heightPoint := range heightPoints {
-        basinSize := heightPoint.basinSize(heightMap)
-        basinSizes = append(basinSizes, basinSize)
+    for _, point := range points {
+        basinSizes = append(basinSizes, basinSize(graph, point))
     }
     return basinSizes
 }
 
-type HeightMap struct {
-    mapping map[Position]int
-    width int
-    height int
+func basinSize(graph parsers.Graph, point parsers.Point) int {
+    basin := Points{point}
+    for i := 0; i < len(basin); i++ {
+        for _, adjacent := range basin[i].Adjacent() {
+            adjacentValue, exists := graph.Grid[adjacent]
+            if exists && conversions.ToInt(adjacentValue) < 9 && !basin.contains(adjacent) {
+                basin = append(basin, adjacent)
+            }
+        }
+    }
+    return len(basin)
 }
 
-func (heightMap HeightMap) minimums() HeightPoints {
-    var result []HeightPoint
-    for position, value := range heightMap.mapping {
-        if heightMap.isMinimum(position) {
-            result = append(result, HeightPoint{position, value})
+func main() {
+    graph := getGraph()
+
+    minimums := minimums(graph)
+    answers.Part1(506, minimums.riskLevel(graph))
+
+    basinSizes := minimums.basinSizes(graph)
+    sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
+    answers.Part2(931200, basinSizes[0] * basinSizes[1] * basinSizes[2])
+}
+
+func minimums(graph parsers.Graph) Points {
+    var result Points
+    for point := range graph.Grid {
+        if isMinimum(graph, point) {
+            result = append(result, point)
         }
     }
     return result
 }
 
-func (heightMap HeightMap) isMinimum(position Position) bool {
-    value := heightMap.mapping[position]
-    for _, adjacent := range position.adjacent() {
-        adjacentValue, exists := heightMap.mapping[adjacent]
-        if exists && adjacentValue <= value {
+func isMinimum(graph parsers.Graph, point parsers.Point) bool {
+    value := conversions.ToInt(graph.Grid[point])
+    for _, adjacent := range point.Adjacent() {
+        adjacentValue, exists := graph.Grid[adjacent]
+        if exists && conversions.ToInt(adjacentValue) <= value {
             return false
         }
     }
     return true
 }
 
-func main() {
-    data := getData()
-
-    minimums := data.minimums()
-    answers.Part1(506, minimums.riskLevel())
-
-    basinSizes := minimums.basinSizes(data)
-    sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
-    answers.Part2(931200, basinSizes[0] * basinSizes[1] * basinSizes[2])
-}
-
-func getData() HeightMap {
-    data, _ := ioutil.ReadFile("data.txt")
-
-    rows := strings.Split(string(data), "\r\n")
-
-    height := len(rows)
-    width := len(rows[0])
-
-    mapping := make(map[Position]int)
-    for y, row := range rows {
-        for x, rawValue := range row {
-            position := Position{x, y}
-            value, _ := strconv.Atoi(string(rawValue))
-            mapping[position] = value            
-        }
-    }
-
-    
-    return HeightMap{mapping, width, height}
+func getGraph() parsers.Graph {
+    return parsers.ConstructGraph(files.ReadLines(), parsers.Character)
 }
