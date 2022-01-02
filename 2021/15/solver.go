@@ -1,35 +1,21 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "fmt"
-    "io/ioutil"
-    "strings"
+import (
+	"advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
 )
 
-type Position struct {
-    x int
-    y int
-}
-
-func (position Position) adjacent() []Position {
-    return []Position{
-        {position.x - 1, position.y},
-        {position.x + 1, position.y},
-        {position.x, position.y - 1},
-        {position.x, position.y + 1},
-    }
-}
-
 type Path struct {
-    path []Position
+    path []parsers.Point
     value int
 }
 
-func (path Path) add(position Position, value int) Path {
-    newPositions := make([]Position, len(path.path))
-    copy(newPositions, path.path)
-    return Path{append(newPositions, position), path.value + value}
+func (path Path) add(point parsers.Point, value int) Path {
+    newPoints := make([]parsers.Point, len(path.path))
+    copy(newPoints, path.path)
+    return Path{append(newPoints, point), path.value + value}
 }
 
 type PriorityQueue []Path
@@ -53,30 +39,36 @@ func (priorityQueue *PriorityQueue) pop() Path {
     return minPath
 }
 
-type Graph struct {
-    graph map[Position]int
-    end int
+func main() {
+    answers.Part1(656, solve(getGraph(false)))
+    answers.Part2(2979, solve(getGraph(true)))
 }
 
-func (graph Graph) solve() int {
-    end := Position{graph.end, graph.end}
+func solve(graph parsers.Graph) int {
+    end := parsers.Point{
+        X: graph.Width, 
+        Y: graph.Height,
+    }
 
     var priorityQueue PriorityQueue
-    priorityQueue.add(Path{[]Position{{0, 0}}, 0})
+    priorityQueue.add(Path{
+        path: []parsers.Point{{X: 0, Y: 0}}, 
+        value: 0,
+    })
 
-    seen := make(map[Position]bool)
+    seen := make(map[parsers.Point]bool)
 
     for !priorityQueue.empty() {
         path := priorityQueue.pop()
-        lastPosition := path.path[len(path.path) - 1]
-        if lastPosition == end {
+        lastPoint := path.path[len(path.path) - 1]
+        if lastPoint == end {
             return path.value
         }
-        for _, neighbor := range lastPosition.adjacent() {
-            value, exists := graph.graph[neighbor]
+        for _, neighbor := range lastPoint.Adjacent(false) {
+            value, exists := graph.Grid[neighbor]
             if exists && !seen[neighbor] {
                 seen[neighbor] = true
-                priorityQueue.add(path.add(neighbor, value))
+                priorityQueue.add(path.add(neighbor, conversions.ToInt(value)))
             }
         }
     }
@@ -84,55 +76,37 @@ func (graph Graph) solve() int {
     return 0
 }
 
-func (graph Graph) print() {
-    for y := 0; y < graph.end; y++ {
-        for x := 0; x < graph.end; x++ {
-            position := Position{x, y}
-            fmt.Print(graph.graph[position])
-        }
-        fmt.Println()
-    }
-}
-
-func main() {
-    answers.Part1(656, getData(false).solve())
-    answers.Part2(2979, getData(true).solve())
-}
-
-func getData(wrap bool) Graph {
-    baseGraph := baseData()
+func getGraph(wrap bool) parsers.Graph {
+    baseGraph := baseGraph()
     if !wrap {
         return baseGraph
     } else {
-        baseSize := baseGraph.end + 1
-        graph := make(map[Position]int)
+        baseSize := baseGraph.Width + 1
+        graph := make(map[parsers.Point]string)
         for i := 0; i < 5; i++ {
             for j := 0; j < 5; j++ {
                 distance := i + j
-                for position, value := range baseGraph.graph {
-                    newPosition := Position{position.x + (baseSize * i), position.y + (baseSize * j)}
-                    newValue := value + distance
+                for point, value := range baseGraph.Grid {
+                    newPoint := parsers.Point{
+                        X: point.X + (baseSize * i), 
+                        Y: point.Y + (baseSize * j),
+                    }
+                    newValue := conversions.ToInt(value) + distance
                     if newValue > 9 {
                         newValue -= 9
                     }
-                    graph[newPosition] = newValue
+                    graph[newPoint] = conversions.ToString(newValue)
                 }
             }
         }
-        return Graph{graph, (baseSize * 5) - 1}
+        return parsers.Graph{
+            Grid: graph, 
+            Height: (baseSize * 5) - 1,
+            Width: (baseSize * 5) - 1,
+        }
     }
 }
 
-func baseData() Graph {
-    data, _ := ioutil.ReadFile("data.txt")
-    rows := strings.Split(string(data), "\r\n")
-    graph := make(map[Position]int)
-    for y, row := range rows {
-        for x, rawValue := range(row) {
-            position := Position{x, y}
-            value := rawValue - '0'
-            graph[position] = int(value)
-        }
-    }
-    return Graph{graph, len(rows) - 1}
+func baseGraph() parsers.Graph {
+    return parsers.ConstructGraph(files.ReadLines(), parsers.Character)
 }
