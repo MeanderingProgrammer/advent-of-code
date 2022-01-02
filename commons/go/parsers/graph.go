@@ -11,6 +11,15 @@ type Point struct {
     Y int
 }
 
+func (point Point) Adjacent() []Point {
+    return []Point{
+        {X: point.X - 1, Y: point.Y},
+        {X: point.X + 1, Y: point.Y},
+        {X: point.X, Y: point.Y - 1},
+        {X: point.X, Y: point.Y + 1},
+    }
+}
+
 func ConstructPoint(x, y string) Point {
     return Point{
         X: conversions.ToInt(x), 
@@ -63,11 +72,7 @@ func fieldSplitter(row string) []string {
 }
 
 func characterSplitter(row string) []string {
-	var result []string
-	for _, char := range row {
-		result = append(result, string(char))
-	}
-	return result
+    return strings.Split(row, "")
 }
 
 func ConstructGraph(rows []string, splitter RowSplitter) Graph {
