@@ -2,9 +2,8 @@ package main
 
 import (
     "advent-of-code/commons/go/answers"
-	"io/ioutil"
+    "advent-of-code/commons/go/files"
 	"sort"
-	"strings"
 )
 
 type Stack []string
@@ -42,12 +41,32 @@ var scores = map[string]Score {
     ">": {25137, 4},
 }
 
+type System string
+
+func (system System) checkSyntax() (string, Stack) {
+    var syntaxStack Stack
+    for _, raw := range system {
+        value := string(raw)
+        _, exists := openToClose[value]
+        if exists {
+            syntaxStack.push(value)
+        } else {
+            lastOpen := syntaxStack.pop()
+            matchingClose := openToClose[lastOpen]
+            if matchingClose != value {
+                return value, nil
+            }
+        }
+    }
+    return "", syntaxStack
+}
+
 type Systems []string
 
 func (systems Systems) mismatchScore() int {
     total := 0
     for _, system := range systems {
-        mismatched, _ := checkSyntax(system)
+        mismatched, _ := System(system).checkSyntax()
         score := scores[mismatched].mismatch
         total += score
     }
@@ -57,7 +76,7 @@ func (systems Systems) mismatchScore() int {
 func (systems Systems) autocompleteScore() int {
     var totals []int
     for _, system := range systems {
-        _, unmatched := checkSyntax(system)
+        _, unmatched := System(system).checkSyntax()
         incompleteScore := 0
         for !unmatched.empty() {
             unmatchedBrace := unmatched.pop()
@@ -74,32 +93,12 @@ func (systems Systems) autocompleteScore() int {
 }
 
 func main() {
-    systems := getData()
+    systems := getSystem()
 
     answers.Part1(321237, systems.mismatchScore())
     answers.Part2(2360030859, systems.autocompleteScore())
 }
 
-func checkSyntax(system string) (string, Stack) {
-    var syntaxStack Stack
-    for _, raw := range system {
-        value := string(raw)
-        _, exists := openToClose[value]
-        if exists {
-            syntaxStack.push(value)
-        } else {
-            lastOpen := syntaxStack.pop()
-            matchingClose, _ := openToClose[lastOpen]
-            if matchingClose != value {
-                return value, nil
-            }
-        }
-    }
-    return "", syntaxStack
-}
-    
-
-func getData() Systems {
-    data, _ := ioutil.ReadFile("data.txt")
-    return strings.Split(string(data), "\r\n")
+func getSystem() Systems {
+    return files.ReadLines()
 }
