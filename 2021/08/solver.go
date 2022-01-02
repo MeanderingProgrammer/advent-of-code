@@ -1,9 +1,9 @@
 package main
 
 import (
-    "advent-of-code/commons/go/answers"
-	"io/ioutil"
-	"math"
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
 	"sort"
 	"strings"
 )
@@ -18,14 +18,12 @@ import (
  *  gggg
  */
 
-type Digit struct {
-    segments string
-}
+type Digit string
 
 func (digit Digit) overlap(other Digit) int {
     result := 0
-    for _, char1 := range digit.segments {
-        for _, char2 := range other.segments {
+    for _, char1 := range digit {
+        for _, char2 := range other {
             if char1 == char2 {
                 result += 1
             }
@@ -72,7 +70,7 @@ func (inputDigits InputDigits) getMapping() map[Digit]int {
 func (inputDigits InputDigits) getOfLength(n int) InputDigits {
     var digits []Digit
     for _, digit := range inputDigits {
-        if len(digit.segments) == n {
+        if len(digit) == n {
             digits = append(digits, digit)
         }
     }  
@@ -94,62 +92,52 @@ type SegmentEntry struct {
     outputDigits []Digit
 }
 
-func (segmentEntry SegmentEntry) solve() []int {
+func (segmentEntry SegmentEntry) solve() string {
     mapping := segmentEntry.inputDigits.getMapping()
-
-    var outputDigits []int
+    outputNumber := strings.Builder{}
     for _, digit := range segmentEntry.outputDigits {
-        outputDigits = append(outputDigits, mapping[digit])
+        outputNumber.WriteString(conversions.ToString(mapping[digit]))
     }
-    return outputDigits
+    return outputNumber.String()
 }
 
 func main() {
-    segmentEntries := getData()
-    
-    part1Solution :=  0
-    part2Solution := 0
-    for _, segmentEntry := range segmentEntries {
-        outputDigits := segmentEntry.solve()
-        part1Solution += trackPart1(outputDigits)
-        part2Solution += trackPart2(outputDigits)
+    part1, part2 :=  0, 0
+    for _, segmentEntry := range getSegmentEntries() {
+        outputNumber := segmentEntry.solve()
+        part1 += trackPart1(outputNumber)
+        part2 += trackPart2(outputNumber)
     }
-
-    answers.Part1(344, part1Solution)
-    answers.Part2(1048410, part2Solution)
+    answers.Part1(344, part1)
+    answers.Part2(1048410, part2)
 }
 
-func trackPart1(outputDigits []int) int {
+func trackPart1(outputNumber string) int {
     result := 0
-    for _, digit := range outputDigits {
-        if digit == 1 || digit == 4 || digit == 7 || digit == 8 {
-            result += 1
-        }
+    for _, digit := range []string{"1", "4", "7", "8"} {
+        result += strings.Count(outputNumber, digit)
     }
     return result
 }
 
-func trackPart2(outputDigits []int) int {
-    result := 0
-    for i, digit := range outputDigits {
-        exponent := len(outputDigits) - i - 1
-        scale := math.Pow(10.0, float64(exponent))
-        result += (digit * int(scale))
+func trackPart2(outputNumber string) int {
+    return conversions.ToInt(outputNumber)
+}
+
+func getSegmentEntries() []SegmentEntry {
+    var result []SegmentEntry
+    for _, segmentEntry := range files.Read(parseLine) {
+        result = append(result, segmentEntry.(SegmentEntry))
     }
     return result
 }
 
-func getData() []SegmentEntry {
-    data, _ := ioutil.ReadFile("data.txt")
-    lines := strings.Split(string(data), "\r\n")
-
-    var segmentEntries []SegmentEntry
-    for _, line := range lines {
-        parts := strings.Split(line, " | ")
-        segmentEntry := SegmentEntry{parseDigits(parts[0]), parseDigits(parts[1])}
-        segmentEntries = append(segmentEntries, segmentEntry)
+func parseLine(line string) interface{} {
+    parts := strings.Split(line, " | ")
+    return SegmentEntry{
+        inputDigits: parseDigits(parts[0]), 
+        outputDigits: parseDigits(parts[1]),
     }
-    return segmentEntries
 }
 
 func parseDigits(raw string) []Digit {
@@ -161,10 +149,7 @@ func parseDigits(raw string) []Digit {
 }
 
 func parseDigit(rawDigit string) Digit {
-    var segments []string
-    for _, digit := range rawDigit {
-        segments = append(segments, string(digit))
-    }
+    segments := strings.Split(rawDigit, "")
     sort.Strings(segments)
-    return Digit{strings.Join(segments, "")}
+    return Digit(strings.Join(segments, ""))
 }
