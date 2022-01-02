@@ -39,8 +39,8 @@ func ConstructPoint(x, y string) Point {
 
 type Graph struct {
     Grid map[Point]string
-    height int
-    width int
+    Height int
+    Width int
 }
 
 func (graph Graph) Contains(point Point) bool {
@@ -57,11 +57,14 @@ func (graph Graph) GetPoint(target string) (Point, bool) {
     return Point{}, false
 }
 
-func (graph Graph) Print() {
-    for y := 0; y < graph.height; y++ {
-        for x := 0; x < graph.width; x++ {
+func (graph Graph) Print(defaultValue string) {
+    for y := 0; y <= graph.Height; y++ {
+        for x := 0; x <= graph.Width; x++ {
             point := Point{X: x, Y: y}
-            value := graph.Grid[point]
+            value, exists := graph.Grid[point]
+            if !exists {
+                value = defaultValue
+            }
             fmt.Print(value)
         }
         fmt.Println()
@@ -100,7 +103,7 @@ func ConstructGraph(rows []string, splitter RowSplitter) Graph {
     }
 	return Graph{
         Grid: grid, 
-        height: len(rows), 
-        width: len(f(rows[0])), 
+        Height: len(rows) - 1, 
+        Width: len(f(rows[0])) - 1, 
     }
 }
