@@ -2,16 +2,12 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
     "fmt"
-    "io/ioutil"
     "strings"
-    "strconv"
 )
-
-type Position struct {
-    x int
-    y int
-}
 
 type Direction int
 
@@ -25,82 +21,71 @@ type Fold struct {
     amount int
 }
 
-func (fold Fold) apply(position Position) Position {
-    value := position.x
+func (fold Fold) apply(point parsers.Point) parsers.Point {
+    value := point.X
     if fold.direction == Up {
-        value = position.y
+        value = point.Y
     }
-    if value <= fold.amount {
-        return position
-    } else {
+    if value > fold.amount {
         newValue := 2 * fold.amount - value
         if fold.direction == Up {
-            return Position{position.x, newValue}
+            point.Y = newValue
         } else {
-            return Position{newValue, position.y}
+            point.X = newValue
         }
     }
-}
-
-type Graph struct {
-    grid map[Position]string
-    rows int
-    columns int
-}
-
-func (graph Graph) apply(fold Fold) Graph {
-    grid := make(map[Position]string)
-    for position := range graph.grid {
-        grid[fold.apply(position)] = "#"
-    }
-    if fold.direction == Up {
-        return Graph{grid, fold.amount - 1, graph.columns}
-    } else {
-        return Graph{grid, graph.rows, fold.amount - 1}
-    }
-}
-
-func (graph Graph) print() {
-    for y := 0; y <= graph.rows; y++ {
-        for x := 0; x <= graph.columns; x++ {
-            position := Position{x, y}
-            value, exists := graph.grid[position]
-            if !exists {
-                value = "."
-            }
-            fmt.Print(value)
-        }
-        fmt.Println()
-    }
+    return point
 }
 
 func main() {
     graph, folds := getData()
 
-    graph = graph.apply(folds[0])
-    answers.Part1(737, len(graph.grid))
+    graph = apply(graph, folds[0])
+    answers.Part1(737, len(graph.Grid))
+
     // Part 2: ZUJUAFHP
     fmt.Println("Part 2")
     for _, fold := range folds[1:] {
-        graph = graph.apply(fold)
+        graph = apply(graph, fold)
     }
-    graph.print()
+    graph.Print(".")
 }
 
-func getData() (Graph, []Fold) {
-    data, _ := ioutil.ReadFile("data.txt")
-    dotsInstructions := strings.Split(string(data), "\r\n\r\n")
+func apply(graph parsers.Graph,fold Fold) parsers.Graph {
+    grid := make(map[parsers.Point]string)
+    for point := range graph.Grid {
+        grid[fold.apply(point)] = "#"
+    }
+    result := parsers.Graph{
+        Grid: grid, 
+        Height: graph.Height,
+        Width: graph.Width,
+    }
+    if fold.direction == Up {
+        result.Height = fold.amount - 1
+    } else {
+        result.Width = fold.amount - 1
+    }
+    return result
+}
+
+func getData() (parsers.Graph, []Fold) {
+    dotsInstructions := files.ReadGroups()
     dots, instructions := split(dotsInstructions[0]), split(dotsInstructions[1])
 
-    graph := Graph{make(map[Position]string), 0, 0}
+    graph := parsers.Graph{
+        Grid: make(map[parsers.Point]string), 
+        Height: 0, 
+        Width: 0,
+    }
     for _, dot := range dots {
-        position := getPosition(dot)
-        graph.grid[position] = "#"
-        if position.x > graph.columns {
-            graph.columns = position.x
+        point := getPoint(dot)
+        graph.Grid[point] = "#"
+        if point.X > graph.Width {
+            graph.Width = point.X
         } 
-        if position.y > graph.rows {
-            graph.rows = position.y
+        if point.Y > graph.Height {
+            graph.Height = point.Y
         }
     }
     
@@ -116,21 +101,16 @@ func split(value string) []string {
     return strings.Split(value, "\r\n")
 }
 
-func getPosition(raw string) Position {
+func getPoint(raw string) parsers.Point {
     parts := strings.Split(raw, ",")
-    return Position{convert(parts[0]), convert(parts[1])}
+    return parsers.ConstructPoint(parts[0], parts[1])
 }
 
 func getInstruction(raw string) Fold {
     parts := strings.Split(raw, "=")
-    fold := Fold{Up, convert(parts[1])}
+    fold := Fold{Up, conversions.ToInt(parts[1])}
     if strings.HasSuffix(parts[0], "x") {
         fold.direction = Left
     }
     return fold
-}
-
-func convert(value string) int {
-    result, _ := strconv.Atoi(value)
-    return result
 }
