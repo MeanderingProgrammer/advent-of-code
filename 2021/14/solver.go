@@ -2,7 +2,8 @@ package main
 
 import (
     "advent-of-code/commons/go/answers"
-	"io/ioutil"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/utils"
 	"strings"
 )
 
@@ -36,10 +37,9 @@ func (frequencies Frequencies) diff() int {
     for _, frequency := range frequencies {
         if most == -1 && least == -1 {
             most, least = frequency, frequency
-        } else if frequency > most {
-            most = frequency
-        } else if frequency < least {
-            least = frequency
+        } else {
+            most = utils.Max(most, frequency)
+            least = utils.Min(least, frequency)
         }
     }
     return most - least
@@ -68,8 +68,7 @@ func diffAfter(n int) int {
 }
 
 func getData() (Template, Rules) {
-    data, _ := ioutil.ReadFile("data.txt")
-    templateRules := strings.Split(string(data), "\r\n\r\n")
+    templateRules := files.ReadGroups()
 
     template := make(map[string]int)
     for i := 0; i < len(templateRules[0]) - 1; i++ {
