@@ -1,10 +1,10 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strconv"
-    "strings"
+import (
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/utils"
 )
 
 type Point struct {
@@ -30,19 +30,10 @@ func (p1 Point) add(p2 Point) Point {
 }
 
 func (p1 Point) distance(p2 Point) int {
-    distance := 0
-    distance += componentDistance(p1.x, p2.x)
-    distance += componentDistance(p1.y, p2.y)
-    distance += componentDistance(p1.z, p2.z)
+    distance := utils.Abs(p1.x - p2.x)
+    distance += utils.Abs(p1.y - p2.y)
+    distance += utils.Abs(p1.z - p2.z)
     return distance
-}
-
-func componentDistance(v1 int, v2 int) int {
-    result := v1 - v2
-    if result < 0 {
-        result *= -1
-    }
-    return result
 }
 
 type Points []Point
@@ -75,17 +66,13 @@ func (points Points) largestDistance() int {
     max := 0
     for _, p1 := range points {
         for _, p2 := range points {
-            distance := p1.distance(p2)
-            if distance > max {
-                max = distance
-            }
+            max = utils.Max(max, p1.distance(p2))
         }
     }
     return max
 }
 
 type Scanner struct {
-    id int
     positions Points
     points Points
 }
@@ -99,46 +86,46 @@ func (transformation Transformation) apply(point Point) Point {
     return transformation.rotation(point).add(transformation.offset)
 }
 
-var rotations = map[string]func(Point)Point {
-    "(0,0,1,F)": func (point Point) Point {return Point{ point.x,  point.y, point.z}},
-    "(0,0,1,B)": func (point Point) Point {return Point{-point.x, -point.y, point.z}},
-    "(0,0,1,L)": func (point Point) Point {return Point{ point.y, -point.x, point.z}},
-    "(0,0,1,R)": func (point Point) Point {return Point{-point.y,  point.x, point.z}},
+var rotations = []func(Point)Point {
+    func (point Point) Point {return Point{ point.x,  point.y, point.z}},
+    func (point Point) Point {return Point{-point.x, -point.y, point.z}},
+    func (point Point) Point {return Point{ point.y, -point.x, point.z}},
+    func (point Point) Point {return Point{-point.y,  point.x, point.z}},
 
-    "(0,0,-1,F)": func (point Point) Point {return Point{-point.x,  point.y, -point.z}},
-    "(0,0,-1,B)": func (point Point) Point {return Point{ point.x, -point.y, -point.z}},
-    "(0,0,-1,L)": func (point Point) Point {return Point{ point.y,  point.x, -point.z}},
-    "(0,0,-1,R)": func (point Point) Point {return Point{-point.y, -point.x, -point.z}},
+    func (point Point) Point {return Point{-point.x,  point.y, -point.z}},
+    func (point Point) Point {return Point{ point.x, -point.y, -point.z}},
+    func (point Point) Point {return Point{ point.y,  point.x, -point.z}},
+    func (point Point) Point {return Point{-point.y, -point.x, -point.z}},
 
-    "(0,1,0,F)": func (point Point) Point {return Point{ point.x, point.z, -point.y}},
-    "(0,1,0,B)": func (point Point) Point {return Point{-point.x, point.z,  point.y}},
-    "(0,1,0,L)": func (point Point) Point {return Point{ point.y, point.z,  point.x}},
-    "(0,1,0,R)": func (point Point) Point {return Point{-point.y, point.z, -point.x}},
+    func (point Point) Point {return Point{ point.x, point.z, -point.y}},
+    func (point Point) Point {return Point{-point.x, point.z,  point.y}},
+    func (point Point) Point {return Point{ point.y, point.z,  point.x}},
+    func (point Point) Point {return Point{-point.y, point.z, -point.x}},
 
-    "(0,-1,0,F)": func (point Point) Point {return Point{ point.x, -point.z,  point.y}},
-    "(0,-1,0,B)": func (point Point) Point {return Point{-point.x, -point.z, -point.y}},
-    "(0,-1,0,L)": func (point Point) Point {return Point{-point.y, -point.z,  point.x}},
-    "(0,-1,0,R)": func (point Point) Point {return Point{ point.y, -point.z, -point.x}},
+    func (point Point) Point {return Point{ point.x, -point.z,  point.y}},
+    func (point Point) Point {return Point{-point.x, -point.z, -point.y}},
+    func (point Point) Point {return Point{-point.y, -point.z,  point.x}},
+    func (point Point) Point {return Point{ point.y, -point.z, -point.x}},
 
-    "(1,0,0,F)": func (point Point) Point {return Point{point.z, -point.x, -point.y}},
-    "(1,0,0,B)": func (point Point) Point {return Point{point.z,  point.x,  point.y}},
-    "(1,0,0,L)": func (point Point) Point {return Point{point.z,  point.y, -point.x}},
-    "(1,0,0,R)": func (point Point) Point {return Point{point.z, -point.y,  point.x}},
+    func (point Point) Point {return Point{point.z, -point.x, -point.y}},
+    func (point Point) Point {return Point{point.z,  point.x,  point.y}},
+    func (point Point) Point {return Point{point.z,  point.y, -point.x}},
+    func (point Point) Point {return Point{point.z, -point.y,  point.x}},
 
-    "(-1,0,0,F)": func (point Point) Point {return Point{-point.z,  point.x, -point.y}},
-    "(-1,0,0,B)": func (point Point) Point {return Point{-point.z, -point.x,  point.y}},
-    "(-1,0,0,L)": func (point Point) Point {return Point{-point.z,  point.y,  point.x}},
-    "(-1,0,0,R)": func (point Point) Point {return Point{-point.z, -point.y, -point.x}},
+    func (point Point) Point {return Point{-point.z,  point.x, -point.y}},
+    func (point Point) Point {return Point{-point.z, -point.x,  point.y}},
+    func (point Point) Point {return Point{-point.z,  point.y,  point.x}},
+    func (point Point) Point {return Point{-point.z, -point.y, -point.x}},
 }
 
 func (s1 *Scanner) join(s2 Scanner) bool {
-    transforamtion := s1.getTransformation(s2)
-    if transforamtion.rotation == nil {
+    transformation, exists := s1.getTransformation(s2)
+    if !exists {
         return false
     }
-    s1.positions = append(s1.positions, transforamtion.offset)
+    s1.positions = append(s1.positions, transformation.offset)
     for _, point := range s2.points {
-        transformed := transforamtion.apply(point)
+        transformed := transformation.apply(point)
         if !s1.points.contains(transformed) {
             s1.points = append(s1.points, transformed)
         }
@@ -146,14 +133,14 @@ func (s1 *Scanner) join(s2 Scanner) bool {
     return true
 }
 
-func (s1 Scanner) getTransformation(s2 Scanner) Transformation {
+func (s1 Scanner) getTransformation(s2 Scanner) (Transformation, bool) {
     for _, rotation := range rotations {
         offset, frequency := s1.points.mostCommonOffset(s2.points, rotation)
         if frequency >= 12 {
-            return Transformation{rotation, offset}
+            return Transformation{rotation, offset}, true
         }
     }
-    return Transformation{}
+    return Transformation{}, false
 }
 
 func main() {
@@ -164,38 +151,35 @@ func main() {
 }
 
 func joinScanners() Scanner {
-    scanners := getData()
-
-    scanner, unjoined := scanners[0], scanners[1:]
-    previous, current := 0, len(unjoined)
-    for previous != current {
+    scanners := getScanners()
+    joined, unjoinedScanners := scanners[0], scanners[1:]
+    for len(unjoinedScanners) > 0 {
         var nextUnjoined []Scanner
-        for _, other := range unjoined {
-            if !scanner.join(other) {
-                nextUnjoined = append(nextUnjoined, other)
+        for _, unjoined := range unjoinedScanners {
+            if !joined.join(unjoined) {
+                nextUnjoined = append(nextUnjoined, unjoined)
             }
         }
-        unjoined, previous, current = nextUnjoined, current, len(nextUnjoined)
+        unjoinedScanners = nextUnjoined
     }
-    return scanner
+    return joined
 }
 
-func getData() []Scanner {
-    data, _ := ioutil.ReadFile("data.txt")
+func getScanners() []Scanner {
     var scanners []Scanner
-    for i, rawScanner := range strings.Split(string(data), "\r\n\r\n") {
+    for _, rawScanner := range files.ReadGroups() {
         var points Points
-        for _, rawPoint := range strings.Split(rawScanner, "\r\n")[1:] {
-            parts := strings.Split(rawPoint, ",")
+        for _, rawPoint := range parsers.Lines(rawScanner)[1:] {
+            coordinates := parsers.IntCsv(rawPoint)
             point := Point{
-                x: toInt(parts[0]),
-                y: toInt(parts[1]),
-                z: toInt(parts[2]),
+                x: coordinates[0],
+                y: coordinates[1],
+                z: coordinates[2],
             }
             points = append(points, point) 
         }
         scanner := Scanner{
-            id: i,
+            // Each scanner is assumed to be at the origin relative to itself
             positions: []Point{
                 {0,0,0},
             },
@@ -204,9 +188,4 @@ func getData() []Scanner {
         scanners = append(scanners, scanner)
     }
     return scanners
-}
-
-func toInt(raw string) int {
-    value, _ := strconv.Atoi(raw)
-    return value
 }
