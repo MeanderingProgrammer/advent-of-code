@@ -2,8 +2,8 @@ package main
 
 import (
     "advent-of-code/commons/go/answers"
-	"io/ioutil"
-	"strconv"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
     "strings"
 )
 
@@ -23,52 +23,48 @@ func (packet Packet) versionSum() int {
 }
 
 func (packet Packet) calculate() int {
-    if packet.packetType == 4 {
-        return packet.value
-    } else if packet.packetType == 0 {
-        return packet.math(func(acc int, curr int)int {return acc + curr})
-    } else if packet.packetType == 1 {
-        return packet.math(func(acc int, curr int)int {return acc * curr})
-    } else if packet.packetType == 2 {
-        return packet.absolute(func(result int, curr int)bool {return curr < result})
-    } else if packet.packetType == 3 {
-        return packet.absolute(func(result int, curr int)bool {return curr > result})
-    } else if packet.packetType == 5 {
-        return packet.eqaulity(func(v1 int, v2 int)bool {return v1 > v2})
-    } else if packet.packetType == 6 {
-        return packet.eqaulity(func(v1 int, v2 int)bool {return v1 < v2})
-    } else if packet.packetType == 7 {
-        return packet.eqaulity(func(v1 int, v2 int)bool {return v1 == v2})
-    } else {
-        return 0
+    switch packet.packetType {
+    case 4: return packet.value
+    case 0: return packet.math(func(acc int, curr int)int {return acc + curr})
+    case 1: return packet.math(func(acc int, curr int)int {return acc * curr})
+    case 2: return packet.absolute(func(result int, curr int)bool {return curr < result})
+    case 3: return packet.absolute(func(result int, curr int)bool {return curr > result})
+    case 5: return packet.eqaulity(func(v1 int, v2 int)bool {return v1 > v2})
+    case 6: return packet.eqaulity(func(v1 int, v2 int)bool {return v1 < v2})
+    case 7: return packet.eqaulity(func(v1 int, v2 int)bool {return v1 == v2})
+    default: panic("Unknown packet type")
     }
 }
 
 func (packet Packet) math(f func(int, int)int) int {
-    result := packet.subPackets[0].calculate()
-    for _, subPacket := range packet.subPackets[1:] {
-        result = f(result, subPacket.calculate())
+    result := packet.calculateSubPacket(0)
+    for i := range packet.subPackets[1:] {
+        result = f(result, packet.calculateSubPacket(i + 1))
     }
     return result
 }
 
 func (packet Packet) absolute(f func(int, int)bool) int {
-    result := packet.subPackets[0].calculate()
-    for _, subPacket := range packet.subPackets[1:] {
-        subPacketValue := subPacket.calculate()
-        if f(result, subPacketValue) {
-            result = subPacketValue
+    result := packet.calculateSubPacket(0)
+    for i := range packet.subPackets[1:] {
+        value := packet.calculateSubPacket(i + 1)
+        if f(result, value) {
+            result = value
         }
     }
     return result
 }
 
 func (packet Packet) eqaulity(f func(int, int)bool) int {
-    if f(packet.subPackets[0].calculate(), packet.subPackets[1].calculate()) {
+    if f(packet.calculateSubPacket(0), packet.calculateSubPacket(1)) {
         return 1
     } else {
         return 0
     }
+}
+
+func (packet Packet) calculateSubPacket(index int) int {
+    return packet.subPackets[index].calculate()
 }
 
 func main() {
@@ -90,13 +86,13 @@ func parsePackets(packets string, max int) ([]Packet, int) {
             packet.value = value
             i = newIndex
         } else if packets[i] == '0' {
-            length := binaryToDecimal(packets[i+1:i+16])
+            length := conversions.BinaryToDecimal(packets[i+1:i+16])
             i += 16
             subPackets, _ := parsePackets(packets[i:i+length], -1)
             packet.subPackets = subPackets
             i += length
         } else {
-            length := binaryToDecimal(packets[i+1:i+12])
+            length := conversions.BinaryToDecimal(packets[i+1:i+12])
             i += 12
             subPackets, bitsParsed := parsePackets(packets[i:], length)
             packet.subPackets = subPackets
@@ -109,8 +105,8 @@ func parsePackets(packets string, max int) ([]Packet, int) {
 
 func getHeader(packets string, i int) Packet {
     return Packet{
-        version: binaryToDecimal(packets[i:i+3]), 
-        packetType: binaryToDecimal(packets[i+3:i+6]),
+        version: conversions.BinaryToDecimal(packets[i:i+3]), 
+        packetType: conversions.BinaryToDecimal(packets[i+3:i+6]),
     }
 }
 
@@ -121,34 +117,19 @@ func pullType4Number(packets string, i int) (int, int) {
         i += 5
     }
     number.WriteString(packets[i+1:i+5])
-    return binaryToDecimal(number.String()), i+5
+    return conversions.BinaryToDecimal(number.String()), i+5
 }
 
 func getData() string {
-    data, _ := ioutil.ReadFile("data.txt")
     var packets strings.Builder
-    for _, hex := range string(data) {
+    for _, hex := range files.Content() {
         hexadecimal := string(hex)
-        decimal := hexToDecimal(string(hexadecimal))
-        binary := decimalToBinary(decimal)
+        decimal := conversions.HexToDecimal(hexadecimal)
+        binary := conversions.DecimalToBinary(decimal)
         for i := 0; i < 4 - len(binary); i++ {
             packets.WriteString("0")
         }
         packets.WriteString(binary)
     }
     return packets.String()
-}
-
-func hexToDecimal(hexadecimal string) int {
-    result, _ := strconv.ParseInt(hexadecimal, 16, 64)
-    return int(result)
-}
-
-func decimalToBinary(decimal int) string {
-    return strconv.FormatInt(int64(decimal), 2)
-}
-
-func binaryToDecimal(binary string) int {
-    result, _ := strconv.ParseInt(binary, 2, 64)
-    return int(result)
 }
