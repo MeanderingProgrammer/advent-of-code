@@ -20,3 +20,13 @@ func BinaryToDecimal(value string) int {
 	utils.CheckError(err)
 	return int(result)
 }
+
+func DecimalToBinary(decimal int) string {
+	return strconv.FormatInt(int64(decimal), 2)
+}
+
+func HexToDecimal(hexadecimal string) int {
+    result, err := strconv.ParseInt(hexadecimal, 16, 64)
+	utils.CheckError(err)
+    return int(result)
+}
