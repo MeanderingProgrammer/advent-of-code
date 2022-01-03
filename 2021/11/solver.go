@@ -67,7 +67,7 @@ func main() {
 
 func getGrid() OctopusGrid {
     return OctopusGrid{
-        graph: parsers.ConstructGraph(files.ReadLines(), parsers.Character),
+        graph: parsers.ConstructGraph(files.Content(), parsers.Character, ""),
         flashed: make(map[parsers.Point]bool),
     }
 }
