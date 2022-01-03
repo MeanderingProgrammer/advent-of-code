@@ -2,8 +2,10 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strconv"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/utils"
     "strings"
 )
 
@@ -61,13 +63,9 @@ func (trajectory Trajectory) overshot(targetArea TargetArea) bool {
 }
 
 func (trajectory Trajectory) maxHeight() int {
-    max := trajectory[0].y
-    for _, position := range trajectory[1:] {
-        if position.y <= max {
-            return max
-        } else {
-            max = position.y
-        }
+    max := 0
+    for _, position := range trajectory {
+        max = utils.Max(max, position.y)
     }
     return max
 }
@@ -98,10 +96,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
             trajectory := targetArea.shoot(Velocity{x, y})
             if trajectory.in(targetArea) {
 				numValid++
-				height := trajectory.maxHeight()
-                if height > maxHeight {
-                    maxHeight = height
-                }
+                maxHeight = utils.Max(maxHeight, trajectory.maxHeight())
             }
         }
     }
@@ -109,8 +104,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
 }
 
 func getData() TargetArea {
-    data, _ := ioutil.ReadFile("data.txt")
-    rawTargetArea := strings.Split(string(data), ": ")[1]
+    rawTargetArea := parsers.SubstringAfter(files.Content(), ": ")
     components := strings.Split(rawTargetArea, ", ")
     return TargetArea{
         xRange: parseRange(components[0]),
@@ -119,9 +113,10 @@ func getData() TargetArea {
 }
 
 func parseRange(raw string) [2]int {
-    values := strings.Split(raw, "=")[1]
+    values := parsers.SubstringAfter(raw, "=")
     minxMax := strings.Split(values, "..")
-    min, _ := strconv.Atoi(minxMax[0])
-    max, _ := strconv.Atoi(minxMax[1])
-    return [2]int{min, max}
+    return [2]int{
+        conversions.ToInt(minxMax[0]), 
+        conversions.ToInt(minxMax[1]),
+    }
 }
