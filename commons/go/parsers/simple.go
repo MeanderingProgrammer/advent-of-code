@@ -20,3 +20,7 @@ func IntCsv(s string) []int {
     }
 	return result
 }
+
+func Lines(s string) []string {
+	return strings.Split(s, "\r\n")
+}
