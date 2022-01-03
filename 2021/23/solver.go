@@ -4,6 +4,7 @@ import (
     "advent-of-code/commons/go/answers"
     "advent-of-code/commons/go/files"
     "advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/utils"
 	"container/heap"
 	"fmt"
 )
@@ -94,29 +95,36 @@ func (boardState *BoardState) occupied(point parsers.Point) bool {
 func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Character {
     var inRoom []Character
     for _, characterState := range boardState.characterStates {
-        location := board.pointDetails[characterState.point]
-        if location == goal {
+        if board.pointDetails[characterState.point] == goal {
             inRoom = append(inRoom, characterState.character)
         }
     }
     return inRoom
 }
 
-func (boardState *BoardState) update(characterIndex int, point parsers.Point, moves int) *BoardState {
+func (boardState *BoardState) updateCharacter(characterIndex int, destination parsers.Point) *BoardState {
     var newStates []CharacterState
-    newCost := boardState.cost
     for i, characterState := range boardState.characterStates {
         if i == characterIndex {
-            character := characterState.character
-            newCost += (character.cost() * moves)
-            newCharacterState := CharacterState{point, true, character}
-            newStates = append(newStates, newCharacterState)
+            newStates = append(newStates, CharacterState{
+                point: destination,
+                moved: true,
+                character: characterState.character,
+            })
         } else {
             newStates = append(newStates, characterState)
         }
     }
-    result := BoardState{newStates, newCost}
-    return &result
+
+    characterState := boardState.characterStates[characterIndex]
+    cost := characterState.character.cost()
+    start := characterState.point
+    distance := utils.Abs(start.X - destination.X) + start.Y + destination.Y - 2
+
+    return &BoardState{
+        characterStates: newStates, 
+        cost: boardState.cost + cost * distance,
+    }
 }
 
 type Queue []BoardState
@@ -163,104 +171,87 @@ func (board *Board) solve(initial BoardState) (int, int) {
         }
     }
 
-    return -1, explored
+    panic("Could not find a solution")
 }
 
 func (board *Board) legalMoves(boardState BoardState) []BoardState {
     var legalMoves []BoardState
     for i := range boardState.characterStates {
-        for point, moves := range board.characterLegalMoves(boardState, i) {
-            newState := boardState.update(i, point, moves)
+        for _, point := range board.characterLegalMoves(boardState, i) {
+            newState := boardState.updateCharacter(i, point)
             legalMoves = append(legalMoves, *newState)
         }
     }
     return legalMoves
 }
 
-type PointMoves map[parsers.Point]int
-
-func (board *Board) characterLegalMoves(boardState BoardState, i int) PointMoves {
-    characterState := boardState.characterStates[i]
-    if characterState.atGoal(*board) && characterState.moved {
+func (board *Board) characterLegalMoves(boardState BoardState, i int) []parsers.Point {
+    start := boardState.characterStates[i]
+    if start.atGoal(*board) && start.moved {
         // If we're already at the goal state, then there is nowhere else to go
         return nil
     }
 
-    reachable := board.reachable(boardState, characterState.point)
-
-    var toDelete []parsers.Point
-    for destination := range reachable {
-        destinationType, shouldDelete := board.pointDetails[destination], false
-        if destination == characterState.point {
-            // Remove moving nowhere as an option
-            shouldDelete = true
-        } else if destinationType == Doorway {
-            // Can never stop outside of a room
-            shouldDelete = true
-        } else if destinationType == Hallway {
-            // Can not move to hallway once we are already in the hallway  must go to a room
-            if board.pointDetails[characterState.point] == Hallway {
-                shouldDelete = true
-            }
-        } else {
-            // Destination must now be a room
-            if characterState.character.goal() != destinationType {
-                // If this room is for another character then we cannot enter
-                shouldDelete = true
-            } else {
-                // Otherwise it is the room for this character, we need to make sure that:
-                // 1) Only valid characters are in the room
-                // 2) That we go to the correct point in the room, i.e. as far back as possible
-                charactersInRoom, allValid := boardState.charactersInRoom(board, characterState.character.goal()), true
-                for _, characterInRoom := range charactersInRoom {
-                    if characterInRoom != characterState.character {
-                        allValid = false
-                    }
-                }
-                if allValid {
-                    // Must go to back of room
-                    if destination.Y != board.roomSize - len(charactersInRoom) + 1 {
-                        shouldDelete = true
-                    }
-                } else {
-                    // At least one character in the room needs to leave
-                    shouldDelete = true
-                }
-            }
-        }
-        if shouldDelete {
-            toDelete = append(toDelete, destination)
-        }
+    var reachable []parsers.Point
+    explored := map[parsers.Point]bool{
+        start.point: true,
     }
+    toExplore := []parsers.Point{start.point}
 
-    for _, point := range toDelete {
-        delete(reachable, point)
+    for len(toExplore) > 0 {
+        current := toExplore[0]
+        toExplore = toExplore[1:]
+
+        for _, destination := range board.graph[current] {
+            if explored[destination] || boardState.occupied(destination) {
+                // If we've already explored a particular position or that position is occupied
+                // then break the chain and do not try to explore from this position
+                continue
+            }
+            explored[destination] = true
+            if board.shouldGo(boardState, start, destination) {
+                reachable = append(reachable, destination)
+            }
+            toExplore = append(toExplore, destination)
+        }
     }
 
     return reachable
 }
 
-func (board *Board) reachable(boardState BoardState, point parsers.Point) PointMoves {
-    pointMoves, toExplore := PointMoves{point: 0}, []parsers.Point{point}
-
-    for len(toExplore) > 0 {
-        currentPoint, currentMoves := toExplore[0], pointMoves[toExplore[0]]        
-        toExplore = toExplore[1:]
-
-        for _, adjacent := range board.graph[currentPoint] {
-            _, explored := pointMoves[adjacent]
-            if explored {
-                continue
+func (board *Board) shouldGo(boardState BoardState, start CharacterState, destination parsers.Point) bool {
+    destinationType := board.pointDetails[destination]
+    if destinationType == Doorway {
+        // Can never stop outside of a room
+        return false
+    } else if destinationType == Hallway {
+        // Can not move to hallway once we are already in the hallway  must go to a room
+        if board.pointDetails[start.point] == Hallway {
+            return false
+        }
+    } else {
+        // Destination must now be a room
+        if start.character.goal() != destinationType {
+            // If this room is for another character then we cannot enter
+            return false
+        } else {
+            // Otherwise it is the room for this character, we need to make sure that:
+            // 1) Only valid characters are in the room
+            // 2) That we go to the correct point in the room, i.e. as far back as possible
+            charactersInRoom := boardState.charactersInRoom(board, start.character.goal())
+            for _, characterInRoom := range charactersInRoom {
+                if characterInRoom != start.character {
+                    // At least one character in the room needs to leave
+                    return false
+                }
             }
-            if boardState.occupied(adjacent) {
-                continue
+            // Must go to back of room
+            if destination.Y != board.roomSize - len(charactersInRoom) + 1 {
+                return false
             }
-            pointMoves[adjacent] = currentMoves + 1
-            toExplore = append(toExplore, adjacent)
         }
     }
-
-    return pointMoves
+    return true
 }
 
 func main() {
