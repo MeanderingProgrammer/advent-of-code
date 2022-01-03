@@ -186,13 +186,13 @@ func (board *Board) legalMoves(boardState BoardState) []BoardState {
 }
 
 func (board *Board) characterLegalMoves(boardState BoardState, i int) []parsers.Point {
+    var reachable []parsers.Point
     start := boardState.characterStates[i]
     if start.atGoal(*board) && start.moved {
         // If we're already at the goal state, then there is nowhere else to go
-        return nil
+        return reachable
     }
 
-    var reachable []parsers.Point
     explored := map[parsers.Point]bool{
         start.point: true,
     }
