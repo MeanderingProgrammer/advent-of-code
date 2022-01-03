@@ -2,9 +2,10 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strconv"
-    "strings"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/utils"
 )
 
 type Player struct {
@@ -28,6 +29,10 @@ type GameState struct {
     p2 Player
 }
 
+func (gameState GameState) losingScore() int {
+    return utils.Min(gameState.p1.score, gameState.p2.score)
+}
+
 type GameStateFrequency map[GameState]int
 
 func (gameFrequencies GameStateFrequency) total() int {
@@ -45,10 +50,10 @@ type PlayerState struct {
 
 type Game struct {
     target int
-    stateUpdater func(Player)[](PlayerState)
+    dice Dice
 }
 
-func (game Game) play(p1 Player, p2 Player) GameStateFrequency {
+func (game Game) play(p1, p2 Player) GameStateFrequency {
     isP1 := true
     p1Wins, p2Wins := make(GameStateFrequency), make(GameStateFrequency)
 
@@ -77,7 +82,7 @@ func (game Game) play(p1 Player, p2 Player) GameStateFrequency {
 func (game Game) step(states GameStateFrequency, wins GameStateFrequency) GameStateFrequency {
     inProgress := make(GameStateFrequency)
     for state, frequency := range states {
-        for _, playerState := range game.stateUpdater(state.p1) {
+        for _, playerState := range game.dice.roll(state.p1) {
             newState := GameState{
                 p1: state.p2,
                 p2: playerState.player,
@@ -93,51 +98,51 @@ func (game Game) step(states GameStateFrequency, wins GameStateFrequency) GameSt
     return inProgress
 }
 
+type Dice interface {
+    roll(Player) []PlayerState
+}
+
 type DeterministicDice struct {
     current int
     max int
     moves int
 }
 
-func (dice *DeterministicDice) roll() int {
+func (dice *DeterministicDice) roll(player Player) []PlayerState {
+    return []PlayerState{
+        {
+            player: player.move(dice.next() + dice.next() + dice.next()),
+            frequency: 1,
+        },
+    }
+}
+
+func (dice *DeterministicDice) next() int {
     dice.current %= dice.max
     dice.current++
     dice.moves++
     return dice.current
 }
 
-func (dice *DeterministicDice) stateUpdater() func(Player)[]PlayerState {
-    return func(player Player) []PlayerState {
-        return []PlayerState{
-            {
-                player: player.move(dice.roll() + dice.roll() + dice.roll()),
-                frequency: 1,
-            },
-        }
-    }
-}
+type StateSpace map[int]int
 
 type QuantumDice struct {
     dimensions int
     rolls int
+    stateSpace StateSpace
 }
 
-func (dice QuantumDice) stateUpdater() func(Player)[]PlayerState {
-    stateSpace := dice.computeStateSpace()
-    return func(player Player) []PlayerState {
-        var result []PlayerState
-        for amount, frequency := range stateSpace {
-            playerState := PlayerState{
-                player: player.move(amount),
-                frequency: frequency,
-            }
-            result = append(result, playerState)
+func (dice QuantumDice) roll(player Player) []PlayerState {
+    var result []PlayerState
+    for amount, frequency := range dice.stateSpace {
+        playerState := PlayerState{
+            player: player.move(amount),
+            frequency: frequency,
         }
-        return result
+        result = append(result, playerState)
     }
+    return result
 }
-
-type StateSpace map[int]int
 
 func (dice QuantumDice) computeStateSpace() StateSpace {
     states := [][]int{
@@ -176,45 +181,40 @@ func part1() int {
         max: 100,
         moves: 0,
     }
-    game := Game{
-        target: 1000,
-        stateUpdater: dice.stateUpdater(),
-    }
-    gamesWon := game.play(getData())
+    gamesWon := play(1000, &dice)
     result := 0
     for gameWon := range gamesWon {
-        if gameWon.p1.score < gameWon.p2.score {
-            result += gameWon.p1.score * dice.moves
-        } else {
-            result += gameWon.p2.score * dice.moves
-        }
+        result += gameWon.losingScore() * dice.moves
     }
     return result
 }
 
 func part2() int {
-    game := Game{
-        target: 21,
-        stateUpdater: QuantumDice{
-            dimensions: 3,
-            rolls: 3,
-        }.stateUpdater(),
+    dice := QuantumDice{
+        dimensions: 3,
+        rolls: 3,
     }
-    gamesWon := game.play(getData())
+    dice.stateSpace = dice.computeStateSpace()
+    gamesWon := play(21, dice)
     return gamesWon.total()
 }
 
-func getData() (Player, Player) {
-    data, _ := ioutil.ReadFile("data.txt")
-    players := strings.Split(string(data), "\r\n")
+func play(target int, dice Dice) GameStateFrequency {
+    game := Game{
+        target: target,
+        dice: dice,
+    }
+    return game.play(getPlayers())
+}
+
+func getPlayers() (Player, Player) {
+    players := files.ReadLines()
     return parsePlayer(players[0]), parsePlayer(players[1])
 }
 
 func parsePlayer(player string) Player {
-    rawPosition := strings.Split(player, ": ")[1]
-    position, _ := strconv.Atoi(rawPosition)
     return Player{
-        position: position,
+        position: conversions.ToInt(parsers.SubstringAfter(player, ": ")),
         score: 0,
     }
 }
