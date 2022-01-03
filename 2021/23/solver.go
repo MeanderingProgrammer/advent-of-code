@@ -2,10 +2,10 @@ package main
 
 import (
     "advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
 	"container/heap"
 	"fmt"
-	"io/ioutil"
-	"strings"
 )
 
 type Location int
@@ -18,20 +18,6 @@ const (
     DGoal
 )
 
-type Position struct {
-    x int
-    y int
-}
-
-func (position Position) adjacent() []Position {
-    return []Position{
-        {x: position.x-1, y: position.y},
-        {x: position.x+1, y: position.y},
-        {x: position.x, y: position.y-1},
-        {x: position.x, y: position.y+1},
-    }
-}
-
 type Character int
 const (
 	A Character = iota
@@ -41,13 +27,13 @@ const (
 )
 
 type CharacterState struct {
-    position Position
+    point parsers.Point
     moved bool
     character Character
 }
 
 func (characterState CharacterState) atGoal(board Board) bool {
-    current := board.positionDetails[characterState.position]
+    current := board.pointDetails[characterState.point]
     return current == characterState.character.goal()
 }
 
@@ -72,8 +58,8 @@ func (character Character) goal() Location {
 }
 
 type Board struct {
-    positionDetails map[Position]Location
-    graph map[Position][]Position
+    pointDetails map[parsers.Point]Location
+    graph map[parsers.Point][]parsers.Point
     roomSize int
 }
 
@@ -96,9 +82,9 @@ func (boardState *BoardState) complete(board Board) bool {
     return true
 }
 
-func (boardState *BoardState) occupied(position Position) bool {
+func (boardState *BoardState) occupied(point parsers.Point) bool {
     for _, characterState := range boardState.characterStates {
-        if characterState.position == position {
+        if characterState.point == point {
             return true
         }
     }
@@ -108,7 +94,7 @@ func (boardState *BoardState) occupied(position Position) bool {
 func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Character {
     var inRoom []Character
     for _, characterState := range boardState.characterStates {
-        location := board.positionDetails[characterState.position]
+        location := board.pointDetails[characterState.point]
         if location == goal {
             inRoom = append(inRoom, characterState.character)
         }
@@ -116,14 +102,14 @@ func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Ch
     return inRoom
 }
 
-func (boardState *BoardState) update(characterIndex int, position Position, moves int) *BoardState {
+func (boardState *BoardState) update(characterIndex int, point parsers.Point, moves int) *BoardState {
     var newStates []CharacterState
     newCost := boardState.cost
     for i, characterState := range boardState.characterStates {
         if i == characterIndex {
             character := characterState.character
             newCost += (character.cost() * moves)
-            newCharacterState := CharacterState{position, true, character}
+            newCharacterState := CharacterState{point, true, character}
             newStates = append(newStates, newCharacterState)
         } else {
             newStates = append(newStates, characterState)
@@ -158,13 +144,14 @@ func (q *Queue) Push(state interface{}) {
 	*q = append(*q, state.(BoardState))
 }
 
-func (board *Board) solve(initial BoardState) int {
-    queue, seen := &Queue{initial}, make(map[string]bool)
+func (board *Board) solve(initial BoardState) (int, int) {
+    queue, seen, explored := &Queue{initial}, make(map[string]bool), 0
 
     for queue.Len() > 0 {
+        explored++
         currentState := heap.Pop(queue).(BoardState)
         if currentState.complete(*board) {
-            return currentState.cost
+            return currentState.cost, explored
         }
         legalMoves := board.legalMoves(currentState)
         for _, state := range legalMoves {
@@ -176,36 +163,35 @@ func (board *Board) solve(initial BoardState) int {
         }
     }
 
-    return -1
+    return -1, explored
 }
 
 func (board *Board) legalMoves(boardState BoardState) []BoardState {
     var legalMoves []BoardState
     for i := range boardState.characterStates {
-        positionMoves := board.characterLegalMoves(boardState, i)
-        for position, moves := range positionMoves {
-            newState := boardState.update(i, position, moves)
+        for point, moves := range board.characterLegalMoves(boardState, i) {
+            newState := boardState.update(i, point, moves)
             legalMoves = append(legalMoves, *newState)
         }
     }
     return legalMoves
 }
 
-type PositionMoves map[Position]int
+type PointMoves map[parsers.Point]int
 
-func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMoves {
+func (board *Board) characterLegalMoves(boardState BoardState, i int) PointMoves {
     characterState := boardState.characterStates[i]
     if characterState.atGoal(*board) && characterState.moved {
         // If we're already at the goal state, then there is nowhere else to go
         return nil
     }
 
-    reachable := board.reachable(boardState, characterState.position)
+    reachable := board.reachable(boardState, characterState.point)
 
-    var toDelete []Position
+    var toDelete []parsers.Point
     for destination := range reachable {
-        destinationType, shouldDelete := board.positionDetails[destination], false
-        if destination == characterState.position {
+        destinationType, shouldDelete := board.pointDetails[destination], false
+        if destination == characterState.point {
             // Remove moving nowhere as an option
             shouldDelete = true
         } else if destinationType == Doorway {
@@ -213,7 +199,7 @@ func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMo
             shouldDelete = true
         } else if destinationType == Hallway {
             // Can not move to hallway once we are already in the hallway  must go to a room
-            if board.positionDetails[characterState.position] == Hallway {
+            if board.pointDetails[characterState.point] == Hallway {
                 shouldDelete = true
             }
         } else {
@@ -224,7 +210,7 @@ func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMo
             } else {
                 // Otherwise it is the room for this character, we need to make sure that:
                 // 1) Only valid characters are in the room
-                // 2) That we go to the correct position in the room, i.e. as far back as possible
+                // 2) That we go to the correct point in the room, i.e. as far back as possible
                 charactersInRoom, allValid := boardState.charactersInRoom(board, characterState.character.goal()), true
                 for _, characterInRoom := range charactersInRoom {
                     if characterInRoom != characterState.character {
@@ -233,7 +219,7 @@ func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMo
                 }
                 if allValid {
                     // Must go to back of room
-                    if destination.y != board.roomSize - len(charactersInRoom) + 1 {
+                    if destination.Y != board.roomSize - len(charactersInRoom) + 1 {
                         shouldDelete = true
                     }
                 } else {
@@ -247,34 +233,34 @@ func (board *Board) characterLegalMoves(boardState BoardState, i int) PositionMo
         }
     }
 
-    for _, position := range toDelete {
-        delete(reachable, position)
+    for _, point := range toDelete {
+        delete(reachable, point)
     }
 
     return reachable
 }
 
-func (board *Board) reachable(boardState BoardState, position Position) PositionMoves {
-    positionMoves, toExplore := PositionMoves{position: 0}, []Position{position}
+func (board *Board) reachable(boardState BoardState, point parsers.Point) PointMoves {
+    pointMoves, toExplore := PointMoves{point: 0}, []parsers.Point{point}
 
     for len(toExplore) > 0 {
-        currentPosition, currentMoves := toExplore[0], positionMoves[toExplore[0]]        
+        currentPoint, currentMoves := toExplore[0], pointMoves[toExplore[0]]        
         toExplore = toExplore[1:]
 
-        for _, adjacent := range board.graph[currentPosition] {
-            _, explored := positionMoves[adjacent]
+        for _, adjacent := range board.graph[currentPoint] {
+            _, explored := pointMoves[adjacent]
             if explored {
                 continue
             }
             if boardState.occupied(adjacent) {
                 continue
             }
-            positionMoves[adjacent] = currentMoves + 1
+            pointMoves[adjacent] = currentMoves + 1
             toExplore = append(toExplore, adjacent)
         }
     }
 
-    return positionMoves
+    return pointMoves
 }
 
 func main() {
@@ -284,12 +270,13 @@ func main() {
 
 func solve(extend bool) int {
     board, boardState := getData(extend)
-    return board.solve(boardState)
+    cost, explored := board.solve(boardState)
+    fmt.Println(explored)
+    return cost
 }
 
 func getData(extend bool) (Board, BoardState) {
-    data, _ := ioutil.ReadFile("data.txt")
-    rows := strings.Split(string(data), "\r\n")
+    rows := files.ReadLines()
 
     if extend {
         length := len(rows)
@@ -302,7 +289,7 @@ func getData(extend bool) (Board, BoardState) {
         rows = append(rows, lastRows...)
     }
 
-    positionDetails := make(map[Position]Location)
+    pointDetails := make(map[parsers.Point]Location)
     var characterStates []CharacterState
     
     for y, row := range rows {
@@ -310,17 +297,17 @@ func getData(extend bool) (Board, BoardState) {
             if value == '#' || value == ' ' {
                 continue
             }
-            position := Position{x, y}
-            positionDetails[position] = location(position)
+            point := parsers.Point{X: x, Y: y}
+            pointDetails[point] = location(point)
             if value != '.' {
-                characterStates = append(characterStates, CharacterState{position, false, character(value)})
+                characterStates = append(characterStates, CharacterState{point, false, character(value)})
             }
         }
     }
 
     return Board{
-        positionDetails: positionDetails, 
-        graph: graph(positionDetails), 
+        pointDetails: pointDetails, 
+        graph: graph(pointDetails), 
         roomSize: len(rows) - 3,
     }, BoardState{
         characterStates: characterStates, 
@@ -328,52 +315,55 @@ func getData(extend bool) (Board, BoardState) {
     }
 }
 
-func location(position Position) Location {
-    x, y := position.x, position.y
-    if y == 1 {
-        if x == 3 || x == 5 || x == 7 || x == 9 {
+func location(point parsers.Point) Location {
+    goalMapping := map[int]Location{
+        3: AGoal,
+        5: BGoal,
+        7: CGoal,
+        9: DGoal,
+    }
+    goal, exists := goalMapping[point.X]
+
+    if point.Y == 1 {
+        if exists {
             return Doorway
         } else {
             return Hallway
         }
-    } else if x == 3 {
-        return AGoal
-    } else if x == 5 {
-        return BGoal
-    } else if x == 7 {
-        return CGoal
-    } else if x == 9 {
-        return DGoal
     } else {
-        panic(fmt.Sprintf("Can't figure out location for: (%d, %d)", x, y))
+        if exists {
+            return goal
+        } else {
+            panic(fmt.Sprintf("Can't figure out location for: (%v)", point))
+        }
     }
 }
 
 func character(value rune) Character {
-    if value == 'A' {
-        return A
-    } else if value == 'B' {
-        return B
-    } else if value == 'C' {
-        return C
-    } else if value == 'D' {
-        return D
-    } else {
+    characterMapping := map[rune]Character{
+        'A': A,
+        'B': B,
+        'C': C,
+        'D': D,
+    }
+    character, exists := characterMapping[value]
+    if !exists {
         panic(fmt.Sprintf("Can't figure out character for: %v", value))
     }
+    return character
 }
 
-func graph(positionDetails map[Position]Location) map[Position][]Position {
-    result := make(map[Position][]Position)
-    for position := range positionDetails {
-        var connected []Position
-        for _, adjacent := range position.adjacent() {
-            _, exists := positionDetails[adjacent]
+func graph(pointDetails map[parsers.Point]Location) map[parsers.Point][]parsers.Point {
+    result := make(map[parsers.Point][]parsers.Point)
+    for point := range pointDetails {
+        var connected []parsers.Point
+        for _, adjacent := range point.Adjacent(false) {
+            _, exists := pointDetails[adjacent]
             if exists {
                 connected = append(connected, adjacent)
             }
         }
-        result[position] = connected
+        result[point] = connected
     }
     return result
 }
