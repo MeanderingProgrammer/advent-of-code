@@ -2,33 +2,36 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "io/ioutil"
-    "strconv"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/utils"
     "strings"
 )
 
 type Range [2]int
 
-func (r1 Range) overlap(r2 Range) Range {
-    maxStart := r1[0]
-    if maxStart < r2[0] {
-        maxStart = r2[0]
-    }
+func (r Range) start() int {
+    return r[0]
+}
 
-    minEnd := r1[1]
-    if minEnd > r2[1] {
-        minEnd = r2[1]
-    }
-
-    return [2]int{maxStart, minEnd}
+func (r Range) end() int {
+    return r[1]
 }
 
 func (r Range) valid() bool {
-    return r[0] <= r[1]
+    return r.start() <= r.end()
 }
 
 func (r Range) length() int {
-    return (r[1] - r[0]) + 1
+    return (r.end() - r.start()) + 1
+}
+
+func (r1 Range) overlap(r2 Range) Range {
+    return [2]int{
+        utils.Max(r1.start(), r2.start()), 
+        utils.Min(r1.end(), r2.end()),
+    }
 }
 
 type Bound struct {
@@ -43,12 +46,7 @@ func (bound Bound) disabledOverlap(newBound Bound) (Bound, bool) {
     ys := bound.ys.overlap(newBound.ys)
     zs := bound.zs.overlap(newBound.zs)
     if xs.valid() && ys.valid() && zs.valid() {
-        return Bound{
-            count: -bound.count,
-            xs: xs,
-            ys: ys,
-            zs: zs,
-        }, true
+        return Bound{count: -bound.count, xs: xs, ys: ys, zs: zs}, true
     } else {
         return Bound{}, false
     }
@@ -58,7 +56,7 @@ func (bound Bound) area() int {
     length := bound.xs.length()
     width := bound.ys.length()
     height := bound.zs.length()
-    return length * width * height
+    return (length * width * height) * bound.count
 }
 
 type Bounds []Bound
@@ -77,21 +75,19 @@ func (bounds Bounds) disabledOverlappingBounds(newBound Bound) Bounds {
 func (bounds Bounds) area() int {
     result := 0
     for _, bound := range bounds {
-        area := bound.area()
-        result += (area * bound.count)
+        result += bound.area()
     }
     return result
 }
 
 func main() {
     finalBounds := getFinalBounds()
-
     answers.Part1(561032, limitedBoundsArea(finalBounds))
     answers.Part2(1322825263376414, finalBounds.area())
 }
 
 func getFinalBounds() Bounds {
-    bounds := getData()
+    bounds := getBounds()
     finalBounds := Bounds{bounds[0]}
     for _, bound := range bounds[1:] {
         finalBounds = append(finalBounds, finalBounds.disabledOverlappingBounds(bound)...)
@@ -114,22 +110,19 @@ func limitedBoundsArea(bounds Bounds) int {
     return -boundsDisabled.area()
 }
 
-func getData() Bounds {
-    data, _ := ioutil.ReadFile("data.txt")
+func getBounds() Bounds {
     var bounds Bounds
-    for _, bound := range strings.Split(string(data), "\r\n") {
-        bounds = append(bounds, parseBound(bound))
+    for _, bound := range files.Read(parseBound) {
+        bounds = append(bounds, bound.(Bound))
     }
     return bounds
 }
 
-func parseBound(bound string) Bound {
-    enableWhere := strings.Split(bound, " ")
-    var count int
+func parseBound(line string) interface{} {
+    enableWhere := strings.Split(line, " ")
+    count := -1
     if enableWhere[0] == "on" {
         count = 1
-    } else {
-        count = -1
     }
     where := strings.Split(enableWhere[1], ",")
     return Bound{
@@ -141,12 +134,10 @@ func parseBound(bound string) Bound {
 }
 
 func parseRange(rawRange string) Range {
-    rangePortion := strings.Split(rawRange, "=")[1]
+    rangePortion := parsers.SubstringAfter(rawRange, "=")
     bounds := strings.Split(rangePortion, "..")
-    return [2]int{toInt(bounds[0]), toInt(bounds[1])}
-}
-
-func toInt(value string) int {
-    result, _ := strconv.Atoi(value)
-    return result
+    return [2]int{
+        conversions.ToInt(bounds[0]), 
+        conversions.ToInt(bounds[1]),
+    }
 }
