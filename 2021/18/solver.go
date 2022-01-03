@@ -2,7 +2,9 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
-    "io/ioutil"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/utils"
     "strconv"
     "strings"
 )
@@ -177,10 +179,7 @@ func sumAny(rawNumbers []string) int {
         for j, v2 := range rawNumbers {
             if i != j {
                 sum := parseNumber(v1).add(parseNumber(v2))
-                magnitude := sum.magnitude()
-                if magnitude > max {
-                    max = magnitude
-                }
+                max = utils.Max(max, sum.magnitude())
             }
         }
     }
@@ -188,8 +187,7 @@ func sumAny(rawNumbers []string) int {
 }
 
 func getData() []string {
-    data, _ := ioutil.ReadFile("data.txt")
-    return strings.Split(string(data), "\r\n")
+    return files.ReadLines()
 }
 
 func parseNumber(rawNumber string) *SnailNumber {
@@ -205,8 +203,7 @@ func parse(rawNumber string, parent *SnailNumber) *SnailNumber {
         result.left = parse(unnested[:split], &result)
         result.right = parse(unnested[split + 1:], &result)
     } else {
-        value, _ := strconv.Atoi(rawNumber)
-        result.value = value
+        result.value = conversions.ToInt(rawNumber)
     }
     return &result
 }
