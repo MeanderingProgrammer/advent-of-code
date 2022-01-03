@@ -108,5 +108,5 @@ func getGraph(wrap bool) parsers.Graph {
 }
 
 func baseGraph() parsers.Graph {
-    return parsers.ConstructGraph(files.ReadLines(), parsers.Character)
+    return parsers.ConstructGraph(files.Content(), parsers.Character, "")
 }

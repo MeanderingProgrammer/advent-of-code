@@ -81,5 +81,5 @@ func isMinimum(graph parsers.Graph, point parsers.Point) bool {
 }
 
 func getGraph() parsers.Graph {
-    return parsers.ConstructGraph(files.ReadLines(), parsers.Character)
+    return parsers.ConstructGraph(files.Content(), parsers.Character, "")
 }

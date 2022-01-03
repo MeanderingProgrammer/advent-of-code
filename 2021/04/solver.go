@@ -5,12 +5,11 @@ import (
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
-	"strings"
 )
 
 type Boards []*Board
 
-func (boards Boards) runToComplete(order []string) []int {
+func (boards Boards) runToComplete(order []int) []int {
     var result []int
     for _, value := range order {
         for _, board := range boards.incomplete() {
@@ -40,14 +39,14 @@ type Board struct {
     complete bool
 }
 
-func (board *Board) mark(value string) {
-    point, exists := board.graph.GetPoint(value)
+func (board *Board) mark(value int) {
+    point, exists := board.graph.GetPoint(conversions.ToString(value))
     if !exists {
         return
     }
 
     board.marked[point] = true
-    board.order = append(board.order, conversions.ToInt(value))
+    board.order = append(board.order, value)
 
     rowComplete := board.isComplete(point, func(p parsers.Point) int {return p.Y})
     columnComplete := board.isComplete(point, func(p parsers.Point) int {return p.X})
@@ -85,15 +84,15 @@ func main() {
     answers.Part2(23670, scores[len(scores) - 1])
 }
 
-func getData() ([]string, Boards) {
+func getData() ([]int, Boards) {
     orderBoards := files.ReadGroups()
-    return strings.Split(orderBoards[0], ","), parseBoards(orderBoards[1:])
+    return parsers.IntCsv(orderBoards[0]), parseBoards(orderBoards[1:])
 }
 
 func parseBoards(boards []string) Boards {
     var result Boards
     for _, board := range boards {
-        graph := parsers.ConstructGraph(strings.Split(board, "\r\n"), parsers.Field)
+        graph := parsers.ConstructGraph(board, parsers.Field, "")
         board := Board{
             graph: graph,
             marked: make(map[parsers.Point]bool),

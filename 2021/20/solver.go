@@ -1,11 +1,12 @@
 package main
 
-import(
-    "advent-of-code/commons/go/answers"
-    "fmt"
-    "io/ioutil"
-    "strconv"
-    "strings"
+import (
+	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/utils"
+	"strings"
 )
 
 const Boarder = 5
@@ -22,11 +23,6 @@ func (enhancer Enhancer) edgeBehavior(time int) bool {
     }
 }
 
-type Position struct {
-    x int
-    y int
-}
-
 type Bounds struct {
     minX int
     maxX int
@@ -34,66 +30,59 @@ type Bounds struct {
     maxY int
 }
 
-func (bounds Bounds) out(position Position) bool {
-    return position.x < bounds.minX  || 
-        position.x > bounds.maxX ||
-        position.y < bounds.minY ||
-        position.y > bounds.maxY
+func (bounds Bounds) out(point parsers.Point) bool {
+    return point.X < bounds.minX  || 
+        point.X > bounds.maxX ||
+        point.Y < bounds.minY ||
+        point.Y > bounds.maxY
 }
 
-type Graph struct {
-    grid map[Position]bool
+type Image struct {
+    graph parsers.Graph
     times int
 }
 
-func (graph Graph) enhance(enhancer Enhancer) Graph {
-    enhanced := make(map[Position]bool)
-    bounds := graph.getBounds()
+func (image Image) enhance(enhancer Enhancer) Image {
+    enhanced := make(map[parsers.Point]string)
+    bounds := image.getBounds()
     for y := bounds.minY - Boarder; y <= bounds.maxY + Boarder; y++ {
         for x := bounds.minX - Boarder; x <= bounds.maxX + Boarder; x++ {
-            position := Position{x, y}
-            if graph.enhanceValue(position, enhancer, bounds) {
-                enhanced[position] = true
+            point := parsers.Point{X: x, Y: y}
+            if image.enhanceValue(point, enhancer, bounds) {
+                enhanced[point] = "#"
             }
         }
     } 
-    return Graph{enhanced, graph.times + 1}
+    return Image{
+        graph: parsers.Graph{Grid: enhanced}, 
+        times: image.times + 1,
+    }
 }
 
-func (graph Graph) enhanceValue(position Position, enhancer Enhancer, bounds Bounds) bool {
+func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds Bounds) bool {
     var indexCode strings.Builder
     for y := -1; y <= 1; y++ {
         for x := -1; x <= 1; x++ {
-            surrounding := Position{position.x + x, position.y + y}
-            value := graph.grid[surrounding]
-            if value || (bounds.out(surrounding) && enhancer.edgeBehavior(graph.times)) {
+            surrounding := point.Add(x, y)
+            value := image.graph.Contains(surrounding)
+            if value || (bounds.out(surrounding) && enhancer.edgeBehavior(image.times)) {
                 indexCode.WriteString("1")
             } else {
                 indexCode.WriteString("0")
             }
         }
     }
-    index, _ := strconv.ParseInt(indexCode.String(), 2, 64)
+    index := conversions.BinaryToDecimal(indexCode.String())
     return enhancer[index] == '#'
 }
 
-func (graph Graph) getBounds() Bounds {
+func (image Image) getBounds() Bounds {
     minX, minY, maxX, maxY := 0, 0, 0, 0
-    for position := range graph.grid {
-        x := position.x
-        if x < minX {
-            minX = x
-        } else if x > maxX {
-            maxX = x
-        }
-
-        y := position.y
-        if y < minY {
-            minY = y
-        } else if y > maxY {
-            maxY = y
-        }
-
+    for point := range image.graph.Grid {
+        minX = utils.Min(minX, point.X)
+        maxX = utils.Max(maxX, point.X)
+        minY = utils.Min(minY, point.Y)
+        maxY = utils.Max(maxY, point.Y)
     }
     return Bounds{
         minX: minX,
@@ -103,50 +92,27 @@ func (graph Graph) getBounds() Bounds {
     }
 }
 
-func (graph Graph) print() {
-    bounds := graph.getBounds()
-    for y := bounds.minY; y <= bounds.maxY; y++ {
-        for x := bounds.minX; x <= bounds.maxX; x++ {
-            position := Position{x, y}
-            value := graph.grid[position]
-            if value {
-                fmt.Print("#")
-            } else {
-                fmt.Print(".")
-            }
-        }
-        fmt.Println()
-    }
-}
-
 func main() {
     answers.Part1(5437, litAfter(2))
     answers.Part2(19340, litAfter(50))
 }
 
 func litAfter(times int) int {
-    enhancer, puzzle := getData()
+    enhancer, puzzle := getEnhancerImage()
     for i := 0; i < times; i++ {
         puzzle = puzzle.enhance(enhancer)
     }
-    return len(puzzle.grid)
+    return len(puzzle.graph.Grid)
 }
 
-func getData() (Enhancer, Graph) {
-    data, _ := ioutil.ReadFile("data.txt")
-    enhancerPuzzle := strings.Split(string(data), "\r\n\r\n")
-    enhancer, puzzle := enhancerPuzzle[0], enhancerPuzzle[1]
-    return Enhancer(enhancer), parsePuzzle(puzzle)
+func getEnhancerImage() (Enhancer, Image) {
+    enhancerImage := files.ReadGroups()
+    return Enhancer(enhancerImage[0]), parseImage(enhancerImage[1])
 }
 
-func parsePuzzle(raw string) Graph {
-    graph := make(map[Position]bool)
-    for y, line := range strings.Split(raw, "\r\n") {
-        for x, value := range line {
-            if value == '#' {
-                graph[Position{x, y}] = true
-            }
-        }
+func parseImage(raw string) Image {
+    return Image{
+        graph: parsers.ConstructGraph(raw, parsers.Character, "."), 
+        times: 0,
     }
-    return Graph{graph, 0}
 }

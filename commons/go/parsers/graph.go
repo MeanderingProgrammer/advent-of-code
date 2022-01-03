@@ -11,6 +11,13 @@ type Point struct {
     Y int
 }
 
+func (point Point) Add(x, y int) Point {
+    return Point{
+        X: point.X + x, 
+        Y: point.Y + y,
+    }
+}
+
 func (point Point) Adjacent(includeDiagonal bool) []Point {
     adjacent := []Point{
         {X: point.X - 1, Y: point.Y},
@@ -93,12 +100,13 @@ func characterSplitter(row string) []string {
     return strings.Split(row, "")
 }
 
-func ConstructGraph(rows []string, splitter RowSplitter) Graph {
-	grid, f := make(map[Point]string), splitter.get()
+func ConstructGraph(rawRows string, splitter RowSplitter, ignore string) Graph {
+	rows, grid, f := Lines(rawRows), make(map[Point]string), splitter.get()
 	for y, row := range rows {
         for x, value := range f(row) {
-            point := Point{X: x, Y: y}
-            grid[point] = value
+            if !strings.ContainsAny(value, ignore) {
+                grid[Point{X: x, Y: y}] = value
+            }
         }
     }
 	return Graph{
