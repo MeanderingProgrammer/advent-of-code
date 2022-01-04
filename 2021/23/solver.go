@@ -18,35 +18,17 @@ const (
 	D       = "D"
 )
 
-func getType(position parsers.Point) string {
-	result := Hallway
-	switch position.X {
-	case 3:
-		result = A
-	case 5:
-		result = B
-	case 7:
-		result = C
-	case 9:
-		result = D
-	}
-	if position.Y == 1 && result != Hallway {
-		result = Doorway
-	}
-	return result
+type Character struct {
+	value string
+	moved bool
 }
 
-type CharacterState struct {
-	character string
-	moved     bool
+func (character Character) atGoal(vertex graphs.Vertex) bool {
+	return character.value == vertex.Value
 }
 
-func (characterState CharacterState) atGoal(position parsers.Point) bool {
-	return characterState.character == getType(position)
-}
-
-func (characterState CharacterState) cost() int {
-	switch characterState.character {
+func (character Character) cost() int {
+	switch character.value {
 	case A:
 		return 1
 	case B:
@@ -61,8 +43,8 @@ func (characterState CharacterState) cost() int {
 }
 
 type BoardState struct {
-	characterStates map[parsers.Point]CharacterState
-	cost            int
+	characters map[graphs.Vertex]Character
+	cost       int
 }
 
 func (state BoardState) Cost() int {
@@ -75,43 +57,43 @@ func (state BoardState) String() *string {
 }
 
 func (state BoardState) complete(board Board) bool {
-	for position, characterState := range state.characterStates {
-		if getType(position) != characterState.character {
+	for vertex, character := range state.characters {
+		if !character.atGoal(vertex) {
 			return false
 		}
 	}
 	return true
 }
 
-func (state BoardState) charactersInRoom(character string) []string {
+func (state BoardState) charactersInRoom(value string) []string {
 	var inRoom []string
-	for position, characterState := range state.characterStates {
-		if getType(position) == character {
-			inRoom = append(inRoom, characterState.character)
+	for vertex, character := range state.characters {
+		if vertex.Value == value {
+			inRoom = append(inRoom, character.value)
 		}
 	}
 	return inRoom
 }
 
-func (state BoardState) updateCharacter(start, destination parsers.Point) BoardState {
-	newStates := make(map[parsers.Point]CharacterState)
-	for position, characterState := range state.characterStates {
+func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardState {
+	updated := make(map[graphs.Vertex]Character)
+	for position, character := range state.characters {
 		if position == start {
-			newStates[destination] = CharacterState{
-				moved:     true,
-				character: characterState.character,
+			updated[destination] = Character{
+				moved: true,
+				value: character.value,
 			}
 		} else {
-			newStates[position] = characterState
+			updated[position] = character
 		}
 	}
 
-	characterState := state.characterStates[start]
-	distance := utils.Abs(start.X-destination.X) + start.Y + destination.Y - 2
+	distance := utils.Abs(start.Point.X - destination.Point.X)
+	distance += start.Point.Y + destination.Point.Y - 2
 
 	return BoardState{
-		characterStates: newStates,
-		cost:            state.cost + characterState.cost()*distance,
+		characters: updated,
+		cost:       state.cost + state.characters[start].cost()*distance,
 	}
 }
 
@@ -131,6 +113,7 @@ func (board Board) solve(initial BoardState) (int, int) {
 		}
 		for _, state := range board.legalMoves(state) {
 			asString := *state.String()
+			//fmt.Println(asString)
 			if !seen[asString] {
 				seen[asString] = true
 				queue.Add(state)
@@ -143,7 +126,7 @@ func (board Board) solve(initial BoardState) (int, int) {
 
 func (board Board) legalMoves(state BoardState) []BoardState {
 	var legalMoves []BoardState
-	for start := range state.characterStates {
+	for start := range state.characters {
 		for _, destination := range board.characterLegalMoves(state, start) {
 			newState := state.updateCharacter(start, destination)
 			legalMoves = append(legalMoves, newState)
@@ -152,24 +135,24 @@ func (board Board) legalMoves(state BoardState) []BoardState {
 	return legalMoves
 }
 
-func (board Board) characterLegalMoves(state BoardState, start parsers.Point) []parsers.Point {
-	var reachable []parsers.Point
-	characterState := state.characterStates[start]
+func (board Board) characterLegalMoves(state BoardState, start graphs.Vertex) []graphs.Vertex {
+	var reachable []graphs.Vertex
+	character := state.characters[start]
 
-	if characterState.atGoal(start) && characterState.moved {
+	if character.atGoal(start) && character.moved {
 		// If we're already at the goal state, then there is nowhere else to go
 		return reachable
 	}
 
-	explored := map[parsers.Point]bool{start: true}
-	toExplore := []parsers.Point{start}
+	explored := map[graphs.Vertex]bool{start: true}
+	toExplore := []graphs.Vertex{start}
 
 	for len(toExplore) > 0 {
 		current := toExplore[0]
 		toExplore = toExplore[1:]
 
 		for _, destination := range board.graph[current] {
-			_, occupied := state.characterStates[destination]
+			_, occupied := state.characters[destination]
 			if explored[destination] || occupied {
 				// If we've already explored a particular position or that position is occupied
 				// then break the chain and do not try to explore from this position
@@ -186,38 +169,33 @@ func (board Board) characterLegalMoves(state BoardState, start parsers.Point) []
 	return reachable
 }
 
-func (board Board) shouldGo(state BoardState, start, destination parsers.Point) bool {
-	startType, destinationType := getType(start), getType(destination)
-
-	if destinationType == Doorway {
+func (board Board) shouldGo(state BoardState, start, destination graphs.Vertex) bool {
+	value := state.characters[start].value
+	if destination.Value == Doorway {
 		// Can never stop outside of a room
 		return false
-	} else if destinationType == Hallway {
+	} else if destination.Value == Hallway {
 		// Can not move to hallway once we are already in the hallway  must go to a room
-		if startType == Hallway {
+		if start.Value == Hallway {
 			return false
 		}
+	} else if value != destination.Value {
+		// If this room is for another character then we cannot enter
+		return false
 	} else {
-		character := state.characterStates[start].character
-		// Destination must now be a room
-		if character != destinationType {
-			// If this room is for another character then we cannot enter
-			return false
-		} else {
-			// Otherwise it is the room for this character, we need to make sure that:
-			// 1) Only valid characters are in the room
-			// 2) That we go to the correct point in the room, i.e. as far back as possible
-			charactersInRoom := state.charactersInRoom(character)
-			for _, characterInRoom := range charactersInRoom {
-				if characterInRoom != character {
-					// At least one character in the room needs to leave
-					return false
-				}
-			}
-			// Must go to back of room
-			if destination.Y != board.roomSize-len(charactersInRoom)+1 {
+		// Otherwise it is the room for this character, we need to make sure that:
+		// 1) Only valid characters are in the room
+		// 2) That we go to the correct point in the room, i.e. as far back as possible
+		charactersInRoom := state.charactersInRoom(value)
+		for _, characterInRoom := range charactersInRoom {
+			if characterInRoom != value {
+				// At least one character in the room needs to leave
 				return false
 			}
+		}
+		// Must go to back of room
+		if destination.Point.Y != board.roomSize-len(charactersInRoom)+1 {
+			return false
 		}
 	}
 	return true
@@ -248,24 +226,43 @@ func getData(extend bool) (Board, BoardState) {
 
 	grid := parsers.ConstructGrid(rows, parsers.Character, "# ")
 
-	characterStates := make(map[parsers.Point]CharacterState)
+	characters := make(map[graphs.Vertex]Character)
 	for _, point := range grid.Points() {
 		value := grid.Get(point)
 		if value != "." {
-			characterStates[point] = CharacterState{
-				character: value,
-				moved:     false,
+			vertex := graphs.Vertex{Point: point, Value: getType(point)}
+			characters[vertex] = Character{
+				value: value,
+				moved: false,
 			}
 		}
 	}
 
 	board := Board{
-		graph:    graphs.ConstructGraph(grid),
+		graph:    graphs.ConstructGraph(grid, getType),
 		roomSize: grid.Height - 2,
 	}
 	state := BoardState{
-		characterStates: characterStates,
-		cost:            0,
+		characters: characters,
+		cost:       0,
 	}
 	return board, state
+}
+
+func getType(position parsers.Point) string {
+	result := Hallway
+	switch position.X {
+	case 3:
+		result = A
+	case 5:
+		result = B
+	case 7:
+		result = C
+	case 9:
+		result = D
+	}
+	if position.Y == 1 && result != Hallway {
+		result = Doorway
+	}
+	return result
 }
