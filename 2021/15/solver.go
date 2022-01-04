@@ -4,76 +4,66 @@ import (
 	"advent-of-code/commons/go/answers"
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/graphs"
 	"advent-of-code/commons/go/parsers"
+	"fmt"
 )
 
 type Path struct {
-	path  []parsers.Point
+	last  graphs.Vertex
 	value int
 }
 
-func (path Path) add(point parsers.Point, value int) Path {
-	newPoints := make([]parsers.Point, len(path.path))
-	copy(newPoints, path.path)
-	return Path{append(newPoints, point), path.value + value}
+func (path Path) Cost() int {
+	return path.value
 }
 
-type PriorityQueue []Path
-
-func (priorityQueue *PriorityQueue) add(path Path) {
-	*priorityQueue = append(*priorityQueue, path)
+func (path Path) String() *string {
+	result := fmt.Sprintf("%v", path.last)
+	return &result
 }
 
-func (priorityQueue PriorityQueue) empty() bool {
-	return len(priorityQueue) == 0
-}
-
-func (priorityQueue *PriorityQueue) pop() Path {
-	minIndex, minPath := 0, (*priorityQueue)[0]
-	for i, path := range (*priorityQueue)[1:] {
-		if path.value < minPath.value {
-			minIndex, minPath = i+1, path
-		}
+func (path Path) add(vertex graphs.Vertex) Path {
+	return Path{
+		last:  vertex,
+		value: path.value + vertex.Value.(int),
 	}
-	*priorityQueue = append((*priorityQueue)[:minIndex], (*priorityQueue)[minIndex+1:]...)
-	return minPath
 }
 
 func main() {
-	answers.Part1(656, solve(getGrid(false)))
-	answers.Part2(2979, solve(getGrid(true)))
+	answers.Part1(656, solve(false))
+	answers.Part2(2979, solve(true))
 }
 
-func solve(grid parsers.Grid) int {
-	end := parsers.Point{
-		X: grid.Width,
-		Y: grid.Height,
-	}
+func solve(wrap bool) int {
+	grid := getGrid(wrap)
 
-	var priorityQueue PriorityQueue
-	priorityQueue.add(Path{
-		path:  []parsers.Point{{X: 0, Y: 0}},
+	initial := Path{
+		last:  graphs.ConstructVertex(parsers.Point{X: 0, Y: 0}, grid, getType),
 		value: 0,
-	})
-
-	seen := make(map[parsers.Point]bool)
-
-	for !priorityQueue.empty() {
-		path := priorityQueue.pop()
-		lastPoint := path.path[len(path.path)-1]
-		if lastPoint == end {
-			return path.value
-		}
-		for _, neighbor := range lastPoint.Adjacent(false) {
-			value, exists := grid.Get(neighbor), grid.Contains(neighbor)
-			if exists && !seen[neighbor] {
-				seen[neighbor] = true
-				priorityQueue.add(path.add(neighbor, conversions.ToInt(value)))
-			}
-		}
 	}
 
-	return 0
+	done := func(state graphs.State) bool {
+		path := state.(Path)
+		return path.last.Point == parsers.Point{X: grid.Width, Y: grid.Height}
+	}
+
+	graph := graphs.ConstructGraph(grid, getType)
+	nextStates := func(state graphs.State) []graphs.State {
+		var states []graphs.State
+		path := state.(Path)
+		for _, neighbor := range graph.Neighbors(path.last) {
+			states = append(states, path.add(neighbor))
+		}
+		return states
+	}
+
+	cost, _ := graph.Bfs(initial, done, nextStates)
+	return cost
+}
+
+func getType(position parsers.Point, value string) interface{} {
+	return conversions.ToInt(value)
 }
 
 func getGrid(wrap bool) parsers.Grid {
