@@ -9,17 +9,19 @@ import (
 	"fmt"
 )
 
+type Type string
+
 const (
-	Hallway = "HALL"
-	Doorway = "DOOR"
-	A       = "A"
-	B       = "B"
-	C       = "C"
-	D       = "D"
+	Hallway Type = "."
+	Doorway      = "x"
+	A            = "A"
+	B            = "B"
+	C            = "C"
+	D            = "D"
 )
 
 type Character struct {
-	value string
+	value Type
 	moved bool
 }
 
@@ -47,6 +49,14 @@ type BoardState struct {
 	cost       int
 }
 
+func (state BoardState) Positions() map[graphs.Vertex]interface{} {
+	positions := make(map[graphs.Vertex]interface{})
+	for position, character := range state.characters {
+		positions[position] = character.value
+	}
+	return positions
+}
+
 func (state BoardState) Cost() int {
 	return state.cost
 }
@@ -65,8 +75,8 @@ func (state BoardState) complete(board Board) bool {
 	return true
 }
 
-func (state BoardState) charactersInRoom(value string) []string {
-	var inRoom []string
+func (state BoardState) charactersInRoom(value Type) []Type {
+	var inRoom []Type
 	for vertex, character := range state.characters {
 		if vertex.Value == value {
 			inRoom = append(inRoom, character.value)
@@ -151,7 +161,7 @@ func (board Board) characterLegalMoves(state BoardState, start graphs.Vertex) []
 		current := toExplore[0]
 		toExplore = toExplore[1:]
 
-		for _, destination := range board.graph[current] {
+		for _, destination := range board.graph.Neighbors(current) {
 			_, occupied := state.characters[destination]
 			if explored[destination] || occupied {
 				// If we've already explored a particular position or that position is occupied
@@ -231,7 +241,7 @@ func getData(extend bool) (Board, BoardState) {
 		if value != "." {
 			vertex := graphs.Vertex{Point: point, Value: getType(point)}
 			characters[vertex] = Character{
-				value: value,
+				value: Type(value),
 				moved: false,
 			}
 		}
@@ -248,7 +258,7 @@ func getData(extend bool) (Board, BoardState) {
 	return board, state
 }
 
-func getType(position parsers.Point) string {
+func getType(position parsers.Point) interface{} {
 	result := Hallway
 	switch position.X {
 	case 3:
