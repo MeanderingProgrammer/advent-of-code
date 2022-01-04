@@ -90,11 +90,34 @@ do
     cd ..
 done
 
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+red=$(tput setaf 1)
+normal=$(tput sgr0)
+
+set_color() {
+    if (( $(echo "${1} < 0.5" | bc -l) ))
+    then
+        color=${green}
+    elif (( $(echo "${1} < 1.5" | bc -l) ))
+    then
+        color=${normal}
+    elif (( $(echo "${1} < 10.0" | bc -l) ))
+    then
+        color=${yellow}
+    else
+        color=${red}
+    fi
+}
+
 # Generates a table with runtimes for all days / years
 printf "\n"
 printf "| Year | Day | Time (sec.) | \n"
 printf "| ---- | --- | ----------- | \n"
 for i in "${!runtimes[@]}"
 do
-    printf "| %4.4s | %3.3s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${runtimes[i]}
+    runtime=${runtimes[i]}
+    set_color ${runtime}
+    printf "${color}"
+    printf "| %4.4s | %3.3s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${runtime}
 done
