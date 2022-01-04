@@ -1,125 +1,129 @@
 package parsers
 
-import(
-    "advent-of-code/commons/go/conversions"
-    "advent-of-code/commons/go/utils"
+import (
+	"advent-of-code/commons/go/conversions"
+	"advent-of-code/commons/go/utils"
 	"fmt"
 	"strings"
 )
 
 type Point struct {
-    X int
-    Y int
+	X int
+	Y int
 }
 
 func (point Point) Add(x, y int) Point {
-    return Point{
-        X: point.X + x, 
-        Y: point.Y + y,
-    }
+	return Point{
+		X: point.X + x,
+		Y: point.Y + y,
+	}
 }
 
 func (point Point) Adjacent(includeDiagonal bool) []Point {
-    adjacent := []Point{
-        {X: point.X - 1, Y: point.Y},
-        {X: point.X + 1, Y: point.Y},
-        {X: point.X, Y: point.Y - 1},
-        {X: point.X, Y: point.Y + 1},
-    }
-    if includeDiagonal {
-        diagonals := []Point{
-            {X: point.X + 1, Y: point.Y + 1},
-            {X: point.X - 1, Y: point.Y - 1},
-            {X: point.X + 1, Y: point.Y - 1},
-            {X: point.X - 1, Y: point.Y + 1},
-        }
-        adjacent = append(adjacent, diagonals...)
-    }
-    return adjacent
+	adjacent := []Point{
+		{X: point.X - 1, Y: point.Y},
+		{X: point.X + 1, Y: point.Y},
+		{X: point.X, Y: point.Y - 1},
+		{X: point.X, Y: point.Y + 1},
+	}
+	if includeDiagonal {
+		diagonals := []Point{
+			{X: point.X + 1, Y: point.Y + 1},
+			{X: point.X - 1, Y: point.Y - 1},
+			{X: point.X + 1, Y: point.Y - 1},
+			{X: point.X - 1, Y: point.Y + 1},
+		}
+		adjacent = append(adjacent, diagonals...)
+	}
+	return adjacent
 }
 
 func ConstructPoint(x, y string) Point {
-    return Point{
-        X: conversions.ToInt(x), 
-        Y: conversions.ToInt(y),
-    }
+	return Point{
+		X: conversions.ToInt(x),
+		Y: conversions.ToInt(y),
+	}
 }
 
 type Grid struct {
-    plane map[Point]string
-    Height int
-    Width int
+	plane  map[Point]string
+	Height int
+	Width  int
 }
 
 func (grid Grid) Len() int {
-    return len(grid.plane)
+	return len(grid.plane)
 }
 
 func (grid Grid) Contains(point Point) bool {
-    _, exists := grid.plane[point]
-    return exists
+	_, exists := grid.plane[point]
+	return exists
 }
 
 func (grid Grid) Get(point Point) string {
-    value, _ := grid.plane[point]
-    return value
+	value, _ := grid.plane[point]
+	return value
 }
 
 func (grid *Grid) Set(point Point, value string) {
-    if grid.Len() == 0 {
-        grid.plane = make(map[Point]string)
-    }
-    grid.plane[point] = value
-    grid.Width = utils.Max(grid.Width, point.X)
-    grid.Height = utils.Max(grid.Height, point.Y)
+	if grid.Len() == 0 {
+		grid.plane = make(map[Point]string)
+	}
+	grid.plane[point] = value
+	grid.Width = utils.Max(grid.Width, point.X)
+	grid.Height = utils.Max(grid.Height, point.Y)
 }
 
 func (grid Grid) Delete(point Point) {
-    delete(grid.plane, point)
+	delete(grid.plane, point)
 }
 
 func (grid Grid) Points() []Point {
-    var points []Point
-    for point := range grid.plane {
-        points = append(points, point)
-    }
-    return points
+	var points []Point
+	for point := range grid.plane {
+		points = append(points, point)
+	}
+	return points
 }
 
 func (grid Grid) GetPoint(target string) (Point, bool) {
-    for point, value := range grid.plane {
-        if value == target {
-            return point, true
-        }
-    }
-    return Point{}, false
+	for point, value := range grid.plane {
+		if value == target {
+			return point, true
+		}
+	}
+	return Point{}, false
 }
 
 func (grid Grid) Print(defaultValue string) {
-    for y := 0; y <= grid.Height; y++ {
-        for x := 0; x <= grid.Width; x++ {
-            point := Point{X: x, Y: y}
-            value, exists := grid.plane[point]
-            if !exists {
-                value = defaultValue
-            }
-            fmt.Print(value)
-        }
-        fmt.Println()
-    }
+	for y := 0; y <= grid.Height; y++ {
+		for x := 0; x <= grid.Width; x++ {
+			point := Point{X: x, Y: y}
+			value, exists := grid.plane[point]
+			if !exists {
+				value = defaultValue
+			}
+			fmt.Print(value)
+		}
+		fmt.Println()
+	}
 }
 
 type RowSplitter int
+
 const (
-	Field     RowSplitter = iota
+	Field RowSplitter = iota
 	Character
 )
 
-func (splitter RowSplitter) get() func(string)[]string {
+func (splitter RowSplitter) get() func(string) []string {
 	switch splitter {
-	case Field: return fieldSplitter
-	case Character: return characterSplitter
-	default: panic(fmt.Sprintf("Unknown splitter: %d", splitter))
+	case Field:
+		return fieldSplitter
+	case Character:
+		return characterSplitter
+	default:
+		panic(fmt.Sprintf("Unknown splitter: %d", splitter))
 	}
 }
 
@@ -128,21 +132,21 @@ func fieldSplitter(row string) []string {
 }
 
 func characterSplitter(row string) []string {
-    return strings.Split(row, "")
+	return strings.Split(row, "")
 }
 
 func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid {
 	plane, f := make(map[Point]string), splitter.get()
 	for y, row := range rows {
-        for x, value := range f(row) {
-            if !strings.ContainsAny(value, ignore) {
-                plane[Point{X: x, Y: y}] = value
-            }
-        }
-    }
+		for x, value := range f(row) {
+			if !strings.ContainsAny(value, ignore) {
+				plane[Point{X: x, Y: y}] = value
+			}
+		}
+	}
 	return Grid{
-        plane: plane, 
-        Height: len(rows) - 1, 
-        Width: len(f(rows[0])) - 1, 
-    }
+		plane:  plane,
+		Height: len(rows) - 1,
+		Width:  len(f(rows[0])) - 1,
+	}
 }

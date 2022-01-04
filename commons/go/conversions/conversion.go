@@ -26,7 +26,7 @@ func DecimalToBinary(decimal int) string {
 }
 
 func HexToDecimal(hexadecimal string) int {
-    result, err := strconv.ParseInt(hexadecimal, 16, 64)
+	result, err := strconv.ParseInt(hexadecimal, 16, 64)
 	utils.CheckError(err)
-    return int(result)
+	return int(result)
 }

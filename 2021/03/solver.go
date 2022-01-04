@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"advent-of-code/commons/go/answers"
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
@@ -38,7 +38,7 @@ func main() {
 }
 
 func getBinaries() Binaries {
-    return files.ReadLines()
+	return files.ReadLines()
 }
 
 func calculatePowerConsumption(binaries Binaries) int {

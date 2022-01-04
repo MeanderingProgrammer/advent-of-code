@@ -1,6 +1,6 @@
 package parsers
 
-import(
+import (
 	"advent-of-code/commons/go/conversions"
 	"strings"
 )
@@ -10,14 +10,14 @@ func SubstringAfter(s, sep string) string {
 }
 
 func SplitAt(s string, split int) (string, string) {
-	return s[:split], s[split + 1:]
+	return s[:split], s[split+1:]
 }
 
 func IntCsv(s string) []int {
 	var result []int
 	for _, value := range strings.Split(s, ",") {
 		result = append(result, conversions.ToInt(value))
-    }
+	}
 	return result
 }
 

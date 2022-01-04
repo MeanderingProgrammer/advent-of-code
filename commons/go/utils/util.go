@@ -9,8 +9,8 @@ func CheckError(err error) {
 func Abs(value int) int {
 	result := value
 	if value < 0 {
-        return result * -1
-    }
+		return result * -1
+	}
 	return result
 }
 
