@@ -5,8 +5,8 @@ import (
 )
 
 type State interface {
-	Positions() map[Vertex]interface{}
 	Cost() int
+	String() *string
 }
 
 type Queue []State

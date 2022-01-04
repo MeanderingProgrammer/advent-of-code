@@ -49,7 +49,7 @@ type BoardState struct {
 	cost       int
 }
 
-func (state BoardState) Positions() map[graphs.Vertex]interface{} {
+func (state BoardState) positions() map[graphs.Vertex]interface{} {
 	positions := make(map[graphs.Vertex]interface{})
 	for position, character := range state.characters {
 		positions[position] = character.value
@@ -239,7 +239,7 @@ func getData(extend bool) (Board, BoardState) {
 	for _, point := range grid.Points() {
 		value := grid.Get(point)
 		if value != "." {
-			vertex := graphs.Vertex{Point: point, Value: getType(point)}
+			vertex := graphs.ConstructVertex(point, grid, getType)
 			characters[vertex] = Character{
 				value: Type(value),
 				moved: false,
@@ -258,7 +258,7 @@ func getData(extend bool) (Board, BoardState) {
 	return board, state
 }
 
-func getType(position parsers.Point) interface{} {
+func getType(position parsers.Point, value string) interface{} {
 	result := Hallway
 	switch position.X {
 	case 3:
