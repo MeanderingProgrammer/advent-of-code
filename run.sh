@@ -2,16 +2,13 @@
 
 if [[ $# -ne 1 && $# -ne 2 ]]
 then
-    echo 'Usage: <year> <day1,day2,...>?'
+    echo 'Usage: <year1,year2,...> <day1,day2,...>?'
     exit 1
 fi
 
 # Setup PYTHONPATH so commons imports work
 current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
-
-# Store array of runtimes
-runtimes=()
 
 time_run() {
     start=$(date -u +%s.%N)
@@ -24,6 +21,15 @@ time_run() {
 JAVA="java"
 PYTHON="py"
 GO="go"
+
+update_days() {
+    if [[ $# -eq 0 ]]
+    then
+        days=($(ls | sort))
+    else
+        days=($(echo ${1} | tr "," "\n"))
+    fi
+}
 
 run_day() {
     day=${1}
@@ -55,30 +61,40 @@ run_day() {
     cd ..
 }
 
-year=${1}
+# Store array of runtimes and days / years associated with each runtime
+years_ran=()
+days_ran=()
+runtimes=()
 
-echo "Runing year ${year}"
-cd ${year}
+years=($(echo ${1} | tr "," "\n"))
 
-if [[ $# -eq 1 ]]
-then
-    days=($(ls | sort))
-else
-    days=($(echo ${2} | tr "," "\n"))
-fi
-
-# Run each day specified and append runtime to an array
-for day in "${days[@]}"
+for year in "${years[@]}"
 do
-    run_day ${day}
-    runtimes+=(${runtime})
+    echo "Runing year ${year}"
+    cd ${year}
+
+    # Sets days array based on input and current year being run
+    update_days ${2}
+
+    # Run each day specified and update arrays
+    for day in "${days[@]}"
+    do
+        run_day ${day}
+        years_ran+=(${year})
+        days_ran+=(${day})
+        runtimes+=(${runtime})
+    done
+
+    # Similar to running for each day, we need to change back out of the
+    # directory to run the next year
+    cd ..
 done
 
-# Generates a table with runtimes for all days
+# Generates a table with runtimes for all days / years
 printf "\n"
 printf "| Year | Day | Time (sec.) | \n"
 printf "| ---- | --- | ----------- | \n"
 for i in "${!runtimes[@]}"
 do
-    printf "| %4.4s | %3.3s | %11.11s | \n" ${year} ${days[i]} ${runtimes[i]}
+    printf "| %4.4s | %3.3s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${runtimes[i]}
 done
