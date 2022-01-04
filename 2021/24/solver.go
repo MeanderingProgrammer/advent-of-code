@@ -2,9 +2,9 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/files"
     "fmt"
-    "io/ioutil"
-    "strconv"
     "strings"
 )
 
@@ -133,38 +133,31 @@ func (program Program) nth(n int) []int {
     var values []int
     for i, instruction := range program {
         if i % 18 == n {
-            values = append(values, toInt(instruction[2]))
+            values = append(values, conversions.ToInt(instruction[2]))
         }
     }
     return values
 }
 
 func getProgram() Program {
-    data, _ := ioutil.ReadFile("data.txt")
-    rawInstructions := strings.Split(string(data), "\r\n")
     var program []Instruction
-    for _, rawInstruction := range rawInstructions {
+    for _, rawInstruction := range files.ReadLines() {
         instruction := strings.Split(rawInstruction, " ")
         program = append(program, instruction)
     }
     return program
 }
 
-func toInt(value string) int {
-    result, _ := strconv.Atoi(value)
-    return result
-}
-
 func parseResult(values []int) int {
     var result strings.Builder
 	for _, value := range values {
-		result.WriteString(strconv.Itoa(value))
+		result.WriteString(conversions.ToString(value))
 	}
-	return toInt(result.String())
+    return conversions.ToInt(result.String())
 }
 
 // ================================================================================================
-// The below implement the programatic way to solve this problem, parsing input and storing values
+// Below implements the programatic way to solve this problem, parsing input and storing values
 // in the ALU struct registers
 // It is really slow and in the time it takes to optimize this based on the input, it is faster
 // to implement an analytical solution, details above main()
@@ -265,7 +258,7 @@ func (alu *ALU) get(register string) int {
     } else if register == "z" {
         value = alu.z
     } else {
-        value = toInt(register)
+        value = conversions.ToInt(register)
     }
     return value
 }
@@ -273,13 +266,8 @@ func (alu *ALU) get(register string) int {
 func runSlow(source int) int {
     program := getProgram()
     alu := ALU{}
-    provider := toProvider(source)
+    provider := InputProvider{
+        source: conversions.ToString(source),
+    }
     return alu.runProgram(program, &provider)
 }
-
-func toProvider(source int) InputProvider {
-    value := strconv.Itoa(source)
-    return InputProvider{
-        source: value,
-    }
-} 
