@@ -21,80 +21,71 @@ type Fold struct {
     amount int
 }
 
-func (fold Fold) apply(point parsers.Point) parsers.Point {
+func (fold Fold) apply(point parsers.Point) (parsers.Point, bool) {
     value := point.X
     if fold.direction == Up {
         value = point.Y
     }
     if value > fold.amount {
+        result := parsers.Point{X: point.X, Y: point.Y}
         newValue := 2 * fold.amount - value
         if fold.direction == Up {
-            point.Y = newValue
+            result.Y = newValue
         } else {
-            point.X = newValue
+            result.X = newValue
         }
+        return result, true
+    } else {
+        return point, false
     }
-    return point
 }
 
 func main() {
-    graph, folds := getData()
+    grid, folds := getData()
 
-    graph = apply(graph, folds[0])
-    answers.Part1(737, len(graph.Grid))
+    grid = apply(grid, folds[0])
+    answers.Part1(737, grid.Len())
 
     // Part 2: ZUJUAFHP
     fmt.Println("Part 2")
     for _, fold := range folds[1:] {
-        graph = apply(graph, fold)
+        grid = apply(grid, fold)
     }
-    graph.Print(".")
+    grid.Print(".")
 }
 
-func apply(graph parsers.Graph,fold Fold) parsers.Graph {
-    grid := make(map[parsers.Point]string)
-    for point := range graph.Grid {
-        grid[fold.apply(point)] = "#"
-    }
-    result := parsers.Graph{
-        Grid: grid, 
-        Height: graph.Height,
-        Width: graph.Width,
+func apply(grid parsers.Grid, fold Fold) parsers.Grid {
+    for _, point := range grid.Points() {
+        newPoint, moved := fold.apply(point)
+        if moved {
+            grid.Delete(point)
+            grid.Set(newPoint, "#")
+        }
     }
     if fold.direction == Up {
-        result.Height = fold.amount - 1
+        grid.Height = fold.amount - 1
     } else {
-        result.Width = fold.amount - 1
+        grid.Width = fold.amount - 1
     }
-    return result
+    return grid
 }
 
-func getData() (parsers.Graph, []Fold) {
+func getData() (parsers.Grid, []Fold) {
     dotsInstructions := files.ReadGroups()
     dots, instructions := split(dotsInstructions[0]), split(dotsInstructions[1])
 
-    graph := parsers.Graph{
-        Grid: make(map[parsers.Point]string), 
-        Height: 0, 
-        Width: 0,
-    }
+    grid := parsers.Grid{}
     for _, dot := range dots {
         point := getPoint(dot)
-        graph.Grid[point] = "#"
-        if point.X > graph.Width {
-            graph.Width = point.X
-        } 
-        if point.Y > graph.Height {
-            graph.Height = point.Y
-        }
+        grid.Set(point, "#")
     }
-    
+
     var folds []Fold
     for _, instruction := range instructions {
         folds = append(folds, getInstruction(instruction))
     }
 
-    return graph, folds
+    return grid, folds
 }
 
 func split(value string) []string {

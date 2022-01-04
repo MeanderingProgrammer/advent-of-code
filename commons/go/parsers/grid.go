@@ -2,6 +2,7 @@ package parsers
 
 import(
     "advent-of-code/commons/go/conversions"
+    "advent-of-code/commons/go/utils"
 	"fmt"
 	"strings"
 )
@@ -44,19 +45,49 @@ func ConstructPoint(x, y string) Point {
     }
 }
 
-type Graph struct {
-    Grid map[Point]string
+type Grid struct {
+    plane map[Point]string
     Height int
     Width int
 }
 
-func (graph Graph) Contains(point Point) bool {
-    _, exists := graph.Grid[point]
-    return exists
-} 
+func (grid Grid) Len() int {
+    return len(grid.plane)
+}
 
-func (graph Graph) GetPoint(target string) (Point, bool) {
-    for point, value := range graph.Grid {
+func (grid Grid) Contains(point Point) bool {
+    _, exists := grid.plane[point]
+    return exists
+}
+
+func (grid Grid) Get(point Point) string {
+    value, _ := grid.plane[point]
+    return value
+}
+
+func (grid *Grid) Set(point Point, value string) {
+    if grid.Len() == 0 {
+        grid.plane = make(map[Point]string)
+    }
+    grid.plane[point] = value
+    grid.Width = utils.Max(grid.Width, point.X)
+    grid.Height = utils.Max(grid.Height, point.Y)
+}
+
+func (grid Grid) Delete(point Point) {
+    delete(grid.plane, point)
+}
+
+func (grid Grid) Points() []Point {
+    var points []Point
+    for point := range grid.plane {
+        points = append(points, point)
+    }
+    return points
+}
+
+func (grid Grid) GetPoint(target string) (Point, bool) {
+    for point, value := range grid.plane {
         if value == target {
             return point, true
         }
@@ -64,11 +95,11 @@ func (graph Graph) GetPoint(target string) (Point, bool) {
     return Point{}, false
 }
 
-func (graph Graph) Print(defaultValue string) {
-    for y := 0; y <= graph.Height; y++ {
-        for x := 0; x <= graph.Width; x++ {
+func (grid Grid) Print(defaultValue string) {
+    for y := 0; y <= grid.Height; y++ {
+        for x := 0; x <= grid.Width; x++ {
             point := Point{X: x, Y: y}
-            value, exists := graph.Grid[point]
+            value, exists := grid.plane[point]
             if !exists {
                 value = defaultValue
             }
@@ -100,17 +131,17 @@ func characterSplitter(row string) []string {
     return strings.Split(row, "")
 }
 
-func ConstructGraph(rawRows string, splitter RowSplitter, ignore string) Graph {
-	rows, grid, f := Lines(rawRows), make(map[Point]string), splitter.get()
+func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid {
+	plane, f := make(map[Point]string), splitter.get()
 	for y, row := range rows {
         for x, value := range f(row) {
             if !strings.ContainsAny(value, ignore) {
-                grid[Point{X: x, Y: y}] = value
+                plane[Point{X: x, Y: y}] = value
             }
         }
     }
-	return Graph{
-        Grid: grid, 
+	return Grid{
+        plane: plane, 
         Height: len(rows) - 1, 
         Width: len(f(rows[0])) - 1, 
     }

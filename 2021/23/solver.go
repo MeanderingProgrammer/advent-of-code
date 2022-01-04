@@ -1,14 +1,15 @@
 package main
 
 import (
-    "advent-of-code/commons/go/answers"
+    //"advent-of-code/commons/go/answers"
     "advent-of-code/commons/go/files"
+    //"advent-of-code/commons/go/graphs"
     "advent-of-code/commons/go/parsers"
-    "advent-of-code/commons/go/utils"
-	"container/heap"
+    //"advent-of-code/commons/go/utils"
 	"fmt"
 )
 
+/*
 type Location int
 const (
 	Hallway Location = iota
@@ -19,6 +20,11 @@ const (
     DGoal
 )
 
+type Vertex struct {
+    point parsers.Point
+    value Location
+}
+
 type Character int
 const (
 	A Character = iota
@@ -26,17 +32,6 @@ const (
 	C
     D
 )
-
-type CharacterState struct {
-    point parsers.Point
-    moved bool
-    character Character
-}
-
-func (characterState CharacterState) atGoal(board Board) bool {
-    current := board.pointDetails[characterState.point]
-    return current == characterState.character.goal()
-}
 
 func (character Character) cost() int {
     switch character {
@@ -58,9 +53,19 @@ func (character Character) goal() Location {
     }
 }
 
+type CharacterState struct {
+    vertext Vertex
+    moved bool
+    character Character
+}
+
+func (characterState CharacterState) atGoal(board Board) bool {
+    current := board.pointDetails[characterState.point]
+    return current == characterState.character.goal()
+}
+
 type Board struct {
-    pointDetails map[parsers.Point]Location
-    graph map[parsers.Point][]parsers.Point
+    graph map[Vertex][]Vertex
     roomSize int
 }
 
@@ -69,12 +74,16 @@ type BoardState struct {
     cost int
 }
 
-func (boardState *BoardState) String() *string {
+func (boardState BoardState) Cost() int {
+    return boardState.cost
+}
+
+func (boardState BoardState) String() *string {
     result := fmt.Sprintf("%v", boardState)
     return &result
 }
 
-func (boardState *BoardState) complete(board Board) bool {
+func (boardState BoardState) complete(board Board) bool {
     for _, characterState := range boardState.characterStates {
         if !characterState.atGoal(board) {
             return false
@@ -83,7 +92,7 @@ func (boardState *BoardState) complete(board Board) bool {
     return true
 }
 
-func (boardState *BoardState) occupied(point parsers.Point) bool {
+func (boardState BoardState) occupied(point parsers.Point) bool {
     for _, characterState := range boardState.characterStates {
         if characterState.point == point {
             return true
@@ -92,7 +101,7 @@ func (boardState *BoardState) occupied(point parsers.Point) bool {
     return false
 }
 
-func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Character {
+func (boardState BoardState) charactersInRoom(board Board, goal Location) []Character {
     var inRoom []Character
     for _, characterState := range boardState.characterStates {
         if board.pointDetails[characterState.point] == goal {
@@ -102,7 +111,7 @@ func (boardState *BoardState) charactersInRoom(board *Board, goal Location) []Ch
     return inRoom
 }
 
-func (boardState *BoardState) updateCharacter(characterIndex int, destination parsers.Point) *BoardState {
+func (boardState BoardState) updateCharacter(characterIndex int, destination parsers.Point) BoardState {
     var newStates []CharacterState
     for i, characterState := range boardState.characterStates {
         if i == characterIndex {
@@ -121,52 +130,27 @@ func (boardState *BoardState) updateCharacter(characterIndex int, destination pa
     start := characterState.point
     distance := utils.Abs(start.X - destination.X) + start.Y + destination.Y - 2
 
-    return &BoardState{
+    return BoardState{
         characterStates: newStates, 
         cost: boardState.cost + cost * distance,
     }
 }
 
-type Queue []BoardState
-
-func (q Queue) Len() int {
-    return len(q)
-}
-
-func (q Queue) Less(i, j int) bool {
-    return q[i].cost < q[j].cost
-}
-
-func (q Queue) Swap(i, j int) { 
-    q[i], q[j] = q[j], q[i] 
-}
-
-func (q *Queue) Pop() interface{} {
-    length := len(*q)
-    result := (*q)[length -1]
-	*q = (*q)[:length - 1]
-	return result
-}
-
-func (q *Queue) Push(state interface{}) {
-	*q = append(*q, state.(BoardState))
-}
-
-func (board *Board) solve(initial BoardState) (int, int) {
-    queue, seen, explored := &Queue{initial}, make(map[string]bool), 0
+func (board Board) solve(initial BoardState) (int, int) {
+    queue, seen, explored := &graphs.Queue{initial}, make(map[string]bool), 0
 
     for queue.Len() > 0 {
         explored++
-        currentState := heap.Pop(queue).(BoardState)
-        if currentState.complete(*board) {
+        currentState := queue.Next().(BoardState)
+        fmt.Println(currentState)
+        if currentState.complete(board) {
             return currentState.cost, explored
         }
-        legalMoves := board.legalMoves(currentState)
-        for _, state := range legalMoves {
+        for _, state := range board.legalMoves(currentState) {
             asString := *state.String()
             if !seen[asString] {
                 seen[asString] = true
-                heap.Push(queue, state)
+                queue.Add(state)
             }
         }
     }
@@ -174,21 +158,21 @@ func (board *Board) solve(initial BoardState) (int, int) {
     panic("Could not find a solution")
 }
 
-func (board *Board) legalMoves(boardState BoardState) []BoardState {
+func (board Board) legalMoves(boardState BoardState) []BoardState {
     var legalMoves []BoardState
     for i := range boardState.characterStates {
         for _, point := range board.characterLegalMoves(boardState, i) {
             newState := boardState.updateCharacter(i, point)
-            legalMoves = append(legalMoves, *newState)
+            legalMoves = append(legalMoves, newState)
         }
     }
     return legalMoves
 }
 
-func (board *Board) characterLegalMoves(boardState BoardState, i int) []parsers.Point {
+func (board Board) characterLegalMoves(boardState BoardState, i int) []parsers.Point {
     var reachable []parsers.Point
     start := boardState.characterStates[i]
-    if start.atGoal(*board) && start.moved {
+    if start.atGoal(board) && start.moved {
         // If we're already at the goal state, then there is nowhere else to go
         return reachable
     }
@@ -219,7 +203,7 @@ func (board *Board) characterLegalMoves(boardState BoardState, i int) []parsers.
     return reachable
 }
 
-func (board *Board) shouldGo(boardState BoardState, start CharacterState, destination parsers.Point) bool {
+func (board Board) shouldGo(boardState BoardState, start CharacterState, destination parsers.Point) bool {
     destinationType := board.pointDetails[destination]
     if destinationType == Doorway {
         // Can never stop outside of a room
@@ -253,12 +237,16 @@ func (board *Board) shouldGo(boardState BoardState, start CharacterState, destin
     }
     return true
 }
-
+*/
 func main() {
-    answers.Part1(18282, solve(false))
-    answers.Part2(50132, solve(true))
+    fmt.Println(files.Content())
+    graph := parsers.ConstructGraph(files.Content(), parsers.Character, "# ")
+    graph.Print("#")
+    //answers.Part1(18282, solve(false))
+    //answers.Part2(50132, solve(true))
 }
 
+/*
 func solve(extend bool) int {
     board, boardState := getData(extend)
     cost, explored := board.solve(boardState)
@@ -280,7 +268,7 @@ func getData(extend bool) (Board, BoardState) {
         rows = append(rows, lastRows...)
     }
 
-    pointDetails := make(map[parsers.Point]Location)
+    vertexValues := make(map[parsers.Point]Location)
     var characterStates []CharacterState
     
     for y, row := range rows {
@@ -289,21 +277,27 @@ func getData(extend bool) (Board, BoardState) {
                 continue
             }
             point := parsers.Point{X: x, Y: y}
-            pointDetails[point] = location(point)
+            vertexValues[point] = location(point)
+            vertex := Vertex{point: point, value: location(point)}
             if value != '.' {
-                characterStates = append(characterStates, CharacterState{point, false, character(value)})
+                characterStates = append(characterStates, CharacterState{
+                    vertext: vertex, 
+                    moved: false, 
+                    character: character(value),
+                })
             }
         }
     }
 
-    return Board{
-        pointDetails: pointDetails, 
-        graph: graph(pointDetails), 
+    board :=  Board{
+        graph: graph(vertices), 
         roomSize: len(rows) - 3,
-    }, BoardState{
+    }
+    state := BoardState{
         characterStates: characterStates, 
         cost: 0,
     }
+    return board, state
 }
 
 func location(point parsers.Point) Location {
@@ -344,17 +338,18 @@ func character(value rune) Character {
     return character
 }
 
-func graph(pointDetails map[parsers.Point]Location) map[parsers.Point][]parsers.Point {
-    result := make(map[parsers.Point][]parsers.Point)
-    for point := range pointDetails {
-        var connected []parsers.Point
+func graph(vertices []Vertex) map[Vertex][]Vertex {
+    result := make(map[Vertex][]Vertex)
+    for _, vertex := range vertices {
+        var connected []Vertex
         for _, adjacent := range point.Adjacent(false) {
             _, exists := pointDetails[adjacent]
             if exists {
                 connected = append(connected, adjacent)
             }
         }
-        result[point] = connected
+        result[vertex] = connected
     }
     return result
 }
+*/

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/answers"
     "advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
 )
 
 type Path struct {
@@ -40,14 +40,14 @@ func (priorityQueue *PriorityQueue) pop() Path {
 }
 
 func main() {
-    answers.Part1(656, solve(getGraph(false)))
-    answers.Part2(2979, solve(getGraph(true)))
+    answers.Part1(656, solve(getGrid(false)))
+    answers.Part2(2979, solve(getGrid(true)))
 }
 
-func solve(graph parsers.Graph) int {
+func solve(grid parsers.Grid) int {
     end := parsers.Point{
-        X: graph.Width, 
-        Y: graph.Height,
+        X: grid.Width, 
+        Y: grid.Height,
     }
 
     var priorityQueue PriorityQueue
@@ -65,7 +65,7 @@ func solve(graph parsers.Graph) int {
             return path.value
         }
         for _, neighbor := range lastPoint.Adjacent(false) {
-            value, exists := graph.Grid[neighbor]
+            value, exists := grid.Get(neighbor), grid.Contains(neighbor)
             if exists && !seen[neighbor] {
                 seen[neighbor] = true
                 priorityQueue.add(path.add(neighbor, conversions.ToInt(value)))
@@ -76,37 +76,33 @@ func solve(graph parsers.Graph) int {
     return 0
 }
 
-func getGraph(wrap bool) parsers.Graph {
-    baseGraph := baseGraph()
-    if !wrap {
-        return baseGraph
-    } else {
-        baseSize := baseGraph.Width + 1
-        graph := make(map[parsers.Point]string)
+func getGrid(wrap bool) parsers.Grid {
+    grid := baseGrid()
+    if wrap {
+        points, baseSize := grid.Points(), grid.Width + 1
         for i := 0; i < 5; i++ {
             for j := 0; j < 5; j++ {
                 distance := i + j
-                for point, value := range baseGraph.Grid {
+                if distance == 0 {
+                    continue
+                }
+                for _, point := range points {
                     newPoint := parsers.Point{
                         X: point.X + (baseSize * i), 
                         Y: point.Y + (baseSize * j),
                     }
-                    newValue := conversions.ToInt(value) + distance
+                    newValue := conversions.ToInt(grid.Get(point)) + distance
                     if newValue > 9 {
                         newValue -= 9
                     }
-                    graph[newPoint] = conversions.ToString(newValue)
+                    grid.Set(newPoint, conversions.ToString(newValue))
                 }
             }
         }
-        return parsers.Graph{
-            Grid: graph, 
-            Height: (baseSize * 5) - 1,
-            Width: (baseSize * 5) - 1,
-        }
     }
+    return grid
 }
 
-func baseGraph() parsers.Graph {
-    return parsers.ConstructGraph(files.Content(), parsers.Character, "")
+func baseGrid() parsers.Grid {
+    return parsers.ConstructGrid(files.ReadLines(), parsers.Character, "")
 }

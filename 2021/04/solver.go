@@ -33,14 +33,14 @@ func (boards Boards) incomplete() Boards {
 }
 
 type Board struct {
-    graph parsers.Graph
+    grid parsers.Grid
     marked map[parsers.Point]bool
     order []int
     complete bool
 }
 
 func (board *Board) mark(value int) {
-    point, exists := board.graph.GetPoint(conversions.ToString(value))
+    point, exists := board.grid.GetPoint(conversions.ToString(value))
     if !exists {
         return
     }
@@ -57,7 +57,7 @@ func (board *Board) mark(value int) {
 
 func (board Board) isComplete(targetPoint parsers.Point, f func(parsers.Point) int) bool {
     targetCoord := f(targetPoint)
-    for point := range board.graph.Grid {
+    for _, point := range board.grid.Points() {
         if f(point) == targetCoord && !board.marked[point] {
             return false
         }
@@ -67,9 +67,9 @@ func (board Board) isComplete(targetPoint parsers.Point, f func(parsers.Point) i
 
 func (board Board) score() int {
     total := 0
-    for point, value := range board.graph.Grid {
+    for _, point := range board.grid.Points() {
         if !board.marked[point] {
-            total += conversions.ToInt(value)
+            total += conversions.ToInt(board.grid.Get(point))
         }
     }
     lastMarked := board.order[len(board.order) - 1]
@@ -92,9 +92,9 @@ func getData() ([]int, Boards) {
 func parseBoards(boards []string) Boards {
     var result Boards
     for _, board := range boards {
-        graph := parsers.ConstructGraph(board, parsers.Field, "")
+        grid := parsers.ConstructGrid(parsers.Lines(board), parsers.Field, "")
         board := Board{
-            graph: graph,
+            grid: grid,
             marked: make(map[parsers.Point]bool),
             order: nil,
             complete: false,
