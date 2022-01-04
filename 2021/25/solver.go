@@ -2,15 +2,10 @@ package main
 
 import(
     "advent-of-code/commons/go/answers"
+    "advent-of-code/commons/go/files"
+    "advent-of-code/commons/go/parsers"
     "fmt"
-    "io/ioutil"
-    "strings"
 )
-
-type Position struct {
-    x int
-    y int
-}
 
 type Cucumber int
 const (
@@ -18,19 +13,23 @@ const (
     South
 )
 
-func (cucumber Cucumber) target(start Position) Position {
+func (cucumber Cucumber) toString() string {
     switch cucumber {
-    case East: return Position{x: start.x + 1, y: start.y}
-    case South: return Position{x: start.x, y: start.y + 1}
+    case East: return ">"
+    case South: return "v"
     default: panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
     }
 }
 
-type Grid struct {
-    graph map[Position]Cucumber
-    height int
-    width int
+func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
+    switch cucumber {
+    case East: return start.Add(1, 0)
+    case South: return start.Add(0, 1)
+    default: panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
+    }
 }
+
+type Grid parsers.Graph
 
 func (grid *Grid) untilStop() int {
     moves, didMove := 0, true
@@ -48,79 +47,38 @@ func (grid *Grid) step() bool {
 }
 
 func (grid *Grid) move(toMove Cucumber) bool {
-    positionsToUpdate := make(map[Position]Position)
+    pointsToUpdate := make(map[parsers.Point]parsers.Point)
 
-    for position, cucumber := range grid.graph {
-        if cucumber != toMove {
+    for point, cucumber := range grid.Grid {
+        if cucumber != toMove.toString() {
             continue
         }
-        target := cucumber.target(position)
-        if target.x >= grid.width {
-            target.x = 0
+        target := toMove.target(point)
+        if target.X > grid.Width {
+            target.X = 0
         }
-        if target.y >= grid.height {
-            target.y = 0
+        if target.Y > grid.Height {
+            target.Y = 0
         }
-        _, occupied := grid.graph[target]
+        _, occupied := grid.Grid[target]
         if !occupied {
-            positionsToUpdate[position] = target
+            pointsToUpdate[point] = target
         }
     }
 
-    if len(positionsToUpdate) == 0 {
-        return false
+    for startPoint, endPoint := range pointsToUpdate {
+        delete(grid.Grid, startPoint)
+        grid.Grid[endPoint] = toMove.toString()
     }
 
-    for startPosition, endPosition := range positionsToUpdate {
-        delete(grid.graph, startPosition)
-        grid.graph[endPosition] = toMove
-    }
-
-    return true
-}
-
-func (grid Grid) print() {
-    for y := 0; y < grid.height; y++ {
-        for x := 0; x < grid.width; x++ {
-            position := Position{x, y}
-            value, exists := grid.graph[position]
-            representation := "."
-            if exists {
-                if value == East {
-                    representation = ">"
-                } else {
-                    representation = "v"
-                }
-            }
-            fmt.Print(representation)
-        }
-        fmt.Println()
-    }
+    return len(pointsToUpdate) > 0
 }
 
 func main() {
-    cucumbers := getData()
-
-    answers.Part1(492, cucumbers.untilStop())
+    answers.Part1(492, getGrid().untilStop())
 }
 
-func getData() Grid {
-    data, _ := ioutil.ReadFile("data.txt")
-    rows := strings.Split(string(data), "\r\n")
-    graph := make(map[Position]Cucumber)
-    for y, row := range rows {
-        for x, value := range row {
-            position := Position{x, y}
-            if value == '>' {
-                graph[position] = East
-            } else if value == 'v' {
-                graph[position] = South
-            }
-        }
-    }
-    return Grid{
-        graph: graph,
-        height: len(rows),
-        width: len(rows[0]),
-    }
+func getGrid() *Grid {
+    graph := Grid(parsers.ConstructGraph(files.Content(), parsers.Character, "."))
+    return &graph
 }
