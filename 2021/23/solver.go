@@ -52,7 +52,7 @@ func (state BoardState) Cost() int {
 }
 
 func (state BoardState) String() *string {
-	result := fmt.Sprintf("%v", state)
+	result := fmt.Sprintf("%v", state.characters)
 	return &result
 }
 
@@ -103,7 +103,7 @@ type Board struct {
 }
 
 func (board Board) solve(initial BoardState) (int, int) {
-	queue, seen, explored := &graphs.Queue{initial}, make(map[string]bool), 0
+	queue, seen, explored := &graphs.Queue{initial}, make(map[string]int), 0
 
 	for queue.Len() > 0 {
 		explored++
@@ -112,10 +112,10 @@ func (board Board) solve(initial BoardState) (int, int) {
 			return state.cost, explored
 		}
 		for _, state := range board.legalMoves(state) {
-			asString := *state.String()
-			//fmt.Println(asString)
-			if !seen[asString] {
-				seen[asString] = true
+			encodedState := *state.String()
+			seenValue, exists := seen[encodedState]
+			if !exists || state.Cost() < seenValue {
+				seen[encodedState] = state.Cost()
 				queue.Add(state)
 			}
 		}
@@ -208,8 +208,7 @@ func main() {
 
 func solve(extend bool) int {
 	board, boardState := getData(extend)
-	cost, explored := board.solve(boardState)
-	fmt.Println(explored)
+	cost, _ := board.solve(boardState)
 	return cost
 }
 
