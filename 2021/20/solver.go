@@ -38,23 +38,23 @@ func (bounds Bounds) out(point parsers.Point) bool {
 }
 
 type Image struct {
-    graph parsers.Graph
+    grid parsers.Grid
     times int
 }
 
 func (image Image) enhance(enhancer Enhancer) Image {
-    enhanced := make(map[parsers.Point]string)
+    enhanced := parsers.Grid{}
     bounds := image.getBounds()
     for y := bounds.minY - Boarder; y <= bounds.maxY + Boarder; y++ {
         for x := bounds.minX - Boarder; x <= bounds.maxX + Boarder; x++ {
             point := parsers.Point{X: x, Y: y}
             if image.enhanceValue(point, enhancer, bounds) {
-                enhanced[point] = "#"
+                enhanced.Set(point, "#")
             }
         }
-    } 
+    }
     return Image{
-        graph: parsers.Graph{Grid: enhanced}, 
+        grid: enhanced, 
         times: image.times + 1,
     }
 }
@@ -64,7 +64,7 @@ func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds B
     for y := -1; y <= 1; y++ {
         for x := -1; x <= 1; x++ {
             surrounding := point.Add(x, y)
-            value := image.graph.Contains(surrounding)
+            value := image.grid.Contains(surrounding)
             if value || (bounds.out(surrounding) && enhancer.edgeBehavior(image.times)) {
                 indexCode.WriteString("1")
             } else {
@@ -78,7 +78,7 @@ func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds B
 
 func (image Image) getBounds() Bounds {
     minX, minY, maxX, maxY := 0, 0, 0, 0
-    for point := range image.graph.Grid {
+    for _, point := range image.grid.Points() {
         minX = utils.Min(minX, point.X)
         maxX = utils.Max(maxX, point.X)
         minY = utils.Min(minY, point.Y)
@@ -98,11 +98,11 @@ func main() {
 }
 
 func litAfter(times int) int {
-    enhancer, puzzle := getEnhancerImage()
+    enhancer, image := getEnhancerImage()
     for i := 0; i < times; i++ {
-        puzzle = puzzle.enhance(enhancer)
+        image = image.enhance(enhancer)
     }
-    return len(puzzle.graph.Grid)
+    return image.grid.Len()
 }
 
 func getEnhancerImage() (Enhancer, Image) {
@@ -112,7 +112,7 @@ func getEnhancerImage() (Enhancer, Image) {
 
 func parseImage(raw string) Image {
     return Image{
-        graph: parsers.ConstructGraph(raw, parsers.Character, "."), 
+        grid: parsers.ConstructGrid(parsers.Lines(raw), parsers.Character, "."), 
         times: 0,
     }
 }

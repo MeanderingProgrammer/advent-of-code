@@ -19,27 +19,27 @@ func (points Points) contains(point parsers.Point) bool {
     return false
 }
 
-func (points Points) riskLevel(graph parsers.Graph) int {
+func (points Points) riskLevel(grid parsers.Grid) int {
     result := 0
     for _, point := range points {        
-        result += conversions.ToInt(graph.Grid[point]) + 1
+        result += conversions.ToInt(grid.Get(point)) + 1
     }
     return result
 }
 
-func (points Points) basinSizes(graph parsers.Graph) []int {
+func (points Points) basinSizes(grid parsers.Grid) []int {
     var basinSizes []int
     for _, point := range points {
-        basinSizes = append(basinSizes, basinSize(graph, point))
+        basinSizes = append(basinSizes, basinSize(grid, point))
     }
     return basinSizes
 }
 
-func basinSize(graph parsers.Graph, point parsers.Point) int {
+func basinSize(grid parsers.Grid, point parsers.Point) int {
     basin := Points{point}
     for i := 0; i < len(basin); i++ {
         for _, adjacent := range basin[i].Adjacent(false) {
-            adjacentValue, exists := graph.Grid[adjacent]
+            adjacentValue, exists := grid.Get(adjacent), grid.Contains(adjacent)
             if exists && conversions.ToInt(adjacentValue) < 9 && !basin.contains(adjacent) {
                 basin = append(basin, adjacent)
             }
@@ -49,30 +49,30 @@ func basinSize(graph parsers.Graph, point parsers.Point) int {
 }
 
 func main() {
-    graph := getGraph()
+    grid := getGrid()
 
-    minimums := minimums(graph)
-    answers.Part1(506, minimums.riskLevel(graph))
+    minimums := minimums(grid)
+    answers.Part1(506, minimums.riskLevel(grid))
 
-    basinSizes := minimums.basinSizes(graph)
+    basinSizes := minimums.basinSizes(grid)
     sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
     answers.Part2(931200, basinSizes[0] * basinSizes[1] * basinSizes[2])
 }
 
-func minimums(graph parsers.Graph) Points {
+func minimums(grid parsers.Grid) Points {
     var result Points
-    for point := range graph.Grid {
-        if isMinimum(graph, point) {
+    for _, point := range grid.Points() {
+        if isMinimum(grid, point) {
             result = append(result, point)
         }
     }
     return result
 }
 
-func isMinimum(graph parsers.Graph, point parsers.Point) bool {
-    value := conversions.ToInt(graph.Grid[point])
+func isMinimum(grid parsers.Grid, point parsers.Point) bool {
+    value := conversions.ToInt(grid.Get(point))
     for _, adjacent := range point.Adjacent(false) {
-        adjacentValue, exists := graph.Grid[adjacent]
+        adjacentValue, exists := grid.Get(adjacent), grid.Contains(adjacent)
         if exists && conversions.ToInt(adjacentValue) <= value {
             return false
         }
@@ -80,6 +80,6 @@ func isMinimum(graph parsers.Graph, point parsers.Point) bool {
     return true
 }
 
-func getGraph() parsers.Graph {
-    return parsers.ConstructGraph(files.Content(), parsers.Character, "")
+func getGrid() parsers.Grid {
+    return parsers.ConstructGrid(files.ReadLines(), parsers.Character, "")
 }

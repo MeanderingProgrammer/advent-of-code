@@ -29,27 +29,30 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
     }
 }
 
-type Grid parsers.Graph
+func main() {
+    answers.Part1(492, untilStop(getGrid()))
+}
 
-func (grid *Grid) untilStop() int {
+func untilStop(grid parsers.Grid) int {
     moves, didMove := 0, true
     for didMove {
-        didMove = grid.step()
+        didMove = step(grid)
         moves++
     }
     return moves
 }
 
-func (grid *Grid) step() bool {
-    eastMoved := grid.move(East)
-    southMoved := grid.move(South)
+func step(grid parsers.Grid) bool {
+    eastMoved := move(grid, East)
+    southMoved := move(grid, South)
     return eastMoved || southMoved
 }
 
-func (grid *Grid) move(toMove Cucumber) bool {
+func move(grid parsers.Grid, toMove Cucumber) bool {
     pointsToUpdate := make(map[parsers.Point]parsers.Point)
 
-    for point, cucumber := range grid.Grid {
+    for _, point := range grid.Points() {
+        cucumber := grid.Get(point)
         if cucumber != toMove.toString() {
             continue
         }
@@ -60,25 +63,19 @@ func (grid *Grid) move(toMove Cucumber) bool {
         if target.Y > grid.Height {
             target.Y = 0
         }
-        _, occupied := grid.Grid[target]
-        if !occupied {
+        if !grid.Contains(target) {
             pointsToUpdate[point] = target
         }
     }
 
     for startPoint, endPoint := range pointsToUpdate {
-        delete(grid.Grid, startPoint)
-        grid.Grid[endPoint] = toMove.toString()
+        grid.Delete(startPoint)
+        grid.Set(endPoint, toMove.toString())
     }
 
     return len(pointsToUpdate) > 0
 }
 
-func main() {
-    answers.Part1(492, getGrid().untilStop())
-}
-
-func getGrid() *Grid {
-    graph := Grid(parsers.ConstructGraph(files.Content(), parsers.Character, "."))
-    return &graph
+func getGrid() parsers.Grid {
+    return parsers.ConstructGrid(files.ReadLines(), parsers.Character, ".")
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type OctopusGrid struct {
-    graph parsers.Graph
+    grid parsers.Grid
     flashed map[parsers.Point]bool
 }
 
@@ -21,7 +21,7 @@ func (grid OctopusGrid) runFor(steps int) int {
 }
 
 func (grid OctopusGrid) runUntilAll() int {
-    target, steps := len(grid.graph.Grid), 1
+    target, steps := grid.grid.Len(), 1
     for grid.step() != target {
         steps++
     }
@@ -29,19 +29,19 @@ func (grid OctopusGrid) runUntilAll() int {
 }
 
 func (grid OctopusGrid) step() int {
-    for point := range grid.graph.Grid {
+    for _, point := range grid.grid.Points() {
         grid.flash(point)
     }
     flashed := len(grid.flashed)
     for point := range grid.flashed {
-        grid.graph.Grid[point] = "0"
+        grid.grid.Set(point, "0")
         delete(grid.flashed, point)
     }
     return flashed
 }
 
 func (grid OctopusGrid) flash(point parsers.Point) {
-    if !grid.graph.Contains(point) {
+    if !grid.grid.Contains(point) {
         return
     }
     energy := grid.increment(point)
@@ -54,9 +54,9 @@ func (grid OctopusGrid) flash(point parsers.Point) {
 }
 
 func (grid OctopusGrid) increment(point parsers.Point) int {
-    previousValue := grid.graph.Grid[point]
+    previousValue := grid.grid.Get(point)
     newValue := conversions.ToInt(previousValue) + 1
-    grid.graph.Grid[point] = conversions.ToString(newValue)
+    grid.grid.Set(point, conversions.ToString(newValue))
     return newValue
 }
 
@@ -67,7 +67,7 @@ func main() {
 
 func getGrid() OctopusGrid {
     return OctopusGrid{
-        graph: parsers.ConstructGraph(files.Content(), parsers.Character, ""),
+        grid: parsers.ConstructGrid(files.ReadLines(), parsers.Character, ""),
         flashed: make(map[parsers.Point]bool),
     }
 }
