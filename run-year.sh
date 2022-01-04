@@ -2,7 +2,7 @@
 
 if [[ $# -ne 1 && $# -ne 2 ]]
 then
-    echo 'Usage: <year> <day>?'
+    echo 'Usage: <year> <day1,day2,...>?'
     exit 1
 fi
 
@@ -18,7 +18,7 @@ time_run() {
     $@
     end=$(date -u +%s.%N)
     runtime=$(echo "$end - $start" | bc)
-    echo "Runtime: ${runtime}"
+    printf "Runtime: %f \n" ${runtime}
 }
 
 JAVA="java"
@@ -62,13 +62,23 @@ cd ${year}
 
 if [[ $# -eq 1 ]]
 then
-    days=$(ls | sort)
+    days=($(ls | sort))
 else
-    days=(${2})
+    days=($(echo ${2} | tr "," "\n"))
 fi
 
-for day in ${days}
+# Run each day specified and append runtime to an array
+for day in "${days[@]}"
 do
     run_day ${day}
     runtimes+=(${runtime})
+done
+
+# Generates a table with runtimes for all days
+printf "\n"
+printf "| Year | Day | Time (sec.) | \n"
+printf "| ---- | --- | ----------- | \n"
+for i in "${!runtimes[@]}"
+do
+    printf "| %4.4s | %3.3s | %11.11s | \n" ${year} ${days[i]} ${runtimes[i]}
 done
