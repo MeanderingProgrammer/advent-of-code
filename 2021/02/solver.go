@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"advent-of-code/commons/go/answers"
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
@@ -9,8 +9,8 @@ import(
 
 type Position struct {
 	horizontal int
-	depth  int
-	aim int
+	depth      int
+	aim        int
 }
 
 func (position Position) magicNumber() int {
@@ -27,7 +27,7 @@ const (
 
 type Instruction struct {
 	direction Direction
-	amount int
+	amount    int
 }
 
 type Instructions []Instruction
@@ -51,8 +51,8 @@ func getInstructions() Instructions {
 	toInstruction := func(line string) interface{} {
 		parts := strings.Fields(line)
 		return Instruction{
-			direction: Direction(parts[0]), 
-			amount: conversions.ToInt(parts[1]),
+			direction: Direction(parts[0]),
+			amount:    conversions.ToInt(parts[1]),
 		}
 	}
 	var instructions Instructions
@@ -64,19 +64,25 @@ func getInstructions() Instructions {
 
 func part1(position *Position, amount int, direction Direction) {
 	switch direction {
-	case Forward: position.horizontal += amount
-	case Down: position.depth += amount
-	case Up: position.depth -= amount
+	case Forward:
+		position.horizontal += amount
+	case Down:
+		position.depth += amount
+	case Up:
+		position.depth -= amount
 	}
 }
 
 func part2(position *Position, amount int, direction Direction) {
 	switch direction {
-	case Forward: {
-		position.horizontal += amount
-		position.depth += (position.aim * amount)
-	}
-	case Down: position.aim += amount
-	case Up: position.aim -= amount
+	case Forward:
+		{
+			position.horizontal += amount
+			position.depth += (position.aim * amount)
+		}
+	case Down:
+		position.aim += amount
+	case Up:
+		position.aim -= amount
 	}
 }

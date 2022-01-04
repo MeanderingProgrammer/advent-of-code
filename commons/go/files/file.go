@@ -21,7 +21,7 @@ func ReadInt() []int {
 	return result
 }
 
-func Read(f func(string)interface{}) []interface{} {
+func Read(f func(string) interface{}) []interface{} {
 	var result []interface{}
 	for _, line := range ReadLines() {
 		result = append(result, f(line))

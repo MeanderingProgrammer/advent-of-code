@@ -1,6 +1,6 @@
 package graphs
 
-import(
+import (
 	"container/heap"
 )
 
@@ -13,21 +13,21 @@ type Queue []State
 // Methods needed by container/heap module
 
 func (q Queue) Len() int {
-    return len(q)
+	return len(q)
 }
 
 func (q Queue) Less(i, j int) bool {
-    return q[i].Cost() < q[j].Cost()
+	return q[i].Cost() < q[j].Cost()
 }
 
-func (q Queue) Swap(i, j int) { 
-    q[i], q[j] = q[j], q[i] 
+func (q Queue) Swap(i, j int) {
+	q[i], q[j] = q[j], q[i]
 }
 
 func (q *Queue) Pop() interface{} {
-    length := len(*q)
-    result := (*q)[length -1]
-	*q = (*q)[:length - 1]
+	length := len(*q)
+	result := (*q)[length-1]
+	*q = (*q)[:length-1]
 	return result
 }
 
