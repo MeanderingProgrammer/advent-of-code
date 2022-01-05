@@ -87,34 +87,34 @@ func (transformation Transformation) apply(point Point) Point {
 }
 
 var rotations = []func(Point) Point{
-	func(point Point) Point { return Point{point.x, point.y, point.z} },
-	func(point Point) Point { return Point{-point.x, -point.y, point.z} },
-	func(point Point) Point { return Point{point.y, -point.x, point.z} },
-	func(point Point) Point { return Point{-point.y, point.x, point.z} },
+	func(point Point) Point { return Point{+point.x, +point.y, +point.z} },
+	func(point Point) Point { return Point{-point.x, -point.y, +point.z} },
+	func(point Point) Point { return Point{+point.y, -point.x, +point.z} },
+	func(point Point) Point { return Point{-point.y, +point.x, +point.z} },
 
-	func(point Point) Point { return Point{-point.x, point.y, -point.z} },
-	func(point Point) Point { return Point{point.x, -point.y, -point.z} },
-	func(point Point) Point { return Point{point.y, point.x, -point.z} },
+	func(point Point) Point { return Point{-point.x, +point.y, -point.z} },
+	func(point Point) Point { return Point{+point.x, -point.y, -point.z} },
+	func(point Point) Point { return Point{+point.y, +point.x, -point.z} },
 	func(point Point) Point { return Point{-point.y, -point.x, -point.z} },
 
-	func(point Point) Point { return Point{point.x, point.z, -point.y} },
-	func(point Point) Point { return Point{-point.x, point.z, point.y} },
-	func(point Point) Point { return Point{point.y, point.z, point.x} },
-	func(point Point) Point { return Point{-point.y, point.z, -point.x} },
+	func(point Point) Point { return Point{+point.x, +point.z, -point.y} },
+	func(point Point) Point { return Point{-point.x, +point.z, +point.y} },
+	func(point Point) Point { return Point{+point.y, +point.z, +point.x} },
+	func(point Point) Point { return Point{-point.y, +point.z, -point.x} },
 
-	func(point Point) Point { return Point{point.x, -point.z, point.y} },
+	func(point Point) Point { return Point{+point.x, -point.z, +point.y} },
 	func(point Point) Point { return Point{-point.x, -point.z, -point.y} },
-	func(point Point) Point { return Point{-point.y, -point.z, point.x} },
-	func(point Point) Point { return Point{point.y, -point.z, -point.x} },
+	func(point Point) Point { return Point{-point.y, -point.z, +point.x} },
+	func(point Point) Point { return Point{+point.y, -point.z, -point.x} },
 
-	func(point Point) Point { return Point{point.z, -point.x, -point.y} },
-	func(point Point) Point { return Point{point.z, point.x, point.y} },
-	func(point Point) Point { return Point{point.z, point.y, -point.x} },
-	func(point Point) Point { return Point{point.z, -point.y, point.x} },
+	func(point Point) Point { return Point{+point.z, -point.x, -point.y} },
+	func(point Point) Point { return Point{+point.z, +point.x, +point.y} },
+	func(point Point) Point { return Point{+point.z, +point.y, -point.x} },
+	func(point Point) Point { return Point{+point.z, -point.y, +point.x} },
 
-	func(point Point) Point { return Point{-point.z, point.x, -point.y} },
-	func(point Point) Point { return Point{-point.z, -point.x, point.y} },
-	func(point Point) Point { return Point{-point.z, point.y, point.x} },
+	func(point Point) Point { return Point{-point.z, +point.x, -point.y} },
+	func(point Point) Point { return Point{-point.z, -point.x, +point.y} },
+	func(point Point) Point { return Point{-point.z, +point.y, +point.x} },
 	func(point Point) Point { return Point{-point.z, -point.y, -point.x} },
 }
 
