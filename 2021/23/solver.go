@@ -13,11 +13,11 @@ type Type string
 
 const (
 	Hallway Type = "."
-	Doorway      = "x"
-	A            = "A"
-	B            = "B"
-	C            = "C"
-	D            = "D"
+	Doorway Type = "x"
+	A       Type = "A"
+	B       Type = "B"
+	C       Type = "C"
+	D       Type = "D"
 )
 
 type Character struct {
@@ -44,17 +44,11 @@ func (character Character) cost() int {
 	}
 }
 
-type BoardState struct {
-	characters map[graphs.Vertex]Character
-	cost       int
-}
+type Characters map[graphs.Vertex]Character
 
-func (state BoardState) positions() map[graphs.Vertex]interface{} {
-	positions := make(map[graphs.Vertex]interface{})
-	for position, character := range state.characters {
-		positions[position] = character.value
-	}
-	return positions
+type BoardState struct {
+	characters Characters
+	cost       int
 }
 
 func (state BoardState) Cost() int {
@@ -66,7 +60,7 @@ func (state BoardState) String() *string {
 	return &result
 }
 
-func (state BoardState) complete(board Board) bool {
+func (state BoardState) complete() bool {
 	for vertex, character := range state.characters {
 		if !character.atGoal(vertex) {
 			return false
@@ -86,7 +80,7 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 }
 
 func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardState {
-	updated := make(map[graphs.Vertex]Character)
+	updated := make(Characters)
 	for position, character := range state.characters {
 		if position == start {
 			updated[destination] = Character{
@@ -107,35 +101,38 @@ func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardS
 	}
 }
 
+func (state BoardState) positions() map[graphs.Vertex]interface{} {
+	positions := make(map[graphs.Vertex]interface{})
+	for position, character := range state.characters {
+		positions[position] = character.value
+	}
+	return positions
+}
+
 type Board struct {
 	graph    graphs.Graph
 	roomSize int
 }
 
-func (board Board) solve(initial BoardState) (int, int) {
-	queue, seen, explored := &graphs.Queue{initial}, make(map[string]int), 0
-
-	for queue.Len() > 0 {
-		explored++
-		state := queue.Next().(BoardState)
-		if state.complete(board) {
-			return state.cost, explored
-		}
-		for _, state := range board.legalMoves(state) {
-			encodedState := *state.String()
-			seenValue, exists := seen[encodedState]
-			if !exists || state.Cost() < seenValue {
-				seen[encodedState] = state.Cost()
-				queue.Add(state)
-			}
-		}
+func (board Board) solve(characters Characters) (int, int) {
+	initial := BoardState{
+		characters: characters,
+		cost:       0,
 	}
 
-	panic("Could not find a solution")
+	done := func(state graphs.State) bool {
+		return state.(BoardState).complete()
+	}
+
+	nextStates := func(state graphs.State) []graphs.State {
+		return board.legalMoves(state.(BoardState))
+	}
+
+	return board.graph.Bfs(initial, done, nextStates)
 }
 
-func (board Board) legalMoves(state BoardState) []BoardState {
-	var legalMoves []BoardState
+func (board Board) legalMoves(state BoardState) []graphs.State {
+	var legalMoves []graphs.State
 	for start := range state.characters {
 		for _, destination := range board.characterLegalMoves(state, start) {
 			newState := state.updateCharacter(start, destination)
@@ -217,14 +214,13 @@ func main() {
 }
 
 func solve(extend bool) int {
-	board, boardState := getData(extend)
-	cost, _ := board.solve(boardState)
+	board, characters := getData(extend)
+	cost, _ := board.solve(characters)
 	return cost
 }
 
-func getData(extend bool) (Board, BoardState) {
+func getData(extend bool) (Board, Characters) {
 	rows := files.ReadLines()
-
 	if extend {
 		lastRows := make([]string, 2)
 		copy(lastRows, rows[len(rows)-2:])
@@ -235,7 +231,7 @@ func getData(extend bool) (Board, BoardState) {
 
 	grid := parsers.ConstructGrid(rows, parsers.Character, "# ")
 
-	characters := make(map[graphs.Vertex]Character)
+	characters := make(Characters)
 	for _, point := range grid.Points() {
 		value := grid.Get(point)
 		if value != "." {
@@ -251,11 +247,7 @@ func getData(extend bool) (Board, BoardState) {
 		graph:    graphs.ConstructGraph(grid, getType),
 		roomSize: grid.Height - 2,
 	}
-	state := BoardState{
-		characters: characters,
-		cost:       0,
-	}
-	return board, state
+	return board, characters
 }
 
 func getType(position parsers.Point, value string) interface{} {
