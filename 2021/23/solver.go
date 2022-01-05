@@ -80,25 +80,27 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 }
 
 func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardState {
-	updated := make(Characters)
+	updated, cost := make(Characters), 0
 	for position, character := range state.characters {
-		if position == start {
+		if position != start {
+			updated[position] = character
+		} else {
 			updated[destination] = Character{
 				moved: true,
 				value: character.value,
 			}
-		} else {
-			updated[position] = character
+			cost = character.cost()
 		}
 	}
-
-	distance := utils.Abs(start.Point.X - destination.Point.X)
-	distance += start.Point.Y + destination.Point.Y - 2
-
 	return BoardState{
 		characters: updated,
-		cost:       state.cost + state.characters[start].cost()*distance,
+		cost:       state.cost + cost*distance(start.Point, destination.Point),
 	}
+}
+
+func distance(start, destination parsers.Point) int {
+	distance := utils.Abs(start.X - destination.X)
+	return distance + start.Y + destination.Y - 2
 }
 
 func (state BoardState) positions() map[graphs.Vertex]interface{} {
@@ -119,15 +121,12 @@ func (board Board) solve(characters Characters) (int, int) {
 		characters: characters,
 		cost:       0,
 	}
-
 	done := func(state graphs.State) bool {
 		return state.(BoardState).complete()
 	}
-
 	nextStates := func(state graphs.State) []graphs.State {
 		return board.legalMoves(state.(BoardState))
 	}
-
 	return board.graph.Bfs(initial, done, nextStates)
 }
 
