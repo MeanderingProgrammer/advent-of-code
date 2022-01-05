@@ -9,6 +9,8 @@ import (
 	"fmt"
 )
 
+const PrintStates = false
+
 type Type string
 
 const (
@@ -122,18 +124,21 @@ func (board Board) solve(characters Characters) (int, int) {
 		cost:       0,
 	}
 	done := func(state graphs.State) bool {
+		if PrintStates {
+			board.graph.Print(state.(BoardState).positions())
+		}
 		return state.(BoardState).complete()
 	}
 	nextStates := func(state graphs.State) []graphs.State {
-		return board.legalMoves(state.(BoardState))
+		return board.moves(state.(BoardState))
 	}
 	return board.graph.Bfs(initial, done, nextStates)
 }
 
-func (board Board) legalMoves(state BoardState) []graphs.State {
+func (board Board) moves(state BoardState) []graphs.State {
 	var legalMoves []graphs.State
 	for start := range state.characters {
-		for _, destination := range board.characterLegalMoves(state, start) {
+		for _, destination := range board.characterMoves(state, start) {
 			newState := state.updateCharacter(start, destination)
 			legalMoves = append(legalMoves, newState)
 		}
@@ -141,7 +146,7 @@ func (board Board) legalMoves(state BoardState) []graphs.State {
 	return legalMoves
 }
 
-func (board Board) characterLegalMoves(state BoardState, start graphs.Vertex) []graphs.Vertex {
+func (board Board) characterMoves(state BoardState, start graphs.Vertex) []graphs.Vertex {
 	var reachable []graphs.Vertex
 	character := state.characters[start]
 
