@@ -7,6 +7,7 @@ import (
 	"advent-of-code/commons/go/parsers"
 	"advent-of-code/commons/go/utils"
 	"fmt"
+	"math"
 )
 
 const PrintStates = false
@@ -22,6 +23,18 @@ const (
 	D       Type = "D"
 )
 
+func (t Type) distance() int {
+	return int(t[0] - 'A')
+}
+
+func (t Type) cost() int {
+	return int(math.Pow(10, float64(t.distance())))
+}
+
+func (t Type) x() int {
+	return 3 + t.distance()*2
+}
+
 type Character struct {
 	value Type
 	moved bool
@@ -29,21 +42,6 @@ type Character struct {
 
 func (character Character) atGoal(vertex graphs.Vertex) bool {
 	return character.value == vertex.Value
-}
-
-func (character Character) cost() int {
-	switch character.value {
-	case A:
-		return 1
-	case B:
-		return 10
-	case C:
-		return 100
-	case D:
-		return 1000
-	default:
-		panic("Unkwnown character")
-	}
 }
 
 type Characters map[graphs.Vertex]Character
@@ -81,7 +79,7 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 	return inRoom
 }
 
-func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardState {
+func (state BoardState) move(start, destination graphs.Vertex) BoardState {
 	updated, cost := make(Characters), 0
 	for position, character := range state.characters {
 		if position != start {
@@ -91,7 +89,7 @@ func (state BoardState) updateCharacter(start, destination graphs.Vertex) BoardS
 				moved: true,
 				value: character.value,
 			}
-			cost = character.cost()
+			cost = character.value.cost()
 		}
 	}
 	return BoardState{
@@ -139,7 +137,7 @@ func (board Board) moves(state BoardState) []graphs.State {
 	var legalMoves []graphs.State
 	for start := range state.characters {
 		for _, destination := range board.characterMoves(state, start) {
-			newState := state.updateCharacter(start, destination)
+			newState := state.move(start, destination)
 			legalMoves = append(legalMoves, newState)
 		}
 	}
@@ -186,9 +184,21 @@ func (board Board) shouldGo(state BoardState, start, destination graphs.Vertex) 
 		// Can never stop outside of a room
 		return false
 	} else if destination.Value == Hallway {
-		// Can not move to hallway once we are already in the hallway  must go to a room
+		// Can not move to hallway once we are already in the hallway must go to a room
 		if start.Value == Hallway {
 			return false
+		}
+		// Here we detect "deadlock", which occurs when we put our character in the Hallway
+		// and they block a character from reaching their room who is in turn blocking them
+		for _, point := range pathToGoal(destination, value) {
+			onPath, exists := state.characters[point]
+			if !exists {
+				continue
+			}
+			deadlock := contains(pathToGoal(point, onPath.value), destination)
+			if deadlock {
+				return false
+			}
 		}
 	} else if value != destination.Value {
 		// If this room is for another character then we cannot enter
@@ -210,6 +220,28 @@ func (board Board) shouldGo(state BoardState, start, destination graphs.Vertex) 
 		}
 	}
 	return true
+}
+
+func pathToGoal(location graphs.Vertex, value Type) []graphs.Vertex {
+	var result []graphs.Vertex
+	x1, x2 := location.Point.X, value.x()
+	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
+		vertex := graphs.Vertex{
+			Point: parsers.Point{X: i, Y: 1},
+			Value: Hallway,
+		}
+		result = append(result, vertex)
+	}
+	return result
+}
+
+func contains(path []graphs.Vertex, target graphs.Vertex) bool {
+	for _, vertex := range path {
+		if vertex == target {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
@@ -257,13 +289,13 @@ func getData(extend bool) (Board, Characters) {
 func getType(position parsers.Point, value string) interface{} {
 	result := Hallway
 	switch position.X {
-	case 3:
+	case A.x():
 		result = A
-	case 5:
+	case B.x():
 		result = B
-	case 7:
+	case C.x():
 		result = C
-	case 9:
+	case D.x():
 		result = D
 	}
 	if position.Y == 1 && result != Hallway {
