@@ -19,6 +19,18 @@ func (point Point) Add(x, y int) Point {
 	}
 }
 
+func (point Point) Subtract(x, y int) Point {
+	return Point{
+		X: point.X - x,
+		Y: point.Y - y,
+	}
+}
+
+func (p1 Point) ManhattanDistance(p2 Point) int {
+	difference := p1.Subtract(p2.X, p2.Y)
+	return utils.Abs(difference.X) + utils.Abs(difference.Y)
+}
+
 func (point Point) Adjacent(includeDiagonal bool) []Point {
 	adjacent := []Point{
 		{X: point.X - 1, Y: point.Y},
@@ -61,8 +73,7 @@ func (grid Grid) Contains(point Point) bool {
 }
 
 func (grid Grid) Get(point Point) string {
-	value, _ := grid.plane[point]
-	return value
+	return grid.plane[point]
 }
 
 func (grid *Grid) Set(point Point, value string) {
