@@ -10,8 +10,8 @@ import (
 )
 
 type Path struct {
-	last  graphs.Vertex
-	value int
+	vertex graphs.Vertex
+	value  int
 }
 
 func (path Path) Cost() int {
@@ -19,14 +19,14 @@ func (path Path) Cost() int {
 }
 
 func (path Path) String() *string {
-	result := fmt.Sprintf("%v", path.last)
+	result := fmt.Sprintf("%v", path.vertex)
 	return &result
 }
 
 func (path Path) add(vertex graphs.Vertex) Path {
 	return Path{
-		last:  vertex,
-		value: path.value + vertex.Value.(int),
+		vertex: vertex,
+		value:  path.value + vertex.Value.(int),
 	}
 }
 
@@ -39,27 +39,31 @@ func solve(wrap bool) int {
 	grid := getGrid(wrap)
 
 	initial := Path{
-		last:  graphs.ConstructVertex(parsers.Point{X: 0, Y: 0}, grid, getType),
-		value: 0,
+		vertex: graphs.ConstructVertex(parsers.Point{X: 0, Y: 0}, grid, getType),
+		value:  0,
 	}
 
+	end := parsers.Point{X: grid.Width, Y: grid.Height}
 	done := func(state graphs.State) bool {
-		path := state.(Path)
-		return path.last.Point == parsers.Point{X: grid.Width, Y: grid.Height}
+		return state.(Path).vertex.Point == end
 	}
 
 	graph := graphs.ConstructGraph(grid, getType)
 	nextStates := func(state graphs.State) []graphs.State {
-		var states []graphs.State
 		path := state.(Path)
-		for _, neighbor := range graph.Neighbors(path.last) {
+		var states []graphs.State
+		for _, neighbor := range graph.Neighbors(path.vertex) {
 			states = append(states, path.add(neighbor))
 		}
 		return states
 	}
 
-	cost, _ := graph.Bfs(initial, done, nextStates)
-	return cost
+	endState, _ := graph.Bfs(graphs.Search{
+		Initial:    initial,
+		Done:       done,
+		NextStates: nextStates,
+	})
+	return endState.(Path).value
 }
 
 func getType(position parsers.Point, value string) interface{} {

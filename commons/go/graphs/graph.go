@@ -29,15 +29,21 @@ type Graph struct {
 type Complete func(State) bool
 type NextStates func(State) []State
 
-func (graph Graph) Bfs(initial State, done Complete, nextStates NextStates) (int, int) {
-	queue, seen, explored := &Queue{initial}, make(map[string]int), 0
+type Search struct {
+	Initial    State
+	Done       Complete
+	NextStates NextStates
+}
+
+func (graph Graph) Bfs(search Search) (State, int) {
+	queue, seen, explored := &Queue{search.Initial}, make(map[string]int), 0
 	for queue.Len() > 0 {
 		explored++
-		current := queue.Next().(State)
-		if done(current) {
-			return current.Cost(), explored
+		current := queue.Next()
+		if search.Done(current) {
+			return current, explored
 		}
-		for _, state := range nextStates(current) {
+		for _, state := range search.NextStates(current) {
 			encodedState := *state.String()
 			seenValue, exists := seen[encodedState]
 			if !exists || state.Cost() < seenValue {
