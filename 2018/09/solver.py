@@ -1,5 +1,7 @@
 from collections import deque
 
+import commons.answer as answer
+
 
 class Player:
 
@@ -50,10 +52,8 @@ class Game:
 def main():
     num_players = 411
     highest_value = 72_059
-    # Part 1: 429943
-    print('Part 1: {}'.format(solve(num_players, highest_value)))
-    # Part 2: 3615691746
-    print('Part 2: {}'.format(solve(num_players, highest_value * 100)))
+    answer.part1(429943, solve(num_players, highest_value))
+    answer.part2(3615691746, solve(num_players, highest_value * 100))
 
 
 def solve(num_players, num_moves):

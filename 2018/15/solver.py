@@ -1,5 +1,6 @@
 from operator import attrgetter
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -205,10 +206,8 @@ class Game:
 
 def main():
     data = Parser().nested_lines()
-    # Part 1: 214731
-    print('Part 1: {}'.format(play_game(data, False)))
-    # Part 2: 53222
-    print('Part 2: {}'.format(play_game(data, True)))
+    answer.part1(214731, play_game(data, False))
+    answer.part2(53222, play_game(data, True))
 
 
 def play_game(data, play_until_elf_win):

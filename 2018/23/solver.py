@@ -1,6 +1,7 @@
 import heapq
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -35,11 +36,9 @@ def main():
 
     strongest_bot = bots[-1]
     bots_in_range = [bot for bot in bots if strongest_bot.in_range(bot.pos)]
-    # Part 1: 383
-    print('Part 1: {}'.format(len(bots_in_range)))
 
-    # Part 2: 100474026
-    print('Part 2: {}'.format(distance_of_most_overlap(bots)))
+    answer.part1(383, len(bots_in_range))
+    answer.part2(100474026, distance_of_most_overlap(bots))
 
 
 def distance_of_most_overlap(bots):

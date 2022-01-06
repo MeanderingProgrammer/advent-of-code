@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -182,12 +183,12 @@ class CartSystem:
 
 def main():
     data = get_data()
-    # Part 1: 86,118
+
     system = CartSystem(get_track(data), get_carts(data))
-    print('Part 1: {}'.format(system.run_until_crash()[0]))
-    # Part 2: 2,81
+    answer.part1(Point(86, 118), system.run_until_crash()[0])
+
     system = CartSystem(get_track(data), get_carts(data))
-    print('Part 2: {}'.format(system.run_unit_one_remains()))
+    answer.part2(Point(2, 81), system.run_unit_one_remains())
 
 
 def get_data():

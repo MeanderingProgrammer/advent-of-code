@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -45,10 +46,8 @@ class Node:
 
 def main():
     tree = Node(Parser().int_entries())
-    # Part 1: 42472
-    print('Part 1: {}'.format(tree.sum_metadata()))
-    # Part 2: 21810
-    print('Part 2: {}'.format(tree.value()))
+    answer.part1(42472, tree.sum_metadata())
+    answer.part2(21810, tree.value())
 
 
 if __name__ == '__main__':

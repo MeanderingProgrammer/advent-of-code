@@ -1,5 +1,6 @@
 import heapq 
 
+import commons.answer as answer
 from commons.aoc_board import Grid, Point
 
 
@@ -76,11 +77,8 @@ def main():
     target = Point(14, 778)
     cave = build_out_cave(11_541, target)
 
-    # Part 1: 11575
-    print('Part 1: {}'.format(risk_within(cave, target)))
-
-    # Part 2: 1068
-    print('Part 2: {}'.format(traverse(cave, start, target, TORCH)))
+    answer.part1(11575, risk_within(cave, target)) 
+    answer.part2(1068, traverse(cave, start, target, TORCH))
 
 
 def build_out_cave(depth, target):

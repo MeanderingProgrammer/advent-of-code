@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -188,10 +189,8 @@ class Instruction:
 
 
 def main():
-    # Part 1: 993
-    print('Part 1: {}'.format(solve_part_1()))
-    # Part 2: 10708912
-    print('Part 2: {}'.format(solve_part_2(10_551_361)))
+    answer.part1(993, solve_part_1())
+    answer.part2(10708912, solve_part_2(10_551_361))
 
 
 def solve_part_1():

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -224,16 +225,14 @@ def main():
             mapping[opcode] = possible
         else:
             mapping[opcode] &= possible
-    # Part 1: 560
-    print('Part 1: {}'.format(behave_as_at_least_3))
+    answer.part1(560, behave_as_at_least_3)
 
     mapping = collapse(mapping)
     regs = Registers([0, 0, 0, 0], False)
     for instruction in groups[-1]:
         instruction = Instruction(instruction)
         ALL_INSTRUCTIONS[mapping[instruction.opcode()]].process(instruction, regs)
-    # Part 2: 622
-    print('Part 2: {}'.format(regs.get(0)))
+    answer.part2(622, regs.get(0))
 
 
 def get_sample_instructions(groups):

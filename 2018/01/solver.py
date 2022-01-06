@@ -1,12 +1,11 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
     frequencies = Parser().int_lines()
-    # Part 1: 540
-    print('Part 1: {}'.format(sum(frequencies)))
-    # Part 2: 73056
-    print('Part 2: {}'.format(get_first_repeated(frequencies)))
+    answer.part1(540, sum(frequencies))
+    answer.part2(73056, get_first_repeated(frequencies))
 
 
 def get_first_repeated(values):

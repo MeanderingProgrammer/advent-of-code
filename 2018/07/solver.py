@@ -1,5 +1,6 @@
 import re
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -117,10 +118,8 @@ class Worker:
 
 def main():
     graph = get_graph()
-    # Part 1: LAPFCRGHVZOTKWENBXIMSUDJQY
-    print('Part 1: {}'.format(solve_part_1(graph)))
-    # Part 2: 936
-    print('Part 2: {}'.format(solve_part_2(graph)))
+    answer.part1('LAPFCRGHVZOTKWENBXIMSUDJQY', solve_part_1(graph))
+    answer.part2(936, solve_part_2(graph))
 
 
 def solve_part_1(graph):

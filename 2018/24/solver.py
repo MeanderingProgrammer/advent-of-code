@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -183,10 +184,8 @@ class Battle:
 
 
 def main():
-    # Part 1: 16086
-    print('Part 1: {}'.format(solve_part_1()))
-    # Part 2: 3957
-    print('Part 2: {}'.format(solve_part_2()))
+    answer.part1(16086, solve_part_1())
+    answer.part2(3957, solve_part_2())
 
 
 def solve_part_1():

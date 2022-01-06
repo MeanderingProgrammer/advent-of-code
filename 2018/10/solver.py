@@ -1,5 +1,6 @@
 import re
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -11,10 +12,12 @@ def main():
     point_velocities = get_point_velocities()
     min_time = get_min_area_time(point_velocities)
     grid = grid_at_time(point_velocities, min_time)
+
     # Part 1: GPJLLLLH
+    print('Part 1')
     print(grid)
-    # Part 2: 10515
-    print('Part 2: {}'.format(min_time))
+
+    answer.part2(10515, min_time)
 
 
 def get_min_area_time(point_velocities):

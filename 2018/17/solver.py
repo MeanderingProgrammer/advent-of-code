@@ -1,5 +1,6 @@
 import sys
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -109,14 +110,8 @@ def main():
 
     reservoir = GroundReservoir(grid)
     reservoir.fill(start)
-    # Part 1: 38409
-    print('Part 1: {}'.format(
-        len([point for point in reservoir.flowing if reservoir.in_range(point)])
-    ))
-    # Part 2: 32288
-    print('Part 2: {}'.format(
-        len([point for point in reservoir.settled if reservoir.in_range(point)])
-    ))
+    answer.part1(38409, len([point for point in reservoir.flowing if reservoir.in_range(point)]))
+    answer.part2(32288, len([point for point in reservoir.settled if reservoir.in_range(point)]))
 
 
 def get_grid():

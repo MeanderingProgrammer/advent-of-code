@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -48,14 +49,12 @@ class Landscape:
 
 
 def main():
-    # Part 1: 515496
-    print('Part 1: {}'.format(run_for(10)))
+    answer.part1(515496, run_for(10))
 
     goal = 1_000_000_000
     start, pattern = get_pattern(1_000, 5, 30)
     index = (goal - start) % len(pattern)
-    # Part 2: 233058
-    print('Part 2: {}'.format(pattern[index]))
+    answer.part2(233058, pattern[index])
 
 
 def run_for(n):
