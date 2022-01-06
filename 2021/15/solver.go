@@ -49,13 +49,14 @@ func solve(wrap bool) int {
 	}
 
 	graph := graphs.ConstructGraph(grid, getType)
-	nextStates := func(state graphs.State) []graphs.State {
-		path := state.(Path)
-		var states []graphs.State
-		for _, neighbor := range graph.Neighbors(path.vertex) {
-			states = append(states, path.add(neighbor))
+	nextStates := func(state graphs.State) <-chan graphs.State {
+		neighbors := graph.Neighbors(state.(Path).vertex)
+		nextStates := make(chan graphs.State, len(neighbors))
+		for _, neighbor := range neighbors {
+			nextStates <- state.(Path).add(neighbor)
 		}
-		return states
+		close(nextStates)
+		return nextStates
 	}
 
 	endState, _ := graph.Bfs(graphs.Search{
