@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -48,10 +49,8 @@ class Orbits:
 
 def main():
     orbits = get_orbits()
-    # Part 1: 358244
-    print('Part 1: {}'.format(len(orbits)))
-    # Part 2: 517 
-    print('Part 2: {}'.format(orbits.get_distance('YOU', 'SAN')))
+    answer.part1(358244, len(orbits))
+    answer.part2(517, orbits.get_distance('YOU', 'SAN'))
 
 
 def get_orbits():

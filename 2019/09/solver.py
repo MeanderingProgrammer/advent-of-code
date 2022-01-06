@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -26,10 +27,8 @@ class BoostProgram:
 
 
 def main():
-    # Part 1: 3512778005
-    print('Part 1: {}'.format(run(1)))
-    # Part 2: 35920
-    print('Part 2: {}'.format(run(2)))
+    answer.part1(3512778005, run(1))
+    answer.part2(35920, run(2))
 
 
 def run(setting):

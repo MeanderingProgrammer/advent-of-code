@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -20,10 +21,8 @@ class BasicProgram:
         self.diagnostic_code = value
 
 def main():
-    # Part 1: 12234644
-    print('Part 1: {}'.format(run_program(1)))
-    # Part 2: 3508186
-    print('Part 2: {}'.format(run_program(5)))
+    answer.part1(12234644, run_program(1))
+    answer.part2(3508186, run_program(5))
 
 
 def run_program(system_id):

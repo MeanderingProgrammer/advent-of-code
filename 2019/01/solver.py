@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -15,10 +16,8 @@ class Module:
 
 
 def main():
-    # Part 1: 3393938
-    print('Part 1: {}'.format(get_fuel(False)))
-    # Part 2: 5088037
-    print('Part 2: {}'.format(get_fuel(True)))
+    answer.part1(3393938, get_fuel(False))
+    answer.part2(5088037, get_fuel(True))
 
 
 def get_fuel(recursive):

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -59,10 +60,8 @@ class Transmission:
 
 
 def main():
-    # Part 1: 77038830
-    print('Part 1: {}'.format(apply_fft(1, False)))
-    # Part 2: 28135104
-    print('Part 2: {}'.format(apply_fft(10_000, True)))
+    answer.part1(77038830, apply_fft(1, False))
+    answer.part2(28135104, apply_fft(10_000, True))
 
 
 def apply_fft(repeats, apply_offset):

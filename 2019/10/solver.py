@@ -1,6 +1,7 @@
 import math
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -80,12 +81,11 @@ class Grid:
 def main():
     grid = get_grid()
     most_seen = grid.get_most_seen()
-    # Part 1: 230
-    print('Part 1: {}'.format(most_seen[1]))
+    answer.part1(230, most_seen[1])
+
     destruction_order = grid.get_destruction_order(most_seen[0])
     asteroid = destruction_order[199]
-    # Part 2: 1205
-    print('Part 2: {}'.format((asteroid.x * 100) + asteroid.y))
+    answer.part2(1205, (asteroid.x * 100) + asteroid.y)
 
 
 def get_grid():

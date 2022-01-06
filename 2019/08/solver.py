@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -64,9 +65,9 @@ class LayeredImage:
 def main():
     image = LayeredImage(get_image_data(), 25, 6)
     layer = image.get_fewest()
-    # Part 1: 1965
-    print('Part 1: {}'.format(layer.get_count(1) * layer.get_count(2)))
+    answer.part1(1965, layer.get_count(1) * layer.get_count(2))
     # Part 2: GZKJY
+    print('Part 2')
     print(image.flatten())
 
 

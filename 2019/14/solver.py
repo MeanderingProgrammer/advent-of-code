@@ -1,6 +1,7 @@
 import math
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -72,10 +73,8 @@ class Reactions:
 
 def main():
     reactions = get_reactions()
-    # Part 1: 1967319
-    print('Part 1: {}'.format(reactions.ore_for_fuel(1)))
-    # Part 2: 1122036
-    print('Part 2: {}'.format(binary_search(reactions, 1_000_000_000_000, 0, 2_000_000)))
+    answer.part1(1967319, reactions.ore_for_fuel(1))
+    answer.part2(1122036, binary_search(reactions, 1_000_000_000_000, 0, 2_000_000))
 
 
 def binary_search(reactions, goal, start, end):

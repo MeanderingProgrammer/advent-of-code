@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -64,18 +65,16 @@ class PaintBot:
 
 
 def main():
-    # Part 1: 1909
-    print('Part 1: {}'.format(run(0, False)))
+    answer.part1(1909, len(run(0).grid))
     # Part 2: JUFEKHPH
-    run(1, True)
+    print('Part 2')
+    print(run(1).get_grid())
 
 
-def run(setting, print_grid):
+def run(setting):
     bot = PaintBot(get_memory(), setting)
     bot.run()
-    if print_grid:
-        print(bot.get_grid())
-    return len(bot.grid)
+    return bot
 
 
 def get_memory():

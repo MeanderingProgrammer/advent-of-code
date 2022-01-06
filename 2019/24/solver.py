@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point, Grid
 
@@ -130,10 +131,8 @@ class Layout:
 
 
 def main():
-    # Part 1: 32776479
-    print('Part 1: {}'.format(solve_part_1()))
-    # Part 2: 2017
-    print('Part 2: {}'.format(solve_part_2()))
+    answer.part1(32776479, solve_part_1())
+    answer.part2(2017, solve_part_2())
 
 
 def solve_part_1():

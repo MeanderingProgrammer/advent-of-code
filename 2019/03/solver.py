@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -38,12 +39,12 @@ class Path:
 def main():
     p1, p2 = get_paths()
     intersections = p1.get_intersection(p2)
+
     lengths = [len(intersection) for intersection in intersections]
-    # Part 1: 870
-    print('Part 1: {}'.format(min(lengths)))
+    answer.part1(870, min(lengths))
+
     steps = [p1.steps(intersection) + p2.steps(intersection) for intersection in intersections]
-    # Part 2: 13698
-    print('Part 2: {}'.format(min(steps)))
+    answer.part2(13698, min(steps))
 
 
 def get_paths():

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -38,8 +39,7 @@ class JumpDroid:
 
 
 def main():
-    # Part 1: 19357761
-    print('Part 1: {}'.format(run_droid([
+    answer.part1(19357761, run_droid([
         # If one ahead is missing always Jump
         'NOT A J',
         # If 3 ahead is missing
@@ -55,9 +55,9 @@ def main():
         'AND A T',
         # Start the script
         'WALK'
-    ])))
-    # Part 2: 1142249706
-    print('Part 2: {}'.format(run_droid([
+    ]))
+
+    answer.part2(1142249706, run_droid([
         # If one ahead is missing always Jump
         'NOT A J',
         # If 3 ahead is missing
@@ -77,7 +77,7 @@ def main():
         'AND T J',
         # Start the script
         'RUN'
-    ])))
+    ]))
 
 
 def run_droid(actual_program):

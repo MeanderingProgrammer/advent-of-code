@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -85,7 +86,7 @@ class Game:
     def get_key(self):
         key_line = self.instruction.split('\n')[-2]
         key_parts = key_line.split()
-        return key_parts[-8]
+        return int(key_parts[-8])
 
     def __str__(self):
         return self.instruction
@@ -229,8 +230,7 @@ class Droid:
 def main():
     droid = Droid(get_memory())
     droid.run()
-    # Part 1: 2622472
-    print('Part 1: {}'.format(droid.game.get_key()))
+    answer.part1(2622472, droid.game.get_key())
 
 
 def get_memory():
