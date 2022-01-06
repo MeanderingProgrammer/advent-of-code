@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -20,10 +21,8 @@ class Disk:
 
 
 def main():
-    # Part 1: 121834
-    print('Part 1: {}'.format(calculate_first_pass(False)))
-    # Part 2: 3208099
-    print('Part 2: {}'.format(calculate_first_pass(True)))
+    answer.part1(121834, calculate_first_pass(False))
+    answer.part2(3208099, calculate_first_pass(True))
 
 
 def calculate_first_pass(add_disk):

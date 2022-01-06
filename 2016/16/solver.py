@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 START_STATE = '10001110011110000'
 DESIRED_LENGTH = 272
 
@@ -30,10 +33,8 @@ class Curve:
 
 
 def main():
-    # Part 1: 10010101010011101
-    print('Part 1: {}'.format(fill_disk(DESIRED_LENGTH)))
-    # Part 2: 01100111101101111
-    print('Part 2: {}'.format(fill_disk(35_651_584)))
+    answer.part1('10010101010011101', fill_disk(DESIRED_LENGTH))
+    answer.part2('01100111101101111', fill_disk(35_651_584))
 
 
 def fill_disk(length):

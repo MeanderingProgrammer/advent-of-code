@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -11,16 +12,14 @@ CONTROLS = {
 
 
 def main():
-    # Part 1: 47978
-    print('Part 1: {}'.format(get_code(*create_phone(
+    answer.part1('47978', get_code(
         [
             [1, 2, 3],
             [4, 5, 6],
             [7, 8, 9]
         ]
-    ))))
-    # Part 2: 659AD
-    print('Part 2: {}'.format(get_code(*create_phone(
+    ))
+    answer.part2('659AD', get_code(
         [
             ['*', '*',  1 , '*', '*'],
             ['*',  2 ,  3 ,  4 , '*'],
@@ -28,10 +27,11 @@ def main():
             ['*', 'A', 'B', 'C', '*'],
             ['*', '*', 'D', '*', '*']
         ]
-    ))))
+    ))
 
 
-def get_code(phone, position):
+def get_code(pattern):
+    phone, position = create_phone(pattern)
     code = ''
     for instruction in get_instructions():
         position = follow(phone, position, instruction)

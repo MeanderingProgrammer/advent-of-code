@@ -1,5 +1,6 @@
 import hashlib 
 
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_board import Point
 
@@ -21,12 +22,8 @@ def main():
         Point(0, 0), 
         get_adjacent
     )
-    # Part 1: DDRLRRUDDR
-    shortest = pull_path(paths[0])
-    print('Part 1: {}'.format(shortest))
-    # Part 2: 556
-    longest = pull_path(paths[-1])
-    print('Part 2: {}'.format(len(longest)))
+    answer.part1('DDRLRRUDDR', pull_path(paths[0]))
+    answer.part2(556, len(pull_path(paths[-1])))
 
 
 def get_adjacent(item):

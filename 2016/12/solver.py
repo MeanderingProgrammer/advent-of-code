@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_computer import Computer
 from commons.aoc_parser import Parser
 
@@ -30,10 +31,8 @@ class Jump:
 
 
 def main():
-    # Part 1: 318117
-    print('Part 1: {}'.format(run_instructions(False)))
-    # Part 2: 9227771
-    print('Part 2: {}'.format(run_instructions(True)))
+    answer.part1(318117, run_instructions(False))
+    answer.part2(9227771, run_instructions(True))
 
 
 def run_instructions(ignite):

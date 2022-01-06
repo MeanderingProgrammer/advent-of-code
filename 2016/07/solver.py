@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -63,12 +64,12 @@ class IpAddress:
 
 def main():
     ip_addresses = get_ip_addresses()
-    # Part 1: 118
+    
     supported = [ip_address.tls() for ip_address in ip_addresses]
-    print('Part 1: {}'.format(sum(supported)))
-    # Part 2: 260
+    answer.part1(118, sum(supported))
+    
     supported = [ip_address.ssl() for ip_address in ip_addresses]
-    print('Part 2: {}'.format(sum(supported)))
+    answer.part2(260, sum(supported))
 
 
 def get_ip_addresses():

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -15,10 +16,8 @@ class Triangle:
 
 
 def main():
-    # Part 1 = 862
-    print('Part 1: {}'.format(num_valid(get_triangles_vertically())))
-    # Part 2 = 1577
-    print('Part 2: {}'.format(num_valid(get_triangles_horizontally())))
+    answer.part1(862, num_valid(get_triangles_vertically()))
+    answer.part2(1577, num_valid(get_triangles_horizontally()))
 
 
 def num_valid(triangles):

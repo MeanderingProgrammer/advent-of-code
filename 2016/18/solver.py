@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 STARTING_ROW = '.^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^....'
 
 TRAP = '^'
@@ -5,10 +8,8 @@ SAFE = '.'
 
 
 def main():
-    # Part 1: 2013
-    print('Part 1: {}'.format(total_safe(40)))
-    # Part 2: 20006289
-    print('Part 2: {}'.format(total_safe(400_000)))
+    answer.part1(2013, total_safe(40))
+    answer.part2(20006289, total_safe(400_000))
 
 
 def total_safe(n):

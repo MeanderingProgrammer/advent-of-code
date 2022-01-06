@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -65,10 +66,8 @@ def main():
         for value in values:
             bots[bot].process(value, bots, outputs)
 
-    # Part 1: 118
-    print('Part 1: {}'.format(get_bot(bots.values(), [17, 61]).id))
-    # Part 2: 143153
-    print('Part 2: {}'.format(multiply_outputs(outputs, [0, 1, 2])))
+    answer.part1(118, get_bot(bots.values(), [17, 61]).id)
+    answer.part2(143153, multiply_outputs(outputs, [0, 1, 2]))
 
 
 def get_bot(bots, values):

@@ -1,14 +1,14 @@
 import hashlib 
 
+import commons.answer as answer
+
 
 SALT = 'qzyelonm'
 
 
 def main():
-    # Part 1: 15168
-    print('Part 1: {}'.format(generate_keys(64, 1)))
-    # Part 2: 20864
-    print('Part 2: {}'.format(generate_keys(64, 2_017)))
+    answer.part1(15168, generate_keys(64, 1))
+    answer.part2(20864, generate_keys(64, 2_017))
 
 
 def generate_keys(n, num_hashes):

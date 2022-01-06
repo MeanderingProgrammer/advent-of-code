@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_parser import Parser
 
@@ -126,15 +127,13 @@ class Chip:
 
 
 def main():
-    # Part 1: 37
-    print('Part 1: {}'.format(count_steps([])))
-    # Part 2: 61 
-    print('Part 2: {}'.format(count_steps([
+    answer.part1(37, count_steps([]))
+    answer.part2(61, count_steps([
         'elerium generator',
         'elerium-compatible microchip',
         'dilithium generator',
         'dilithium-compatible microchip'
-    ])))
+    ]))
 
 
 def count_steps(add_to_first):

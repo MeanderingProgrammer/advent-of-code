@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -49,9 +50,10 @@ def main():
     for operation in operations:
         operation.apply(display)
         
-    # Part 1: 106
-    print('Part 1: {}'.format(lit(display)))
+    answer.part1(106, lit(display))
+
     # Part 2: CFLELOYFCS
+    print('Part 2')
     print(display)
 
 

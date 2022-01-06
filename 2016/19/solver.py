@@ -1,14 +1,14 @@
 from collections import deque
 
+import commons.answer as answer
+
 
 NUM_ELVES = 3_014_603
 
 
 def main():
-    # Part 1: 1834903
-    print('Part 1: {}'.format(solve_by_pattern(True)))
-    # Part 2: 1420280
-    print('Part 2: {}'.format(solve_by_pattern(False)))
+    answer.part1(1834903, solve_by_pattern(True))
+    answer.part2(1420280, solve_by_pattern(False))
 
 
 def solve_by_pattern(always_increment):

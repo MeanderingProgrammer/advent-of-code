@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -12,10 +13,9 @@ DIRECTIONS = [
 
 def main():
     visited = traverse()
-    # Part 1: 252
-    print('Part 1: {}'.format(len(visited[-1])))
-    # Part 2: 143
-    print('Part 2: {}'.format(len(repeated(visited))))
+    answer.part1(252, len(visited[-1]))
+    answer.part2(143, len(repeated(visited)))
+
 
 def traverse():
     index, position = 0, Point(0, 0)

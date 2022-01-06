@@ -1,3 +1,4 @@
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_board import Grid, Point
 
@@ -10,10 +11,8 @@ GRID = Grid()
 def main():
     start = Point(1, 1)
     GRID[start] = False
-    # Part 1: 92
-    print('Part 1: {}'.format(aoc_search.bfs(start, GOAL, get_adjacent)))
-    # Part 2: 124
-    print('Part 2: {}'.format(len(aoc_search.reachable(start, 50, get_adjacent))))
+    answer.part1(92, aoc_search.bfs(start, GOAL, get_adjacent))
+    answer.part2(124, len(aoc_search.reachable(start, 50, get_adjacent)))
 
 
 def get_adjacent(position):
