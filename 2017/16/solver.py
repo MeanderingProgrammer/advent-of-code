@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -31,11 +32,9 @@ def main():
     moves = get_moves()
     pattern = get_pattern(dance, moves)
 
-    # Part 1: eojfmbpkldghncia
-    print('Part 1: {}'.format(pattern[1]))
-    # Part 2: iecopnahgdflmkjb
+    answer.part1('eojfmbpkldghncia', pattern[1])
     index = 1_000_000_000 % len(pattern)
-    print('Part 2: {}'.format(pattern[index]))
+    answer.part2('iecopnahgdflmkjb', pattern[index])
 
 
 def get_pattern(dance, moves):

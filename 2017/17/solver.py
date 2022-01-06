@@ -1,5 +1,7 @@
 from collections import deque
 
+import commons.answer as answer
+
 
 STEPS = 344
 
@@ -26,19 +28,15 @@ class Lock:
 
 
 def main():
-    # Part 1: 996
-    lock = run_lock(2_017)
-    print('Part 1: {}'.format(lock.after(2_017)))
-    # Part 2: 1898341
-    lock = run_lock(50_000_000)
-    print('Part 2: {}'.format(lock.after(0)))
+    answer.part1(996, run_lock_after(2_017, 2_017))
+    answer.part2(1898341, run_lock_after(50_000_000, 0))
 
 
-def run_lock(steps):
+def run_lock_after(steps, after):
     lock = Lock(STEPS)
     for i in range(steps + 1):
         lock.insert(i)
-    return lock
+    return lock.after(after)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -16,10 +17,8 @@ def main():
     directions = get_directions()
     positions = move_to_end(directions)
     steps_required = [steps(position) for position in positions]
-    # Part 1: 812
-    print('Part 1: {}'.format(steps_required[-1]))
-    # Part 2: 1603
-    print('Part 2: {}'.format(max(steps_required)))
+    answer.part1(812, steps_required[-1])
+    answer.part2(1603, max(steps_required))
 
 
 def move_to_end(directions):

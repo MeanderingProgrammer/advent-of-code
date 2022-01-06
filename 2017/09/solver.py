@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -46,10 +47,8 @@ class Group:
 
 def main():
     group = get_group()
-    # Part 1: 15922
-    print('Part 1: {}'.format(group.score()))
-    # Part 2: 7314
-    print('Part 2: {}'.format(group.garbage_removed))
+    answer.part1(15922, group.score())
+    answer.part2(7314, group.garbage_removed)
 
 
 def get_group():

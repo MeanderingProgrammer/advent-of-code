@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -69,10 +70,8 @@ def main():
     grid = get_grid()
     traverser = Traverser(grid)
     traverser.traverse()
-    # Part 1: NDWHOYRUEA
-    print('Part 1: {}'.format(traverser.letters()))
-    # Part 2: 17540
-    print('Part 2: {}'.format(traverser.steps()))
+    answer.part1('NDWHOYRUEA', traverser.letters())
+    answer.part2(17540, traverser.steps())
 
 
 def get_grid():

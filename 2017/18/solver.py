@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -98,10 +99,8 @@ class Instruction:
 
 
 def main():
-    # Part 1: 9423
-    print('Part 1: {}'.format(run_1_computers()))
-    # Part 2: 7620
-    print('Part 2: {}'.format(run_2_computers()))
+    answer.part1(9423, run_1_computers())
+    answer.part2(7620, run_2_computers())
 
 
 def run_1_computers():

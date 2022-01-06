@@ -1,5 +1,6 @@
 import collections
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -67,13 +68,11 @@ def main():
 
     knot = Knot(size, get_lengths(False))
     knot.run_hash()
-    # Part 1: 38415
-    print('Part 1: {}'.format(knot.score()))
+    answer.part1(38415, knot.score())
 
     knot = Knot(size, get_lengths(True) + [17, 31, 73, 47, 23])
     knot.run_hash(64)
-    # Part 2: 9de8846431eef262be78f590e39a4848
-    print('Part 2: {}'.format(knot.dense_hash()))
+    answer.part2('9de8846431eef262be78f590e39a4848', knot.dense_hash())
 
 
 def get_lengths(to_ord):

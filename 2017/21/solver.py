@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -77,10 +78,8 @@ class Pattern:
 
 def main():
     patterns = get_patterns()
-    # Part 1: 188
-    print('Part 1: {}'.format(run_iterations(patterns, 5)))
-    # Part 2: 2758764
-    print('Part 2: {}'.format(run_iterations(patterns, 18)))
+    answer.part1(188, run_iterations(patterns, 5))
+    answer.part2(2758764, run_iterations(patterns, 18))
 
 
 def run_iterations(patterns, n):

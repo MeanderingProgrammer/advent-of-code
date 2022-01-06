@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -36,29 +37,31 @@ class Memory:
 
 
 def main():
-    seen = set()
     memory = Memory(Parser().int_entries())
 
-    cycles = 0
-    while memory not in seen:
+    seen = set()
+    def unique(memory):
+        seen_before = memory in seen
         seen.add(memory)
-        memory = memory.redistribute()
-        cycles += 1
+        return not seen_before
+    memory, cycles = run_as_long(memory, unique)
 
-    # Part 1: 7864
-    print('Part 1: {}'.format(cycles))
+    answer.part1(7864, cycles)
 
     caused_repitition = memory
+    def not_equal(memory):
+        return memory != caused_repitition
+    memory, cycles = run_as_long(memory.redistribute(), not_equal)
 
-    memory = memory.redistribute()
-    cycles = 1
+    answer.part2(1695, cycles + 1)
 
-    while memory != caused_repitition:
+
+def run_as_long(memory, f):
+    cycles = 0
+    while f(memory):
         memory = memory.redistribute()
         cycles += 1
-
-    # Part 2: 1695
-    print('Part 2: {}'.format(cycles))
+    return memory, cycles
 
 
 if __name__ == '__main__':

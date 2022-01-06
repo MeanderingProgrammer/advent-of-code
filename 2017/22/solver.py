@@ -1,5 +1,6 @@
 from collections import deque
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -61,10 +62,7 @@ def main():
         CLEAN: INFECTED,
         INFECTED: CLEAN
     }
-    # Part 1: 5575
-    print('Part 1: {}'.format(
-        run(10_000, simplified_state_change)
-    ))
+    answer.part1(5575, run(10_000, simplified_state_change))
     
     expanded_state_change = {
         CLEAN: WEAKENED,
@@ -72,10 +70,7 @@ def main():
         FLAGGED: CLEAN,
         INFECTED: FLAGGED
     }
-    # Part 2: 2511991
-    print('Part 2: {}'.format(
-        run(10_000_000, expanded_state_change)
-    ))
+    answer.part2(2511991, run(10_000_000, expanded_state_change))
 
 
 def run(n, state_change):

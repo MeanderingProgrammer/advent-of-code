@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -19,14 +20,12 @@ class Scanner:
 def main():
     scanners = get_scanners()
 
-    # Part 1: 632
-    print('Part 1: {}'.format(get_trip_severity(scanners)))
-
+    answer.part1(632, get_trip_severity(scanners))
+    
     offset = 1
     while is_caught(scanners, offset):
         offset += 1
-    # Part 2: 3849742
-    print('Part 2: {}'.format(offset))
+    answer.part2(3849742, offset)
 
 
 def get_trip_severity(scanners):

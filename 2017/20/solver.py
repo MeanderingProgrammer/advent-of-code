@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -39,12 +40,8 @@ class Particle:
 
 
 def main():
-    particles = run_simulation(False)
-    # Part 1: 161
-    print('Part 1: {}'.format(particles[0].id))
-    particles = run_simulation(True)
-    # Part 2: 438
-    print('Part 2: {}'.format(len(particles)))
+    answer.part1(161, run_simulation(False)[0].id)
+    answer.part2(438, len(run_simulation(True)))
 
 
 def run_simulation(cleanup):
