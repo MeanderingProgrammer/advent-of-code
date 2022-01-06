@@ -1,14 +1,14 @@
 import hashlib 
 
+import commons.answer as answer
+
 
 DOOR_ID = 'ugkcyxxp'
 
 
 def main():
-    # Part 1: d4cd2ee1
-    print('Part 1: {}'.format(generate_password(populate_v1)))
-    # Part 2: f2c730e5
-    print('Part 2: {}'.format(generate_password(populate_v2)))
+    answer.part1('d4cd2ee1', generate_password(populate_v1))
+    answer.part2('f2c730e5', generate_password(populate_v2))
 
 
 def generate_password(populator):

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -35,10 +36,8 @@ class Compressed:
 
 
 def main():
-    # Part 1: 102239
-    print('Part 1: {}'.format(decompress(False)))
-    # Part 2: 10780403063
-    print('Part 2: {}'.format(decompress(True)))
+    answer.part1(102239, decompress(False))
+    answer.part2(10780403063, decompress(True))
 
 
 def decompress(recursive):

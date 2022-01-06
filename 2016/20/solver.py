@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -34,12 +35,9 @@ def main():
     data_ranges = get_data_ranges()
     data_ranges = combine_all(data_ranges)
     data_ranges.sort()
-    
-    # Part 1: 17348574
-    print('Part 1: {}'.format(data_ranges[0].end + 1))
 
-    # Part 2: 104
-    print('Part 2: {}'.format(get_total_unblocked(data_ranges)))
+    answer.part1(17348574, data_ranges[0].end + 1)
+    answer.part2(104, get_total_unblocked(data_ranges))
 
 
 def combine_all(data_ranges):

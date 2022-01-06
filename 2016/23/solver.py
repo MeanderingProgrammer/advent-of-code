@@ -1,5 +1,6 @@
 import math
 
+import commons.answer as answer
 from commons.aoc_computer import Computer
 from commons.aoc_parser import Parser
 
@@ -79,12 +80,10 @@ class Toggle:
         
 
 def main():
-    # Part 1: 11662
-    print('Part 1: {}'.format(run_computer(7)))
-    # Part 2: 479008222
-    # Ends up simplifying of n! + 77*86 
+    answer.part1(11662, run_computer(7))
+    # Ends up simplifying to n! + 77*86 
     # Did some reverse engineering
-    print('Part 2: {}'.format(math.factorial(12) + 77*86))
+    answer.part2(479008222, math.factorial(12) + 77*86)
 
 
 def run_computer(num_eggs):

@@ -1,13 +1,12 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
-    # Part 1: liwvqppc
-    print('Part 1: {}'.format(error_correct_message(-1)))
-    # Part 2: caqfbzlh
-    print('Part 2: {}'.format(error_correct_message(0)))
+    answer.part1('liwvqppc', error_correct_message(-1))
+    answer.part2('caqfbzlh', error_correct_message(0))
 
 
 def error_correct_message(n):

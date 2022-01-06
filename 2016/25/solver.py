@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_computer import Computer
 from commons.aoc_parser import Parser
 
@@ -105,8 +106,7 @@ class Output:
 
 
 def main():
-    # Part 1: 198
-    print('Part 1: {}'.format(run_until_success()))
+    answer.part1(198, run_until_success())
 
 
 def run_until_success():

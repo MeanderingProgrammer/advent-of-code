@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -101,16 +102,15 @@ class Scrambler:
 
 
 def main():
-    # Part 1: bdfhgeca
-    print('Part 1: {}'.format(scramble('abcdefgh')))
-    # Part 2: gdfcabeh
-    print('Part 2: {}'.format(unscramble('fbgdceah')))
+    answer.part1('bdfhgeca', scramble('abcdefgh'))
+    answer.part2('gdfcabeh', unscramble('fbgdceah'))
+
 
 def scramble(value):
     scrambler = Scrambler(value)
     for line in get_lines():
         scrambler.scramble(line)
-    return scrambler
+    return str(scrambler)
 
 
 def unscramble(value):
@@ -119,7 +119,7 @@ def unscramble(value):
     lines.reverse()
     for line in lines:
         scrambler.unscramble(line)
-    return scrambler
+    return str(scrambler)
 
 
 def get_lines():

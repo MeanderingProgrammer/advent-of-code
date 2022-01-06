@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_board import Grid, Point
 from commons.aoc_parser import Parser
@@ -10,10 +11,8 @@ OPEN = '.'
 
 
 def main():
-    # Part 1: 498
-    print('Part 1: {}'.format(get_shortest_path(False)))
-    # Part 2: 804
-    print('Part 2: {}'.format(get_shortest_path(True)))
+    answer.part1(498, get_shortest_path(False))
+    answer.part2(804, get_shortest_path(True))
 
 
 def get_shortest_path(go_home):

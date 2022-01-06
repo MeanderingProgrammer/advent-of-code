@@ -1,3 +1,4 @@
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_board import Grid, Point
 from commons.aoc_parser import Parser
@@ -32,10 +33,8 @@ class Node:
 
 def main():
     nodes = get_nodes()
-    # Part 1: 910
-    print('Part 1: {}'.format(get_viable_connections(nodes)))
-    # Part 2: 222
-    print('Part 2: {}'.format(calculate_transfers(nodes)))
+    answer.part1(910, get_viable_connections(nodes))
+    answer.part2(222, calculate_transfers(nodes))
 
 
 def calculate_transfers(nodes):
