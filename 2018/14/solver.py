@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 class Elve:
 
     def __init__(self, index):
@@ -48,12 +51,12 @@ def main():
     goal = str(170_641)
     recipes = Recipes()
     recipes.evolve(goal)
-    # Part 1: 2103141159
+    
     at_goal = ''.join(recipes.score_board[int(goal):int(goal)+10])
-    print('Part 1: {}'.format(at_goal))
-    # Part 2: 20165733
+    answer.part1('2103141159', at_goal)
+
     goal_at = str(recipes).index(goal)
-    print('Part 2: {}'.format(goal_at))
+    answer.part2(20165733, goal_at)
 
 
 if __name__ == '__main__':

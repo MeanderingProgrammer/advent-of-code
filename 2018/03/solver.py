@@ -1,5 +1,6 @@
 import re
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Grid, Point
 
@@ -51,10 +52,8 @@ def main():
             for claim_on_point in claims_on_point:
                 all_claims.discard(claim_on_point)
 
-    # Part 1: 120408
-    print('Part 1: {}'.format(multiple_claims))
-    # Part 2: 1276
-    print('Part 2: {}'.format(next(iter(all_claims))))
+    answer.part1(120408, multiple_claims)
+    answer.part2(1276, next(iter(all_claims)))
 
 
 if __name__ == '__main__':

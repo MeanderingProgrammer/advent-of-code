@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -45,8 +46,7 @@ def main():
             for option in to_delete:
                 constallations.remove(option)
 
-    # Part 1: 375
-    print('Part 1: {}'.format(len(constallations)))
+    answer.part1(375, len(constallations))
 
 
 def get_options(point, constallations):

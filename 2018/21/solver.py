@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -189,10 +190,8 @@ class Instruction:
 
 def main():
     halt_values = run_analyzed()
-    # Part 1: 6619857
-    print('Part 1: {}'.format(halt_values[0]))
-    # Part 2: 9547924
-    print('Part 2: {}'.format(halt_values[-1]))
+    answer.part1(6619857, halt_values[0])
+    answer.part2(9547924, halt_values[-1])
 
 
 def run_analyzed():

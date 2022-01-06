@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_board import Point
 
 
@@ -26,7 +27,8 @@ class PowerGrid:
             largest = self.get_largest(sub_grid_size)
             if largest_any is None or largest[1] > largest_any[0][1]:
                 largest_any = largest, sub_grid_size
-        return largest_any[0][0], largest_any[1]
+        point = largest_any[0][0]
+        return Point(point.x(), point.y(), largest_any[1])
 
     def get_largest(self, size):
         largest = None
@@ -78,10 +80,8 @@ def main():
     grid_size = 300
     power_grid = PowerGrid(serial_number, grid_size)
     power_grid.initialize()
-    # Part 1: 243,43
-    print('Part 1: {}'.format(power_grid.get_largest(3)[0]))
-    # Part 2: 236,151,15
-    print('Part 2: {}'.format(power_grid.get_largest_any()))
+    answer.part1(Point(243, 43), power_grid.get_largest(3)[0])
+    answer.part2(Point(236, 151, 15), power_grid.get_largest_any())
 
 
 if __name__ == '__main__':

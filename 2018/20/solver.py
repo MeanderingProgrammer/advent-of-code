@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -60,10 +61,8 @@ def main():
     data = Parser().string()
     regex = Regex(data[1:-1])
     regex.calculate_distances()
-    # Part 1: 3930
-    print('Part 1: {}'.format(regex.longest_path()))
-    # Part 2: 8240
-    print('Part 2: {}'.format(regex.paths_longer(1_000)))
+    answer.part1(3930, regex.longest_path())
+    answer.part2(8240, regex.paths_longer(1_000))
 
 
 def follow_path(path):

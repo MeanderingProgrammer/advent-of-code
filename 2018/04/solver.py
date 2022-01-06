@@ -1,5 +1,6 @@
 import re
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -89,10 +90,8 @@ def main():
                 guard_events[guard_id] = GuardEvents()
             guard_events[guard_id].add(event)
 
-    # Part 1: 48680
-    print('Part 1: {}'.format(solve_strategy_1(guard_events)))
-    # Part 2: 94826
-    print('Part 2: {}'.format(solve_strategy_2(guard_events)))
+    answer.part1(48680, solve_strategy_1(guard_events))
+    answer.part2(94826, solve_strategy_2(guard_events))
 
 
 def solve_strategy_1(guard_events):

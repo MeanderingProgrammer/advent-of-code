@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -53,10 +54,8 @@ class Polymer:
 
 def main():
     polymer = Polymer(Parser().string())
-    # Part 1: 11242
-    print('Part 1: {}'.format(solve_part_1(polymer)))
-    # Part 2: 5492
-    print('Part 2: {}'.format(solve_part_2(polymer)))
+    answer.part1(11242, solve_part_1(polymer))
+    answer.part2(5492, solve_part_2(polymer))
 
 
 def solve_part_1(polymer):

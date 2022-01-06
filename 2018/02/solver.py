@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -8,11 +9,8 @@ def main():
 
     contain_2 = count_contain_exactly(box_ids, 2)
     contain_3 = count_contain_exactly(box_ids, 3)
-    # Part 1: 5434
-    print('Part 1: {}'.format(contain_2 * contain_3))
-
-    # Part 2: agimdjvlhedpsyoqfzuknpjwt
-    print('Part 2: {}'.format(get_most_overlap(box_ids)))
+    answer.part1(5434, contain_2 * contain_3)
+    answer.part2('agimdjvlhedpsyoqfzuknpjwt', get_most_overlap(box_ids))
 
 
 def count_contain_exactly(values, n):

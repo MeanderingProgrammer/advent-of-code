@@ -1,6 +1,7 @@
 import math
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.aoc_board import Point
 
@@ -83,10 +84,8 @@ class PointGrid:
 
 def main():
     point_grid = get_point_grid()
-    # Part 1: 3251
-    print('Part 1: {}'.format(point_grid.largest_finite()))
-    # Part 2: 47841
-    print('Part 2: {}'.format(point_grid.within_max_distance(10_000)))
+    answer.part1(3251, point_grid.largest_finite())
+    answer.part2(47841, point_grid.within_max_distance(10_000))
 
 
 def get_point_grid():

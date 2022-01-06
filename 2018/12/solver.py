@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -81,10 +82,8 @@ class Rule:
 
 
 def main():
-    # Part 1: 1816
-    print('Part 1: {}'.format(run_for(get(), 20)))
-    # Part 2: 399999999957
-    print('Part 2: {}'.format(solve_known(50_000_000_000)))
+    answer.part1(1816, run_for(get(), 20))
+    answer.part2(399999999957, solve_known(50_000_000_000))
 
 
 def run_for(state_rules, generations):
