@@ -7,23 +7,12 @@ import (
 	"fmt"
 )
 
-type Cucumber int
+type Cucumber string
 
 const (
-	East Cucumber = iota
-	South
+	East  Cucumber = ">"
+	South Cucumber = "v"
 )
-
-func (cucumber Cucumber) toString() string {
-	switch cucumber {
-	case East:
-		return ">"
-	case South:
-		return "v"
-	default:
-		panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
-	}
-}
 
 func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 	switch cucumber {
@@ -32,37 +21,33 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 	case South:
 		return start.Add(0, 1)
 	default:
-		panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
+		panic(fmt.Sprintf("Unexpected cucumber: %s", cucumber))
 	}
 }
 
-func main() {
-	answers.Part1(492, untilStop(getGrid()))
+type Grid struct {
+	parsers.Grid
 }
 
-func untilStop(grid parsers.Grid) int {
+func (grid Grid) untilStop() int {
 	moves, didMove := 0, true
 	for didMove {
-		didMove = step(grid)
+		didMove = grid.step()
 		moves++
 	}
 	return moves
 }
 
-func step(grid parsers.Grid) bool {
-	eastMoved := move(grid, East)
-	southMoved := move(grid, South)
+func (grid Grid) step() bool {
+	eastMoved := grid.move(East)
+	southMoved := grid.move(South)
 	return eastMoved || southMoved
 }
 
-func move(grid parsers.Grid, toMove Cucumber) bool {
+func (grid Grid) move(toMove Cucumber) bool {
 	pointsToUpdate := make(map[parsers.Point]parsers.Point)
 
-	for _, point := range grid.Points() {
-		cucumber := grid.Get(point)
-		if cucumber != toMove.toString() {
-			continue
-		}
+	for _, point := range grid.GetPoints(string(toMove)) {
 		target := toMove.target(point)
 		if target.X > grid.Width {
 			target.X = 0
@@ -77,12 +62,16 @@ func move(grid parsers.Grid, toMove Cucumber) bool {
 
 	for startPoint, endPoint := range pointsToUpdate {
 		grid.Delete(startPoint)
-		grid.Set(endPoint, toMove.toString())
+		grid.Set(endPoint, string(toMove))
 	}
 
 	return len(pointsToUpdate) > 0
 }
 
-func getGrid() parsers.Grid {
-	return parsers.ConstructGrid(files.ReadLines(), parsers.Character, ".")
+func main() {
+	answers.Part1(492, getGrid().untilStop())
+}
+
+func getGrid() Grid {
+	return Grid{parsers.ConstructGrid(files.ReadLines(), parsers.Character, ".")}
 }

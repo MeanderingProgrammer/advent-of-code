@@ -40,10 +40,11 @@ type Board struct {
 }
 
 func (board *Board) mark(value int) {
-	point, exists := board.grid.GetPoint(conversions.ToString(value))
-	if !exists {
+	points := board.grid.GetPoints(conversions.ToString(value))
+	if len(points) != 1 {
 		return
 	}
+	point := points[0]
 
 	board.marked[point] = true
 	board.order = append(board.order, value)
