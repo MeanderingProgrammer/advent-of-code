@@ -79,13 +79,18 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 	return inRoom
 }
 
-func (state BoardState) move(start, destination graphs.Vertex) BoardState {
+type Move struct {
+	start graphs.Vertex
+	end   graphs.Vertex
+}
+
+func (state BoardState) move(move Move) BoardState {
 	updated, cost := make(Characters), 0
 	for position, character := range state.characters {
-		if position != start {
+		if position != move.start {
 			updated[position] = character
 		} else {
-			updated[destination] = Character{
+			updated[move.end] = Character{
 				moved: true,
 				value: character.value,
 			}
@@ -94,13 +99,14 @@ func (state BoardState) move(start, destination graphs.Vertex) BoardState {
 	}
 	return BoardState{
 		characters: updated,
-		cost:       state.cost + cost*distance(start.Point, destination.Point),
+		cost:       state.cost + cost*distance(move),
 	}
 }
 
-func distance(start, destination parsers.Point) int {
-	distance := utils.Abs(start.X - destination.X)
-	return distance + start.Y + destination.Y - 2
+func distance(move Move) int {
+	start, end := move.start.Point, move.end.Point
+	distance := utils.Abs(start.X - end.X)
+	return distance + start.Y + end.Y - 2
 }
 
 func (state BoardState) positions() map[graphs.Vertex]interface{} {
@@ -128,7 +134,7 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 		return state.(BoardState).complete()
 	}
 	nextStates := func(state graphs.State) []graphs.State {
-		return board.moves(state.(BoardState))
+		return board.nextStates(state.(BoardState))
 	}
 	return board.graph.Bfs(graphs.Search{
 		Initial:    initial,
@@ -137,24 +143,26 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 	})
 }
 
-func (board Board) moves(state BoardState) []graphs.State {
-	var legalMoves []graphs.State
+func (board Board) nextStates(state BoardState) []graphs.State {
+	var allMoves []Move
 	for start := range state.characters {
-		for _, destination := range board.characterMoves(state, start) {
-			newState := state.move(start, destination)
-			legalMoves = append(legalMoves, newState)
-		}
+		characterMoves := board.characterMoves(state, start)
+		allMoves = append(allMoves, characterMoves...)
 	}
-	return legalMoves
+	var nextStates []graphs.State
+	for _, move := range allMoves {
+		nextStates = append(nextStates, state.move(move))
+	}
+	return nextStates
 }
 
-func (board Board) characterMoves(state BoardState, start graphs.Vertex) []graphs.Vertex {
-	var reachable []graphs.Vertex
+func (board Board) characterMoves(state BoardState, start graphs.Vertex) []Move {
+	var moves []Move
 	character := state.characters[start]
 
 	if character.atGoal(start) && character.moved {
 		// If we're already at the goal state, then there is nowhere else to go
-		return reachable
+		return moves
 	}
 
 	explored := map[graphs.Vertex]bool{start: true}
@@ -172,39 +180,40 @@ func (board Board) characterMoves(state BoardState, start graphs.Vertex) []graph
 				continue
 			}
 			explored[destination] = true
-			if board.shouldGo(state, start, destination) {
-				reachable = append(reachable, destination)
+			move := Move{start: start, end: destination}
+			if board.shouldGo(state, move) {
+				moves = append(moves, move)
 			}
 			toExplore = append(toExplore, destination)
 		}
 	}
 
-	return reachable
+	return moves
 }
 
-func (board Board) shouldGo(state BoardState, start, destination graphs.Vertex) bool {
-	value := state.characters[start].value
-	if destination.Value == Doorway {
+func (board Board) shouldGo(state BoardState, move Move) bool {
+	value := state.characters[move.start].value
+	if move.end.Value == Doorway {
 		// Can never stop outside of a room
 		return false
-	} else if destination.Value == Hallway {
+	} else if move.end.Value == Hallway {
 		// Can not move to hallway once we are already in the hallway must go to a room
-		if start.Value == Hallway {
+		if move.start.Value == Hallway {
 			return false
 		}
 		// Here we detect "deadlock", which occurs when we put our character in the Hallway
 		// and they block a character from reaching their room who is in turn blocking them
-		for _, point := range pathToGoal(destination, value) {
+		for _, point := range pathToGoal(move.end, value) {
 			onPath, exists := state.characters[point]
 			if !exists {
 				continue
 			}
-			deadlock := contains(pathToGoal(point, onPath.value), destination)
+			deadlock := contains(pathToGoal(point, onPath.value), move.end)
 			if deadlock {
 				return false
 			}
 		}
-	} else if value != destination.Value {
+	} else if value != move.end.Value {
 		// If this room is for another character then we cannot enter
 		return false
 	} else {
@@ -219,7 +228,7 @@ func (board Board) shouldGo(state BoardState, start, destination graphs.Vertex) 
 			}
 		}
 		// Must go to back of room
-		if destination.Point.Y != board.roomSize-len(charactersInRoom)+1 {
+		if move.end.Point.Y != board.roomSize-len(charactersInRoom)+1 {
 			return false
 		}
 	}
