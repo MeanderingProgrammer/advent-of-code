@@ -29,6 +29,11 @@ type Grid struct {
 	parsers.Grid
 }
 
+type Move struct {
+	start parsers.Point
+	end   parsers.Point
+}
+
 func (grid Grid) untilStop() int {
 	moves, didMove := 0, true
 	for didMove {
@@ -45,7 +50,7 @@ func (grid Grid) step() bool {
 }
 
 func (grid Grid) move(toMove Cucumber) bool {
-	pointsToUpdate := make(map[parsers.Point]parsers.Point)
+	var moves []Move
 
 	for _, point := range grid.GetPoints(string(toMove)) {
 		target := toMove.target(point)
@@ -56,16 +61,17 @@ func (grid Grid) move(toMove Cucumber) bool {
 			target.Y = 0
 		}
 		if !grid.Contains(target) {
-			pointsToUpdate[point] = target
+			move := Move{start: point, end: target}
+			moves = append(moves, move)
 		}
 	}
 
-	for startPoint, endPoint := range pointsToUpdate {
-		grid.Delete(startPoint)
-		grid.Set(endPoint, string(toMove))
+	for _, move := range moves {
+		grid.Delete(move.start)
+		grid.Set(move.end, string(toMove))
 	}
 
-	return len(pointsToUpdate) > 0
+	return len(moves) > 0
 }
 
 func main() {
