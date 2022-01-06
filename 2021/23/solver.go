@@ -8,7 +8,6 @@ import (
 	"advent-of-code/commons/go/utils"
 	"fmt"
 	"math"
-	"sync"
 )
 
 const PrintStates = false
@@ -145,33 +144,23 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 }
 
 func (board Board) nextStates(state BoardState) <-chan graphs.State {
-	nextStates := make(chan graphs.State, len(state.characters))
-	var wg sync.WaitGroup
-	for start := range state.characters {
-		wg.Add(1)
-		go func(start graphs.Vertex) {
-			defer wg.Done()
-			for _, move := range board.characterMoves(state, start) {
-				nextStates <- state.move(move)
-			}
-		}(start)
-	}
+	nextStates := make(chan graphs.State)
 	go func() {
-		wg.Wait()
-		close(nextStates)
+		defer close(nextStates)
+		for start, character := range state.characters {
+			// Check that the character hasn't already been moved to their goal
+			if !character.atGoal(start) || !character.moved {
+				for _, move := range board.characterMoves(state, start) {
+					nextStates <- state.move(move)
+				}
+			}
+		}
 	}()
 	return nextStates
 }
 
 func (board Board) characterMoves(state BoardState, start graphs.Vertex) []Move {
 	var moves []Move
-	character := state.characters[start]
-
-	if character.atGoal(start) && character.moved {
-		// If we're already at the goal state, then there is nowhere else to go
-		return moves
-	}
-
 	explored := map[graphs.Vertex]bool{start: true}
 	toExplore := []graphs.Vertex{start}
 
