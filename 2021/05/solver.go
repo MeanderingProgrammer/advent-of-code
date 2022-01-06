@@ -52,10 +52,10 @@ func coordinateRange(v1 int, v2 int) []int {
 }
 
 func main() {
-	data := getData()
+	lines := getLines()
 
-	answers.Part1(6666, numPointsWithOverlap(data, false))
-	answers.Part2(19081, numPointsWithOverlap(data, true))
+	answers.Part1(6666, numPointsWithOverlap(lines, false))
+	answers.Part2(19081, numPointsWithOverlap(lines, true))
 }
 
 func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
@@ -74,7 +74,7 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 	return totalOverlap
 }
 
-func getData() []Line {
+func getLines() []Line {
 	var result []Line
 	for _, line := range files.Read(parseLine) {
 		result = append(result, line.(Line))
@@ -85,12 +85,7 @@ func getData() []Line {
 func parseLine(line string) interface{} {
 	points := strings.Split(line, " -> ")
 	return Line{
-		p1: parsePoint(points[0]),
-		p2: parsePoint(points[1]),
+		p1: parsers.ConstructPoint(points[0]),
+		p2: parsers.ConstructPoint(points[1]),
 	}
-}
-
-func parsePoint(point string) parsers.Point {
-	coords := strings.Split(point, ",")
-	return parsers.ConstructPoint(coords[0], coords[1])
 }

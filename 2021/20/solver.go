@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const Boarder = 5
+const Boarder = 1
 
 type Enhancer string
 
@@ -38,12 +38,12 @@ func (bounds Bounds) out(point parsers.Point) bool {
 }
 
 type Image struct {
-	grid  parsers.Grid
+	parsers.Grid
 	times int
 }
 
 func (image Image) enhance(enhancer Enhancer) Image {
-	enhanced := parsers.Grid{}
+	enhanced := Image{times: image.times + 1}
 	bounds := image.getBounds()
 	for y := bounds.minY - Boarder; y <= bounds.maxY+Boarder; y++ {
 		for x := bounds.minX - Boarder; x <= bounds.maxX+Boarder; x++ {
@@ -53,10 +53,7 @@ func (image Image) enhance(enhancer Enhancer) Image {
 			}
 		}
 	}
-	return Image{
-		grid:  enhanced,
-		times: image.times + 1,
-	}
+	return enhanced
 }
 
 func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds Bounds) bool {
@@ -64,7 +61,7 @@ func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds B
 	for y := -1; y <= 1; y++ {
 		for x := -1; x <= 1; x++ {
 			surrounding := point.Add(x, y)
-			value := image.grid.Contains(surrounding)
+			value := image.Contains(surrounding)
 			if value || (bounds.out(surrounding) && enhancer.edgeBehavior(image.times)) {
 				indexCode.WriteString("1")
 			} else {
@@ -78,7 +75,7 @@ func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds B
 
 func (image Image) getBounds() Bounds {
 	minX, minY, maxX, maxY := 0, 0, 0, 0
-	for _, point := range image.grid.Points() {
+	for _, point := range image.Points() {
 		minX = utils.Min(minX, point.X)
 		maxX = utils.Max(maxX, point.X)
 		minY = utils.Min(minY, point.Y)
@@ -102,7 +99,7 @@ func litAfter(times int) int {
 	for i := 0; i < times; i++ {
 		image = image.enhance(enhancer)
 	}
-	return image.grid.Len()
+	return image.Len()
 }
 
 func getEnhancerImage() (Enhancer, Image) {
@@ -112,7 +109,7 @@ func getEnhancerImage() (Enhancer, Image) {
 
 func parseImage(raw string) Image {
 	return Image{
-		grid:  parsers.ConstructGrid(parsers.Lines(raw), parsers.Character, "."),
+		Grid:  parsers.ConstructGrid(parsers.Lines(raw), parsers.Character, "."),
 		times: 0,
 	}
 }
