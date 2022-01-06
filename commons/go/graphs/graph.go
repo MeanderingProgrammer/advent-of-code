@@ -35,19 +35,29 @@ type Search struct {
 	NextStates NextStates
 }
 
+type Seen map[string]int
+
+func (seen Seen) updateIfBest(state State) bool {
+	encodedState, cost := *state.String(), state.Cost()
+	lowestCost, exists := seen[encodedState]
+	if !exists || cost < lowestCost {
+		seen[encodedState] = cost
+		return true
+	} else {
+		return false
+	}
+}
+
 func (graph Graph) Bfs(search Search) (State, int) {
-	queue, seen, explored := &Queue{search.Initial}, make(map[string]int), 0
-	for queue.Len() > 0 {
+	queue, seen, explored := &Queue{search.Initial}, make(Seen), 0
+	for !queue.Empty() {
 		explored++
 		current := queue.Next()
 		if search.Done(current) {
 			return current, explored
 		}
 		for state := range search.NextStates(current) {
-			encodedState := *state.String()
-			seenValue, exists := seen[encodedState]
-			if !exists || state.Cost() < seenValue {
-				seen[encodedState] = state.Cost()
+			if seen.updateIfBest(state) {
 				queue.Add(state)
 			}
 		}

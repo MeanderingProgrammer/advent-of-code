@@ -45,3 +45,7 @@ func (q *Queue) Add(state State) {
 func (q *Queue) Next() State {
 	return heap.Pop(q).(State)
 }
+
+func (q Queue) Empty() bool {
+	return q.Len() == 0
+}
