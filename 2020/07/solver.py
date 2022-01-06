@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -87,12 +88,8 @@ def main():
     for bag_rule in bag_rules:
         graph.add(bag_rule)
 
-    connected = get_connected_to(graph, 'shiny gold')
-    # Part 1: 172
-    print('Part 1: {}'.format(connected))
-    bags_needed = graph.get_bags_needed('shiny gold')
-    # Part 2: 39645
-    print('Part 2: {}'.format(bags_needed))
+    answer.part1(172, get_connected_to(graph, 'shiny gold'))
+    answer.part2(39645, graph.get_bags_needed('shiny gold'))
 
 
 def get_connected_to(graph, end):

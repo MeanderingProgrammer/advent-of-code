@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -39,12 +40,11 @@ class BoardingPass():
 def main():
     data = process()
     data.sort()
-    # Part 1: 919
-    print('Part 1: {}'.format(data[-1]))
+    answer.part1(919, data[-1])
+
     code = to_code(to_binary(find_missing(data)), 'BBBBBBBRRR', 'FFFFFFFLLL')
     boarding_pass = BoardingPass(code)
-    # Part 2: 642
-    print('Part 2: {}'.format(boarding_pass.get_id()))
+    answer.part2(642, boarding_pass.get_id())
 
 
 def find_missing(data):

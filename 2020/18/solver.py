@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -85,10 +86,8 @@ class Expression:
 
 
 def main():
-    # Part 1: 69490582260
-    print('Part 1: {}'.format(sum_expressions(False)))
-    # Part 2: 362464596624526
-    print('Part 2: {}'.format(sum_expressions(True)))
+    answer.part1(69490582260, sum_expressions(False))
+    answer.part2(362464596624526, sum_expressions(True))
 
 
 def sum_expressions(prefer_addition):

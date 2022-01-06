@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -44,12 +45,8 @@ def main():
     adapters = process()
     
     chains = adapters.get_chains()
-    # Part 1: 2343
-    print('Part 1: {}'.format(chains[1] * chains[3]))
-    
-    num_combinations = adapters.get_num_combinations()
-    # Part 2: 31581162962944
-    print('Part 2: {}'.format(num_combinations))
+    answer.part1(2343, chains[1] * chains[3])
+    answer.part2(31581162962944, adapters.get_num_combinations())
 
 
 def process():

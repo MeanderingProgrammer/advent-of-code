@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -31,10 +32,8 @@ class PasswordEntry:
 
 def main():
     passwords = get_passwords()
-    # Part 1: 536
-    print('Part 1: {}'.format(sum([password.valid_v1() for password in passwords])))
-    # Part 2: 558
-    print('Part 2: {}'.format(sum([password.valid_v2() for password in passwords])))
+    answer.part1(536, sum([password.valid_v1() for password in passwords]))
+    answer.part2(558, sum([password.valid_v2() for password in passwords]))
 
 
 def get_passwords():

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -46,13 +47,11 @@ def main():
     masking = process()
 
     invalid_number = masking.get_first_invalid()
-    # Part 1: 104054607
-    print('Part 1: {}'.format(invalid_number))
+    answer.part1(104054607, invalid_number)
 
     sum_set = masking.get_sum_set(invalid_number)
     magic_number = min(sum_set) + max(sum_set)
-    # Part 2: 13935797
-    print('Part 2: {}'.format(magic_number))
+    answer.part2(13935797, magic_number)
 
 
 def process():

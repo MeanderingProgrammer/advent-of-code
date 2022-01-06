@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -79,10 +80,8 @@ class Deck:
 
 
 def main():
-    # Part 1: 32102
-    print('Part 1: {}'.format(run_game(False)))
-    # Part 2: 34173
-    print('Part 2: {}'.format(run_game(True)))
+    answer.part1(32102, run_game(False))
+    answer.part2(34173, run_game(True))
 
 
 def run_game(recursive):

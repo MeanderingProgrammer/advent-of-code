@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -27,8 +28,7 @@ class Transformer:
 
 def main():
     card_pub, door_pub = get_keys()
-    # Part 1: 3015200
-    print('Part 1: {}'.format(encryption_key(card_pub, door_pub)))
+    answer.part1(3015200, encryption_key(card_pub, door_pub))
 
 
 def encryption_key(public_key, other_public_key):

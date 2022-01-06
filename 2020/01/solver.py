@@ -1,14 +1,15 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
     values = read_data()
+    
     pair =  find_pair(2020, values)
-    # Part 1: 1020084
-    print('Part 1: {}'.format(pair[0] * pair[1]))
+    answer.part1(1020084, pair[0] * pair[1])
+
     triple = find_triple(values)
-    # Part 2: 295086480
-    print('Part 2: {}'.format(triple[0] * triple[1] * triple[2]))
+    answer.part2(295086480, triple[0] * triple[1] * triple[2])
 
 
 def find_triple(values):

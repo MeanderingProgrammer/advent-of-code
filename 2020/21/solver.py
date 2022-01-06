@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -24,10 +25,8 @@ class Food:
 
 def main():
     foods = get_foods()
-    # Part 1: 1679
-    print('Part 1: {}'.format(occurrences_of_non_allergens(foods)))
-    # Part 2: lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq
-    print('Part 2: {}'.format(sorted_by_allergen(foods)))
+    answer.part1(1679, occurrences_of_non_allergens(foods))
+    answer.part2('lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq', sorted_by_allergen(foods))
 
 
 def occurrences_of_non_allergens(foods):

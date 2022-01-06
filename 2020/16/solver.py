@@ -1,5 +1,6 @@
 from functools import reduce
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -84,10 +85,8 @@ class Ticket:
 
 def main():
     rules, my_ticket, nearby_tickets = process()
-    # Part 1: 26980
-    print('Part 1: {}'.format(solve_part_1(rules, nearby_tickets)))
-    # Part 2: 3021381607403
-    print('Part 2: {}'.format(solve_part_2(rules, my_ticket, nearby_tickets)))
+    answer.part1(26980, solve_part_1(rules, nearby_tickets))
+    answer.part2(3021381607403, solve_part_2(rules, my_ticket, nearby_tickets))
 
 
 def solve_part_1(rules, nearby_tickets):

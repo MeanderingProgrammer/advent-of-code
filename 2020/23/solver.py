@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -96,10 +97,8 @@ class Cups:
 
 
 def main():
-    # Part 1: 45798623
-    print('Part 1: {}'.format(run(None, 100)))
-    # Part 2: 235551949822
-    print('Part 2: {}'.format(run(1_000_000, 10_000_000)))
+    answer.part1('45798623', run(None, 100))
+    answer.part2(235551949822, run(1_000_000, 10_000_000))
 
 
 def run(num_cups, loops):

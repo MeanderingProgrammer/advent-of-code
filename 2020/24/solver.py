@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -133,14 +134,12 @@ def main():
 
     for path in paths:
         floor.follow_path(path).flip()
-    # Part 1: 320
-    print('Part 1: {}'.format(floor.count_black_tiles()))
+    answer.part1(320, floor.count_black_tiles())
 
     days = 100
     for day in range(days):
         floor.transform()
-    # Part 2: 3777
-    print('Part 2: {}'.format(floor.count_black_tiles()))
+    answer.part2(3777, floor.count_black_tiles())
 
 
 def get_paths():

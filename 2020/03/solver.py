@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -14,14 +15,12 @@ def main():
     trees = []
     for traversal in traversals:
         trees.append(traverse(board, traversal[0], traversal[1]))
-
-    # Part 1: 220
-    print('Part 1: {}'.format(trees[1]))
+    answer.part1(220, trees[1])
+    
     result = 1
     for tree in trees:
         result *= tree
-    # Part 2: 2138320800
-    print('Part 2: {}'.format(result))
+    answer.part2(2138320800, result)
 
 
 def traverse(board, r_step, d_step):

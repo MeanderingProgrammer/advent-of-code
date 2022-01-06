@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -91,10 +92,8 @@ class Rules:
 
 
 def main():
-    # Part 1: 198
-    print('Part 1: {}'.format(total_matches(False)))
-    # Part 2: 372
-    print('Part 2: {}'.format(total_matches(True)))
+    answer.part1(198, total_matches(False))
+    answer.part2(372, total_matches(True))
 
 
 def total_matches(is_part2):
