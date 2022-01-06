@@ -144,18 +144,21 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 }
 
 func (board Board) nextStates(state BoardState) <-chan graphs.State {
-	nextStates := make(chan graphs.State)
-	go func() {
-		defer close(nextStates)
-		for start, character := range state.characters {
-			// Check that the character hasn't already been moved to their goal
-			if !character.atGoal(start) || !character.moved {
-				for _, move := range board.characterMoves(state, start) {
-					nextStates <- state.move(move)
-				}
+	var allNextStates []graphs.State
+	for start, character := range state.characters {
+		// Check that the character hasn't already been moved to their goal
+		if !character.atGoal(start) || !character.moved {
+			for _, move := range board.characterMoves(state, start) {
+				allNextStates = append(allNextStates, state.move(move))
 			}
 		}
-	}()
+	}
+
+	nextStates := make(chan graphs.State, len(allNextStates))
+	for _, nextState := range allNextStates {
+		nextStates <- nextState
+	}
+	close(nextStates)
 	return nextStates
 }
 
