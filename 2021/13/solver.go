@@ -40,21 +40,11 @@ func (fold Fold) apply(point parsers.Point) (parsers.Point, bool) {
 	}
 }
 
-func main() {
-	grid, folds := getData()
-
-	grid = apply(grid, folds[0])
-	answers.Part1(737, grid.Len())
-
-	// Part 2: ZUJUAFHP
-	fmt.Println("Part 2")
-	for _, fold := range folds[1:] {
-		grid = apply(grid, fold)
-	}
-	grid.Print(".")
+type PaperGrid struct {
+	parsers.Grid
 }
 
-func apply(grid parsers.Grid, fold Fold) parsers.Grid {
+func (grid PaperGrid) apply(fold Fold) PaperGrid {
 	for _, point := range grid.Points() {
 		newPoint, moved := fold.apply(point)
 		if moved {
@@ -70,13 +60,27 @@ func apply(grid parsers.Grid, fold Fold) parsers.Grid {
 	return grid
 }
 
-func getData() (parsers.Grid, []Fold) {
-	dotsInstructions := files.ReadGroups()
-	dots, instructions := split(dotsInstructions[0]), split(dotsInstructions[1])
+func main() {
+	grid, folds := getGridFolds()
 
-	grid := parsers.Grid{}
+	grid = grid.apply(folds[0])
+	answers.Part1(737, grid.Len())
+
+	// Part 2: ZUJUAFHP
+	fmt.Println("Part 2")
+	for _, fold := range folds[1:] {
+		grid = grid.apply(fold)
+	}
+	grid.Print(".")
+}
+
+func getGridFolds() (PaperGrid, []Fold) {
+	dotsInstructions := files.ReadGroups()
+	dots, instructions := parsers.Lines(dotsInstructions[0]), parsers.Lines(dotsInstructions[1])
+
+	grid := PaperGrid{}
 	for _, dot := range dots {
-		point := getPoint(dot)
+		point := parsers.ConstructPoint(dot)
 		grid.Set(point, "#")
 	}
 
@@ -86,15 +90,6 @@ func getData() (parsers.Grid, []Fold) {
 	}
 
 	return grid, folds
-}
-
-func split(value string) []string {
-	return strings.Split(value, "\r\n")
-}
-
-func getPoint(raw string) parsers.Point {
-	parts := strings.Split(raw, ",")
-	return parsers.ConstructPoint(parts[0], parts[1])
 }
 
 func getInstruction(raw string) Fold {

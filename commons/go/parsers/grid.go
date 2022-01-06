@@ -1,7 +1,6 @@
 package parsers
 
 import (
-	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/utils"
 	"fmt"
 	"strings"
@@ -50,10 +49,11 @@ func (point Point) Adjacent(includeDiagonal bool) []Point {
 	return adjacent
 }
 
-func ConstructPoint(x, y string) Point {
+func ConstructPoint(s string) Point {
+	coords := IntCsv(s)
 	return Point{
-		X: conversions.ToInt(x),
-		Y: conversions.ToInt(y),
+		X: coords[0],
+		Y: coords[1],
 	}
 }
 
