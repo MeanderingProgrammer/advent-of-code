@@ -1,5 +1,6 @@
 import math
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -25,10 +26,8 @@ def main():
     arrive_time = int(data[0])
     buses = [Bus(bus) for bus in data[1].split(',')]
 
-    # Part 1: 296
-    print('Part 1: {}'.format(solve_part_1(arrive_time, buses)))
-    # Part 2: 535296695251210
-    print('Part 2: {}'.format(solve_part_2(buses)))
+    answer.part1(296, solve_part_1(arrive_time, buses))
+    answer.part2(535296695251210, solve_part_2(buses))
 
 
 def solve_part_1(arrive_time, buses):

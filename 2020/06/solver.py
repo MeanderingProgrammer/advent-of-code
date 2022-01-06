@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -21,10 +22,8 @@ class BoardingGroup:
 
 def main():
     groups = process()
-    # Part 1: 6782
-    print('Part 1: {}'.format(sum([group.any_positive() for group in groups])))
-    # Part 2: 3596
-    print('Part 2: {}'.format(sum([group.all_positive() for group in groups])))
+    answer.part1(6782, sum([group.any_positive() for group in groups]))
+    answer.part2(3596, sum([group.all_positive() for group in groups]))
 
 
 def process():

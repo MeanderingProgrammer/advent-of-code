@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -115,10 +116,8 @@ class Grid:
 
 
 def main():
-    # Part 1: 284
-    print('Part 1: {}'.format(simulate(3)))
-    # Part 2: 2,240
-    print('Part 2: {}'.format(simulate(4)))
+    answer.part1(284, simulate(3))
+    answer.part2(2240, simulate(4))
 
 
 def simulate(dimensions):

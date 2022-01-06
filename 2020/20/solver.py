@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -226,10 +227,8 @@ class SearchImage:
 def main():
     board = PuzzleBoard()
     solve_board(board)
-    # Part 1: 15003787688423
-    print('Part 1: {}'.format(corner_values(board)))
-    # Part 2: 1705
-    print('Part 2: {}'.format(get_roughness(board)))
+    answer.part1(15003787688423, corner_values(board))
+    answer.part2(1705, get_roughness(board))
 
 
 def solve_board(board):

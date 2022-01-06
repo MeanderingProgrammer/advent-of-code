@@ -1,5 +1,6 @@
 import re
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -83,10 +84,8 @@ class Passport:
 
 def main():
     passports = get_passports()
-    # Part 1: 200
-    print('Part 1: {}'.format(sum([passport.validate(False) for passport in passports])))
-    # Part 2: 116
-    print('Part 2: {}'.format(sum([passport.validate(True) for passport in passports])))
+    answer.part1(200, sum([passport.validate(False) for passport in passports]))
+    answer.part2(116, sum([passport.validate(True) for passport in passports]))
 
 
 def get_passports():

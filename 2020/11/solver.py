@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -122,10 +123,8 @@ class SeatingChart:
 
 
 def main():
-    # Part 1: 2386
-    print('Part 1: {}'.format(run_until_stable(False)))
-    # Part 2: 2091
-    print('Part 2: {}'.format(run_until_stable(True)))
+    answer.part1(2386, run_until_stable(False))
+    answer.part2(2091, run_until_stable(True))
 
 
 def run_until_stable(look):

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -96,10 +97,8 @@ class InstructionSet:
 def main():
     instructions = get_instructions()
     instructions.execute()
-    # Part 1: 1744
-    print('Part 1: {}'.format(instructions.acc))
-    # Part 2: 1174
-    print('Part 2: {}'.format(instructions.attempt_to_fix()))
+    answer.part1(1744, instructions.acc)
+    answer.part2(1174, instructions.attempt_to_fix())
 
 
 def get_instructions():

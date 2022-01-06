@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -25,10 +26,8 @@ class Stats:
 
 
 def main():
-    # Part 1: 240
-    print('Part 1: {}'.format(run(2_020)))
-    # Part 2: 505
-    print('Part 2: {}'.format(run(30_000_000)))
+    answer.part1(240, run(2_020))
+    answer.part2(505, run(30_000_000))
 
 
 def run(n):

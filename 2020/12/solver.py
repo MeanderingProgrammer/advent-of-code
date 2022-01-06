@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -90,10 +91,8 @@ class Instruction:
 
 
 def main():
-    # Part 1: 362
-    print('Part 1: {}'.format(move_ship(True)))
-    # Part 2: 29895
-    print('Part 2: {}'.format(move_ship(False)))
+    answer.part1(362, move_ship(True))
+    answer.part2(29895, move_ship(False))
 
 
 def move_ship(is_v1):
