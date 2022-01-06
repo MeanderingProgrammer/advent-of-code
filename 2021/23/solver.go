@@ -8,6 +8,7 @@ import (
 	"advent-of-code/commons/go/utils"
 	"fmt"
 	"math"
+	"sync"
 )
 
 const PrintStates = false
@@ -133,7 +134,7 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 		}
 		return state.(BoardState).complete()
 	}
-	nextStates := func(state graphs.State) []graphs.State {
+	nextStates := func(state graphs.State) <-chan graphs.State {
 		return board.nextStates(state.(BoardState))
 	}
 	return board.graph.Bfs(graphs.Search{
@@ -143,16 +144,22 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 	})
 }
 
-func (board Board) nextStates(state BoardState) []graphs.State {
-	var allMoves []Move
+func (board Board) nextStates(state BoardState) <-chan graphs.State {
+	nextStates := make(chan graphs.State, len(state.characters))
+	var wg sync.WaitGroup
 	for start := range state.characters {
-		characterMoves := board.characterMoves(state, start)
-		allMoves = append(allMoves, characterMoves...)
+		wg.Add(1)
+		go func(start graphs.Vertex) {
+			defer wg.Done()
+			for _, move := range board.characterMoves(state, start) {
+				nextStates <- state.move(move)
+			}
+		}(start)
 	}
-	var nextStates []graphs.State
-	for _, move := range allMoves {
-		nextStates = append(nextStates, state.move(move))
-	}
+	go func() {
+		wg.Wait()
+		close(nextStates)
+	}()
 	return nextStates
 }
 

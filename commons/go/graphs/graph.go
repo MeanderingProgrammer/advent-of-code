@@ -27,7 +27,7 @@ type Graph struct {
 }
 
 type Complete func(State) bool
-type NextStates func(State) []State
+type NextStates func(State) <-chan State
 
 type Search struct {
 	Initial    State
@@ -43,7 +43,7 @@ func (graph Graph) Bfs(search Search) (State, int) {
 		if search.Done(current) {
 			return current, explored
 		}
-		for _, state := range search.NextStates(current) {
+		for state := range search.NextStates(current) {
 			encodedState := *state.String()
 			seenValue, exists := seen[encodedState]
 			if !exists || state.Cost() < seenValue {
