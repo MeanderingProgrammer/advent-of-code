@@ -1,11 +1,10 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
-    # Part 1: 373160
-    print('Part 1: {}'.format(run(increment_v1)))
-    # Part 2: 26395586
-    print('Part 2: {}'.format(run(increment_v2)))
+    answer.part1(373160, run(increment_v1))
+    answer.part2(26395586, run(increment_v2))
 
 
 def run(f):

@@ -1,5 +1,6 @@
 import collections
 
+import commons.answer as answer
 from commons.aoc_board import Point
 
 
@@ -80,11 +81,8 @@ class Knot:
 
 def main():
     points = get_enabled_points()
-    # Part 1: 8190
-    print('Part 1: {}'.format(len(points)))
-    groups = group_points(points)
-    # Part 2: 1134
-    print('Part 2: {}'.format(len(groups)))
+    answer.part1(8190, len(points))
+    answer.part2(1134, len(group_points(points)))
 
 
 def group_points(points):

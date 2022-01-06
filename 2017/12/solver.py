@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 from commons.aoc_parser import Parser
 
@@ -7,11 +8,10 @@ from commons.aoc_parser import Parser
 def main():
     graph = get_graph()
     
-    # Part 1: 306
     connected_to_0 = aoc_search.connected(graph, '0')
-    print('Part 1: {}'.format(len(connected_to_0)))
+    answer.part1(306, len(connected_to_0))
+    
 
-    # Part 2: 200
     heads = set(['0'])
     grouped = set(connected_to_0)
 
@@ -22,7 +22,7 @@ def main():
         grouped |= connected
         head = get_ungrouped(graph, grouped)
 
-    print('Part 2: {}'.format(len(heads)))
+    answer.part2(200, len(heads))
 
 
 def get_ungrouped(graph, grouped):

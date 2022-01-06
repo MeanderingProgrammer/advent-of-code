@@ -73,8 +73,7 @@ def main():
     machine = TuringMachine(state[0], rules)
     for i in range(state[1]):
         machine.step()
-    # Part 1: 3099
-    print('Part 1: {}'.format(machine.checksum()))
+    answer.part1(3099, machine.checksum())
 
 
 def get_state_rules():

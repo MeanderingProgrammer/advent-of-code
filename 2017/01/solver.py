@@ -1,12 +1,11 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
     data = Parser().string()
-    # Part 1: 1136
-    print('Part 1: {}'.format(sum_list(data, 1)))
-    # Part 2: 1092
-    print('Part 2: {}'.format(sum_list(data, len(data) // 2)))
+    answer.part1(1136, sum_list(data, 1))
+    answer.part2(1092, sum_list(data, len(data) // 2))
 
 
 def sum_list(data, increment):

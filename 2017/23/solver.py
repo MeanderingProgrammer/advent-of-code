@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -63,11 +64,9 @@ class Intstruction:
 
 
 def main():
-    # Part 1: 9409
-    print('Part 1: {}'.format(run_computer(False)))
-    # Part 2: 913
+    answer.part1(9409, run_computer(False))
     # run_computer(True) would take too long to run
-    print('Part 2: {}'.format(count_non_primes(109_900, 126_900, 17)))
+    answer.part2(913, count_non_primes(109_900, 126_900, 17))
 
 
 def run_computer(debug):

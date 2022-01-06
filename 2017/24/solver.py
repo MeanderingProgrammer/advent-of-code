@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -44,10 +45,8 @@ def main():
     components = get_components()
     bridge = Bridge(components)
     statistics = bridge.build()
-    # Part 1: 1656
-    print('Part 1: {}'.format(get_strongest(statistics)))
-    # Part 2: 1642
-    print('Part 2: {}'.format(get_longest_strongest(statistics)))
+    answer.part1(1656, get_strongest(statistics))
+    answer.part2(1642, get_longest_strongest(statistics))
 
 
 def get_strongest(statistics):

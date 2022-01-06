@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 GEN_A_START = 277
 GEN_B_START = 349
 
@@ -31,10 +34,8 @@ class Judge:
 
 def main():
     judge = Judge()
-    # Part 1: 592
-    print('Part 1: {}'.format(count_matches(judge, 40_000_000, False)))
-    # Part 2: 320
-    print('Part 2: {}'.format(count_matches(judge, 5_000_000, True)))
+    answer.part1(592, count_matches(judge, 40_000_000, False))
+    answer.part2(320, count_matches(judge, 5_000_000, True))
 
 
 def count_matches(judge, n, wait_for_mult):

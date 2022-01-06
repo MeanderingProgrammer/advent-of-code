@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -56,10 +57,8 @@ def main():
         instruction.apply(registers)
         maxes.append(max(registers.values()))
 
-    # Part 1: 7296
-    print('Part 1: {}'.format(max(registers.values())))
-    # Part 2: 8186
-    print('Part 2: {}'.format(max(maxes)))
+    answer.part1(7296, max(registers.values()))
+    answer.part2(8186, max(maxes))
 
 
 def get_instructions():

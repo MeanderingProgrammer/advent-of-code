@@ -1,16 +1,15 @@
+import commons.answer as answer
 from commons.aoc_board import Grid, Point
 
 
 def main():
     goal = 289_326
 
-    # Part 1: 419
     point, value = build_grid(goal, value_updater_v1)
-    print('Part 1: {}'.format(len(point)))
+    answer.part1(419, len(point))
 
-    # Part 2: 295229
     point, value = build_grid(goal, value_updater_v2)
-    print('Part 2: {}'.format(value))
+    answer.part2(295229, value)
 
 
 def build_grid(goal, value_updater):

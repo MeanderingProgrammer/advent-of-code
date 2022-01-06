@@ -1,11 +1,10 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
-    # Part 1: 47623
-    print('Part 1: {}'.format(calculate_checksum(checksum_v1)))
-    # Part 2: 312
-    print('Part 2: {}'.format(calculate_checksum(checksum_v2)))
+    answer.part1(47623, calculate_checksum(checksum_v1))
+    answer.part2(312, calculate_checksum(checksum_v2))
 
 
 def calculate_checksum(f):

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -26,10 +27,8 @@ class Password:
 
 
 def main():
-    # Part 1: 466
-    print('Part 1: {}'.format(count_valid(False)))
-    # Part 2: 251
-    print('Part 2: {}'.format(count_valid(True)))
+    answer.part1(466, count_valid(False))
+    answer.part2(251, count_valid(True))
 
 
 def count_valid(check_anagram):
