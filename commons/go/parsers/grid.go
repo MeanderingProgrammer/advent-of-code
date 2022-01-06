@@ -97,13 +97,14 @@ func (grid Grid) Points() []Point {
 	return points
 }
 
-func (grid Grid) GetPoint(target string) (Point, bool) {
+func (grid Grid) GetPoints(target string) []Point {
+	var points []Point
 	for point, value := range grid.plane {
 		if value == target {
-			return point, true
+			points = append(points, point)
 		}
 	}
-	return Point{}, false
+	return points
 }
 
 func (grid Grid) Print(defaultValue string) {
