@@ -1,5 +1,6 @@
 import math
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -105,10 +106,8 @@ class System:
 
 
 def main():
-    # Part 1: 5350
-    print('Part 1: {}'.format(run_for(1_000)))
-    # Part 2: 467034091553512
-    print('Part 2: {}'.format(get_system_period()))
+    answer.part1(5350, run_for(1_000))
+    answer.part2(467034091553512, get_system_period())
 
 
 def run_for(n):

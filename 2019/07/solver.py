@@ -1,5 +1,6 @@
 from itertools import permutations
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -41,10 +42,8 @@ class Amplifier:
 
 
 def main():
-    # Part 1: 38834
-    print('Part 1: {}'.format(run_permutations([0, 1, 2, 3, 4], False)))
-    # Part 2: 69113332
-    print('Part 2: {}'.format(run_permutations([5, 6, 7, 8, 9], True)))
+    answer.part1(38834, run_permutations([0, 1, 2, 3, 4], False))
+    answer.part2(69113332, run_permutations([5, 6, 7, 8, 9], True))
 
 
 def run_permutations(sequence, pause_on_load):

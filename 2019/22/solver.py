@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -74,16 +75,9 @@ class Deck:
 
 
 def main():
-    # I have no idea how this one works, I definitely took it off
-    # the Reddits
-    # Part 1: 4684
-    print('Part 1: {}'.format(
-        process_deck(10_007).index_of(2019, 1)
-    ))
-    # Part 2: 452290953297
-    print('Part 2: {}'.format(
-        process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661)
-    ))
+    # I have no idea how this one works, I definitely took it off the Reddits
+    answer.part1(4684, process_deck(10_007).index_of(2019, 1))
+    answer.part2(452290953297, process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661))
 
 
 def process_deck(n):

@@ -43,6 +43,10 @@ run_day() {
 
     if [[ ${extension} == ${JAVA} ]]
     then
+        if [[ -f "Solver.class" ]]
+        then
+            rm Solver.class
+        fi
         javac Solver.java
         time_run java Solver
     elif [[ ${extension} == ${PYTHON} ]]

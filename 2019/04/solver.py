@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 PASSWORD_RANGE = 256_310, 732_736
 
 
@@ -36,10 +39,8 @@ class Password:
 
 
 def main():
-    # Part 1: 979
-    print('Part 1: {}'.format(get_num_valid(False)))
-    # Part 2: 635
-    print('Part 2: {}'.format(get_num_valid(True)))
+    answer.part1(979, get_num_valid(False))
+    answer.part2(635, get_num_valid(True))
 
 
 def get_num_valid(exact):

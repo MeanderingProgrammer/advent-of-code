@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 from commons.aoc_board import Point
@@ -215,10 +216,8 @@ class VacuumDroid:
 
 def main():
     droid = VacuumDroid()
-    # Part 1: 9876
-    print('Part 1: {}'.format(total_alignment(droid)))
-    # Part 2: 1234055
-    print('Part 2: {}'.format(dust_collected(droid)))
+    answer.part1(9876, total_alignment(droid))
+    answer.part2(1234055, dust_collected(droid))
 
 
 def total_alignment(droid):

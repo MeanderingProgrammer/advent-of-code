@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -88,10 +89,8 @@ class Packet:
 def main():
     network = Network(get_memory())
     nat_history = network.run_until_nat_repeat()
-    # Part 1: 16549
-    print('Part 1: {}'.format(nat_history[0]))
-    # Part 2: 11462
-    print('Part 2: {}'.format(nat_history[-1]))
+    answer.part1(16549, nat_history[0])
+    answer.part2(11462, nat_history[-1])
 
 
 def get_memory():

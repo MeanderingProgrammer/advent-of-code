@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 from commons.aoc_board import Point
@@ -56,10 +57,8 @@ class Tester:
 
 def main():
     tester = Tester(get_memory())
-    # Part 1: 160
-    print('Part 1: {}'.format(affected_points(tester, 0, 0, 50)))
-    # Part 2: 9441282
-    print('Part 2: {}'.format(bounding_point(tester, 100)))
+    answer.part1(160, affected_points(tester, 0, 0, 50))
+    answer.part2(9441282, bounding_point(tester, 100))
 
 
 def affected_points(tester, x_start, y_start, amount):

@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -63,10 +64,8 @@ class Game:
 
 
 def main():
-    # Part 1: 363
-    print('Part 1: {}'.format(play_game(False)))
-    # Part 2: 17159
-    print('Part 2: {}'.format(play_game(True)))
+    answer.part1(363, play_game(False))
+    answer.part2(17159, play_game(True))
 
 
 def play_game(play_for_free):

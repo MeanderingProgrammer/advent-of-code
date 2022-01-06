@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -61,12 +62,9 @@ class Computer:
 
 
 def main():
-    result = set_memory_and_run(12, 2)
-    # Part 1: 6627023
-    print('Part 1: {}'.format(result))
+    answer.part1(6627023, set_memory_and_run(12, 2))
     noun, verb = get_goal_pair()
-    # Part 2: 4019
-    print('Part 2: {}'.format((100 * noun) + verb))
+    answer.part2(4019, (100 * noun) + verb)
 
 
 def get_goal_pair():

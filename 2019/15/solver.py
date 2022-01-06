@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 from commons.int_code import Computer
 
@@ -118,10 +119,8 @@ class RepairDroid:
 def main():
     droid = RepairDroid(get_memory())
     droid.run()
-    # Part 1: 224
-    print('Part 1: {}'.format(droid.get_min_steps((0, 0))))
-    # Part 2: 284
-    print('Part 2: {}'.format(time_for_air(droid)))
+    answer.part1(224, droid.get_min_steps((0, 0)))
+    answer.part2(284, time_for_air(droid))
 
 
 def time_for_air(droid):
