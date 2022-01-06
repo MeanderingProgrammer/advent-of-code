@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_board import Grid, Point
 from commons.aoc_parser import Parser
 
@@ -50,10 +51,8 @@ class Animator:
 def main():
     grid = Parser().as_grid()
 
-    # Part 1: 1061
-    print('Part 1: {}'.format(run(False, grid)))
-    # Part 2: 1006
-    print('Part 2: {}'.format(run(True, grid)))
+    answer.part1(1061, run(False, grid))
+    answer.part2(1006, run(True, grid))
 
 
 def run(force_corners, grid):

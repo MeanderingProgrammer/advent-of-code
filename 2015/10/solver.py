@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 START = '1113122113'
 
 
@@ -25,10 +28,8 @@ class Game:
 
 
 def main():
-    # Part 1: 360154
-    print('Part 1: {}'.format(run(40)))
-    # Part 2: 5103798
-    print('Part 2: {}'.format(run(50)))
+    answer.part1(360154, run(40))
+    answer.part2(5103798, run(50))
 
 
 def run(n):

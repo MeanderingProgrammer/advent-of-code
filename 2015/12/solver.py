@@ -1,5 +1,6 @@
 import json
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -35,10 +36,8 @@ class SantaData:
 
 
 def main():
-    # Part 1: 111754
-    print('Part 1: {}'.format(get_total(False)))
-    # Part 2: 65402
-    print('Part 2: {}'.format(get_total(True)))
+    answer.part1(111754, get_total(False))
+    answer.part2(65402, get_total(True))
 
 
 def get_total(ignore_red):

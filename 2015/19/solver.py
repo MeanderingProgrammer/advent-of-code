@@ -1,3 +1,4 @@
+import commons.answer as answer
 import commons.aoc_util as aoc_util
 from commons.aoc_parser import Parser
 
@@ -22,10 +23,8 @@ class Rule:
 
 def main():
     molecule, rules = get_data()
-    # Part 1: 576
-    print('Part 1: {}'.format(len(run(rules, molecule))))
-    # Part 2: 207
-    print('Part 2: {}'.format(replacements_needed(molecule)))
+    answer.part1(576, len(run(rules, molecule)))
+    answer.part2(207, replacements_needed(molecule))
 
 
 def run(rules, molecule):

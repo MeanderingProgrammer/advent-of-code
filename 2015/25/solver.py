@@ -1,10 +1,12 @@
+import commons.answer as answer
+
+
 POSITION = (2_947, 3_029)
 
 
 def main():
     index = get_index(POSITION)
-    # Part 1 = 19980801
-    print('Part 1: {}'.format(get_password(index)))
+    answer.part1(19980801, get_password(index))
 
 
 def get_index(position):

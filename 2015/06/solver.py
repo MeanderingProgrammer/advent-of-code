@@ -1,6 +1,7 @@
 from itertools import product
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -48,10 +49,8 @@ class Direction:
 
 def main():
     grid_values = run_grid()
-    # Part 1: 400410
-    print('Part 1: {}'.format(state_value(grid_values, SINGLE)))
-    # Part 2: 15343601
-    print('Part 2: {}'.format(state_value(grid_values, DIMABLE)))
+    answer.part1(400410, state_value(grid_values, SINGLE))
+    answer.part2(15343601, state_value(grid_values, DIMABLE))
 
 
 def run_grid():

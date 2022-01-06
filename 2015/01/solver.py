@@ -1,12 +1,11 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
     data = Parser().string()
-    # Part 1: 232
-    print('Part 1: {}'.format(get_floor(data, False)))
-    # Part 2: 1783
-    print('Part 2: {}'.format(get_floor(data, True)))
+    answer.part1(232, get_floor(data, False))
+    answer.part2(1783, get_floor(data, True))
 
 
 def get_floor(value, stop_at_basement):

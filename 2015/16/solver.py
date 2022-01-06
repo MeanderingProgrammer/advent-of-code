@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -45,10 +46,8 @@ class Aunt:
 
 
 def main():
-    # Part 1: 213
-    print('Part 1: {}'.format(get_aunt(False)))
-    # Part 2: 323
-    print('Part 2: {}'.format(get_aunt(True)))
+    answer.part1(213, get_aunt(False))
+    answer.part2(323, get_aunt(True))
 
 
 def get_aunt(calibrate):

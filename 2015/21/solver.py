@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -76,10 +77,8 @@ def main():
         player.reset()
         enemy.reset()
         
-    # Part 1: 121
-    print('Part 1: {}'.format(min(win_costs)))
-    # Part 2: 201
-    print('Part 2: {}'.format(max(loss_costs)))
+    answer.part1(121, min(win_costs))
+    answer.part2(201, max(loss_costs))
 
 
 def fight(player, enemy):

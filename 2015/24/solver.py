@@ -1,14 +1,13 @@
 import itertools
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
     weights = Parser().int_lines()
-    # Part 1: 10439961859
-    print('Part 1: {}'.format(store_weights(weights, 3)))
-    # Part 2: 72050269
-    print('Part 2: {}'.format(store_weights(weights, 4)))
+    answer.part1(10439961859, store_weights(weights, 3))
+    answer.part2(72050269, store_weights(weights, 4))
 
 
 def store_weights(weights, sections):

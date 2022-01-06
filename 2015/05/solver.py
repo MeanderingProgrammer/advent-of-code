@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -73,10 +74,8 @@ class Word:
 
 
 def main():
-    # Part 1: 238
-    print('Part 1: {}'.format(total_nice_words(False)))
-    # Part 2: 69
-    print('Part 2: {}'.format( total_nice_words(True)))
+    answer.part1(238, total_nice_words(False))
+    answer.part2(69, total_nice_words(True))
 
 
 def total_nice_words(new_rules):
