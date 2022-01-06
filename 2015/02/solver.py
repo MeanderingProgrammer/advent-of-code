@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -31,10 +32,8 @@ def main():
         box = Box(*line.split('x'))
         paper.append(box.paper_needed())
         ribbon.append(box.ribbon_needed())
-    # Part 1: 1606483
-    print('Part 1: {}'.format(sum(paper)))
-    # Part 2 = 3842356
-    print('Part 2: {}'.format(sum(ribbon)))
+    answer.part1(1606483, sum(paper))
+    answer.part2(3842356, sum(ribbon))
 
 
 if __name__ == '__main__':

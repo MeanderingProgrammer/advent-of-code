@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -64,10 +65,8 @@ class Recipe:
 def main():
     ingredients = get_ingredients()
     recipe = Recipe(ingredients, 100)
-    # Part 1: 18965440
-    print('Part 1: {}'.format(recipe.best_score()))
-    # Part 2: 15862900
-    print('Part 2: {}'.format(recipe.best_score(500)))
+    answer.part1(18965440, recipe.best_score())
+    answer.part2(15862900, recipe.best_score(500))
 
 
 def get_ingredients():

@@ -1,11 +1,12 @@
+import commons.answer as answer
+
+
 GOAL = 29_000_000
 
 
 def main():
-    # Part 1 = 665280
-    print('Part 1: {}'.format(find_first(False)))
-    # Part 2 = 705600
-    print('Part 2: {}'.format(find_first(True)))
+    answer.part1(665280, find_first(False))
+    answer.part2(705600, find_first(True))
 
 
 def find_first(lazy):

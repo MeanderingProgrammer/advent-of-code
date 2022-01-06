@@ -1,14 +1,13 @@
 import itertools
 from collections import defaultdict
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
 def main():
-    # Part 1: 709
-    print('Part 1: {}'.format(get_max_score(False)))
-    # Part 2: 668
-    print('Part 2: {}'.format(get_max_score(True)))
+    answer.part1(709, get_max_score(False))
+    answer.part2(668, get_max_score(True))
 
 
 def get_max_score(include_self):

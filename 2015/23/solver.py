@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_computer import Computer
 from commons.aoc_parser import Parser
 
@@ -39,10 +40,8 @@ class Instruction:
 
 
 def main():
-    # Part 1: 170
-    print('Part 1: {}'.format(run_computer(False)))
-    # Part 2: 247
-    print('Part 2: {}'.format(run_computer(True)))
+    answer.part1(170, run_computer(False))
+    answer.part2(247, run_computer(True))
 
 
 def run_computer(set_a):

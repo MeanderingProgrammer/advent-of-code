@@ -1,15 +1,15 @@
 import hashlib 
 
+import commons.answer as answer
+
 
 SALT = 'iwrupvqb'
 
 
 def main():
     five_leading_0s = first_index(5, 1)
-    # Part 1: 346386
-    print('Part 1: {}'.format(five_leading_0s))
-    # Part 2: 9958218
-    print('Part 2: {}'.format(first_index(6, five_leading_0s)))
+    answer.part1(346386, five_leading_0s)
+    answer.part2(9958218, first_index(6, five_leading_0s))
 
 
 def first_index(leading_zeros, index):

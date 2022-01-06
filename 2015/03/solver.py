@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_board import Point
 from commons.aoc_parser import Parser
 
@@ -11,10 +12,9 @@ DIRECTIONS = {
 
 
 def main():
-    # Part 1: 2081
-    print('Part 1: {}'.format(run(1)))
-    # Part 2: 2341
-    print('Part 2: {}'.format(run(2)))
+    answer.part1(2081, run(1))
+    answer.part2(2341, run(2))
+
 
 def run(santas):
     locations = []

@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -7,10 +8,8 @@ def main():
     capacities = get_capacities()
     volume = 150
     combinations = get_combinations(capacities, volume)
-    # Part 1: 1304
-    print('Part 1: {}'.format(len(combinations)))
-    # Part 2: 18
-    print('Part 2: {}'.format(get_min_lengths(combinations)))
+    answer.part1(1304, len(combinations))
+    answer.part2(18, get_min_lengths(combinations))
 
 
 def get_combinations(capacities, volume):

@@ -1,5 +1,6 @@
 import itertools
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -12,10 +13,8 @@ def main():
         result = distance(permutation, distances)
         options.append(result)
         
-    # Part 1: 141
-    print('Part 1: {}'.format(min(options)))
-    # Part 2: 736
-    print('Part 2: {}'.format(max(options)))
+    answer.part1(141, min(options))
+    answer.part2(736, max(options))
     
 
 def get_distances():

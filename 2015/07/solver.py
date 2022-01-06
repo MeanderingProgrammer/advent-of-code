@@ -1,5 +1,6 @@
 import numpy as np
 
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -58,10 +59,8 @@ class Value:
 
 def main():
     first = evaluate(None)
-    # Part 1: 3176
-    print('Part 1: {}'.format(first))
-    # Part 2: 14710
-    print('Part 2: {}'.format(evaluate(first)))
+    answer.part1(3176, first)
+    answer.part2(14710, evaluate(first))
 
 
 def evaluate(b_override):

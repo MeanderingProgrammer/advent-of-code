@@ -1,3 +1,6 @@
+import commons.answer as answer
+
+
 STARTING_PASSWORD = 'hxbxwxba'
 
 
@@ -77,10 +80,8 @@ class PasswordIncrementer:
 
 def main():
     generator = PasswordIncrementer(STARTING_PASSWORD)
-    # Part 1: hxbxxyzz
-    print('Part 1: {}'.format(run(generator)))
-    # Part 2: hxcaabcc
-    print('Part 2: {}'.format(run(generator)))
+    answer.part1('hxbxxyzz', run(generator))
+    answer.part2('hxcaabcc', run(generator))
 
 
 def run(generator):

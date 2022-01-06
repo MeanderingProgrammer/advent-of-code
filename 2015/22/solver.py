@@ -1,3 +1,4 @@
+import commons.answer as answer
 import commons.aoc_search as aoc_search
 
 
@@ -290,10 +291,8 @@ class Game:
 
 
 def main():
-    # Part 1: 1269
-    print('Part 1: {}'.format(play_game(False)))
-    # Part 2: 1309
-    print('Part 2: {}'.format(play_game(True)))
+    answer.part1(1269, play_game(False))
+    answer.part2(1309, play_game(True))
 
 
 def play_game(hard):

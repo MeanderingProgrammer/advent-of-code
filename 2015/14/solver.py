@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -26,10 +27,8 @@ class Reindeer:
 
 def main():
     reindeers, time = get_reindeers(), 2_503
-    # Part 1 = 2655
-    print('Part 1: {}'.format(max(get_distance_after(reindeers, time))))
-    # Part 2 = 1059
-    print('Part 2: {}'.format(max(get_times_in_lead(reindeers, time))))
+    answer.part1(2655, max(get_distance_after(reindeers, time)))
+    answer.part2(1059, max(get_times_in_lead(reindeers, time)))
 
 
 def get_distance_after(reindeers, time):

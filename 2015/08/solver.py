@@ -1,3 +1,4 @@
+import commons.answer as answer
 from commons.aoc_parser import Parser
 
 
@@ -43,10 +44,8 @@ def main():
         decoded += s.decode()
         encoded += s.encode()
 
-    # Part 1: 1350
-    print('Part 1: {}'.format(total - decoded))
-    # Part 2: 2085
-    print('Part 2: {}'.format(encoded - total))
+    answer.part1(1350, total - decoded)
+    answer.part2(2085, encoded - total)
 
 
 if __name__ == '__main__':
