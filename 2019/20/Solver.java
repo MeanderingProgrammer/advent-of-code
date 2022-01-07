@@ -9,11 +9,8 @@ public class Solver {
     private static final String FILE_NAME = "data";
 
     public static void main(String[] args) {
-        Answer.test();
-        // Part 1: 628
-        System.out.println(String.format("Part 1: %d", solve(false)));
-        // Part 2: 7506
-        System.out.println(String.format("Part 2: %d", solve(true)));
+        Answer.part1(628, solve(false));
+        Answer.part2(7506, solve(true));
     }
 
     private static int solve(boolean recursive) {
