@@ -10,19 +10,26 @@ fi
 current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
 
-setup_jar() {
+class_path="."
+setup_jars() {
     cd commons/java
-    if [[ -f "answer.jar" ]]
-    then
-        rm answer.jar
-    fi
-    javac -d . Answer.java
-    jar cf answer.jar answer/Answer.class
+    for jar_file_path in "${@}"
+    do
+        jar_file=($(echo ${jar_file_path} | tr "/" "\n"))
+        jar=${jar_file[0]}
+        file=${jar_file[1]}
+        if [[ -f "${jar}.jar" ]]
+        then
+            rm ${jar}.jar
+        fi
+        javac -d . ${file}.java
+        jar cf ${jar}.jar ${jar}/${file}.class
+        class_path+=":../../commons/java/${jar}.jar"
+    done
     cd ../..
 }
 
-setup_jar
-class_path=".:../../commons/java/answer.jar"
+setup_jars "io/FileReader" "answer/Answer"
 
 time_run() {
     start=$(date -u +%s.%N)
