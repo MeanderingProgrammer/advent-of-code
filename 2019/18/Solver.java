@@ -9,11 +9,8 @@ public class Solver {
     private static final String FILE_NAME = "data";
 
     public static void main(String[] args) {
-        Answer.test();
-        // Part 1: 5402
-        System.out.println(String.format("Part 1: %d", solve(false)));
-        // Part 2: 2138
-        System.out.println(String.format("Part 2: %d", solve(true)));
+        Answer.part1(5402, solve(false));
+        Answer.part2(2138, solve(true));
     }
 
     private static int solve(boolean splitMaze) {
