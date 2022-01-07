@@ -10,6 +10,20 @@ fi
 current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
 
+setup_jar() {
+    cd commons/java
+    if [[ -f "answer.jar" ]]
+    then
+        rm answer.jar
+    fi
+    javac -d . Answer.java
+    jar cf answer.jar answer/Answer.class
+    cd ../..
+}
+
+setup_jar
+class_path=".:../../commons/java/answer.jar"
+
 time_run() {
     start=$(date -u +%s.%N)
     $@
@@ -47,8 +61,8 @@ run_day() {
         then
             rm main/Solver.class
         fi
-        javac -d . Solver.java
-        time_run java main.Solver
+        javac -cp ${class_path} -d . Solver.java
+        time_run java -cp ${class_path} main.Solver
     elif [[ ${extension} == ${PYTHON} ]]
     then
         time_run python3 solver.py
