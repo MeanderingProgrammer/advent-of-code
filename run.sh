@@ -43,12 +43,12 @@ run_day() {
 
     if [[ ${extension} == ${JAVA} ]]
     then
-        if [[ -f "Solver.class" ]]
+        if [[ -f "main/Solver.class" ]]
         then
-            rm Solver.class
+            rm main/Solver.class
         fi
-        javac Solver.java
-        time_run java Solver
+        javac -d . Solver.java
+        time_run java main.Solver
     elif [[ ${extension} == ${PYTHON} ]]
     then
         time_run python3 solver.py

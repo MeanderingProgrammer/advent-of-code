@@ -1,3 +1,5 @@
+package main;
+
 import io.FileReader;
 import maze.Maze;
 
