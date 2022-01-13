@@ -10,22 +10,28 @@ fi
 current_directory=$(pwd)
 export PYTHONPATH=${current_directory}
 
-class_path="."
+jar="uber-jar.jar"
+# Runs in <year>/<day> directory, hence the ../..
+class_path=".:../../commons/java/${jar}"
+
 setup_jars() {
     cd commons/java
-    for jar_file_path in "${@}"
+
+    if [[ -f "${jar}" ]]
+    then
+        rm ${jar}
+    fi
+    
+    class_files=()
+    for class_file_path in "${@}"
     do
-        jar_file=($(echo ${jar_file_path} | tr "/" "\n"))
-        jar=${jar_file[0]}
-        file=${jar_file[1]}
-        if [[ -f "${jar}.jar" ]]
-        then
-            rm ${jar}.jar
-        fi
-        javac -d . ${file}.java
-        jar cf ${jar}.jar ${jar}/${file}.class
-        class_path+=":../../commons/java/${jar}.jar"
+        class_file=($(echo ${class_file_path} | tr "/" "\n"))
+        javac -d . ${class_file[1]}.java
+        class_files+=("${class_file_path}.class")
     done
+
+    jar cf ${jar} ${class_files[@]}
+
     cd ../..
 }
 
