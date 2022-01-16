@@ -10,7 +10,7 @@ import (
 )
 
 type Path struct {
-	vertex graphs.Vertex
+	vertex graphs.Vertex[int]
 	value  int
 }
 
@@ -23,10 +23,10 @@ func (path Path) String() *string {
 	return &result
 }
 
-func (path Path) add(vertex graphs.Vertex) Path {
+func (path Path) add(vertex graphs.Vertex[int]) Path {
 	return Path{
 		vertex: vertex,
-		value:  path.value + vertex.Value.(int),
+		value:  path.value + vertex.Value,
 	}
 }
 
@@ -67,7 +67,7 @@ func solve(wrap bool) int {
 	return endState.(Path).value
 }
 
-func getType(position parsers.Point, value string) interface{} {
+func getType(position parsers.Point, value string) int {
 	return conversions.ToInt(value)
 }
 
