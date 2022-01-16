@@ -8,10 +8,14 @@ import java.util.Scanner;
 
 public class FileReader {
 
-    private final String fileName;
+    private final boolean testMode;
 
-    public FileReader(String fileName) {
-        this.fileName = fileName;
+    public FileReader() {
+        this(false);
+    }
+
+    public FileReader(boolean testMode) {
+        this.testMode = testMode;
     }
 
     public List<String> read() {
@@ -21,7 +25,8 @@ public class FileReader {
     }
 
     private Optional<Scanner> getFile() {
-        File file = new File(fileName);
+        String fileName = testMode ? "sample" : "data";
+        File file = new File(String.format("%s.txt", fileName));
         try {
             return Optional.of(new Scanner(file));
         } catch (Exception e) {
