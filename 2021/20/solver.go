@@ -38,7 +38,7 @@ func (bounds Bounds) out(point parsers.Point) bool {
 }
 
 type Image struct {
-	parsers.Grid
+	parsers.Grid[string]
 	times int
 }
 

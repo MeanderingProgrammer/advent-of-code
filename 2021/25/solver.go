@@ -26,7 +26,7 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 }
 
 type Grid struct {
-	parsers.Grid
+	parsers.Grid[string]
 }
 
 type Move struct {

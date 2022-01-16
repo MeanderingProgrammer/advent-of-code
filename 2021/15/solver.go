@@ -71,7 +71,7 @@ func getType(position parsers.Point, value string) interface{} {
 	return conversions.ToInt(value)
 }
 
-func getGrid(wrap bool) parsers.Grid {
+func getGrid(wrap bool) parsers.Grid[string] {
 	grid := baseGrid()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1
@@ -98,6 +98,6 @@ func getGrid(wrap bool) parsers.Grid {
 	return grid
 }
 
-func baseGrid() parsers.Grid {
+func baseGrid() parsers.Grid[string] {
 	return parsers.ConstructGrid(files.ReadLines(), parsers.Character, "")
 }
