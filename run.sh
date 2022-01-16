@@ -26,11 +26,21 @@ setup_jars() {
     for class_file_path in "${@}"
     do
         class_file=($(echo ${class_file_path} | tr "/" "\n"))
+        if [[ -d "${class_file[0]}" ]]
+        then
+            rm -rf ${class_file[0]}
+        fi
         javac -d . ${class_file[1]}.java
         class_files+=("${class_file_path}.class")
     done
 
     jar cf ${jar} ${class_files[@]}
+
+    if [[ ! -f "${jar}" ]]
+    then
+        echo "Failed to create ${jar}"
+        exit 1
+    fi
 
     cd ../..
 }
