@@ -11,18 +11,14 @@ import (
 const test_mode = false
 
 func ReadInt() []int {
-	toInt := func(line string) interface{} {
+	toInt := func(line string) int {
 		return conversions.ToInt(line)
 	}
-	var result []int
-	for _, value := range Read(toInt) {
-		result = append(result, value.(int))
-	}
-	return result
+	return Read(toInt)
 }
 
-func Read(f func(string) interface{}) []interface{} {
-	var result []interface{}
+func Read[T any](f func(string) T) []T {
+	var result []T
 	for _, line := range ReadLines() {
 		result = append(result, f(line))
 	}

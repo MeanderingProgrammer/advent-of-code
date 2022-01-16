@@ -125,19 +125,14 @@ func trackPart2(outputNumber string) int {
 }
 
 func getSegmentEntries() []SegmentEntry {
-	var result []SegmentEntry
-	for _, segmentEntry := range files.Read(parseLine) {
-		result = append(result, segmentEntry.(SegmentEntry))
+	toSegmentEntry := func(line string) SegmentEntry {
+		parts := strings.Split(line, " | ")
+		return SegmentEntry{
+			inputDigits:  parseDigits(parts[0]),
+			outputDigits: parseDigits(parts[1]),
+		}
 	}
-	return result
-}
-
-func parseLine(line string) interface{} {
-	parts := strings.Split(line, " | ")
-	return SegmentEntry{
-		inputDigits:  parseDigits(parts[0]),
-		outputDigits: parseDigits(parts[1]),
-	}
+	return files.Read(toSegmentEntry)
 }
 
 func parseDigits(raw string) []Digit {

@@ -111,26 +111,21 @@ func limitedBoundsArea(bounds Bounds) int {
 }
 
 func getBounds() Bounds {
-	var bounds Bounds
-	for _, bound := range files.Read(parseBound) {
-		bounds = append(bounds, bound.(Bound))
+	toBound := func(line string) Bound {
+		enableWhere := strings.Split(line, " ")
+		count := -1
+		if enableWhere[0] == "on" {
+			count = 1
+		}
+		where := strings.Split(enableWhere[1], ",")
+		return Bound{
+			count: count,
+			xs:    parseRange(where[0]),
+			ys:    parseRange(where[1]),
+			zs:    parseRange(where[2]),
+		}
 	}
-	return bounds
-}
-
-func parseBound(line string) interface{} {
-	enableWhere := strings.Split(line, " ")
-	count := -1
-	if enableWhere[0] == "on" {
-		count = 1
-	}
-	where := strings.Split(enableWhere[1], ",")
-	return Bound{
-		count: count,
-		xs:    parseRange(where[0]),
-		ys:    parseRange(where[1]),
-		zs:    parseRange(where[2]),
-	}
+	return files.Read(toBound)
 }
 
 func parseRange(rawRange string) Range {
