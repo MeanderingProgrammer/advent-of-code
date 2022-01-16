@@ -33,7 +33,7 @@ func (boards Boards) incomplete() Boards {
 }
 
 type Board struct {
-	grid     parsers.Grid
+	grid     parsers.Grid[string]
 	marked   map[parsers.Point]bool
 	order    []int
 	complete bool

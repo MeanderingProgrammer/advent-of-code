@@ -8,7 +8,7 @@ import (
 )
 
 type OctopusGrid struct {
-	parsers.Grid
+	parsers.Grid[string]
 	flashed map[parsers.Point]bool
 }
 

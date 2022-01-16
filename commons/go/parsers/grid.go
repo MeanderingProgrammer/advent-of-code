@@ -57,39 +57,39 @@ func ConstructPoint(s string) Point {
 	}
 }
 
-type Grid struct {
-	plane  map[Point]string
+type Grid[T comparable] struct {
+	plane  map[Point]T
 	Height int
 	Width  int
 }
 
-func (grid Grid) Len() int {
+func (grid Grid[T]) Len() int {
 	return len(grid.plane)
 }
 
-func (grid Grid) Contains(point Point) bool {
+func (grid Grid[T]) Contains(point Point) bool {
 	_, exists := grid.plane[point]
 	return exists
 }
 
-func (grid Grid) Get(point Point) string {
+func (grid Grid[T]) Get(point Point) T {
 	return grid.plane[point]
 }
 
-func (grid *Grid) Set(point Point, value string) {
+func (grid *Grid[T]) Set(point Point, value T) {
 	if grid.Len() == 0 {
-		grid.plane = make(map[Point]string)
+		grid.plane = make(map[Point]T)
 	}
 	grid.plane[point] = value
 	grid.Width = utils.Max(grid.Width, point.X)
 	grid.Height = utils.Max(grid.Height, point.Y)
 }
 
-func (grid Grid) Delete(point Point) {
+func (grid Grid[T]) Delete(point Point) {
 	delete(grid.plane, point)
 }
 
-func (grid Grid) Points() []Point {
+func (grid Grid[T]) Points() []Point {
 	var points []Point
 	for point := range grid.plane {
 		points = append(points, point)
@@ -97,7 +97,7 @@ func (grid Grid) Points() []Point {
 	return points
 }
 
-func (grid Grid) GetPoints(target string) []Point {
+func (grid Grid[T]) GetPoints(target T) []Point {
 	var points []Point
 	for point, value := range grid.plane {
 		if value == target {
@@ -107,15 +107,16 @@ func (grid Grid) GetPoints(target string) []Point {
 	return points
 }
 
-func (grid Grid) Print(defaultValue string) {
+func (grid Grid[T]) Print(defaultValue string) {
 	for y := 0; y <= grid.Height; y++ {
 		for x := 0; x <= grid.Width; x++ {
 			point := Point{X: x, Y: y}
 			value, exists := grid.plane[point]
-			if !exists {
-				value = defaultValue
+			if exists {
+				fmt.Print(value)
+			} else {
+				fmt.Print(defaultValue)
 			}
-			fmt.Print(value)
 		}
 		fmt.Println()
 	}
@@ -147,7 +148,7 @@ func characterSplitter(row string) []string {
 	return strings.Split(row, "")
 }
 
-func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid {
+func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid[string] {
 	plane, f := make(map[Point]string), splitter.get()
 	for y, row := range rows {
 		for x, value := range f(row) {
@@ -156,7 +157,7 @@ func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid {
 			}
 		}
 	}
-	return Grid{
+	return Grid[string]{
 		plane:  plane,
 		Height: len(rows) - 1,
 		Width:  len(f(rows[0])) - 1,

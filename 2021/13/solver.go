@@ -41,7 +41,7 @@ func (fold Fold) apply(point parsers.Point) (parsers.Point, bool) {
 }
 
 type PaperGrid struct {
-	parsers.Grid
+	parsers.Grid[string]
 }
 
 func (grid PaperGrid) apply(fold Fold) PaperGrid {

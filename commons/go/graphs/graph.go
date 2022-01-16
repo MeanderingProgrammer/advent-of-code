@@ -11,7 +11,7 @@ type Vertex struct {
 	Value interface{}
 }
 
-func ConstructVertex(point parsers.Point, grid parsers.Grid, f ValueParser) Vertex {
+func ConstructVertex(point parsers.Point, grid parsers.Grid[string], f ValueParser) Vertex {
 	return Vertex{
 		Point: point,
 		Value: f(point, grid.Get(point)),
@@ -22,7 +22,7 @@ type ValueParser func(parsers.Point, string) interface{}
 
 type Graph struct {
 	vertices map[Vertex][]Vertex
-	grid     parsers.Grid
+	grid     parsers.Grid[string]
 	f        ValueParser
 }
 
@@ -98,7 +98,7 @@ func (graph Graph) getValue(positions map[Vertex]interface{}, point parsers.Poin
 	}
 }
 
-func ConstructGraph(grid parsers.Grid, f ValueParser) Graph {
+func ConstructGraph(grid parsers.Grid[string], f ValueParser) Graph {
 	vertices := make(map[Vertex][]Vertex)
 	for _, point := range grid.Points() {
 		var connected []Vertex
