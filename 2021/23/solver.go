@@ -40,11 +40,11 @@ type Character struct {
 	moved bool
 }
 
-func (character Character) atGoal(vertex graphs.Vertex) bool {
+func (character Character) atGoal(vertex graphs.Vertex[Type]) bool {
 	return character.value == vertex.Value
 }
 
-type Characters map[graphs.Vertex]Character
+type Characters map[graphs.Vertex[Type]]Character
 
 type BoardState struct {
 	characters Characters
@@ -80,8 +80,8 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 }
 
 type Move struct {
-	start graphs.Vertex
-	end   graphs.Vertex
+	start graphs.Vertex[Type]
+	end   graphs.Vertex[Type]
 }
 
 func (state BoardState) move(move Move) BoardState {
@@ -109,8 +109,8 @@ func distance(move Move) int {
 	return distance + start.Y + end.Y - 2
 }
 
-func (state BoardState) positions() map[graphs.Vertex]interface{} {
-	positions := make(map[graphs.Vertex]interface{})
+func (state BoardState) positions() map[graphs.Vertex[Type]]Type {
+	positions := make(map[graphs.Vertex[Type]]Type)
 	for position, character := range state.characters {
 		positions[position] = character.value
 	}
@@ -118,7 +118,7 @@ func (state BoardState) positions() map[graphs.Vertex]interface{} {
 }
 
 type Board struct {
-	graph    graphs.Graph
+	graph    graphs.Graph[Type]
 	roomSize int
 }
 
@@ -162,10 +162,10 @@ func (board Board) nextStates(state BoardState) <-chan graphs.State {
 	return nextStates
 }
 
-func (board Board) characterMoves(state BoardState, start graphs.Vertex) []Move {
+func (board Board) characterMoves(state BoardState, start graphs.Vertex[Type]) []Move {
 	var moves []Move
-	explored := map[graphs.Vertex]bool{start: true}
-	toExplore := []graphs.Vertex{start}
+	explored := map[graphs.Vertex[Type]]bool{start: true}
+	toExplore := []graphs.Vertex[Type]{start}
 
 	for len(toExplore) > 0 {
 		current := toExplore[0]
@@ -234,11 +234,11 @@ func (board Board) shouldGo(state BoardState, move Move) bool {
 	return true
 }
 
-func pathToGoal(location graphs.Vertex, value Type) []graphs.Vertex {
-	var result []graphs.Vertex
+func pathToGoal(location graphs.Vertex[Type], value Type) []graphs.Vertex[Type] {
+	var result []graphs.Vertex[Type]
 	x1, x2 := location.Point.X, value.x()
 	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
-		vertex := graphs.Vertex{
+		vertex := graphs.Vertex[Type]{
 			Point: parsers.Point{X: i, Y: 1},
 			Value: Hallway,
 		}
@@ -247,7 +247,7 @@ func pathToGoal(location graphs.Vertex, value Type) []graphs.Vertex {
 	return result
 }
 
-func contains(path []graphs.Vertex, target graphs.Vertex) bool {
+func contains(path []graphs.Vertex[Type], target graphs.Vertex[Type]) bool {
 	for _, vertex := range path {
 		if vertex == target {
 			return true
@@ -298,7 +298,7 @@ func getData(extend bool) (Board, Characters) {
 	return board, characters
 }
 
-func getType(position parsers.Point, value string) interface{} {
+func getType(position parsers.Point, value string) Type {
 	result := Hallway
 	switch position.X {
 	case A.x():
