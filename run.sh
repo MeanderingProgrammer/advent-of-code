@@ -45,7 +45,7 @@ setup_jars() {
     cd ../..
 }
 
-setup_jars "io/FileReader" "answer/Answer"
+setup_jars "io/FileReader" "answer/Answer" "pojo/Position"
 
 time_run() {
     start=$(date -u +%s.%N)
