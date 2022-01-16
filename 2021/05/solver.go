@@ -75,17 +75,12 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 }
 
 func getLines() []Line {
-	var result []Line
-	for _, line := range files.Read(parseLine) {
-		result = append(result, line.(Line))
+	toLine := func(line string) Line {
+		points := strings.Split(line, " -> ")
+		return Line{
+			p1: parsers.ConstructPoint(points[0]),
+			p2: parsers.ConstructPoint(points[1]),
+		}
 	}
-	return result
-}
-
-func parseLine(line string) interface{} {
-	points := strings.Split(line, " -> ")
-	return Line{
-		p1: parsers.ConstructPoint(points[0]),
-		p2: parsers.ConstructPoint(points[1]),
-	}
+	return files.Read(toLine)
 }

@@ -48,18 +48,14 @@ func main() {
 }
 
 func getInstructions() Instructions {
-	toInstruction := func(line string) interface{} {
+	toInstruction := func(line string) Instruction {
 		parts := strings.Fields(line)
 		return Instruction{
 			direction: Direction(parts[0]),
 			amount:    conversions.ToInt(parts[1]),
 		}
 	}
-	var instructions Instructions
-	for _, instruction := range files.Read(toInstruction) {
-		instructions = append(instructions, instruction.(Instruction))
-	}
-	return instructions
+	return files.Read(toInstruction)
 }
 
 func part1(position *Position, amount int, direction Direction) {
