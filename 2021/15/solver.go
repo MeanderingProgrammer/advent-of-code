@@ -59,12 +59,13 @@ func solve(wrap bool) int {
 		return nextStates
 	}
 
-	endState, _ := graph.Bfs(graphs.Search{
+	result := graph.Bfs(graphs.Search{
 		Initial:    initial,
 		Done:       done,
 		NextStates: nextStates,
+		FirstOnly:  true,
 	})
-	return endState.(Path).value
+	return result.Completed[0].(Path).value
 }
 
 func getGrid(wrap bool) parsers.Grid[int] {
