@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-type Graph[V comparable] struct {
-	vertices map[parsers.Point][]parsers.Point
+type Graph[K comparable, V comparable] struct {
+	vertices map[K][]K
 	grid     parsers.Grid[V]
 }
 
@@ -33,7 +33,7 @@ type Search struct {
 	NextStates NextStates
 }
 
-func (graph Graph[V]) Bfs(search Search) (State, int) {
+func (graph Graph[K, V]) Bfs(search Search) (State, int) {
 	queue, seen, explored := &Queue{search.Initial}, make(Seen), 0
 	for !queue.Empty() {
 		explored++
@@ -50,15 +50,15 @@ func (graph Graph[V]) Bfs(search Search) (State, int) {
 	panic("Could not find a solution")
 }
 
-func (graph Graph[V]) Neighbors(point parsers.Point) []parsers.Point {
+func (graph Graph[K, V]) Neighbors(point K) []K {
 	return graph.vertices[point]
 }
 
-func (graph Graph[V]) Value(point parsers.Point) V {
+func (graph Graph[K, V]) Value(point parsers.Point) V {
 	return graph.grid.Get(point)
 }
 
-func (graph Graph[V]) Print(positions map[parsers.Point]V) {
+func (graph Graph[K, V]) Print(positions map[parsers.Point]V) {
 	fmt.Println(graph.separator())
 	for y := 0; y <= graph.grid.Height; y++ {
 		for x := 0; x <= graph.grid.Width; x++ {
@@ -70,11 +70,11 @@ func (graph Graph[V]) Print(positions map[parsers.Point]V) {
 	fmt.Println(graph.separator())
 }
 
-func (graph Graph[V]) separator() string {
+func (graph Graph[K, V]) separator() string {
 	return strings.Repeat("-", graph.grid.Width+1)
 }
 
-func (graph Graph[V]) getValue(positions map[parsers.Point]V, point parsers.Point) interface{} {
+func (graph Graph[K, V]) getValue(positions map[parsers.Point]V, point parsers.Point) interface{} {
 	if !graph.grid.Contains(point) {
 		return "#"
 	} else {
@@ -87,7 +87,7 @@ func (graph Graph[V]) getValue(positions map[parsers.Point]V, point parsers.Poin
 	}
 }
 
-func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[V] {
+func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[parsers.Point, V] {
 	vertices := make(map[parsers.Point][]parsers.Point)
 	for _, point := range grid.Points() {
 		var connected []parsers.Point
@@ -98,7 +98,7 @@ func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[V] {
 		}
 		vertices[point] = connected
 	}
-	return Graph[V]{
+	return Graph[parsers.Point, V]{
 		vertices: vertices,
 		grid:     grid,
 	}

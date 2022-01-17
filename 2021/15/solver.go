@@ -23,7 +23,7 @@ func (path Path) String() *string {
 	return &result
 }
 
-func (path Path) add(graph graphs.Graph[int], point parsers.Point) Path {
+func (path Path) add(graph graphs.Graph[parsers.Point, int], point parsers.Point) Path {
 	return Path{
 		point: point,
 		value: path.value + graph.Value(point),
