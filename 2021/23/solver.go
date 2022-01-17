@@ -118,7 +118,7 @@ func (state BoardState) positions() map[parsers.Point]Type {
 }
 
 type Board struct {
-	graph    graphs.Graph[Type]
+	graph    graphs.Graph[parsers.Point, Type]
 	roomSize int
 }
 
