@@ -108,8 +108,17 @@ func getEnhancerImage() (Enhancer, Image) {
 }
 
 func parseImage(raw string) Image {
+	identity := func(point parsers.Point, value string) string {
+		return value
+	}
+	grid := parsers.GridMaker[string]{
+		Rows:        parsers.Lines(raw),
+		Splitter:    parsers.Character,
+		Ignore:      ".",
+		Transformer: identity,
+	}.Construct()
 	return Image{
-		Grid:  parsers.ConstructGrid(parsers.Lines(raw), parsers.Character, "."),
+		Grid:  grid,
 		times: 0,
 	}
 }

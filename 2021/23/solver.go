@@ -40,11 +40,11 @@ type Character struct {
 	moved bool
 }
 
-func (character Character) atGoal(vertex graphs.Vertex[Type]) bool {
-	return character.value == vertex.Value
+func (character Character) atGoal(point parsers.Point) bool {
+	return character.value.x() == point.X
 }
 
-type Characters map[graphs.Vertex[Type]]Character
+type Characters map[parsers.Point]Character
 
 type BoardState struct {
 	characters Characters
@@ -61,8 +61,8 @@ func (state BoardState) String() *string {
 }
 
 func (state BoardState) complete() bool {
-	for vertex, character := range state.characters {
-		if !character.atGoal(vertex) {
+	for point, character := range state.characters {
+		if !character.atGoal(point) {
 			return false
 		}
 	}
@@ -71,8 +71,8 @@ func (state BoardState) complete() bool {
 
 func (state BoardState) charactersInRoom(value Type) []Type {
 	var inRoom []Type
-	for vertex, character := range state.characters {
-		if vertex.Value == value {
+	for point, character := range state.characters {
+		if point.X == value.x() {
 			inRoom = append(inRoom, character.value)
 		}
 	}
@@ -80,8 +80,8 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 }
 
 type Move struct {
-	start graphs.Vertex[Type]
-	end   graphs.Vertex[Type]
+	start parsers.Point
+	end   parsers.Point
 }
 
 func (state BoardState) move(move Move) BoardState {
@@ -104,15 +104,15 @@ func (state BoardState) move(move Move) BoardState {
 }
 
 func distance(move Move) int {
-	start, end := move.start.Point, move.end.Point
+	start, end := move.start, move.end
 	distance := utils.Abs(start.X - end.X)
 	return distance + start.Y + end.Y - 2
 }
 
-func (state BoardState) positions() map[graphs.Vertex[Type]]Type {
-	positions := make(map[graphs.Vertex[Type]]Type)
-	for position, character := range state.characters {
-		positions[position] = character.value
+func (state BoardState) positions() map[parsers.Point]Type {
+	positions := make(map[parsers.Point]Type)
+	for point, character := range state.characters {
+		positions[point] = character.value
 	}
 	return positions
 }
@@ -162,10 +162,10 @@ func (board Board) nextStates(state BoardState) <-chan graphs.State {
 	return nextStates
 }
 
-func (board Board) characterMoves(state BoardState, start graphs.Vertex[Type]) []Move {
+func (board Board) characterMoves(state BoardState, start parsers.Point) []Move {
 	var moves []Move
-	explored := map[graphs.Vertex[Type]]bool{start: true}
-	toExplore := []graphs.Vertex[Type]{start}
+	explored := map[parsers.Point]bool{start: true}
+	toExplore := []parsers.Point{start}
 
 	for len(toExplore) > 0 {
 		current := toExplore[0]
@@ -192,12 +192,14 @@ func (board Board) characterMoves(state BoardState, start graphs.Vertex[Type]) [
 
 func (board Board) shouldGo(state BoardState, move Move) bool {
 	value := state.characters[move.start].value
-	if move.end.Value == Doorway {
+	startValue, endValue := board.graph.Value(move.start), board.graph.Value(move.end)
+
+	if endValue == Doorway {
 		// Can never stop outside of a room
 		return false
-	} else if move.end.Value == Hallway {
+	} else if endValue == Hallway {
 		// Can not move to hallway once we are already in the hallway must go to a room
-		if move.start.Value == Hallway {
+		if startValue == Hallway {
 			return false
 		}
 		// Here we detect "deadlock", which occurs when we put our character in the Hallway
@@ -212,7 +214,7 @@ func (board Board) shouldGo(state BoardState, move Move) bool {
 				return false
 			}
 		}
-	} else if value != move.end.Value {
+	} else if value != endValue {
 		// If this room is for another character then we cannot enter
 		return false
 	} else {
@@ -227,29 +229,25 @@ func (board Board) shouldGo(state BoardState, move Move) bool {
 			}
 		}
 		// Must go to back of room
-		if move.end.Point.Y != board.roomSize-len(charactersInRoom)+1 {
+		if move.end.Y != board.roomSize-len(charactersInRoom)+1 {
 			return false
 		}
 	}
 	return true
 }
 
-func pathToGoal(location graphs.Vertex[Type], value Type) []graphs.Vertex[Type] {
-	var result []graphs.Vertex[Type]
-	x1, x2 := location.Point.X, value.x()
+func pathToGoal(location parsers.Point, value Type) []parsers.Point {
+	var result []parsers.Point
+	x1, x2 := location.X, value.x()
 	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
-		vertex := graphs.Vertex[Type]{
-			Point: parsers.Point{X: i, Y: 1},
-			Value: Hallway,
-		}
-		result = append(result, vertex)
+		result = append(result, parsers.Point{X: i, Y: 1})
 	}
 	return result
 }
 
-func contains(path []graphs.Vertex[Type], target graphs.Vertex[Type]) bool {
-	for _, vertex := range path {
-		if vertex == target {
+func contains(path []parsers.Point, target parsers.Point) bool {
+	for _, point := range path {
+		if point == target {
 			return true
 		}
 	}
@@ -276,42 +274,59 @@ func getData(extend bool) (Board, Characters) {
 		rows[len(rows)-1] = "  #D#B#A#C#"
 		rows = append(rows, lastRows...)
 	}
+	return getBoard(rows), getCharacters(rows)
+}
 
-	grid := parsers.ConstructGrid(rows, parsers.Character, "# ")
+func getBoard(rows []string) Board {
+	getType := func(position parsers.Point, value string) Type {
+		result := Hallway
+		switch position.X {
+		case A.x():
+			result = A
+		case B.x():
+			result = B
+		case C.x():
+			result = C
+		case D.x():
+			result = D
+		}
+		if position.Y == 1 && result != Hallway {
+			result = Doorway
+		}
+		return result
+	}
+
+	grid := parsers.GridMaker[Type]{
+		Rows:        rows,
+		Splitter:    parsers.Character,
+		Ignore:      "# ",
+		Transformer: getType,
+	}.Construct()
+
+	return Board{
+		graph:    graphs.ConstructGraph(grid),
+		roomSize: grid.Height - 2,
+	}
+}
+
+func getCharacters(rows []string) Characters {
+	getType := func(position parsers.Point, value string) Type {
+		return Type(value)
+	}
+
+	grid := parsers.GridMaker[Type]{
+		Rows:        rows,
+		Splitter:    parsers.Character,
+		Ignore:      ".# ",
+		Transformer: getType,
+	}.Construct()
 
 	characters := make(Characters)
 	for _, point := range grid.Points() {
-		value := grid.Get(point)
-		if value != "." {
-			vertex := graphs.ConstructVertex(point, grid, getType)
-			characters[vertex] = Character{
-				value: Type(value),
-				moved: false,
-			}
+		characters[point] = Character{
+			value: grid.Get(point),
+			moved: false,
 		}
 	}
-
-	board := Board{
-		graph:    graphs.ConstructGraph(grid, getType),
-		roomSize: grid.Height - 2,
-	}
-	return board, characters
-}
-
-func getType(position parsers.Point, value string) Type {
-	result := Hallway
-	switch position.X {
-	case A.x():
-		result = A
-	case B.x():
-		result = B
-	case C.x():
-		result = C
-	case D.x():
-		result = D
-	}
-	if position.Y == 1 && result != Hallway {
-		result = Doorway
-	}
-	return result
+	return characters
 }

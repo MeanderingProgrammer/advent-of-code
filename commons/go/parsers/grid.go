@@ -148,18 +148,28 @@ func characterSplitter(row string) []string {
 	return strings.Split(row, "")
 }
 
-func ConstructGrid(rows []string, splitter RowSplitter, ignore string) Grid[string] {
-	plane, f := make(map[Point]string), splitter.get()
-	for y, row := range rows {
+type ValueParser[T comparable] func(Point, string) T
+
+type GridMaker[T comparable] struct {
+	Rows        []string
+	Splitter    RowSplitter
+	Ignore      string
+	Transformer ValueParser[T]
+}
+
+func (maker GridMaker[T]) Construct() Grid[T] {
+	plane, f := make(map[Point]T), maker.Splitter.get()
+	for y, row := range maker.Rows {
 		for x, value := range f(row) {
-			if !strings.ContainsAny(value, ignore) {
-				plane[Point{X: x, Y: y}] = value
+			if !strings.ContainsAny(value, maker.Ignore) {
+				point := Point{X: x, Y: y}
+				plane[point] = maker.Transformer(point, value)
 			}
 		}
 	}
-	return Grid[string]{
+	return Grid[T]{
 		plane:  plane,
-		Height: len(rows) - 1,
-		Width:  len(f(rows[0])) - 1,
+		Height: len(maker.Rows) - 1,
+		Width:  len(f(maker.Rows[0])) - 1,
 	}
 }

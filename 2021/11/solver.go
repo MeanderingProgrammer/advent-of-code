@@ -8,7 +8,7 @@ import (
 )
 
 type OctopusGrid struct {
-	parsers.Grid[string]
+	parsers.Grid[int]
 	flashed map[parsers.Point]bool
 }
 
@@ -34,7 +34,7 @@ func (grid OctopusGrid) step() int {
 	}
 	flashed := len(grid.flashed)
 	for point := range grid.flashed {
-		grid.Set(point, "0")
+		grid.Set(point, 0)
 		delete(grid.flashed, point)
 	}
 	return flashed
@@ -44,20 +44,15 @@ func (grid OctopusGrid) flash(point parsers.Point) {
 	if !grid.Contains(point) {
 		return
 	}
-	energy := grid.increment(point)
-	if energy > 9 && !grid.flashed[point] {
+
+	grid.Set(point, grid.Get(point)+1)
+
+	if grid.Get(point) > 9 && !grid.flashed[point] {
 		grid.flashed[point] = true
 		for _, adjacent := range point.Adjacent(true) {
 			grid.flash(adjacent)
 		}
 	}
-}
-
-func (grid OctopusGrid) increment(point parsers.Point) int {
-	previousValue := grid.Get(point)
-	newValue := conversions.ToInt(previousValue) + 1
-	grid.Set(point, conversions.ToString(newValue))
-	return newValue
 }
 
 func main() {
@@ -66,8 +61,17 @@ func main() {
 }
 
 func getGrid() OctopusGrid {
+	toInt := func(point parsers.Point, value string) int {
+		return conversions.ToInt(value)
+	}
+	grid := parsers.GridMaker[int]{
+		Rows:        files.ReadLines(),
+		Splitter:    parsers.Character,
+		Ignore:      "",
+		Transformer: toInt,
+	}.Construct()
 	return OctopusGrid{
-		Grid:    parsers.ConstructGrid(files.ReadLines(), parsers.Character, ""),
+		Grid:    grid,
 		flashed: make(map[parsers.Point]bool),
 	}
 }

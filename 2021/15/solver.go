@@ -10,8 +10,8 @@ import (
 )
 
 type Path struct {
-	vertex graphs.Vertex[int]
-	value  int
+	point parsers.Point
+	value int
 }
 
 func (path Path) Cost() int {
@@ -19,14 +19,14 @@ func (path Path) Cost() int {
 }
 
 func (path Path) String() *string {
-	result := fmt.Sprintf("%v", path.vertex)
+	result := fmt.Sprintf("%v", path.point)
 	return &result
 }
 
-func (path Path) add(vertex graphs.Vertex[int]) Path {
+func (path Path) add(graph graphs.Graph[int], point parsers.Point) Path {
 	return Path{
-		vertex: vertex,
-		value:  path.value + vertex.Value,
+		point: point,
+		value: path.value + graph.Value(point),
 	}
 }
 
@@ -39,21 +39,21 @@ func solve(wrap bool) int {
 	grid := getGrid(wrap)
 
 	initial := Path{
-		vertex: graphs.ConstructVertex(parsers.Point{X: 0, Y: 0}, grid, getType),
-		value:  0,
+		point: parsers.Point{X: 0, Y: 0},
+		value: 0,
 	}
 
 	end := parsers.Point{X: grid.Width, Y: grid.Height}
 	done := func(state graphs.State) bool {
-		return state.(Path).vertex.Point == end
+		return state.(Path).point == end
 	}
 
-	graph := graphs.ConstructGraph(grid, getType)
+	graph := graphs.ConstructGraph(grid)
 	nextStates := func(state graphs.State) <-chan graphs.State {
-		neighbors := graph.Neighbors(state.(Path).vertex)
+		neighbors := graph.Neighbors(state.(Path).point)
 		nextStates := make(chan graphs.State, len(neighbors))
 		for _, neighbor := range neighbors {
-			nextStates <- state.(Path).add(neighbor)
+			nextStates <- state.(Path).add(graph, neighbor)
 		}
 		close(nextStates)
 		return nextStates
@@ -67,11 +67,7 @@ func solve(wrap bool) int {
 	return endState.(Path).value
 }
 
-func getType(position parsers.Point, value string) int {
-	return conversions.ToInt(value)
-}
-
-func getGrid(wrap bool) parsers.Grid[string] {
+func getGrid(wrap bool) parsers.Grid[int] {
 	grid := baseGrid()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1
@@ -86,11 +82,11 @@ func getGrid(wrap bool) parsers.Grid[string] {
 						X: point.X + (baseSize * i),
 						Y: point.Y + (baseSize * j),
 					}
-					newValue := conversions.ToInt(grid.Get(point)) + distance
+					newValue := grid.Get(point) + distance
 					if newValue > 9 {
 						newValue -= 9
 					}
-					grid.Set(newPoint, conversions.ToString(newValue))
+					grid.Set(newPoint, newValue)
 				}
 			}
 		}
@@ -98,6 +94,14 @@ func getGrid(wrap bool) parsers.Grid[string] {
 	return grid
 }
 
-func baseGrid() parsers.Grid[string] {
-	return parsers.ConstructGrid(files.ReadLines(), parsers.Character, "")
+func baseGrid() parsers.Grid[int] {
+	toInt := func(point parsers.Point, value string) int {
+		return conversions.ToInt(value)
+	}
+	return parsers.GridMaker[int]{
+		Rows:        files.ReadLines(),
+		Splitter:    parsers.Character,
+		Ignore:      "",
+		Transformer: toInt,
+	}.Construct()
 }

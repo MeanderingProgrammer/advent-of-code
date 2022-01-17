@@ -19,15 +19,15 @@ func (points Points) contains(point parsers.Point) bool {
 	return false
 }
 
-func (points Points) riskLevel(grid parsers.Grid[string]) int {
+func (points Points) riskLevel(grid Grid) int {
 	result := 0
 	for _, point := range points {
-		result += conversions.ToInt(grid.Get(point)) + 1
+		result += grid.Get(point) + 1
 	}
 	return result
 }
 
-func (points Points) basinSizes(grid parsers.Grid[string]) []int {
+func (points Points) basinSizes(grid Grid) []int {
 	var basinSizes []int
 	for _, point := range points {
 		basinSizes = append(basinSizes, basinSize(grid, point))
@@ -35,12 +35,11 @@ func (points Points) basinSizes(grid parsers.Grid[string]) []int {
 	return basinSizes
 }
 
-func basinSize(grid parsers.Grid[string], point parsers.Point) int {
+func basinSize(grid Grid, point parsers.Point) int {
 	basin := Points{point}
 	for i := 0; i < len(basin); i++ {
 		for _, adjacent := range basin[i].Adjacent(false) {
-			adjacentValue, exists := grid.Get(adjacent), grid.Contains(adjacent)
-			if exists && conversions.ToInt(adjacentValue) < 9 && !basin.contains(adjacent) {
+			if grid.Contains(adjacent) && grid.Get(adjacent) < 9 && !basin.contains(adjacent) {
 				basin = append(basin, adjacent)
 			}
 		}
@@ -48,10 +47,34 @@ func basinSize(grid parsers.Grid[string], point parsers.Point) int {
 	return len(basin)
 }
 
+type Grid struct {
+	parsers.Grid[int]
+}
+
+func (grid Grid) minimums() Points {
+	var result Points
+	for _, point := range grid.Points() {
+		if grid.isMinimum(point) {
+			result = append(result, point)
+		}
+	}
+	return result
+}
+
+func (grid Grid) isMinimum(point parsers.Point) bool {
+	value := grid.Get(point)
+	for _, adjacent := range point.Adjacent(false) {
+		if grid.Contains(adjacent) && grid.Get(adjacent) <= value {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	grid := getGrid()
 
-	minimums := minimums(grid)
+	minimums := grid.minimums()
 	answers.Part1(506, minimums.riskLevel(grid))
 
 	basinSizes := minimums.basinSizes(grid)
@@ -59,27 +82,15 @@ func main() {
 	answers.Part2(931200, basinSizes[0]*basinSizes[1]*basinSizes[2])
 }
 
-func minimums(grid parsers.Grid[string]) Points {
-	var result Points
-	for _, point := range grid.Points() {
-		if isMinimum(grid, point) {
-			result = append(result, point)
-		}
+func getGrid() Grid {
+	toInt := func(point parsers.Point, value string) int {
+		return conversions.ToInt(value)
 	}
-	return result
-}
-
-func isMinimum(grid parsers.Grid[string], point parsers.Point) bool {
-	value := conversions.ToInt(grid.Get(point))
-	for _, adjacent := range point.Adjacent(false) {
-		adjacentValue, exists := grid.Get(adjacent), grid.Contains(adjacent)
-		if exists && conversions.ToInt(adjacentValue) <= value {
-			return false
-		}
-	}
-	return true
-}
-
-func getGrid() parsers.Grid[string] {
-	return parsers.ConstructGrid(files.ReadLines(), parsers.Character, "")
+	grid := parsers.GridMaker[int]{
+		Rows:        files.ReadLines(),
+		Splitter:    parsers.Character,
+		Ignore:      "",
+		Transformer: toInt,
+	}.Construct()
+	return Grid{grid}
 }
