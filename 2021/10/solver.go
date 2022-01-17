@@ -3,6 +3,7 @@ package main
 import (
 	"advent-of-code/commons/go/answers"
 	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/utils"
 	"sort"
 )
 
@@ -64,18 +65,15 @@ func (system System) checkSyntax() (string, Stack) {
 type Systems []string
 
 func (systems Systems) mismatchScore() int {
-	total := 0
-	for _, system := range systems {
+	toMimatchScore := func(system string) int {
 		mismatched, _ := System(system).checkSyntax()
-		score := scores[mismatched].mismatch
-		total += score
+		return scores[mismatched].mismatch
 	}
-	return total
+	return utils.Sum(utils.Map(systems, toMimatchScore))
 }
 
 func (systems Systems) autocompleteScore() int {
-	var totals []int
-	for _, system := range systems {
+	toAutocompleteScore := func(system string) int {
 		_, unmatched := System(system).checkSyntax()
 		incompleteScore := 0
 		for !unmatched.empty() {
@@ -84,12 +82,20 @@ func (systems Systems) autocompleteScore() int {
 			incompleteScore *= 5
 			incompleteScore += scores[neededBrace].incomplete
 		}
-		if incompleteScore > 0 {
-			totals = append(totals, incompleteScore)
-		}
+		return incompleteScore
 	}
-	sort.Ints(totals)
-	return totals[len(totals)/2]
+
+	nonZero := func(value int) bool {
+		return value > 0
+	}
+
+	scores := utils.Filter(
+		utils.Map(systems, toAutocompleteScore),
+		nonZero,
+	)
+
+	sort.Ints(scores)
+	return scores[len(scores)/2]
 }
 
 func main() {

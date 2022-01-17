@@ -5,6 +5,7 @@ import (
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/utils"
 	"sort"
 )
 
@@ -52,23 +53,16 @@ type Grid struct {
 }
 
 func (grid Grid) minimums() Points {
-	var result Points
-	for _, point := range grid.Points() {
-		if grid.isMinimum(point) {
-			result = append(result, point)
+	isMinimum := func(point parsers.Point) bool {
+		value := grid.Get(point)
+		for _, adjacent := range point.Adjacent(false) {
+			if grid.Contains(adjacent) && grid.Get(adjacent) <= value {
+				return false
+			}
 		}
+		return true
 	}
-	return result
-}
-
-func (grid Grid) isMinimum(point parsers.Point) bool {
-	value := grid.Get(point)
-	for _, adjacent := range point.Adjacent(false) {
-		if grid.Contains(adjacent) && grid.Get(adjacent) <= value {
-			return false
-		}
-	}
-	return true
+	return utils.Filter(grid.Points(), isMinimum)
 }
 
 func main() {
