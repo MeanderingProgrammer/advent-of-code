@@ -6,34 +6,13 @@ import (
 	"strings"
 )
 
-type Vertex[V comparable] struct {
-	Point parsers.Point
-	Value V
-}
-
-func ConstructVertex[V comparable](point parsers.Point, grid parsers.Grid[string], f ValueParser[V]) Vertex[V] {
-	return Vertex[V]{
-		Point: point,
-		Value: f(point, grid.Get(point)),
-	}
-}
-
-type ValueParser[V comparable] func(parsers.Point, string) V
-
 type Graph[V comparable] struct {
-	vertices map[Vertex[V]][]Vertex[V]
-	grid     parsers.Grid[string]
-	f        ValueParser[V]
+	vertices map[parsers.Point][]parsers.Point
+	grid     parsers.Grid[V]
 }
 
 type Complete func(State) bool
 type NextStates func(State) <-chan State
-
-type Search struct {
-	Initial    State
-	Done       Complete
-	NextStates NextStates
-}
 
 type Seen map[string]int
 
@@ -46,6 +25,12 @@ func (seen Seen) updateIfBest(state State) bool {
 	} else {
 		return false
 	}
+}
+
+type Search struct {
+	Initial    State
+	Done       Complete
+	NextStates NextStates
 }
 
 func (graph Graph[V]) Bfs(search Search) (State, int) {
@@ -65,11 +50,15 @@ func (graph Graph[V]) Bfs(search Search) (State, int) {
 	panic("Could not find a solution")
 }
 
-func (graph Graph[V]) Neighbors(vertex Vertex[V]) []Vertex[V] {
-	return graph.vertices[vertex]
+func (graph Graph[V]) Neighbors(point parsers.Point) []parsers.Point {
+	return graph.vertices[point]
 }
 
-func (graph Graph[V]) Print(positions map[Vertex[V]]V) {
+func (graph Graph[V]) Value(point parsers.Point) V {
+	return graph.grid.Get(point)
+}
+
+func (graph Graph[V]) Print(positions map[parsers.Point]V) {
 	fmt.Println(graph.separator())
 	for y := 0; y <= graph.grid.Height; y++ {
 		for x := 0; x <= graph.grid.Width; x++ {
@@ -85,12 +74,11 @@ func (graph Graph[V]) separator() string {
 	return strings.Repeat("-", graph.grid.Width+1)
 }
 
-func (graph Graph[V]) getValue(positions map[Vertex[V]]V, point parsers.Point) interface{} {
+func (graph Graph[V]) getValue(positions map[parsers.Point]V, point parsers.Point) interface{} {
 	if !graph.grid.Contains(point) {
 		return "#"
 	} else {
-		vertex := ConstructVertex(point, graph.grid, graph.f)
-		value, exists := positions[vertex]
+		value, exists := positions[point]
 		if exists {
 			return value
 		} else {
@@ -99,20 +87,19 @@ func (graph Graph[V]) getValue(positions map[Vertex[V]]V, point parsers.Point) i
 	}
 }
 
-func ConstructGraph[V comparable](grid parsers.Grid[string], f ValueParser[V]) Graph[V] {
-	vertices := make(map[Vertex[V]][]Vertex[V])
+func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[V] {
+	vertices := make(map[parsers.Point][]parsers.Point)
 	for _, point := range grid.Points() {
-		var connected []Vertex[V]
+		var connected []parsers.Point
 		for _, adjacent := range point.Adjacent(false) {
 			if grid.Contains(adjacent) {
-				connected = append(connected, ConstructVertex(adjacent, grid, f))
+				connected = append(connected, adjacent)
 			}
 		}
-		vertices[ConstructVertex(point, grid, f)] = connected
+		vertices[point] = connected
 	}
 	return Graph[V]{
 		vertices: vertices,
 		grid:     grid,
-		f:        f,
 	}
 }

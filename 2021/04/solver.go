@@ -33,14 +33,14 @@ func (boards Boards) incomplete() Boards {
 }
 
 type Board struct {
-	grid     parsers.Grid[string]
+	grid     parsers.Grid[int]
 	marked   map[parsers.Point]bool
 	order    []int
 	complete bool
 }
 
 func (board *Board) mark(value int) {
-	points := board.grid.GetPoints(conversions.ToString(value))
+	points := board.grid.GetPoints(value)
 	if len(points) != 1 {
 		return
 	}
@@ -70,7 +70,7 @@ func (board Board) score() int {
 	total := 0
 	for _, point := range board.grid.Points() {
 		if !board.marked[point] {
-			total += conversions.ToInt(board.grid.Get(point))
+			total += board.grid.Get(point)
 		}
 	}
 	lastMarked := board.order[len(board.order)-1]
@@ -93,7 +93,15 @@ func getData() ([]int, Boards) {
 func parseBoards(boards []string) Boards {
 	var result Boards
 	for _, board := range boards {
-		grid := parsers.ConstructGrid(parsers.Lines(board), parsers.Field, "")
+		toInt := func(point parsers.Point, value string) int {
+			return conversions.ToInt(value)
+		}
+		grid := parsers.GridMaker[int]{
+			Rows:        parsers.Lines(board),
+			Splitter:    parsers.Field,
+			Ignore:      "",
+			Transformer: toInt,
+		}.Construct()
 		board := Board{
 			grid:     grid,
 			marked:   make(map[parsers.Point]bool),

@@ -7,11 +7,11 @@ import (
 	"fmt"
 )
 
-type Cucumber string
+type Cucumber int
 
 const (
-	East  Cucumber = ">"
-	South Cucumber = "v"
+	East Cucumber = iota
+	South
 )
 
 func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
@@ -26,7 +26,7 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 }
 
 type Grid struct {
-	parsers.Grid[string]
+	parsers.Grid[Cucumber]
 }
 
 type Move struct {
@@ -52,7 +52,7 @@ func (grid Grid) step() bool {
 func (grid Grid) move(toMove Cucumber) bool {
 	var moves []Move
 
-	for _, point := range grid.GetPoints(string(toMove)) {
+	for _, point := range grid.GetPoints(toMove) {
 		target := toMove.target(point)
 		if target.X > grid.Width {
 			target.X = 0
@@ -68,7 +68,7 @@ func (grid Grid) move(toMove Cucumber) bool {
 
 	for _, move := range moves {
 		grid.Delete(move.start)
-		grid.Set(move.end, string(toMove))
+		grid.Set(move.end, toMove)
 	}
 
 	return len(moves) > 0
@@ -79,5 +79,21 @@ func main() {
 }
 
 func getGrid() Grid {
-	return Grid{parsers.ConstructGrid(files.ReadLines(), parsers.Character, ".")}
+	toCucumber := func(point parsers.Point, value string) Cucumber {
+		switch value {
+		case ">":
+			return East
+		case "v":
+			return South
+		default:
+			panic(fmt.Sprintf("Unexpected value: %s", value))
+		}
+	}
+	grid := parsers.GridMaker[Cucumber]{
+		Rows:        files.ReadLines(),
+		Splitter:    parsers.Character,
+		Ignore:      ".",
+		Transformer: toCucumber,
+	}.Construct()
+	return Grid{grid}
 }
