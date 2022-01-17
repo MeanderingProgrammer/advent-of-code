@@ -209,7 +209,7 @@ func (board Board) shouldGo(state BoardState, move Move) bool {
 			if !exists {
 				continue
 			}
-			deadlock := contains(pathToGoal(point, onPath.value), move.end)
+			deadlock := utils.Contains(pathToGoal(point, onPath.value), move.end)
 			if deadlock {
 				return false
 			}
@@ -243,15 +243,6 @@ func pathToGoal(location parsers.Point, value Type) []parsers.Point {
 		result = append(result, parsers.Point{X: i, Y: 1})
 	}
 	return result
-}
-
-func contains(path []parsers.Point, target parsers.Point) bool {
-	for _, point := range path {
-		if point == target {
-			return true
-		}
-	}
-	return false
 }
 
 func main() {
