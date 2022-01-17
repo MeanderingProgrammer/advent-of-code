@@ -122,7 +122,7 @@ type Board struct {
 	roomSize int
 }
 
-func (board Board) solve(characters Characters) (graphs.State, int) {
+func (board Board) solve(characters Characters) graphs.State {
 	initial := BoardState{
 		characters: characters,
 		cost:       0,
@@ -136,11 +136,13 @@ func (board Board) solve(characters Characters) (graphs.State, int) {
 	nextStates := func(state graphs.State) <-chan graphs.State {
 		return board.nextStates(state.(BoardState))
 	}
-	return board.graph.Bfs(graphs.Search{
+	result := board.graph.Bfs(graphs.Search{
 		Initial:    initial,
 		Done:       done,
 		NextStates: nextStates,
+		FirstOnly:  true,
 	})
+	return result.Completed[0]
 }
 
 func (board Board) nextStates(state BoardState) <-chan graphs.State {
@@ -252,7 +254,7 @@ func main() {
 
 func solve(extend bool) int {
 	board, characters := getData(extend)
-	endState, _ := board.solve(characters)
+	endState := board.solve(characters)
 	return endState.(BoardState).cost
 }
 

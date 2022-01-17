@@ -31,23 +31,38 @@ type Search struct {
 	Initial    State
 	Done       Complete
 	NextStates NextStates
+	FirstOnly  bool
 }
 
-func (graph Graph[K, V]) Bfs(search Search) (State, int) {
+type SearchResult struct {
+	Completed []State
+	Explored  int
+}
+
+func (graph Graph[K, V]) Bfs(search Search) SearchResult {
+	var completed []State
 	queue, seen, explored := &Queue{search.Initial}, make(Seen), 0
+
 	for !queue.Empty() {
 		explored++
 		current := queue.Next()
 		if search.Done(current) {
-			return current, explored
-		}
-		for state := range search.NextStates(current) {
-			if seen.updateIfBest(state) {
-				queue.Add(state)
+			completed = append(completed, current)
+			if search.FirstOnly {
+				break
+			}
+		} else {
+			for state := range search.NextStates(current) {
+				if seen.updateIfBest(state) {
+					queue.Add(state)
+				}
 			}
 		}
 	}
-	panic("Could not find a solution")
+	return SearchResult{
+		Completed: completed,
+		Explored:  explored,
+	}
 }
 
 func (graph Graph[K, V]) Neighbors(point K) []K {
