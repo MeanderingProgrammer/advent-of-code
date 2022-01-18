@@ -118,3 +118,23 @@ func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[parsers.Point, V] 
 		grid:     grid,
 	}
 }
+
+func ConstructDirectly[K comparable](pairs [][2]K) Graph[K, string] {
+	vertices := make(map[K][]K)
+	for _, pair := range pairs {
+		add(vertices, pair[0], pair[1])
+		add(vertices, pair[1], pair[0])
+	}
+	return Graph[K, string]{
+		vertices: vertices,
+	}
+}
+
+func add[K comparable](graph map[K][]K, start, end K) {
+	_, exists := graph[start]
+	if exists {
+		graph[start] = append(graph[start], end)
+	} else {
+		graph[start] = []K{end}
+	}
+}
