@@ -12,11 +12,16 @@ export PYTHONPATH=${current_directory}
 
 jar="uber-jar.jar"
 # Runs in <year>/<day> directory, hence the ../..
-class_path=".:../../commons/java/${jar}"
+class_path=".:../../commons/java/*"
+
+delete_classes() {
+    find . -name '*class' | xargs rm
+}
 
 setup_jars() {
     cd commons/java
 
+    delete_classes
     if [[ -f "${jar}" ]]
     then
         rm ${jar}
@@ -26,10 +31,6 @@ setup_jars() {
     for class_file_path in "${@}"
     do
         class_file=($(echo ${class_file_path} | tr "/" "\n"))
-        if [[ -d "${class_file[0]}" ]]
-        then
-            rm -rf ${class_file[0]}
-        fi
         javac -d . ${class_file[1]}.java
         class_files+=("${class_file_path}.class")
     done
@@ -80,11 +81,8 @@ run_day() {
 
     if [[ ${extension} == ${JAVA} ]]
     then
-        if [[ -f "main/Solver.class" ]]
-        then
-            rm main/Solver.class
-        fi
-        javac -cp ${class_path} -d . Solver.java
+        delete_classes
+        find . -name '*java' | xargs javac -cp ${class_path} -d .
         time_run java -cp ${class_path} main.Solver
     elif [[ ${extension} == ${PYTHON} ]]
     then
