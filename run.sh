@@ -15,7 +15,7 @@ jar="uber-jar.jar"
 class_path=".:../../commons/java/*"
 
 delete_classes() {
-    find . -name '*class' | xargs rm
+    find . -name '*class' | xargs rm -f
 }
 
 setup_jars() {
