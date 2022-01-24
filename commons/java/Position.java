@@ -3,18 +3,9 @@ package pojo;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.FieldDefaults;
+import lombok.Value;
 
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Value
 public class Position {
 
     int x;
