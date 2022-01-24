@@ -45,7 +45,6 @@ Once the code is cloned. This is to import the classes located in the commons di
 | 2019 | 12   | 0:18.32 |
 | 2019 | 13   | 0:24.05 |
 | 2019 | 16   | 0:12.88 |
-| 2019 | 18   | 0:15.01 |
 | 2019 | 19   | 0:17.07 |
 | 2019 | 21   | 0:10.37 |
 | 2019 | 24   | 0:20:31 |

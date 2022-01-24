@@ -3,61 +3,49 @@ package maze;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Node {
 
     private static final Character STARTING_POINT = '@';
-    private static final Character WALL = '#';
 
-    private final Character ch;
-    private final List<Path> paths;
+    char value;
+    List<Path> paths;
 
-    public Node(char ch) {
-        this.ch = ch;
+    public Node(char value) {
+        this.value = value;
         this.paths = new ArrayList<>();
     }
 
-    public Character getValue() {
-        return ch;
-    }
-
-    public Character asKey() {
+    public char asKey() {
         if (!isDoor()) {
             throw new IllegalArgumentException("Why you asking for the key of a non-door");
         }
-        return Character.toLowerCase(ch);
+        return Character.toLowerCase(value);
     }
 
     public boolean shouldGo(Path newPath) {
         return paths.stream()
-                .allMatch(path -> path.doesPathHavePotential(newPath));
+                .allMatch(path -> path.hasPotential(newPath));
     }
 
     public void addPath(Path newPath) {
         paths.add(newPath);
     }
 
-    public List<Path> getPaths() {
-        return paths;
-    }
-
     public boolean isKey() {
-        return Character.isLowerCase(ch);
+        return Character.isLowerCase(value);
     }
 
     public boolean isDoor() {
-        return Character.isUpperCase(ch);
-    }
-
-    public boolean isWall() {
-        return WALL.equals(ch);
+        return Character.isUpperCase(value);
     }
 
     public boolean isStartingPoint() {
-        return STARTING_POINT.equals(ch);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s: %s", ch, paths);
+        return STARTING_POINT == value;
     }
 }

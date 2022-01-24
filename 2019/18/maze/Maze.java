@@ -36,36 +36,28 @@ public class Maze {
     }
 
     private void fillNodes(Grid grid) {
-        grid.getKeyPositions().forEach(
-                keyPosition -> expandPosition(
-                        grid,
-                        keyPosition,
-                        grid.get(keyPosition).getValue(),
-                        keyPosition,
-                        new HashSet<>(),
-                        0
-                )
-        );
+        grid.getKeyPositions()
+            .forEach(keyPosition -> expandPosition(
+                grid,
+                keyPosition,
+                grid.get(keyPosition).getValue(),
+                keyPosition,
+                new HashSet<>(),
+                0
+            ));
     }
 
     private void expandPosition(
             Grid grid,
             Position keyPosition,
-            Character key,
+            char key,
             Position position,
             Set<Character> keysNeeded,
             int distance
     ) {
-        if (!grid.contains(position)) {
-            return;
-        }
         Node node = grid.get(position);
-        if (node.isWall()) {
-            return;
-        }
 
         if (node.isDoor()) {
-            keysNeeded = new HashSet<>(keysNeeded);
             keysNeeded.add(node.asKey());
         }
 
@@ -76,22 +68,17 @@ public class Maze {
         node.addPath(path);
 
         for (Position adjacent : position.adjacent()) {
-            expandPosition(grid, keyPosition, key, adjacent, keysNeeded, distance + 1);
+            if (grid.contains(adjacent)) {
+                expandPosition(grid, keyPosition, key, adjacent, new HashSet<>(keysNeeded), distance + 1);
+            }
         }
     }
 
     public int complete() {
-        return solve(
-                getStartingPositions(),
-                new HashSet<>(),
-                new HashMap<>()
-        );
-    }
-
-    private List<Position> getStartingPositions() {
-        return grids.stream()
-                .map(Grid::getStartingPosition)
-                .collect(Collectors.toList());
+        List<Position> startingPositions = grids.stream()
+            .map(Grid::getStartingPosition)
+            .collect(Collectors.toList());
+        return solve(startingPositions, new HashSet<>(), new HashMap<>());
     }
 
     private int solve(
@@ -106,27 +93,21 @@ public class Maze {
         List<Integer> distances = new ArrayList<>();
         for (int i = 0; i < grids.size(); i++) {
             for (Path path : grids.get(i).get(positions.get(i)).getPaths()) {
-                if (path.canGo(keysCollected) && !keysCollected.contains(path.getKey())) {
-                    List<Position> nextPositions = new ArrayList<>(positions);
-                    nextPositions.set(i, path.getKeyPosition());
-                    if (!cache.containsKey(nextPositions)) {
-                        cache.put(nextPositions, new HashMap<>());
-                    }
-                    Map<Set<Character>, Integer> positionCache = cache.get(nextPositions);
-
-                    Set<Character> nextKeys = new HashSet<>(keysCollected);
-                    nextKeys.add(path.getKey());
-
-                    int subDistance;
-                    if (positionCache.containsKey(nextKeys)) {
-                        subDistance = positionCache.get(nextKeys);
-                    } else {
-                        subDistance = solve(nextPositions, nextKeys, cache);
-                        positionCache.put(nextKeys, subDistance);
-                    }
-
-                    distances.add(path.getDistance() + subDistance);
+                if (!path.canGo(keysCollected) || keysCollected.contains(path.getKey())) {
+                    continue;
                 }
+
+                List<Position> nextPositions = new ArrayList<>(positions);
+                nextPositions.set(i, path.getKeyPosition());
+
+                Set<Character> nextKeys = new HashSet<>(keysCollected);
+                nextKeys.add(path.getKey());
+
+                int subDistance = cache
+                    .computeIfAbsent(nextPositions, k -> new HashMap<>())
+                    .computeIfAbsent(nextKeys, k -> solve(nextPositions, k, cache));
+
+                distances.add(path.getDistance() + subDistance);
             }
         }
         return Collections.min(distances);
