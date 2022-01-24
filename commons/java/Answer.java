@@ -1,5 +1,8 @@
 package answer;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Answer {
 
     public static void part1(int expected, int result) {
