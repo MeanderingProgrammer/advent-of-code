@@ -7,13 +7,14 @@ import maze.Maze;
 public class Solver {
 
     public static void main(String[] args) {
-        Answer.part1(628, solve(false));
-        Answer.part2(7506, solve(true));
-    }
-
-    private static int solve(boolean recursive) {
         FileReader fileReader = new FileReader();
         Maze maze = new Maze(fileReader.read());
+
+        Answer.part1(628, solve(maze, false));
+        Answer.part2(7506, solve(maze, true));
+    }
+
+    private static int solve(Maze maze, boolean recursive) {
         return maze.path("AA", "ZZ", recursive);
     }
 }

@@ -1,23 +1,15 @@
 package maze;
 
-import maze.path.Path;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
 
+@EqualsAndHashCode
+@AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class State {
 
-    private final Node node;
-    private final int level;
-
-    public State(Path path) {
-        this.node = path.getLast();
-        this.level = path.getLevel();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof State) {
-            State o = (State) other;
-            return node.equals(o.node) && level == o.level;
-        }
-        return false;
-    }
+    Node node;
+    int level;
 }
