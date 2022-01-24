@@ -93,7 +93,7 @@ public class Maze {
         List<Integer> distances = new ArrayList<>();
         for (int i = 0; i < grids.size(); i++) {
             for (Path path : grids.get(i).get(positions.get(i)).getPaths()) {
-                if (!path.canGo(keysCollected) || keysCollected.contains(path.getKey())) {
+                if (!keysCollected.containsAll(path.getKeysNeeded()) || keysCollected.contains(path.getKey())) {
                     continue;
                 }
 

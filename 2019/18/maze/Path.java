@@ -29,8 +29,4 @@ public class Path {
         boolean lessKeys = !other.keysNeeded.containsAll(keysNeeded);
         return betterDistance || lessKeys;
     }
-
-    public boolean canGo(Set<Character> keysCollected) {
-        return keysCollected.containsAll(keysNeeded);
-    }
 }

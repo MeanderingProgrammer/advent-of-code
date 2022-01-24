@@ -1,7 +1,7 @@
 package maze;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,11 +14,11 @@ public class Node {
     private static final Character STARTING_POINT = '@';
 
     char value;
-    List<Path> paths;
+    Set<Path> paths;
 
     public Node(char value) {
         this.value = value;
-        this.paths = new ArrayList<>();
+        this.paths = new HashSet<>();
     }
 
     public char asKey() {
