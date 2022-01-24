@@ -1,7 +1,8 @@
 package pojo;
 
-import java.util.HashSet;
 import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import lombok.Value;
 
@@ -12,11 +13,11 @@ public class Position {
     int y;
 
     public Set<Position> adjacent() {
-        Set<Position> result = new HashSet<>();
-        result.add(new Position(x+1, y));
-        result.add(new Position(x-1, y));
-        result.add(new Position(x, y+1));
-        result.add(new Position(x, y-1));
-        return result;
+        return Sets.newHashSet(
+            new Position(x+1, y),
+            new Position(x-1, y),
+            new Position(x, y+1),
+            new Position(x, y-1)
+        );
     }
 }
