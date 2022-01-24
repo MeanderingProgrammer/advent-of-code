@@ -24,31 +24,22 @@ public class Maze {
         List<Node> startNode = getNodes(start);
         List<Node> endNode = getNodes(end);
         if (startNode.size() == 1 && endNode.size() == 1) {
-            Function<Node, Path> pathCreator = recursive
-                    ? RecursivePath::new
-                    : NormalPath::new;
-
-            return path(startNode.get(0), endNode.get(0), pathCreator);
+            Function<Node, Path> pathCreator = recursive ? RecursivePath::new : NormalPath::new;
+            return path(pathCreator.apply(startNode.get(0)), endNode.get(0));
         } else {
             throw new RuntimeException("Couldn't find nodes matching input");
         }
     }
 
-    private int path(Node start, Node end, Function<Node, Path> pathCreator) {
+    private int path(Path startingPath, Node end) {
         PriorityQueue<Path> queue = new PriorityQueue<>();
-        queue.add(pathCreator.apply(start));
+        queue.add(startingPath);
 
         Set<State> seen = new HashSet<>();
 
         while (!queue.isEmpty()) {
             Path current = queue.poll();
-            State currentState = new State(current);
-
-            if (seen.contains(currentState)) {
-                continue;
-            } else {
-                seen.add(currentState);
-            }
+            seen.add(current.getState());
 
             Node last = current.getLast();
             if (last.equals(end)) {
@@ -57,28 +48,25 @@ public class Maze {
 
             for (Edge adjacent : graph.get(last)) {
                 Path newPath = current.add(getOppositeEdge(adjacent));
-                State newState = new State(newPath);
-
-                if (!seen.contains(newState) && newPath.isValid()) {
+                if (!seen.contains(newPath.getState()) && newPath.isValid()) {
                     queue.add(newPath);
                 }
             }
         }
 
-        return -1;
+        throw new RuntimeException("Couldn't find a path from start to end");
     }
 
     private Edge getOppositeEdge(Edge edge) {
-        List<Node> options = getNodes(edge.getDestination().getLabel());
+        Node node = edge.getDestination();
+        List<Node> options = getNodes(node.getLabel());
         if (options.size() == 1) {
             return edge;
+        } else if (options.size() == 2) {
+            int index = options.get(0).equals(node) ? 1 : 0;
+            return new Edge(options.get(index), edge.getLength() + 1);
         } else {
-            Node option1 = options.get(0);
-            Node option2 = options.get(1);
-            Node option = option1.isInner() == edge.getDestination().isInner()
-                    ? option2
-                    : option1;
-            return new Edge(option, edge.getLength() + 1);
+            throw new RuntimeException("Unexpected number of options");
         }
     }
 
