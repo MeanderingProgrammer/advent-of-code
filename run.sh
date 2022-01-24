@@ -31,7 +31,7 @@ setup_jars() {
     for class_file_path in "${@}"
     do
         class_file=($(echo ${class_file_path} | tr "/" "\n"))
-        javac -d . ${class_file[1]}.java
+        javac -cp "*" -d . ${class_file[1]}.java
         class_files+=("${class_file_path}.class")
     done
 
