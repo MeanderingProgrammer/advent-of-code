@@ -6,16 +6,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class FileReader {
 
     private final boolean testMode;
 
     public FileReader() {
         this(false);
-    }
-
-    public FileReader(boolean testMode) {
-        this.testMode = testMode;
     }
 
     public List<String> read() {
