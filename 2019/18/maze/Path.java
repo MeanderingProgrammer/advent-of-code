@@ -4,23 +4,25 @@ import java.util.Set;
 
 import pojo.Position;
 
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Path {
 
-    private final Position keyPosition;
-    private final Character key;
-    private final Set<Character> keysNeeded;
-    private final int distance;
+    Position keyPosition;
+    char key;
+    Set<Character> keysNeeded;
+    int distance;
 
-    public Path(Position keyPosition, Character key, Set<Character> keysNeeded, int distance) {
-        this.keyPosition = keyPosition;
-        this.key = key;
-        this.keysNeeded = keysNeeded;
-        this.distance = distance;
-    }
-
-    public boolean doesPathHavePotential(Path other) {
+    public boolean hasPotential(Path other) {
         // If paths are to different keys then it by definition has potential
-        if (!other.key.equals(key)) {
+        if (other.key != this.key) {
             return true;
         }
         boolean betterDistance = other.distance < distance;
@@ -30,26 +32,5 @@ public class Path {
 
     public boolean canGo(Set<Character> keysCollected) {
         return keysCollected.containsAll(keysNeeded);
-    }
-
-    public Position getKeyPosition() {
-        return keyPosition;
-    }
-
-    public Character getKey() {
-        return key;
-    }
-
-    public Set<Character> getKeysNeeded() {
-        return keysNeeded;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("To %s at %s In %s if %s are present", key, keyPosition, distance, keysNeeded);
     }
 }

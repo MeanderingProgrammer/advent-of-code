@@ -3,24 +3,29 @@ package maze;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import pojo.Position;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Grid {
 
-    private final Map<Position, Node> grid;
-    private final List<Position> keyPositions;
-    private final Position startingPosition;
+    private static final char WALL = '#';
+
+    Map<Position, Node> grid;
+    @Getter List<Position> keyPositions;
+    @Getter Position startingPosition;
 
     public Grid(List<String> maze, Position startingPosition) {
-        grid = initializeGrid(maze);
-        keyPositions = computeKeyPositions();
-        if (startingPosition == null) {
-            this.startingPosition = computeStartingPosition();
-        } else {
-            this.startingPosition = startingPosition;
-        }
+        this.grid = initializeGrid(maze);
+        this.keyPositions = computeKeyPositions();
+        this.startingPosition = Optional.ofNullable(startingPosition)
+            .orElseGet(() -> computeStartingPosition());
     }
 
     public Grid(List<String> maze) {
@@ -35,23 +40,8 @@ public class Grid {
         return grid.containsKey(position);
     }
 
-    public List<Position> getKeyPositions() {
-        return keyPositions;
-    }
-
     public int totalKeys() {
         return keyPositions.size();
-    }
-
-    public Position getStartingPosition() {
-        return startingPosition;
-    }
-
-    @Override
-    public String toString() {
-        return grid.entrySet().stream()
-                .map(entry -> String.format("%s = %s", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining("\n"));
     }
 
     private static Map<Position, Node> initializeGrid(List<String> maze) {
@@ -59,8 +49,10 @@ public class Grid {
         for (int y = 0; y < maze.size(); y++) {
             String row = maze.get(y);
             for (int x = 0; x < row.length(); x++) {
-                Position position = new Position(x, y);
-                grid.put(position, new Node(row.charAt(x)));
+                char ch = row.charAt(x);
+                if (ch != WALL) {
+                    grid.put(new Position(x, y), new Node(ch));
+                }
             }
         }
         return grid;
