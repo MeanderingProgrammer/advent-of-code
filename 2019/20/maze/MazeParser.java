@@ -20,7 +20,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class MazeParser {
 
-    private static final Set<Character> MAZE_CHARACTERS = Sets.newHashSet('#', '.', ' ');
+    private static final Set<Character> MAZE_CHARACTERS = Sets.newHashSet('#', '.');
+    private static final Set<Character> NON_LABEL_CHARACTERS = Sets.newHashSet('#', '.', ' ');
 
     List<String> maze;
     int mazeSize;
@@ -29,13 +30,11 @@ public class MazeParser {
         this.maze = maze;
 
         String middleRow = maze.get(maze.size() / 2);
-        int nonSpaces = 0;
-        for (int i = 0; i < middleRow.length(); i++) {
-            if (middleRow.charAt(i) != ' ') {
-                nonSpaces++;
-            }
-        }
-        this.mazeSize = nonSpaces / 2;
+        int mazeCharacters = (int) middleRow.chars()
+            .mapToObj(ch -> (char) ch)
+            .filter(MAZE_CHARACTERS::contains)
+            .count();
+        this.mazeSize = mazeCharacters / 2;
     }
 
     public Map<Node, Set<Edge>> asGraph() {
@@ -129,7 +128,7 @@ public class MazeParser {
         public Optional<String> getLabel(String s) {
             char first = s.charAt(index);
             char second = s.charAt(index + 1);
-            if (MAZE_CHARACTERS.contains(first) || MAZE_CHARACTERS.contains(second)) {
+            if (NON_LABEL_CHARACTERS.contains(first) || NON_LABEL_CHARACTERS.contains(second)) {
                 return Optional.empty();
             } else {
                 return Optional.of(String.valueOf(first) + second);
