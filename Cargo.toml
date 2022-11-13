@@ -1,8 +1,8 @@
 [package]
-name = "hello_cargo"
+name = "advent-of-code"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
 name = "example"
-path = "solver.rs"
+path = "2022/01/solver.rs"
