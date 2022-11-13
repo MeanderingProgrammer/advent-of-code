@@ -2,5 +2,5 @@
 // Part 2: 1262
 
 fn main() {
-    println!("Hello World!");
+    println!("Hello World - 1!");
 }
