@@ -1,7 +1,16 @@
-__pycache__
+# IntelliJ
 .idea
-out
 *.iml
+out
+
+# Python
+__pycache__
 *.pyc
+
+# Java
 *.class
 *.jar
+
+# Rust
+*.lock
+target

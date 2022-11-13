@@ -57,6 +57,7 @@ time_run() {
 }
 
 JAVA="java"
+RUST="rs"
 PYTHON="py"
 GO="go"
 
@@ -84,6 +85,10 @@ run_day() {
         delete_classes
         find . -name '*java' | xargs javac -cp ${class_path} -d .
         time_run java -cp ${class_path} main.Solver
+    elif [[ ${extension} == ${RUST} ]]
+    then
+      cargo build -rq
+      time_run cargo run -rq
     elif [[ ${extension} == ${PYTHON} ]]
     then
         time_run python3 solver.py
