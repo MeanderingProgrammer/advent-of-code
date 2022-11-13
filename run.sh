@@ -109,7 +109,7 @@ years=($(echo ${1} | tr "," "\n"))
 
 for year in "${years[@]}"
 do
-    echo "Runing year ${year}"
+    echo "Running year ${year}"
     cd ${year}
 
     # Sets days array based on input and current year being run
