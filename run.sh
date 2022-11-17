@@ -6,47 +6,9 @@ then
     exit 1
 fi
 
-# Setup PYTHONPATH so commons imports work
-export PYTHONPATH=$(pwd)
+source ./language-setup.sh
 
-# Runs in <year>/<day> directory, hence the ../..
-class_path=".:../../commons/java/*"
-
-delete_classes() {
-    find . -name '*class' | xargs rm -f
-}
-
-setup_jars() {
-    jar="uber-jar.jar"
-
-    pushd commons/java >/dev/null
-
-    delete_classes
-    if [[ -f "${jar}" ]]
-    then
-        rm ${jar}
-    fi
-    
-    class_files=()
-    for class_file_path in "${@}"
-    do
-        class_file=$(basename $class_file_path)
-        javac -cp "*" -d . ${class_file}.java
-        class_files+=("${class_file_path}.class")
-    done
-
-    jar cf ${jar} ${class_files[@]}
-
-    if [[ ! -f "${jar}" ]]
-    then
-        echo "Failed to create ${jar}"
-        exit 1
-    fi
-
-    popd >/dev/null
-}
-
-setup_jars "io/FileReader" "answer/Answer" "pojo/Position"
+setup_python
 
 time_run() {
     start=$(date -u +%s.%N)
@@ -62,7 +24,7 @@ PYTHON="py"
 GO="go"
 
 update_days() {
-    if [[ $# -eq 0 ]]
+    if [[ ${#} -eq 0 ]]
     then
         days=($(ls | sort))
     else
@@ -73,7 +35,7 @@ update_days() {
 run_day() {
     day=${1}
 
-    pushd ${day} >/dev/null
+    pushd ${day} > /dev/null
 
     solution_file=$(ls *olver* | tail -1)
     extension="${solution_file#*.}"
@@ -82,7 +44,10 @@ run_day() {
 
     if [[ ${extension} == ${JAVA} ]]
     then
-        delete_classes
+        setup_java
+
+        # Runs in <year>/<day> directory, hence the ../..
+        class_path=".:../../commons/java/*"
         find . -name '*java' | xargs javac -cp ${class_path} -d .
         time_run java -cp ${class_path} main.Solver
     elif [[ ${extension} == ${RUST} ]]
@@ -102,7 +67,7 @@ run_day() {
 
     # Since this is being executed in a for loop then we need to make sure
     # to change out of the directory before running the next iteration
-    popd >/dev/null
+    popd > /dev/null
 }
 
 # Store array of runtimes and days / years associated with each runtime
@@ -115,7 +80,7 @@ years=($(echo ${1} | tr "," "\n"))
 for year in "${years[@]}"
 do
     echo "Running year ${year}"
-    pushd ${year} >/dev/null
+    pushd ${year} > /dev/null
 
     # Sets days array based on input and current year being run
     update_days ${2}
@@ -130,7 +95,7 @@ do
     done
 
     # Similar to running for each day, we need to change back out of the directory
-    popd >/dev/null
+    popd > /dev/null
 done
 
 green=$(tput setaf 2)
