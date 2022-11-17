@@ -1,12 +1,19 @@
-pub fn part1(expected: i64, result: i64) {
+use std::fmt::Display;
+use std::cmp::PartialEq;
+
+
+pub trait Solution: Display + PartialEq {}
+impl<T: Display + PartialEq> Solution for T {}
+
+pub fn part1<T: Solution>(expected: T, result: T) {
 	part(1, expected, result);
 }
 
-pub fn part2(expected: i64, result: i64) {
+pub fn part2<T: Solution>(expected: T, result: T) {
 	part(2, expected, result);
 }
 
-fn part(part: i64, expected: i64, result: i64) {
+fn part<T: Solution>(part: i64, expected: T, result: T) {
 	if expected != result {
 	    panic!("Part {part} incorrect, expected {expected} but got {result}");
 	}
