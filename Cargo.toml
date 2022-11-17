@@ -1,11 +1,15 @@
-[workspace]
-members = [
-    "2022/*",
-]
-
-[workspace.package]
+[package]
+name = "advent_of_code"
 version = "0.1.0"
 edition = "2021"
 
-[workspace.dependencies]
+[[bin]]
+name = "aoc_2022_01"
+path = "2022/01/solver.rs"
+
+[[bin]]
+name = "aoc_2022_02"
+path = "2022/02/solver.rs"
+
+[dependencies]
 aoc_lib = { path = "commons/rust/" }

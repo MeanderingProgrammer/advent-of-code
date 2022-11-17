@@ -43,3 +43,14 @@ setup_java() {
     fi
     is_java_setup="true"
 }
+
+# A hacky way to only build all binaries once per execution of run script
+is_rust_setup="false"
+
+setup_rust() {
+    if [[ ${is_rust_setup} == "false" ]]
+    then
+        cargo build -rq --bins
+    fi
+    is_rust_setup="true"
+}
