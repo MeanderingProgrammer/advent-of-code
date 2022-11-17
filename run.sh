@@ -52,8 +52,8 @@ run_day() {
         time_run java -cp ${class_path} main.Solver
     elif [[ ${extension} == ${RUST} ]]
     then
-      cargo build -rq
-      time_run cargo run -rq
+      setup_rust
+      time_run cargo run -rq --bin "aoc_${year}_${day}"
     elif [[ ${extension} == ${PYTHON} ]]
     then
         time_run python3 solver.py
