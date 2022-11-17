@@ -1,16 +1,14 @@
 #!/bin/bash
 
-if [[ $# -ne 1 && $# -ne 2 ]]
+if [[ ${#} -ne 1 && ${#} -ne 2 ]]
 then
     echo 'Usage: <year1,year2,...> <day1,day2,...>?'
     exit 1
 fi
 
 # Setup PYTHONPATH so commons imports work
-current_directory=$(pwd)
-export PYTHONPATH=${current_directory}
+export PYTHONPATH=$(pwd)
 
-jar="uber-jar.jar"
 # Runs in <year>/<day> directory, hence the ../..
 class_path=".:../../commons/java/*"
 
@@ -19,7 +17,9 @@ delete_classes() {
 }
 
 setup_jars() {
-    cd commons/java
+    jar="uber-jar.jar"
+
+    pushd commons/java >/dev/null
 
     delete_classes
     if [[ -f "${jar}" ]]
@@ -30,8 +30,8 @@ setup_jars() {
     class_files=()
     for class_file_path in "${@}"
     do
-        class_file=($(echo ${class_file_path} | tr "/" "\n"))
-        javac -cp "*" -d . ${class_file[1]}.java
+        class_file=$(basename $class_file_path)
+        javac -cp "*" -d . ${class_file}.java
         class_files+=("${class_file_path}.class")
     done
 
@@ -43,7 +43,7 @@ setup_jars() {
         exit 1
     fi
 
-    cd ../..
+    popd >/dev/null
 }
 
 setup_jars "io/FileReader" "answer/Answer" "pojo/Position"
@@ -73,7 +73,7 @@ update_days() {
 run_day() {
     day=${1}
 
-    cd ${day}
+    pushd ${day} >/dev/null
 
     solution_file=$(ls *olver* | tail -1)
     extension="${solution_file#*.}"
@@ -100,9 +100,9 @@ run_day() {
         exit 1
     fi
 
-    # If this is being executed in a for loop then we need to make sure
+    # Since this is being executed in a for loop then we need to make sure
     # to change out of the directory before running the next iteration
-    cd ..
+    popd >/dev/null
 }
 
 # Store array of runtimes and days / years associated with each runtime
@@ -115,7 +115,7 @@ years=($(echo ${1} | tr "," "\n"))
 for year in "${years[@]}"
 do
     echo "Running year ${year}"
-    cd ${year}
+    pushd ${year} >/dev/null
 
     # Sets days array based on input and current year being run
     update_days ${2}
@@ -129,9 +129,8 @@ do
         runtimes+=(${runtime})
     done
 
-    # Similar to running for each day, we need to change back out of the
-    # directory to run the next year
-    cd ..
+    # Similar to running for each day, we need to change back out of the directory
+    popd >/dev/null
 done
 
 green=$(tput setaf 2)
