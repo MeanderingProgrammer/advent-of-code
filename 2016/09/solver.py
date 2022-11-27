@@ -4,26 +4,26 @@ from commons.aoc_parser import Parser
 
 class Compressed:
 
-    def __init__(self, compressed, recursive):
+    def __init__(self, compressed):
         self.compressed = compressed
-        self.recursive = recursive
-
-    def decompress(self):
-        result, i = [], 0
+    
+    def decompress(self, recursive):
+        result, i = 0, 0
         while i < len(self.compressed):
-            ch = self.compressed[i]
-            if ch == '(':
+            if self.compressed[i] == '(':
                 end, (length, times) = self.get_repeat_details(i+1)
                 i = end + 1
-                section = self.compressed[i:i+length]
-                if self.recursive:
-                    section = Compressed(section, self.recursive).decompress()
-                result.append(section * times)
+                if recursive:
+                    section = self.compressed[i:i+length]
+                    section_length = Compressed(section).decompress(recursive)
+                else:
+                    section_length = length
+                result += section_length * times
                 i += length
             else:
-                result.append(ch)
+                result += 1
                 i += 1
-        return ''.join(result)
+        return result
 
     def get_repeat_details(self, start):
         end = self.compressed.index(')', start)
@@ -41,8 +41,8 @@ def main():
 
 
 def decompress(recursive):
-    compressed = Compressed(Parser().string(), recursive)
-    return len(compressed.decompress())
+    compressed = Compressed(Parser().string())
+    return compressed.decompress(recursive)
 
 
 if __name__ == '__main__':
