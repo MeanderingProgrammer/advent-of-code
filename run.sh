@@ -34,45 +34,38 @@ update_days() {
 
 run_day() {
     day=${1}
+    solution_file=${2}
+    language="${solution_file#*.}"
 
-    pushd ${day} > /dev/null
+    echo "Running day ${day} with ${language}"
 
-    solution_file=$(ls *olver* | tail -1)
-    extension="${solution_file#*.}"
-
-    echo "Running day ${day} with ${extension}"
-
-    if [[ ${extension} == ${JAVA} ]]
+    if [[ ${language} == ${JAVA} ]]
     then
         setup_java
-
         # Runs in <year>/<day> directory, hence the ../..
         class_path=".:../../commons/java/*"
         find . -name '*java' | xargs javac -cp ${class_path} -d .
         time_run java -cp ${class_path} main.Solver
-    elif [[ ${extension} == ${RUST} ]]
+    elif [[ ${language} == ${RUST} ]]
     then
       setup_rust
       time_run cargo run -rq --bin "aoc_${year}_${day}"
-    elif [[ ${extension} == ${PYTHON} ]]
+    elif [[ ${language} == ${PYTHON} ]]
     then
         time_run python3 solver.py
-    elif [[ ${extension} == ${GO} ]]
+    elif [[ ${language} == ${GO} ]]
     then
         time_run go run solver.go
     else
-        echo "Unhandled extension: ${extension}"
+        echo "Unhandled language extension: ${language}"
         exit 1
     fi
-
-    # Since this is being executed in a for loop then we need to make sure
-    # to change out of the directory before running the next iteration
-    popd > /dev/null
 }
 
 # Store array of runtimes and days / years associated with each runtime
 years_ran=()
 days_ran=()
+languages=()
 runtimes=()
 
 years=($(echo ${1} | tr "," "\n"))
@@ -88,10 +81,21 @@ do
     # Run each day specified and update arrays
     for day in "${days[@]}"
     do
-        run_day ${day}
-        years_ran+=(${year})
-        days_ran+=(${day})
-        runtimes+=(${runtime})
+        pushd ${day} > /dev/null
+        solution_files=($(ls *olver*))
+
+        for solution_file in "${solution_files[@]}"
+        do
+            run_day ${day} ${solution_file}
+            years_ran+=(${year})
+            days_ran+=(${day})
+            languages+=(${language})
+            runtimes+=(${runtime})
+        done
+
+        # Since this is being executed in a for loop then we need to make sure
+        # to change out of the directory before running the next iteration
+        popd > /dev/null
     done
 
     # Similar to running for each day, we need to change back out of the directory
@@ -120,12 +124,12 @@ set_color() {
 
 # Generates a table with runtimes for all days / years
 printf "\n"
-printf "| Year | Day | Time (sec.) | \n"
-printf "| ---- | --- | ----------- | \n"
+printf "| Year | Day | Language | Time (sec.) | \n"
+printf "| ---- | --- | -------- | ----------- | \n"
 for i in "${!runtimes[@]}"
 do
     runtime=${runtimes[i]}
     set_color ${runtime}
     printf "${color}"
-    printf "| %4.4s | %3.3s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${runtime}
+    printf "| %4.4s | %3.3s | %8.8s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${languages[i]} ${runtime}
 done

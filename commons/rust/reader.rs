@@ -6,7 +6,11 @@ pub fn read_int() -> Vec<i64> {
     read(|line| line.parse::<i64>().unwrap())
 }
 
-fn read<T>(f: fn(String) -> T) -> Vec<T> {
+pub fn read_lines() -> Vec<String> {
+    read(|line| line)
+}
+
+pub fn read<T>(f: fn(String) -> T) -> Vec<T> {
     let reader = File::open("data.txt")
         .map(|file| BufReader::new(file))
         .expect("could not open 'data.txt'");
