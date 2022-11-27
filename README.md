@@ -4,15 +4,21 @@ Public Repo for Advent of Code Solutions
 
 ![Years Completed](advent-completed.png)
 
-## Getting Started
+## Running
 
-Because I am not great with packaging things together please run:
+Use `run.sh` script to run various days rather than running directly.
 
-```bash
-export PYTHONPATH="<path_to_repo>/advent-of-code"
+Does lots of hacky stuff to set environment variables, compile common directories,
+and set arguments to run commands.
+
+Usage:
+
+```
+./run.sh <years> <days>?
 ```
 
-Once the code is cloned. This is to import the classes located in the commons directory.
+* years: csv of years to run, example `2015,2019`
+* days: (optional) csv of days to run defaults to all days, example `01,03,05`
 
 ## Take Over 10 Seconds (On My Decent Laptop)
 
