@@ -62,11 +62,7 @@ run_day() {
     fi
 }
 
-# Store array of runtimes and days / years associated with each runtime
-years_ran=()
-days_ran=()
-languages=()
-runtimes=()
+echo "year,day,language,runtime" > runtimes.csv
 
 years=($(echo ${1} | tr "," "\n"))
 
@@ -87,10 +83,7 @@ do
         for solution_file in "${solution_files[@]}"
         do
             run_day ${day} ${solution_file}
-            years_ran+=(${year})
-            days_ran+=(${day})
-            languages+=(${language})
-            runtimes+=(${runtime})
+            echo "${year},${day},${language},${runtime}" >> ../../runtimes.csv
         done
 
         # Since this is being executed in a for loop then we need to make sure
@@ -102,34 +95,4 @@ do
     popd > /dev/null
 done
 
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
-red=$(tput setaf 1)
-normal=$(tput sgr0)
-
-set_color() {
-    if (( $(echo "${1} < 0.5" | bc -l) ))
-    then
-        color=${green}
-    elif (( $(echo "${1} < 1.5" | bc -l) ))
-    then
-        color=${normal}
-    elif (( $(echo "${1} < 10.0" | bc -l) ))
-    then
-        color=${yellow}
-    else
-        color=${red}
-    fi
-}
-
-# Generates a table with runtimes for all days / years
-printf "\n"
-printf "| Year | Day | Language | Time (sec.) | \n"
-printf "| ---- | --- | -------- | ----------- | \n"
-for i in "${!runtimes[@]}"
-do
-    runtime=${runtimes[i]}
-    set_color ${runtime}
-    printf "${color}"
-    printf "| %4.4s | %3.3s | %8.8s | %11.11s | \n" ${years_ran[i]} ${days_ran[i]} ${languages[i]} ${runtime}
-done
+python3 display_runtimes.py
