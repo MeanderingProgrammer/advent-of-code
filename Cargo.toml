@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
+name = "aoc_2021_01"
+path = "2021/01/solver.rs"
+
+[[bin]]
+name = "aoc_2021_02"
+path = "2021/02/solver.rs"
+
+[[bin]]
 name = "aoc_2022_01"
 path = "2022/01/solver.rs"
 
@@ -13,3 +21,5 @@ path = "2022/02/solver.rs"
 
 [dependencies]
 aoc_lib = { path = "commons/rust/" }
+strum = "0.24"
+strum_macros = "0.24"
