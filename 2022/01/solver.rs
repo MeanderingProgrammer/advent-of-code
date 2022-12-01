@@ -3,22 +3,21 @@ use aoc_lib::reader;
 
 
 fn main() {
-    let values = reader::read_int();
-    answer::part1(1292, window_increases(values.as_slice(), 1));
-    answer::part2(1262, window_increases(values.as_slice(), 3));
-}
+    let lines = reader::read_lines();
+    let elf_items: Vec<Vec<i64>> = lines.split(|line| line.is_empty())
+        .map(|group| {
+            group.iter()
+                .map(|line| line.parse::<i64>().unwrap())
+                .collect()
+        })
+        .collect();
+        
+    let mut elf_calories: Vec<i64> = elf_items.iter()
+        .map(|item| item.iter().sum())
+        .collect();
+    elf_calories.sort();
+    elf_calories.reverse();
 
-fn window_increases(values: &[i64], window_size: usize) -> i64 {
-    let mut result = 0;
-    for i in 0..values.len()-window_size {
-        if window_sum(values, window_size, i + 1) > window_sum(values, window_size, i) {
-            result += 1;
-        }
-    }
-    result
-}
-
-fn window_sum(values: &[i64], window_size: usize, start_index: usize) -> i64 {
-    let window = &values[start_index..start_index+window_size];
-    window.iter().sum()
+    answer::part1(69501, elf_calories[0]);
+    answer::part2(202346, elf_calories[..3].iter().sum());
 }
