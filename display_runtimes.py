@@ -5,6 +5,14 @@ from termcolor import colored
 def main():
     df = pd.read_csv('runtimes.csv')
 
+    print('ALL')
+    print_df(df)
+
+    print('SLOW')
+    print_df(df[df['runtime'] > 10])
+
+
+def print_df(df):
     markdown = df.to_markdown(index=False)
     rows = markdown.split('\n')
     print('\n'.join(rows[:2]))
@@ -14,14 +22,14 @@ def main():
 
 def get_color(row):
     runtime = row['runtime']
-    if runtime < 0.5:
-        return 'green'
-    elif runtime < 1.5:
-        return None
-    if runtime < 10:
-        return 'yellow'
-    else:
-        return 'red'
+    color_predicates = {
+        'green': lambda x: 0 <= x < 0.5,
+        'yellow': lambda x: 0.5 <= x < 10,
+        'red': lambda x: 10 <= x,
+    }
+    for color, predicate in color_predicates.items():
+        if predicate(row['runtime']):
+            return color
 
 
 if __name__ == '__main__':
