@@ -1,47 +1,103 @@
 use aoc_lib::answer;
-use aoc_lib::point::Point;
 use aoc_lib::reader;
-use std::str::FromStr;
-use strum_macros::EnumString;
 
-#[derive(Debug, EnumString)]
-#[strum(ascii_case_insensitive)]
-enum Direction {
-    Forward,
-    Down,
-    Up,
+#[derive(Clone, Debug, PartialEq)]
+enum Hand {
+    Rock,
+    Paper,
+    Scissors,
+}
+
+impl Hand {
+    fn value(&self) -> i64 {
+        return match self {
+            Hand::Rock => 1,
+            Hand::Paper => 2,
+            Hand::Scissors => 3,
+        }
+    }
+
+    fn beats(&self) -> Hand {
+        return match self {
+            Hand::Rock => Hand::Scissors,
+            Hand::Paper => Hand::Rock,
+            Hand::Scissors => Hand::Paper,
+        }
+    }
+
+    fn loses(&self) -> Hand {
+        return match self {
+            Hand::Rock => Hand::Paper,
+            Hand::Paper => Hand::Scissors,
+            Hand::Scissors => Hand::Rock,
+        }
+    }
 }
 
 #[derive(Debug)]
-struct Instruction {
-    direction: Direction,
-    amount: i64,
+enum Result {
+    Win,
+    Lose,
+    Draw,
+}
+
+impl Result {
+    fn value(&self) -> i64 {
+        return match self {
+            Result::Win => 6,
+            Result::Lose => 0,
+            Result::Draw => 3,
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Round {
+    oponent: Hand,
+    me: (Hand, Result),
+}
+
+impl Round {
+    fn score_play(&self) -> i64 {
+        let result = if self.oponent == self.me.0 {
+            Result::Draw
+        } else if self.oponent.beats() == self.me.0 {
+            Result::Lose
+        } else {
+            Result::Win
+        };
+        return result.value() + self.me.0.value();
+    }
+
+    fn score_result(&self) -> i64 {
+        let hand = match self.me.1 {
+            Result::Draw => self.oponent.clone(),
+            Result::Lose => self.oponent.beats().clone(),
+            Result::Win => self.oponent.loses().clone(),
+        };
+        return hand.value() + self.me.1.value();
+    }
 }
 
 fn main() {
-    let instructions = reader::read(|line| {
-        let (direction, amount) = line.split_once(" ").unwrap();
-        Instruction {
-            direction: Direction::from_str(direction).unwrap(),
-            amount: amount.parse::<i64>().unwrap(),
-        }
-    });
-
-    let mut p = Point::new(3);
-    instructions.iter().for_each(|instruction| {
-        match instruction.direction {
-            Direction::Forward => {
-                // X (horizontal) works the same way in parts 1 & 2
-                p.add_x(instruction.amount);
-                // Y is used for part 2 depth and unused by part 1
-                p.add_y(p.z() * instruction.amount);
+    let rounds = reader::read(|line| {
+        let (oponent, me) = line.split_once(" ").unwrap();
+        Round {
+            oponent: match oponent {
+                "A" => Hand::Rock,
+                "B" => Hand::Paper,
+                "C" => Hand::Scissors,
+                _ => panic!("Unknown oppenent value {}", oponent),
             },
-            // Z functions as depth for part 1 & aim for part 2
-            Direction::Down => p.add_z(instruction.amount),
-            Direction::Up => p.add_z(-1 * instruction.amount),
+            me: match me {
+                "X" => (Hand::Rock, Result::Lose),
+                "Y" => (Hand::Paper, Result::Draw),
+                "Z" => (Hand::Scissors, Result::Win),
+                _ => panic!("Unknown me value {}", me)
+            },
         }
     });
 
-    answer::part1(1459206, p.x() * p.z());
-    answer::part2(1320534480, p.x() * p.y());
+    answer::part1(9651, rounds.iter().map(|round| round.score_play()).sum());
+    answer::part2(10560, rounds.iter().map(|round| round.score_result()).sum());
 }
