@@ -7,15 +7,15 @@ pub fn read_int() -> Vec<i64> {
 }
 
 pub fn read_lines() -> Vec<String> {
-    read(|line| line)
+    read(|line| line.to_string())
 }
 
-pub fn read<T>(f: fn(String) -> T) -> Vec<T> {
+pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
     let reader = File::open("data.txt")
         .map(|file| BufReader::new(file))
         .expect("could not open 'data.txt'");
 
     reader.lines()
-        .map(|line| f(line.unwrap()))
+        .map(|line| f(&line.unwrap()))
         .collect()
 }
