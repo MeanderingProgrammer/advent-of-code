@@ -23,7 +23,6 @@ def print_df(label, df):
 
 
 def get_color(row):
-    runtime = row['runtime']
     color_predicates = {
         'green': lambda x: 0 <= x < 0.5,
         'yellow': lambda x: 0.5 <= x < 10,
