@@ -25,7 +25,7 @@ impl Backpack {
 
 fn main() {
     let backpacks = reader::read(|line| Backpack {
-        content: line,
+        content: line.to_string(),
     });
     answer::part1(8298, backpacks.iter().map(|backpack| priority(backpack.shared())).sum());
     answer::part2(2708, backpacks.chunks(3).map(|group| priority(group_overlap(group))).sum());
@@ -34,7 +34,7 @@ fn main() {
 fn priority(ch: char) -> u32 {
     let base = ch.to_digit(36).unwrap() - 9;
     let additional = if ch.is_uppercase() { 26 } else { 0 };
-    base + additional 
+    base + additional
 }
 
 fn group_overlap(group: &[Backpack]) -> char {
