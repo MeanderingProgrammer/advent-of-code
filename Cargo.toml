@@ -23,6 +23,10 @@ path = "2022/02/solver.rs"
 name = "aoc_2022_03"
 path = "2022/03/solver.rs"
 
+[[bin]]
+name = "aoc_2022_04"
+path = "2022/04/solver.rs"
+
 [dependencies]
 aoc_lib = { path = "commons/rust/" }
 strum = "0.24"
