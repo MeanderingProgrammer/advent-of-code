@@ -1,6 +1,6 @@
 setup_python() {
     # Setup PYTHONPATH so commons imports work
-    export PYTHONPATH=$(pwd)
+    export PYTHONPATH="$(pwd)/commons/python/"
 }
 
 delete_java_classes() {
