@@ -4,15 +4,16 @@ from termcolor import colored
 
 def main():
     df = pd.read_csv('runtimes.csv')
-
-    print('ALL')
-    print_df(df)
-
-    print('SLOW')
-    print_df(df[df['runtime'] > 10])
+    print_df('ALL', df)
+    print_df('SLOW', df[df['runtime'] > 10])
 
 
-def print_df(df):
+def print_df(label, df):
+    if df.shape[0] == 0:
+        print('{}: NONE'.format(label))
+        return
+
+    print(label)
     markdown = df.to_markdown(index=False)
     rows = markdown.split('\n')
     print('\n'.join(rows[:2]))
