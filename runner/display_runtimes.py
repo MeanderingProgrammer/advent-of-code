@@ -1,9 +1,10 @@
+import os
 import pandas as pd
 from termcolor import colored
 
 
 def main():
-    df = pd.read_csv('runtimes.csv')
+    df = pd.read_csv('{}/runtimes.csv'.format(os.path.dirname(__file__)))
     print_df('ALL', df)
     print_df('SLOW', df[df['runtime'] > 10])
 

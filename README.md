@@ -6,7 +6,7 @@ Public Repo for Advent of Code Solutions
 
 ## Running
 
-Use `run.sh` script to run various days rather than running directly.
+Use `runner/run.sh` script to run various days rather than running directly.
 
 Does lots of hacky stuff to set environment variables, compile common directories,
 and set arguments to run commands.
@@ -14,7 +14,7 @@ and set arguments to run commands.
 Usage:
 
 ```
-./run.sh <years> <days>?
+./runner/run.sh <years> <days>?
 ```
 
 * years: csv of years to run, example `2015,2019`

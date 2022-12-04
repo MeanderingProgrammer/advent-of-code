@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-source ./language-setup.sh
+source ./runner/language-setup.sh
 
 setup_python
 
@@ -62,7 +62,7 @@ run_day() {
     fi
 }
 
-echo "year,day,language,runtime" > runtimes.csv
+echo "year,day,language,runtime" > runner/runtimes.csv
 
 years=($(echo ${1} | tr "," "\n"))
 
@@ -83,7 +83,7 @@ do
         for solution_file in "${solution_files[@]}"
         do
             run_day ${day} ${solution_file}
-            echo "${year},${day},${language},${runtime}" >> ../../runtimes.csv
+            echo "${year},${day},${language},${runtime}" >> ../../runner/runtimes.csv
         done
 
         # Since this is being executed in a for loop then we need to make sure
@@ -95,4 +95,4 @@ do
     popd > /dev/null
 done
 
-python3 display_runtimes.py
+python3 runner/display_runtimes.py
