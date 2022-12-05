@@ -66,7 +66,7 @@ def run_day(factory: LanguageFactory, day: Day) -> List[RuntimeInfo]:
 
     runtimes = []
     for solution_file in solution_files:
-        language = factory.get_language(solution_file)
+        language = factory.get_by_suffix(solution_file)
         runtime = run_language(language, day)
         runtimes.append(runtime)
     return runtimes
@@ -74,8 +74,8 @@ def run_day(factory: LanguageFactory, day: Day) -> List[RuntimeInfo]:
 
 def run_language(language: Language, day: Day) -> RuntimeInfo:
     print(f'Running day {day.day} with {language.name}')
-    language.setup()
-    language.compile()
+    language.initial_setup()
+    language.compile(day)
     runtime = language.run(day)
     print(f'Runtime: {runtime}')
     return RuntimeInfo(day, language.name, runtime)

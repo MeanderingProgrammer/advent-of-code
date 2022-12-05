@@ -10,10 +10,15 @@ class Language(abc.ABC):
     
     @property
     @abc.abstractmethod
-    def name(self):
+    def name(self) -> str:
+        pass
+
+    @property
+    @abc.abstractmethod
+    def suffix(self) -> str:
         pass
     
-    def setup(self):
+    def initial_setup(self):
         if not self.__setup:
             self._run_setup()
         self.__setup = True
@@ -23,7 +28,7 @@ class Language(abc.ABC):
         pass
     
     @abc.abstractmethod
-    def compile(self):
+    def compile(self, day: Day):
         pass
     
     def run(self, day: Day) -> float:
@@ -38,6 +43,6 @@ class Language(abc.ABC):
 
 class InterprettedLanguage(Language):
 
-    def compile(self):
+    def compile(self, day: Day):
          # Interpreted languages do not need to be compiled
         pass
