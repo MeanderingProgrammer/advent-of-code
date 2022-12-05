@@ -3,8 +3,8 @@ use aoc_lib::reader;
 
 
 fn main() {
-    let lines = reader::read_lines();
-    println!("{:?}", lines);
+    let data = reader::read_lines();
+    println!("{:?}", data);
 
     //answer::part1(v1, s1);
     //answer::part2(v2, s2);
