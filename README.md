@@ -6,7 +6,7 @@ Public Repo for Advent of Code Solutions
 
 ## Running
 
-Use `runner/run.py` script to run various days rather than running directly.
+Use `scripts/run.py` script to run various days rather than running directly.
 
 Does lots of hacky stuff to set environment variables, compile common directories,
 and set arguments to run commands.
@@ -14,7 +14,7 @@ and set arguments to run commands.
 Usage:
 
 ```
-./runner/run.sh --years <years>? --days <days>?
+./scripts/run.py --years <years>? --days <days>?
 ```
 
 * years: (optional) list of years to run, defaults to all years, example `2015 2019`
@@ -29,7 +29,7 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 Usage:
 
 ```
-./template/generate.sh --year <year> --day <day> --lang <lang>
+./template/generate.py --year <year> --day <day> --lang <lang>
 ```
 
 * year: Year to generate starting files for, example `2022`

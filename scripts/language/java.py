@@ -10,8 +10,12 @@ COMMONS_DIRECTORY = '../../commons/java'
 class Java(Language):
 
     @property
-    def name(self):
+    def name(self) -> str:
         return 'java'
+    
+    @property
+    def suffix(self) -> str:
+        return '.java'
 
     def _run_setup(self):
         os.environ['CLASSPATH'] = f'.:{COMMONS_DIRECTORY}/*'
@@ -46,7 +50,7 @@ class Java(Language):
         if not Path(uber_jar).exists():
             raise Exception(f'Failed to generate Java uber jar: {uber_jar}')
     
-    def compile(self):
+    def compile(self, day: Day):
         # Delete existing classes, that way if compiling fails nothing 
         # gets run, as opposed to runnning with previous artifacts
         self.__delete_classes()
