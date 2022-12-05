@@ -8,6 +8,7 @@ from typing import List
 
 from component.display_runtimes import Displayer
 from component.language_factory import LanguageFactory
+from component.run_template import RunTemplate
 from language.language import Language
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
@@ -83,8 +84,16 @@ def run_language(language: Language, day: Day) -> RuntimeInfo:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--template', type=str)
     parser.add_argument('--years', type=str, nargs='+')
     parser.add_argument('--days', type=str, nargs='+')
 
     args = parser.parse_args()
-    main(args.years or [], args.days or [])
+    if args.template is not None:
+        if not (args.years is None and args.days is None):
+            raise Exception('If template is used, years and days must be undefined')
+        years, days = RunTemplate().get(args.template)
+    else:
+        years = args.years or []
+        days = args.days or []
+    main(years, days)
