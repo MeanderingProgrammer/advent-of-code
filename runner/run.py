@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import os
 
@@ -14,7 +16,6 @@ from pojo.runtime_info import RuntimeInfo
 def main(years: List[str], days: List[str]):
     factory = LanguageFactory()
     runtimes = get_runtimes(factory, years, days)
-    print(runtimes)
     Displayer(runtimes).display()
 
 
@@ -24,11 +25,11 @@ def get_runtimes(
     days: List[str],
 ) -> List[RuntimeInfo]:
     runtimes = []
-    for year in years or get_dirs_wth_prefix('20'):
+    for year in get_dirs_wth_prefix(years, '20'):
         print(f'Running year {year}')
         os.chdir(year)
 
-        for day in days or get_dirs_wth_prefix(None):
+        for day in get_dirs_wth_prefix(days, None):
             os.chdir(day)
             runtimes.extend(run_day(factory, Day(year, day)))
 
@@ -40,15 +41,17 @@ def get_runtimes(
     return runtimes
 
 
-def get_dirs_wth_prefix(valid_prefix):
+def get_dirs_wth_prefix(configured_value: List[str], valid_prefix):
+    if len(configured_value) > 0:
+        return configured_value
+
     def prefix_predicate(dir_name):
         return valid_prefix is None or dir_name.startswith(valid_prefix)
-    names = []
-    for file_path in Path('.').iterdir():
-        file_name = file_path.name
-        if file_path.is_dir() and prefix_predicate(file_name):
-            names.append(file_name)
-    return names
+    return [
+        file_path.name
+        for file_path in Path('.').iterdir()
+        if file_path.is_dir() and prefix_predicate(file_path.name)
+    ]
 
 
 def run_day(factory: LanguageFactory, day: Day) -> List[RuntimeInfo]:
