@@ -3,9 +3,6 @@
 *.iml
 out
 
-# Run Script Temp Files
-runtimes.csv
-
 # Python
 __pycache__
 *.pyc

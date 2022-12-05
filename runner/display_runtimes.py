@@ -3,8 +3,7 @@ import pandas as pd
 from termcolor import colored
 
 
-def main():
-    df = pd.read_csv('{}/runtimes.csv'.format(os.path.dirname(__file__)))
+def display(df):
     print_df('ALL', df)
     print_df('SLOW', df[df['runtime'] > 10])
 
@@ -34,4 +33,4 @@ def get_color(row):
 
 
 if __name__ == '__main__':
-    main()
+    display(pd.read_csv('{}/runtimes.csv'.format(os.path.dirname(__file__))))

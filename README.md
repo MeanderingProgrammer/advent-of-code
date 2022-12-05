@@ -6,7 +6,7 @@ Public Repo for Advent of Code Solutions
 
 ## Running
 
-Use `runner/run.sh` script to run various days rather than running directly.
+Use `runner/run.py` script to run various days rather than running directly.
 
 Does lots of hacky stuff to set environment variables, compile common directories,
 and set arguments to run commands.
@@ -14,11 +14,11 @@ and set arguments to run commands.
 Usage:
 
 ```
-./runner/run.sh <years> <days>?
+python runner/run.sh --years <years>? --days <days>?
 ```
 
-* years: csv of years to run, example `2015,2019`
-* days: (optional) csv of days to run defaults to all days, example `01,03,05`
+* years: (optional) list of years to run,,  defaults to all years, example `2015 2019`
+* days: (optional) list of days to run, defaults to all days, example `01 03 05`
 
 ## Take Over 10 Seconds (On My Decent Laptop)
 
