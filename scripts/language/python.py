@@ -10,8 +10,8 @@ class Python(InterprettedLanguage):
         return 'python'
     
     @property
-    def suffix(self) -> str:
-        return '.py'
+    def solution_file(self) -> str:
+        return 'solver.py'
 
     def _run_setup(self):
         pwd = os.environ['PWD']
@@ -19,3 +19,7 @@ class Python(InterprettedLanguage):
     
     def _do_run(self, day: Day):
         os.system('python3 solver.py')
+    
+    def template_processing(self, day: Day):
+        # No additional template processing needed
+        pass

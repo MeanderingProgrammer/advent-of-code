@@ -1,5 +1,6 @@
 import abc
 import time
+from pathlib import Path
 from pojo.day import Day
 
 
@@ -15,9 +16,13 @@ class Language(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def suffix(self) -> str:
+    def solution_file(self) -> str:
         pass
-    
+
+    @property
+    def suffix(self) -> str:
+        return Path(self.solution_file).suffix
+
     def initial_setup(self):
         if not self.__setup:
             self._run_setup()
@@ -38,6 +43,10 @@ class Language(abc.ABC):
 
     @abc.abstractmethod
     def _do_run(self, day: Day):
+        pass
+
+    @abc.abstractmethod
+    def template_processing(self, day: Day):
         pass
 
 

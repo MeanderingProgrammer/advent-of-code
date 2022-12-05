@@ -10,8 +10,8 @@ class Go(Language):
         return 'golang'
     
     @property
-    def suffix(self) -> str:
-        return '.go'
+    def solution_file(self) -> str:
+        return 'solver.go'
 
     def _run_setup(self):
         pass
@@ -22,3 +22,7 @@ class Go(Language):
     
     def _do_run(self, day: Day):
         os.system('go run solver.go')
+    
+    def template_processing(self, day: Day):
+        # No additional template processing needed
+        pass
