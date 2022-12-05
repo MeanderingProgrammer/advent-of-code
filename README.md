@@ -14,9 +14,10 @@ and set arguments to run commands.
 Usage:
 
 ```
-./scripts/run.py --years <years>? --days <days>?
+./scripts/run.py --template <template_name>? --years <years>? --days <days>?
 ```
 
+* template_name: (optional) name of a template that targets specific years / days, example `latest`
 * years: (optional) list of years to run, defaults to all years, example `2015 2019`
 * days: (optional) list of days to run, defaults to all days, example `01 03 05`
 
