@@ -1,20 +1,17 @@
 import os
-from language.language import Language
+from language.language import InterprettedLanguage
 from pojo.day import Day
 
 
-class Python(Language):
+class Python(InterprettedLanguage):
 
     @property
     def name(self):
         return 'python'
 
     def _run_setup(self):
-        os.environ['PYTHONPATH'] = '{}/commons/python/'.format(os.environ['PWD'])
+        pwd = os.environ['PWD']
+        os.environ['PYTHONPATH'] = f'{pwd}/commons/python/'
     
-    def compile(self):
-        # Python is an interpreted language, nothing to compile
-        pass
-    
-    def run(self, day: Day):
+    def _do_run(self, day: Day):
         os.system('python3 solver.py')

@@ -1,4 +1,5 @@
 import abc
+import time
 from pojo.day import Day
 
 
@@ -25,6 +26,18 @@ class Language(abc.ABC):
     def compile(self):
         pass
     
+    def run(self, day: Day) -> float:
+        start = time.time()
+        self._do_run(day)
+        return time.time() - start
+
     @abc.abstractmethod
-    def run(self, day: Day):
+    def _do_run(self, day: Day):
+        pass
+
+
+class InterprettedLanguage(Language):
+
+    def compile(self):
+         # Interpreted languages do not need to be compiled
         pass

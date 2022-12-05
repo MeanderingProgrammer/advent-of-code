@@ -16,5 +16,5 @@ class Go(Language):
         # For now we use go run, which both compiles and runs our code
         pass
     
-    def run(self, day: Day):
+    def _do_run(self, day: Day):
         os.system('go run solver.go')

@@ -17,5 +17,5 @@ class Rust(Language):
         # need to be individually compiled
         pass
     
-    def run(self, day: Day):
+    def _do_run(self, day: Day):
         os.system(f'cargo run -rq --bin "aoc_{day.year}_{day.day}"')
