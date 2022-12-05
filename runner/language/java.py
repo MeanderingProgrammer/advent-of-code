@@ -23,7 +23,7 @@ class Java(Language):
             'answer/Answer',
             'pojo/Position',
         ])
-        # Change back to directory we were running in after compiling our uber jar
+        # Change back to directory we were running in
         os.chdir(run_directory)
     
     def _create_uber_jar(self, file_paths):
@@ -32,7 +32,7 @@ class Java(Language):
         # Delete any previously generated class files to avoid masking failures
         self.__delete_classes()
 
-        # Remove previously created uber jar to avoid re-using old version on failure
+        # Remove existing uber jar to avoid using old version on failure
         os.system(f'rm -f {uber_jar}')
 
         class_files = []
@@ -47,13 +47,13 @@ class Java(Language):
             raise Exception(f'Failed to generate Java uber jar: {uber_jar}')
     
     def compile(self):
-        # Delete existing classes prior to compiling, that way if compiling fails nothing gets
-        # run, as opposed to runnning with previously compiled artifacts
+        # Delete existing classes, that way if compiling fails nothing 
+        # gets run, as opposed to runnning with previous artifacts
         self.__delete_classes()
         os.system(f'find . -name "*java" | xargs javac -d .')
     
     def __delete_classes(self):
         os.system('find . -name "*class" | xargs rm -f')
     
-    def run(self, day: Day):
+    def _do_run(self, day: Day):
         os.system(f'java main.Solver')
