@@ -18,8 +18,10 @@ class LanguageFactory:
     def get_by_suffix(self, solution_file) -> Language:
         return self._get_by(solution_file.suffix, lambda x: x.suffix)
     
+    def get_by_name(self, name) -> Language:
+        return self._get_by(name, lambda x: x.name)
+    
     def _get_by(self, value, extractor) -> Language:
-        print(value)
         mapping = { extractor(language): language for language in self.__languages }
         if value not in mapping:
             raise Exception(f'{value} is not one of {list(mapping.keys())}')

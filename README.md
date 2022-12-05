@@ -29,7 +29,7 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 Usage:
 
 ```
-./template/generate.py --year <year> --day <day> --lang <lang>
+./scripts/generate.py --year <year> --day <day> --lang <lang>
 ```
 
 * year: Year to generate starting files for, example `2022`

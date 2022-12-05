@@ -14,8 +14,8 @@ class Java(Language):
         return 'java'
     
     @property
-    def suffix(self) -> str:
-        return '.java'
+    def solution_file(self) -> str:
+        return 'Solver.java'
 
     def _run_setup(self):
         os.environ['CLASSPATH'] = f'.:{COMMONS_DIRECTORY}/*'
@@ -61,3 +61,7 @@ class Java(Language):
     
     def _do_run(self, day: Day):
         os.system(f'java main.Solver')
+    
+    def template_processing(self, day: Day):
+        # No additional template processing needed
+        pass
