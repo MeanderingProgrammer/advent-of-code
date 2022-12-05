@@ -14,11 +14,27 @@ and set arguments to run commands.
 Usage:
 
 ```
-python runner/run.sh --years <years>? --days <days>?
+./runner/run.sh --years <years>? --days <days>?
 ```
 
-* years: (optional) list of years to run,,  defaults to all years, example `2015 2019`
+* years: (optional) list of years to run, defaults to all years, example `2015 2019`
 * days: (optional) list of days to run, defaults to all days, example `01 03 05`
+
+## Generate Template
+
+Generates initial files and empty data file for the specified language.
+
+Will do any other required setup, such as updating `Cargo.toml` for `rust`.
+
+Usage:
+
+```
+./template/generate.sh --year <year> --day <day> --lang <lang>
+```
+
+* year: Year to generate starting files for, example `2022`
+* day: Day to generate starting files for, example `05`
+* lang: Language to generate starting files for, must be supported, example `rust`
 
 ## Take Over 10 Seconds (On My Decent Laptop)
 
