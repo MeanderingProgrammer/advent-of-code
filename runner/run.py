@@ -1,7 +1,6 @@
 import argparse
 import os
 import time
-import pandas as pd
 from pathlib import Path
 from display_runtimes import display
 from language_factory import LanguageFactory
@@ -26,7 +25,7 @@ def main(years, days):
         # Change back out of year directory
         os.chdir('..')
     
-    display(pd.DataFrame(runtimes))
+    display(runtimes)
 
 
 def get_all(valid_prefix):
