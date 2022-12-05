@@ -1,8 +1,3 @@
-[package]
-name = "advent_of_code"
-version = "0.1.0"
-edition = "2021"
-
 [[bin]]
 name = "aoc_2021_01"
 path = "2021/01/solver.rs"
@@ -27,7 +22,18 @@ path = "2022/03/solver.rs"
 name = "aoc_2022_04"
 path = "2022/04/solver.rs"
 
+[[bin]]
+name = "aoc_2022_05"
+path = "2022/05/solver.rs"
+
+[package]
+name = "advent_of_code"
+version = "0.1.0"
+edition = "2021"
+
 [dependencies]
-aoc_lib = { path = "commons/rust/" }
 strum = "0.24"
 strum_macros = "0.24"
+
+[dependencies.aoc_lib]
+path = "commons/rust/"
