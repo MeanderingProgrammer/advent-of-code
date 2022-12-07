@@ -3,6 +3,9 @@
 *.iml
 out
 
+# Used by helper scripts
+.adventofcode.session
+
 # Python
 __pycache__
 *.pyc

@@ -37,6 +37,23 @@ Usage:
 * day: Day to generate starting files for, example `05`
 * lang: Language to generate starting files for, must be supported, example `rust`
 
+### Install aoc-cli
+
+Template generation script can use `aoc-cli` to download input: [docs](https://github.com/scarvalhojr/aoc-cli).
+
+* The presense of the `.adventofcode.session` in the repo top level directory enables this logic
+* To set this up create the file and follow the instructions in the `README` of `aoc-cli` to get your session cookie
+
+This library relies on openssl which you will also need to install if you don't already have it.
+
+Commands:
+
+```
+sudo apt-get install pkg-config libssl-dev
+cargo install aoc-cli
+touch .adventofcode.session
+```
+
 ## Take Over 10 Seconds (On My Decent Laptop)
 
 | Year | Day  | Time    |
