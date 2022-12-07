@@ -26,12 +26,17 @@ path = "2022/04/solver.rs"
 name = "aoc_2022_05"
 path = "2022/05/solver.rs"
 
+[[bin]]
+name = "aoc_2022_06"
+path = "2022/06/solver.rs"
+
 [package]
 name = "advent_of_code"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+itertools = "0.10.5"
 strum = "0.24"
 strum_macros = "0.24"
 

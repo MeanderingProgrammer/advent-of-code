@@ -10,6 +10,10 @@ pub fn read_lines() -> Vec<String> {
     read(|line| line.to_string())
 }
 
+pub fn read_chars() -> Vec<char> {
+    read_lines()[0].chars().collect()
+}
+
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
     let reader = File::open("data.txt")
         .map(|file| BufReader::new(file))
