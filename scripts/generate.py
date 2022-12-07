@@ -7,29 +7,62 @@ from pathlib import Path
 from component.language_factory import LanguageFactory
 from pojo.day import Day
 
+ADVENT_COOKIE_FILE = '.adventofcode.session'
+
 
 def main(day: Day, language_name: str):
-    factory = LanguageFactory()
-    language = factory.get_by_name(language_name)
+    language = LanguageFactory().get_by_name(language_name)
+    date_path = get_date_path(day)
 
+    #solution_path = get_solution_path(language, date_path)
+    # At this point we can assume this is the first time we are processing
+    # this day for this language, since the solution path does not exist
+    #language.template_processing(day)
+
+    #copy_template_to(language, solution_path)
+    get_data_if_necessary(day, date_path)
+
+
+def get_date_path(day: Day):
     # Create date directory, okay if it already exists
     date_path = Path(day.year).joinpath(day.day)
     date_path.mkdir(parents=True, exist_ok=True)
+    return date_path
 
+
+def get_solution_path(language, date_path):
     solution_path = date_path.joinpath(language.solution_file)
     if solution_path.exists():
         raise Exception(f'Solution already exists under: {solution_path}')
-    
+    return solution_path
+
+
+def copy_template_to(language, solution_path):
     template_file = f'scripts/templates/{language.solution_file}'
     print(f'Copying {template_file} to {solution_path}')
     os.system(f'cp {template_file} {solution_path}')
-    
+
+
+def get_data_if_necessary(day: Day, date_path):
     data_path = date_path.joinpath('data.txt')
-    if not data_path.exists():
-        print(f'Creating data file under: {data_path}')
-        data_path.touch()
-    
-    language.template_processing(day)
+    #if not data_path.exists():
+    #    print(f'Creating data file under: {data_path}')
+    #    if Path(ADVENT_COOKIE_FILE).exists():
+    #        download_input()
+    #    data_path.touch()
+    if Path(ADVENT_COOKIE_FILE).exists():
+        download_input(day, data_path)
+
+
+def download_input(day: Day, data_path):
+    # TODO add the system command
+    # aoc download \
+    #   --year 2022 --day 07 \
+    #   --input-file data.txt \
+    #   --input-only \
+    #   --session-file ./.adventofcode.session
+    print('Downloading input using aoc-cli')
+    print(f'')
 
 
 if __name__ == '__main__':
