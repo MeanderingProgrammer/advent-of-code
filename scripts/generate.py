@@ -14,12 +14,12 @@ def main(day: Day, language_name: str):
     language = LanguageFactory().get_by_name(language_name)
     date_path = get_date_path(day)
 
-    #solution_path = get_solution_path(language, date_path)
+    solution_path = get_solution_path(language, date_path)
     # At this point we can assume this is the first time we are processing
     # this day for this language, since the solution path does not exist
-    #language.template_processing(day)
+    language.template_processing(day)
 
-    #copy_template_to(language, solution_path)
+    copy_template_to(language, solution_path)
     get_data_if_necessary(day, date_path)
 
 
@@ -45,24 +45,24 @@ def copy_template_to(language, solution_path):
 
 def get_data_if_necessary(day: Day, date_path):
     data_path = date_path.joinpath('data.txt')
-    #if not data_path.exists():
-    #    print(f'Creating data file under: {data_path}')
-    #    if Path(ADVENT_COOKIE_FILE).exists():
-    #        download_input()
-    #    data_path.touch()
-    if Path(ADVENT_COOKIE_FILE).exists():
-        download_input(day, data_path)
+    if not data_path.exists():
+        print(f'Creating data file under: {data_path}')
+        if Path(ADVENT_COOKIE_FILE).exists():
+            print('Downloading input using aoc-cli')
+            download_input(day, data_path)
+        else:
+            print('Creating empty {data_path} since aoc-cli is not setup')
+            data_path.touch()
+    else:
+        print(f'{data_path} already exists, leaving as is')
 
 
 def download_input(day: Day, data_path):
-    # TODO add the system command
-    # aoc download \
-    #   --year 2022 --day 07 \
-    #   --input-file data.txt \
-    #   --input-only \
-    #   --session-file ./.adventofcode.session
-    print('Downloading input using aoc-cli')
-    print(f'')
+    os.system(f'''aoc download  \\
+        --year {day.year} --day {day.day} \\
+        --input-file {data_path} \\
+        --input-only \\
+        --session-file ./.adventofcode.session''')
 
 
 if __name__ == '__main__':
