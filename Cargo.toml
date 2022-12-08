@@ -30,6 +30,10 @@ path = "2022/05/solver.rs"
 name = "aoc_2022_06"
 path = "2022/06/solver.rs"
 
+[[bin]]
+name = "aoc_2022_07"
+path = "2022/07/solver.rs"
+
 [package]
 name = "advent_of_code"
 version = "0.1.0"
