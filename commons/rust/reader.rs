@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+const TEST: bool = false;
 
 pub fn read_int() -> Vec<i64> {
     read(|line| line.parse::<i64>().unwrap())
@@ -15,9 +16,10 @@ pub fn read_chars() -> Vec<char> {
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
-    let reader = File::open("data.txt")
+    let file_name = if TEST { "sample.txt" } else { "data.txt" };
+    let reader = File::open(file_name)
         .map(|file| BufReader::new(file))
-        .expect("could not open 'data.txt'");
+        .expect(&format!("could not open '{}'", file_name));
 
     reader.lines()
         .map(|line| f(&line.unwrap()))
