@@ -32,13 +32,13 @@ fn main() {
         match instruction.direction {
             Direction::Forward => {
                 // X (horizontal) works the same way in parts 1 & 2
-                p.add_x(instruction.amount);
+                p = p.add_x(instruction.amount);
                 // Y is used for part 2 depth and unused by part 1
-                p.add_y(p.z() * instruction.amount);
+                p = p.add_y(p.z() * instruction.amount);
             },
             // Z functions as depth for part 1 & aim for part 2
-            Direction::Down => p.add_z(instruction.amount),
-            Direction::Up => p.add_z(-1 * instruction.amount),
+            Direction::Down => p = p.add_z(instruction.amount),
+            Direction::Up => p = p.add_z(-1 * instruction.amount),
         }
     });
 

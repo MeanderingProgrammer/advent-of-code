@@ -1,3 +1,5 @@
+use crate::grid::Grid;
+use crate::point::Point;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -13,6 +15,19 @@ pub fn read_lines() -> Vec<String> {
 
 pub fn read_chars() -> Vec<char> {
     read_lines()[0].chars().collect()
+}
+
+pub fn read_grid() -> Grid<i64> {
+    let mut grid: Grid<i64> = Grid::new();
+    for (y, line) in read_lines().iter().enumerate() {
+        for (x, ch) in line.char_indices() {
+            grid.add(
+                Point::new_2d(x as i64, y as i64), 
+                ch.to_digit(10).unwrap() as i64,
+            );
+        }
+    }
+    grid
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
