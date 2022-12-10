@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import List
 
+from component.day_factory import DayFactory
 from component.display_runtimes import Displayer
 from component.language_factory import LanguageFactory
 from component.run_template import RunTemplate
@@ -15,55 +16,28 @@ from pojo.runtime_info import RuntimeInfo
 
 
 def main(years: List[str], days: List[str]):
+    run_days = DayFactory(years, days).get_days()
+    if len(run_days) == 0:
+        raise Exception('Could not find any days to run given input')
     factory = LanguageFactory()
-    runtimes = get_runtimes(factory, years, days)
+    runtimes = get_runtimes(factory, run_days)
     Displayer(runtimes).display()
 
 
-def get_runtimes(
-    factory: LanguageFactory, 
-    years: List[str], 
-    days: List[str],
-) -> List[RuntimeInfo]:
+def get_runtimes(factory: LanguageFactory, days: List[Day]) -> List[RuntimeInfo]:
     runtimes = []
-    for year in get_dirs_wth_prefix(years, '20'):
-        print(f'Running year {year}')
-        os.chdir(year)
-
-        for day in get_dirs_wth_prefix(days, None):
-            os.chdir(day)
-            runtimes.extend(run_day(factory, Day(year, day)))
-
-            # Change back out of day directory
-            os.chdir('..')
-
-        # Change back out of year directory
-        os.chdir('..')
+    for day in days:
+        os.chdir(f'{day.year}/{day.day}')
+        runtimes.extend(run_day(factory, day))
+        # Change back out of day directory
+        os.chdir('../..')
     return runtimes
 
 
-def get_dirs_wth_prefix(configured_value: List[str], valid_prefix):
-    if len(configured_value) > 0:
-        return configured_value
-
-    def prefix_predicate(dir_name):
-        return valid_prefix is None or dir_name.startswith(valid_prefix)
-    return [
-        file_path.name
-        for file_path in Path('.').iterdir()
-        if file_path.is_dir() and prefix_predicate(file_path.name)
-    ]
-
-
 def run_day(factory: LanguageFactory, day: Day) -> List[RuntimeInfo]:
-    def is_solution_file(file_path):
+    def is_solution(file_path):
         return file_path.is_file() and file_path.stem.lower() == 'solver'
-
-    solution_files = [
-        file_path 
-        for file_path in Path('.').iterdir() 
-        if is_solution_file(file_path)
-    ]
+    solution_files = [file_path for file_path in Path('.').iterdir() if is_solution(file_path)]
 
     runtimes = []
     for solution_file in solution_files:
@@ -74,7 +48,7 @@ def run_day(factory: LanguageFactory, day: Day) -> List[RuntimeInfo]:
 
 
 def run_language(language: Language, day: Day) -> RuntimeInfo:
-    print(f'Running day {day.day} with {language.name}')
+    print(f'Running year {day.year} day {day.day} with {language.name}')
     language.initial_setup()
     language.compile(day)
     runtime = language.run(day)
