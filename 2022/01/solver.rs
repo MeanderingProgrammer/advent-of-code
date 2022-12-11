@@ -1,16 +1,8 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
 
-
 fn main() {
-    let lines = reader::read_lines();
-    let elf_items: Vec<Vec<i64>> = lines.split(|line| line.is_empty())
-        .map(|group| {
-            group.iter()
-                .map(|line| line.parse::<i64>().unwrap())
-                .collect()
-        })
-        .collect();
+    let elf_items: Vec<Vec<i64>> = reader::read_group_int();
         
     let mut elf_calories: Vec<i64> = elf_items.iter()
         .map(|item| item.iter().sum())
