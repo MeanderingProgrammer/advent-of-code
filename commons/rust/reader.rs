@@ -5,16 +5,19 @@ use std::io::{BufRead, BufReader};
 
 const TEST: bool = false;
 
-pub fn read_int() -> Vec<i64> {
-    read(|line| line.parse::<i64>().unwrap())
+pub fn read_group_int() -> Vec<Vec<i64>> {
+    read_groups(|item| item.parse::<i64>().unwrap())
 }
 
-pub fn read_lines() -> Vec<String> {
-    read(|line| line.to_string())
+pub fn read_group_lines() -> Vec<Vec<String>> {
+    read_groups(|item| item.to_string())
 }
 
-pub fn read_chars() -> Vec<char> {
-    read_lines()[0].chars().collect()
+fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
+    read_lines()
+        .split(|line| line.is_empty())
+        .map(|group| group.iter().map(|item| f(item)).collect())
+        .collect()
 }
 
 pub fn read_grid() -> Grid<i64> {
@@ -28,6 +31,18 @@ pub fn read_grid() -> Grid<i64> {
         }
     }
     grid
+}
+
+pub fn read_int() -> Vec<i64> {
+    read(|line| line.parse::<i64>().unwrap())
+}
+
+pub fn read_lines() -> Vec<String> {
+    read(|line| line.to_string())
+}
+
+pub fn read_chars() -> Vec<char> {
+    read_lines()[0].chars().collect()
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
