@@ -19,9 +19,9 @@ Usage:
 ./scripts/run.py -t <template_name>? -y <years>? -d <days>?
 ```
 
-* template_name: (optional) name of a template that targets specific years / days, example `latest`
-* years: (optional) list of years to run, defaults to all years, example `2015 2019`
-* days: (optional) list of days to run, defaults to all days, example `01 03 05`
+* template_name: (optional) Name of a template that targets specific years / days, example `latest`
+* years: (optional) List of years to run, defaults to all years, example `2015 2019`
+* days: (optional) List of days to run, defaults to all days, example `01 03 05`
 
 ## Generate Template
 
@@ -32,14 +32,15 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 Usage:
 
 ```
-./scripts/generate.py --year <year> --day <day> --lang <lang>
+./scripts/generate.py --template <template_name>? --year <year>? --day <day>? --lang <lang>?
 
-./scripts/generate.py -y <year> -d <day> -l <lang>
+./scripts/generate.py -t <template_name>? -y <year>? -d <day>? -l <lang>?
 ```
 
-* year: Year to generate starting files for, example `2022`
-* day: Day to generate starting files for, example `05`
-* lang: Language to generate starting files for, must be supported, example `rust`
+* template_name: (optional) Name of a template that targets specific year / day, example `next`
+* year: (optional) Year to generate starting files for, example `2022`
+* day: (optional) Day to generate starting files for, example `05`
+* lang: (optional) Language to generate starting files for, must be supported, example `rust`
 
 ### Install aoc-cli
 

@@ -63,11 +63,14 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--days', type=str, nargs='+')
 
     args = parser.parse_args()
+    options = [args.years, args.days]
+
     if args.template is not None:
-        if not (args.years is None and args.days is None):
-            raise Exception('If template is used, years and days must be undefined')
+        if not all([option is None for option in options]):
+            raise Exception('If template is used, other args must be undefined')
         years, days = RunTemplate().get(args.template)
     else:
         years = args.years or []
         days = args.days or []
+
     main(years, days)
