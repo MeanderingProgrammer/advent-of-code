@@ -76,9 +76,9 @@ def download_input(day: Day, data_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--year', type=str, required=True)
-    parser.add_argument('--day', type=str, required=True)
-    parser.add_argument('--lang', type=str, required=True)
+    parser.add_argument('-y', '--year', type=str, required=True)
+    parser.add_argument('-d', '--day', type=str, required=True)
+    parser.add_argument('-l', '--lang', type=str, required=True)
 
     args = parser.parse_args()
     main(Day(args.year, args.day), args.lang)

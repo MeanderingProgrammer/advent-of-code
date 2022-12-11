@@ -58,9 +58,9 @@ def run_language(language: Language, day: Day) -> RuntimeInfo:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--template', type=str)
-    parser.add_argument('--years', type=str, nargs='+')
-    parser.add_argument('--days', type=str, nargs='+')
+    parser.add_argument('-t', '--template', type=str)
+    parser.add_argument('-y', '--years', type=str, nargs='+')
+    parser.add_argument('-d', '--days', type=str, nargs='+')
 
     args = parser.parse_args()
     if args.template is not None:

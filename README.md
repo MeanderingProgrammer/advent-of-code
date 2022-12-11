@@ -15,6 +15,8 @@ Usage:
 
 ```
 ./scripts/run.py --template <template_name>? --years <years>? --days <days>?
+
+./scripts/run.py -t <template_name>? -y <years>? -d <days>?
 ```
 
 * template_name: (optional) name of a template that targets specific years / days, example `latest`
@@ -31,6 +33,8 @@ Usage:
 
 ```
 ./scripts/generate.py --year <year> --day <day> --lang <lang>
+
+./scripts/generate.py -y <year> -d <day> -l <lang>
 ```
 
 * year: Year to generate starting files for, example `2022`
