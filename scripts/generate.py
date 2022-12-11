@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 
+from component.generate_template import GenerateTemplate
 from component.language_factory import LanguageFactory
 from language.language import Language
 from pojo.day import Day
@@ -76,9 +77,21 @@ def download_input(day: Day, data_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-y', '--year', type=str, required=True)
-    parser.add_argument('-d', '--day', type=str, required=True)
-    parser.add_argument('-l', '--lang', type=str, required=True)
+    parser.add_argument('-t', '--template', type=str)
+    parser.add_argument('-y', '--year', type=str)
+    parser.add_argument('-d', '--day', type=str)
+    parser.add_argument('-l', '--lang', type=str)
 
     args = parser.parse_args()
-    main(Day(args.year, args.day), args.lang)
+    options = [args.year, args.day, args.lang]
+
+    if args.template is not None:
+        if not all([option is None for option in options]):
+            raise Exception('If template is used, other args must be undefined')
+        day, lang = GenerateTemplate().get(args.template), 'rust'
+    else:
+        if any([option is None for option in options]):
+            raise Exception('Year, Day, or Language is not provided')
+        day, lang = Day(args.year, args.day), args.lang
+
+    main(day, lang)
