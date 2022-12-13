@@ -1,6 +1,6 @@
 import os
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List
 
@@ -10,8 +10,13 @@ from pojo.day import Day
 @dataclass
 class DayFactory:
 
-    years: List[str]
-    days: List[str]
+    years: List[str] = field(default_factory=list)
+    days: List[str] = field(default_factory=list)
+
+    def get_latest(self) -> Day:
+        days = self.get_days()
+        days.sort(reverse=True)
+        return days[0]
 
     def get_days(self) -> List[Day]:
         days = []

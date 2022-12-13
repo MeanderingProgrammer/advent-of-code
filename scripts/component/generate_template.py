@@ -17,7 +17,5 @@ class GenerateTemplate:
 
     @staticmethod
     def __get_next() -> Day:
-        run_days = DayFactory([], []).get_days()
-        run_days.sort(reverse=True)
-        latest_day = run_days[0]
-        return latest_day.next()
+        latest_day = DayFactory().get_latest()
+        return latest_day.add(1)
