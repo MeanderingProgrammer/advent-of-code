@@ -83,15 +83,17 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--lang', type=str)
 
     args = parser.parse_args()
-    options = [args.year, args.day, args.lang]
 
-    if args.template is not None:
-        if not all([option is None for option in options]):
-            raise Exception('If template is used, other args must be undefined')
-        day, lang = GenerateTemplate().get(args.template), 'rust'
+    if args.year is None and args.day is None:
+        template = args.template or 'next'
+        day = GenerateTemplate().get(template)
+    elif args.template is not None:
+        raise Exception('If --year or --day is provided then --template should not be')
+    elif args.year is None or args.day is None:
+        raise Exception('Both --year and --day are required if either is provided')
     else:
-        if any([option is None for option in options]):
-            raise Exception('Year, Day, or Language is not provided')
-        day, lang = Day(args.year, args.day), args.lang
+        day = Day(args.year, args.day)
+
+    lang = args.lang or 'rust'
 
     main(day, lang)
