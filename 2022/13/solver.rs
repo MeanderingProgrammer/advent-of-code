@@ -100,35 +100,22 @@ fn packet_index(packets: &Vec<PacketData>, target: &PacketData) -> usize {
 }
 
 fn order_packets(packets: &Vec<PacketData>) -> Vec<PacketData> {
-    // Would avoid a lot of computation by doing a topological sort instead
-    let mut result: Vec<PacketData> = Vec::new();
-    let mut packets_copy = packets.clone();
-
-    while !packets_copy.is_empty() {
-        let index = get_next(&packets_copy);
-        let packet = packets_copy.remove(index);
-        result.push(packet);
-    }
-
-    result
-}
-
-fn get_next(packets: &Vec<PacketData>) -> usize {
-    let options: Vec<usize> = (0..packets.len())
-        .filter(|i| {
+    let mut packets_to_unordered: Vec<(PacketData, usize)> = (0..packets.len())
+        .map(|i| {
             let mut copied_packets: Vec<PacketData> = packets.clone();
-            let base = copied_packets.remove(*i);
+            let base = copied_packets.remove(i);
 
             let num_unordered = copied_packets.iter()
                 .filter(|packet| base.compare(packet) != Result::ORDERED)
                 .count();
             
-            num_unordered == 0
+            (base, num_unordered)
         })
         .collect();
-    
-    if options.len() != 1 {
-        panic!("Can't handle all these options: {:?}", options);
-    }
-    options[0]
+
+    packets_to_unordered.sort_by(|a, b| a.1.cmp(&b.1));
+
+    packets_to_unordered.iter()
+        .map(|(packet, _)| packet.clone())
+        .collect()
 }
