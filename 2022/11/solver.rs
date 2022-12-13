@@ -34,12 +34,17 @@ struct ItemMove {
 
 fn main() {
     answer::part1(56350, get_monkey_business(20, true));
-    // 13352822262 is too low
-    answer::part2(13352822262, get_monkey_business(10_000, false));
+    answer::part2(13954061248, get_monkey_business(10_000, false));
 }
 
 fn get_monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
     let mut monkeys = get_monkeys();
+
+    // This can be the least common multiple, but doesn't need to be to work
+    let mut multiple_of_all = 1;
+    for monkey in &monkeys {
+        multiple_of_all *= monkey.divisible_by;
+    }
 
     for _ in 0..rounds {
         for m in 0..monkeys.len() {
@@ -50,6 +55,7 @@ fn get_monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
                 let mut item = monkey.items.remove(0);
                 item = monkey.apply_operation(item);
                 item = if reduce_worry { item / 3 } else { item };
+                item = item % multiple_of_all;
 
                 monkey.inspections += 1;
 
