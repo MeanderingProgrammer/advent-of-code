@@ -56,6 +56,16 @@ impl Point {
         Point { values: copied }
     }
 
+    pub fn neighbors(&self) -> Vec<Self> {
+        if self.dimensions() != 2 {
+            panic!("Computing neighbors only supported in 2 dimension");
+        }
+        vec![
+            self.add_x(1), self.add_x(-1),
+            self.add_y(1), self.add_y(-1),
+        ]
+    }
+
     pub fn distance(&self, other: &Self) -> f64 {
         if self.dimensions() != other.dimensions() {
             panic!("Cannot get distance from {:?} to {:?}", self, other);
