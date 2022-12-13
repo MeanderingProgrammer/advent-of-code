@@ -14,14 +14,17 @@ and set arguments to run commands.
 Usage:
 
 ```
-./scripts/run.py --template <template_name>? --years <years>? --days <days>?
-
-./scripts/run.py -t <template_name>? -y <years>? -d <days>?
+./scripts/run.py --template <template>? --years <years>? --days <days>?
 ```
 
-* template_name: (optional) Name of a template that targets specific years / days, example `latest`
-* years: (optional) List of years to run, defaults to all years, example `2015 2019`
-* days: (optional) List of days to run, defaults to all days, example `01 03 05`
+| Variable Name | Alt  | Description                                           | Required  | Default  | Example         |
+| ------------- | ---- | ----------------------------------------------------- | --------- | -------- | --------------- |
+| template      | `-t` | Name of a template that targets specific years / days | False     | `latest` | `all_languages` |
+| years         | `-y` | List of years to run                                  | False     | None     | `2022`          |
+| days          | `-d` | List of days to run                                   | False     | None     | `01 03 05`      |
+
+* If `template` is provided then `years` & `days` must not be provided
+* If  `years` or `days` are provided then `template` must not be provided
 
 ## Generate Template
 
@@ -32,15 +35,18 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 Usage:
 
 ```
-./scripts/generate.py --template <template_name>? --year <year>? --day <day>? --lang <lang>?
-
-./scripts/generate.py -t <template_name>? -y <year>? -d <day>? -l <lang>?
+./scripts/generate.py --template <template>? --year <year>? --day <day>? --lang <lang>?
 ```
 
-* template_name: (optional) Name of a template that targets specific year / day, example `next`
-* year: (optional) Year to generate starting files for, example `2022`
-* day: (optional) Day to generate starting files for, example `05`
-* lang: (optional) Language to generate starting files for, must be supported, example `rust`
+| Variable Name | Alt  | Description                                         | Required  | Default | Example  |
+| ------------- | ---- | --------------------------------------------------- | --------- | ------- | -------- |
+| template      | `-t` | Name of a template that targets specific year / day | False     | `next`  | `next`   |
+| year          | `-y` | Year to generate starting files for                 | False     | None    | `2022`   |
+| day           | `-d` | Day to generate starting files for                  | False     | None    | `05`     |
+| lang          | `-l` | Language to generate starting files for             | False     | `rust`  | `python` |
+
+* If `template` is provided then `year` & `day` must not be provided
+* If  `year` or `day` are provided then `template` must not be provided
 
 ### Install aoc-cli
 
