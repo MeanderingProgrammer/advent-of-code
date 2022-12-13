@@ -13,7 +13,7 @@ pub fn read_group_lines() -> Vec<Vec<String>> {
     read_groups(|item| item.to_string())
 }
 
-fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
+pub fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
     read_lines()
         .split(|line| line.is_empty())
         .map(|group| group.iter().map(|item| f(item)).collect())
