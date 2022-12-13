@@ -1,4 +1,4 @@
-use crate::grid::Grid;
+use crate::grid::{Grid, GridValue};
 use crate::point::Point;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -20,14 +20,12 @@ fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
         .collect()
 }
 
-pub fn read_grid() -> Grid<i64> {
-    let mut grid: Grid<i64> = Grid::new();
+pub fn read_grid<T: GridValue>(f : fn(char) -> T) -> Grid<T> {
+    let mut grid: Grid<T> = Grid::new();
     for (y, line) in read_lines().iter().enumerate() {
         for (x, ch) in line.char_indices() {
-            grid.add(
-                Point::new_2d(x as i64, y as i64), 
-                ch.to_digit(10).unwrap() as i64,
-            );
+            let point = Point::new_2d(x as i64, y as i64);
+            grid.add(point, f(ch));
         }
     }
     grid
