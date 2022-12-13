@@ -9,6 +9,7 @@ class RunTemplate:
         self.__template_mapping = {
             'all_languages': RunTemplate.__get_all_languages,
             'latest': RunTemplate.__get_latest,
+            'prev': RunTemplate.__get_previous,
         }
 
     def get(self, name) -> Tuple[List[str], List[str]]:
@@ -19,14 +20,21 @@ class RunTemplate:
 
     @staticmethod
     def __get_latest() -> Tuple[List[str], List[str]]:
-        run_days = DayFactory([], []).get_days()
-        run_days.sort(reverse=True)
-        latest_day = run_days[0]
+        latest_day = DayFactory().get_latest()
         return (
             [latest_day.year],
             [latest_day.day],
         )
-
+    
+    @staticmethod
+    def __get_previous() -> Tuple[List[str], List[str]]:
+        latest_day = DayFactory().get_latest()
+        previous_day = latest_day.add(-1)
+        return (
+            [previous_day.year],
+            [previous_day.day],
+        )
+    
     @staticmethod
     def __get_all_languages() -> Tuple[List[str], List[str]]:
         # Python = 2019 - 01
