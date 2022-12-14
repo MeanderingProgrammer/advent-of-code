@@ -3,7 +3,7 @@ use crate::point::Point;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-const TEST: bool = false;
+const TEST: bool = true;
 
 pub fn read_group_int() -> Vec<Vec<i64>> {
     read_groups(|item| item.parse::<i64>().unwrap())
