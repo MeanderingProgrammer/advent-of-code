@@ -10,43 +10,28 @@ enum PacketData {
     List(Vec<PacketData>),
 }
 
-#[derive(Debug, PartialEq)]
-enum Result {
-    ORDERED,
-    SWAPPED,
-    TIED,
-}
-
 impl PacketData {
     fn from_string(value: &str) -> Self {
         serde_json::from_str(value).unwrap()
     }
 
-    fn compare(&self, other: &Self) -> Result {
+    fn compare(&self, other: &Self) -> i8 {
         match (self, other) {
             (PacketData::List(data_1), PacketData::List(data_2)) => {
                 for i in 0..data_1.len().min(data_2.len()) {
                     let result = data_1[i].compare(&data_2[i]);
-                    if result != Result::TIED {
+                    if result != 0 {
                         return result;
                     }
                 }
-                if data_1.len() < data_2.len() {
-                    Result::ORDERED
-                } else if data_1.len() > data_2.len() {
-                    Result::SWAPPED
-                } else {
-                    Result::TIED
-                }
+                if data_1.len() < data_2.len() { -1 }
+                    else if data_1.len() > data_2.len() { 1 }
+                    else { 0 }
             },
             (PacketData::Item(value_1), PacketData::Item(value_2)) => {
-                if value_1 < value_2 {
-                    Result::ORDERED
-                } else if value_1 > value_2 {
-                    Result::SWAPPED
-                } else {
-                    Result::TIED
-                }
+                if value_1 < value_2 { -1 }
+                    else if value_1 > value_2 { 1 }
+                    else { 0 }
             },
             (PacketData::List(data_1), item_2) => {
                 PacketData::List(data_1.clone())
@@ -74,8 +59,7 @@ fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
         .filter(|(_, pair)| {
             let packet_1 = &pair[0];
             let packet_2 = &pair[1];
-            let result = packet_1.compare(packet_2);
-            result == Result::ORDERED
+            packet_1.compare(packet_2) < 0
         })
         .map(|(i, _)| i + 1)
         .sum()
@@ -88,6 +72,10 @@ fn get_decoder_key(packets: &Vec<PacketData>) -> usize {
 fn packet_idx(packets: &Vec<PacketData>, value: &str) -> usize {
     let target = PacketData::from_string(value);
     packets.iter()
-        .filter(|packet| target.compare(packet) != Result::ORDERED)
+        .filter(|packet| match target.compare(packet) {
+            -1 => false,
+            1 => true,
+            _ => panic!("Should never be tied"),
+        })
         .count()
 }
