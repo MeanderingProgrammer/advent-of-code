@@ -18,6 +18,10 @@ enum Result {
 }
 
 impl PacketData {
+    fn from_string(value: &str) -> Self {
+        serde_json::from_str(value).unwrap()
+    }
+
     fn compare(&self, other: &Self) -> Result {
         match (self, other) {
             (PacketData::List(data_1), PacketData::List(data_2)) => {
@@ -59,7 +63,7 @@ impl PacketData {
 fn main() {
     let packets: Vec<PacketData> = reader::read_lines().iter()
         .filter(|line| !line.is_empty())
-        .map(|line| serde_json::from_str(line).unwrap())
+        .map(|line| PacketData::from_string(line))
         .collect();
     answer::part1(4809, sum_adjacent(&packets));
     answer::part2(22600, get_decoder_key(&packets));
@@ -78,44 +82,12 @@ fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
 }
 
 fn get_decoder_key(packets: &Vec<PacketData>) -> usize {
-    let mut packets_copy: Vec<PacketData> = packets.clone();
-
-    // Add in divider packets for part 2
-    let div_1: PacketData = serde_json::from_str("[[2]]").unwrap();
-    let div_2: PacketData = serde_json::from_str("[[6]]").unwrap();
-    packets_copy.push(div_1.clone());
-    packets_copy.push(div_2.clone());
-
-    let ordered_packets = order_packets(&packets_copy);
-    let index_1 = packet_index(&ordered_packets, &div_1);
-    let index_2 = packet_index(&ordered_packets, &div_2);
-
-    index_1 * index_2
+    (packet_idx(packets, "[[2]]") + 1) * (packet_idx(packets, "[[6]]") + 2)
 }
 
-fn packet_index(packets: &Vec<PacketData>, target: &PacketData) -> usize {
+fn packet_idx(packets: &Vec<PacketData>, value: &str) -> usize {
+    let target = PacketData::from_string(value);
     packets.iter()
-        .position(|packet| packet == target)
-        .unwrap() + 1
-}
-
-fn order_packets(packets: &Vec<PacketData>) -> Vec<PacketData> {
-    let mut packets_to_unordered: Vec<(PacketData, usize)> = (0..packets.len())
-        .map(|i| {
-            let mut copied_packets: Vec<PacketData> = packets.clone();
-            let base = copied_packets.remove(i);
-
-            let num_unordered = copied_packets.iter()
-                .filter(|packet| base.compare(packet) != Result::ORDERED)
-                .count();
-            
-            (base, num_unordered)
-        })
-        .collect();
-
-    packets_to_unordered.sort_by(|a, b| a.1.cmp(&b.1));
-
-    packets_to_unordered.iter()
-        .map(|(packet, _)| packet.clone())
-        .collect()
+        .filter(|packet| target.compare(packet) != Result::ORDERED)
+        .count()
 }
