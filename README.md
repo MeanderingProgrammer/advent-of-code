@@ -4,17 +4,30 @@ Public Repo for Advent of Code Solutions
 
 ![Years Completed](advent-completed.png)
 
-## Running
+## Set Aliases
 
-Use `scripts/run.py` script to run various days rather than running directly.
+Add to your `~/.bashrc` or `~/.zshrc`:
+
+```
+# Advent Aliases
+alias a_run="./scripts/run.py"
+alias a_gen="./scripts/generate.py"
+```
+
+## Running a Day
+
+Used to run various days rather than running directly.
 
 Does lots of hacky stuff to set environment variables, compile common directories,
 and set arguments to run commands.
 
-Usage:
+* Alias Command: `a_run`
+* Direct Command: `./scripts/run.py`
+
+### Usage
 
 ```
-./scripts/run.py --template <template>? --years <years>? --days <days>?
+a_run --template <template>? --years <years>? --days <days>?
 ```
 
 | Variable Name | Alt  | Description                             | Required  | Default  | Example         |
@@ -32,10 +45,15 @@ Generates initial files and empty data file for the specified language.
 
 Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
-Usage:
+Will pull down your puzzle input if [instructions](##install-aoc-cli) are followed.
+
+* Alias Command: `a_gen`
+* Direct Command: `./scripts/generate.py`
+
+### Usage
 
 ```
-./scripts/generate.py --template <template>? --year <year>? --day <day>? --lang <lang>?
+a_gen --template <template>? --year <year>? --day <day>? --lang <lang>?
 ```
 
 | Variable Name | Alt  | Description                              | Required  | Default | Example  |
