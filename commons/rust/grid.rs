@@ -1,4 +1,5 @@
 use crate::point::Point;
+use itertools::Itertools;
 use std::cmp::PartialEq;
 use std::collections::HashMap;
 use std::fmt;
@@ -13,7 +14,7 @@ pub struct Grid<T: GridValue> {
 }
 
 impl<T: GridValue> Grid<T> {
-    pub fn new() -> Grid<T> {
+    pub fn new() -> Self {
         Grid {
             grid: HashMap::new(),
         }
@@ -25,6 +26,10 @@ impl<T: GridValue> Grid<T> {
 
     pub fn get(&self, point: &Point) -> &T {
         self.grid.get(point).unwrap()
+    }
+
+    pub fn get_or(&self, point: &Point) -> Option<&T> {
+        self.grid.get(point)
     }
 
     pub fn contains(&self, point: &Point) -> bool {
@@ -55,27 +60,24 @@ impl<T: GridValue> Grid<T> {
             ),
         )
     }
+
+    pub fn as_string(&self, buffer: i64) -> String {
+        let (bottom_left, top_right) = self.bounds();
+        (bottom_left.y()-buffer..=top_right.y()+buffer)
+            .map(|y| (bottom_left.x()-buffer..=top_right.x()+buffer)
+                .map(|x| Point::new_2d(x, y))
+                .map(|point| match self.get_or(&point) {
+                    Some(value) => value.to_string(),
+                    None => String::from("."),
+                })
+                .join("")
+            )
+            .join("\n")
+    }
 }
 
 impl<T: GridValue> fmt::Display for Grid<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let (bottom_left, top_right) = self.bounds();
-
-        let mut rows = Vec::new();
-        for y in bottom_left.y()..=top_right.y() {
-            let mut row = "".to_string();
-            for x in bottom_left.x()..=top_right.x() {
-                let point = Point::new_2d(x, y);
-                if self.contains(&point) {
-                    let as_string = self.get(&point).to_string();
-                    row.push_str(&format!("[{}]", as_string));
-                } else {
-                    row += ".";
-                }
-            }
-            rows.push(row);
-        }
-
-        write!(f, "{}", rows.join("\n"))
+        write!(f, "{}", self.as_string(0))
     }
 }
