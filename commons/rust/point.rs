@@ -67,9 +67,7 @@ impl Point {
     }
 
     pub fn distance(&self, other: &Self) -> f64 {
-        if self.dimensions() != other.dimensions() {
-            panic!("Cannot get distance from {:?} to {:?}", self, other);
-        }
+        self.check_dimension(other);
         let mut sum_squares = 0;
         for i in 0..self.dimensions() {
             let diff = self.get(i) - other.get(i);
@@ -78,9 +76,25 @@ impl Point {
         (sum_squares as f64).sqrt()
     }
 
+    pub fn manhattan_distance(&self, other: &Self) -> i64 {
+        self.check_dimension(other);
+        let mut distance = 0;
+        for i in 0..self.dimensions() {
+            let diff = self.get(i) - other.get(i);
+            distance += diff.abs();
+        }
+        distance
+    }
+
     fn check_index(&self, index: usize) {
         if index >= self.dimensions() {
             panic!("Cannot get index {} from {:?}", index, self.values);
+        }
+    }
+
+    fn check_dimension(&self, other: &Self) {
+        if self.dimensions() != other.dimensions() {
+            panic!("Cannot get distance from {:?} to {:?}", self, other);
         }
     }
 }
