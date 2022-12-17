@@ -14,7 +14,7 @@ class Python(InterprettedLanguage):
         return 'solver.py'
 
     def _run_setup(self):
-        pwd = os.environ['PWD']
+        pwd = os.getcwd()
         os.environ['PYTHONPATH'] = f'{pwd}/commons/python/'
     
     def _do_run(self, day: Day):
