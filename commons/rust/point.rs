@@ -16,6 +16,10 @@ impl Point {
         }
     }
 
+    pub fn new_nd(values: Vec<i64>) -> Point {
+        Point { values }
+    }
+
     pub fn dimensions(&self) -> usize {
         self.values.len()
     }
@@ -57,13 +61,18 @@ impl Point {
     }
 
     pub fn neighbors(&self) -> Vec<Self> {
-        if self.dimensions() != 2 {
-            panic!("Computing neighbors only supported in 2 dimension");
+        match self.dimensions() {
+            2 => vec![
+                self.add_x(1), self.add_x(-1),
+                self.add_y(1), self.add_y(-1),
+            ],
+            3 => vec![
+                self.add_x(1), self.add_x(-1),
+                self.add_y(1), self.add_y(-1),
+                self.add_z(1), self.add_z(-1),
+            ],
+            _ => panic!("Unsupported number of dimensions for computing neighbors"),
         }
-        vec![
-            self.add_x(1), self.add_x(-1),
-            self.add_y(1), self.add_y(-1),
-        ]
     }
 
     pub fn distance(&self, other: &Self) -> f64 {
