@@ -122,3 +122,8 @@ touch .adventofcode.session
 | 2020 | 15   | 0:58.97 |
 | 2020 | 23   | 0:21.99 |
 | 2020 | 24   | 0:13.45 |
+| 2022 | 16   | 0:14.08 |
+
+## TODOs
+
+* Remove super hacky pruning in `2022 - 16`.
