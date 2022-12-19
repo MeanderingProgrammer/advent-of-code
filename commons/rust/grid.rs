@@ -24,6 +24,10 @@ impl<T: GridValue> Grid<T> {
         self.grid.insert(point, value);
     }
 
+    pub fn remove(&mut self, point: &Point) {
+        self.grid.remove(point);
+    }
+
     pub fn get(&self, point: &Point) -> &T {
         self.grid.get(point).unwrap()
     }
@@ -47,6 +51,12 @@ impl<T: GridValue> Grid<T> {
             .collect()
     }
 
+    pub fn height(&self) -> Option<i64> {
+        self.points().iter()
+            .map(|point| point.y())
+            .max()
+    }
+
     pub fn bounds(&self) -> (Point, Point) {
         let points = self.points();        
         (
@@ -62,6 +72,10 @@ impl<T: GridValue> Grid<T> {
     }
 
     pub fn as_string(&self, buffer: i64) -> String {
+        if self.grid.len() == 0 {
+            return "".to_string();
+        }
+
         let (bottom_left, top_right) = self.bounds();
         (bottom_left.y()-buffer..=top_right.y()+buffer)
             .map(|y| (bottom_left.x()-buffer..=top_right.x()+buffer)
