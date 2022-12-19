@@ -31,6 +31,17 @@ pub fn read_grid<T: GridValue>(f : fn(char) -> T) -> Grid<T> {
     grid
 }
 
+pub fn read_points() -> Vec<Point> {
+    let mut result: Vec<Point> = Vec::new();
+    for line in read_lines().iter() {
+        let values = line.split(",")
+            .map(|coord| coord.parse::<i64>().unwrap())
+            .collect();
+        result.push(Point::new_nd(values));
+    }
+    result
+}
+
 pub fn read_int() -> Vec<i64> {
     read(|line| line.parse::<i64>().unwrap())
 }

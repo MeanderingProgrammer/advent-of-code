@@ -57,18 +57,23 @@ impl<T: GridValue> Grid<T> {
             .max()
     }
 
-    pub fn bounds(&self) -> (Point, Point) {
-        let points = self.points();        
-        (
-            Point::new_2d(
-                points.iter().map(|p| p.x()).min().unwrap(), 
-                points.iter().map(|p| p.y()).min().unwrap(),
-            ), 
-            Point::new_2d(
-                points.iter().map(|p| p.x()).max().unwrap(), 
-                points.iter().map(|p| p.y()).max().unwrap(),
-            ),
-        )
+    pub fn bounds(&self, buffer: i64) -> Bound {
+        let points = self.points();
+        if points.len() == 0 {
+            panic!("Can't get the bounds of an empty grid");
+        }
+
+        let mut mins = Vec::new();
+        let mut maxs = Vec::new();
+        for i in 0..points[0].dimensions() {
+            mins.push(points.iter().map(|point| point.get(i)).min().unwrap() - buffer);
+            maxs.push(points.iter().map(|point| point.get(i)).max().unwrap() + buffer);
+        }
+
+        Bound {
+            lower: Point::new_nd(mins),
+            upper: Point::new_nd(maxs),
+        }
     }
 
     pub fn as_string(&self, buffer: i64) -> String {
@@ -76,9 +81,10 @@ impl<T: GridValue> Grid<T> {
             return "".to_string();
         }
 
-        let (bottom_left, top_right) = self.bounds();
-        (bottom_left.y()-buffer..=top_right.y()+buffer)
-            .map(|y| (bottom_left.x()-buffer..=top_right.x()+buffer)
+        let bounds = self.bounds(buffer);
+        let (bottom_left, top_right) = (bounds.lower, bounds.upper);
+        (bottom_left.y()..=top_right.y())
+            .map(|y| (bottom_left.x()..=top_right.x())
                 .map(|x| Point::new_2d(x, y))
                 .map(|point| match self.get_or(&point) {
                     Some(value) => value.to_string(),
@@ -93,5 +99,29 @@ impl<T: GridValue> Grid<T> {
 impl<T: GridValue> fmt::Display for Grid<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_string(0))
+    }
+}
+
+#[derive(Debug)]
+pub struct Bound {
+    lower: Point,
+    upper: Point,
+}
+
+impl Bound {
+    pub fn lower(&self) -> &Point {
+        &self.lower
+    }
+
+    pub fn upper(&self) -> &Point {
+        &self.upper
+    }
+
+    pub fn contain(&self, point: &Point) -> bool {
+        (0..point.dimensions())
+            .all(|i| {
+                let value = point.get(i);
+                value >= self.lower.get(i) && value <= self.upper.get(i)
+            })
     }
 }

@@ -13,8 +13,8 @@ fn main() {
 
 fn fill_with_sand(with_floor: bool) -> i64 {
     let mut grid = get_grid();
-    let (_, top_right) = grid.bounds();
-    let max_height = top_right.y() + if with_floor { 1 } else { 0 };
+    let bounds = grid.bounds(0);
+    let max_height = bounds.upper().y() + if with_floor { 1 } else { 0 };
 
     let mut amount_sand = 0;
     let mut landed = true;
