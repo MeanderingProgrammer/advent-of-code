@@ -33,6 +33,8 @@ class Rust(Language):
             'name': f'aoc_{day.year}_{day.day}', 
             'path': f'{day.year}/{day.day}/{self.solution_file}'
         }
+        if bin_config in cargo['bin']:
+            raise Exception(f'{day} has already been added to {_CARGO_FILE}')
         cargo['bin'].append(bin_config)
 
         f = open(_CARGO_FILE, 'w+')
