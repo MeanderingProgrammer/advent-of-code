@@ -8,3 +8,4 @@ path = "lib.rs"
 
 [dependencies]
 itertools = "0.10.5"
+snowflake = "1.2"
