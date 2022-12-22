@@ -1,5 +1,6 @@
 import abc
 import time
+import os
 from pathlib import Path
 from pojo.day import Day
 
@@ -38,11 +39,12 @@ class Language(abc.ABC):
     
     def run(self, day: Day, is_test: bool) -> float:
         start = time.time()
-        self._do_run(day, is_test)
+        command = self._get_run_command(day, is_test)
+        os.system(command)
         return time.time() - start
 
     @abc.abstractmethod
-    def _do_run(self, day: Day, is_test: bool):
+    def _get_run_command(self, day: Day, is_test: bool) -> str:
         pass
 
     @abc.abstractmethod
