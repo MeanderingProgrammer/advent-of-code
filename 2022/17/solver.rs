@@ -164,7 +164,7 @@ fn simulate<'a>(
         
         let height = grid.height().unwrap() + 1;
 
-        let value = grid.as_string(0);
+        let value = grid.as_string(".", 0);
         if cache.contains_key(&value) {
             let (cache_rocks, cache_height) = cache.get(&value).unwrap();
             let (period_length, period_height) = (rocks_dropped - cache_rocks, height - cache_height);
