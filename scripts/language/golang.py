@@ -1,4 +1,3 @@
-import os
 from language.language import Language
 from pojo.day import Day
 
@@ -20,8 +19,8 @@ class Go(Language):
         # For now we use go run, which both compiles and runs our code
         pass
     
-    def _do_run(self, day: Day, is_test: bool):
-        os.system('go run solver.go')
+    def _get_run_command(self, day: Day, is_test: bool) -> str:
+        return 'go run solver.go'
     
     def template_processing(self, day: Day):
         # No additional template processing needed

@@ -17,8 +17,8 @@ class Python(InterprettedLanguage):
         pwd = os.getcwd()
         os.environ['PYTHONPATH'] = f'{pwd}/commons/python/'
     
-    def _do_run(self, day: Day, is_test: bool):
-        os.system('python3 solver.py')
+    def _get_run_command(self, day: Day, is_test: bool) -> str:
+        return 'python3 solver.py'
     
     def template_processing(self, day: Day):
         # No additional template processing needed
