@@ -24,8 +24,11 @@ class Rust(Language):
         # need to be individually compiled
         pass
     
-    def _do_run(self, day: Day):
-        os.system(f'cargo run -rq --bin "aoc_{day.year}_{day.day}"')
+    def _do_run(self, day: Day, is_test: bool):
+        args = ''
+        if is_test:
+            args += '--test'
+        os.system(f'cargo run -rq --bin "aoc_{day.year}_{day.day}" -- {args}')
     
     def template_processing(self, day: Day):
         cargo = toml.load(_CARGO_FILE)
