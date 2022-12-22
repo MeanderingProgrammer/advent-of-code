@@ -36,13 +36,13 @@ class Language(abc.ABC):
     def compile(self, day: Day):
         pass
     
-    def run(self, day: Day) -> float:
+    def run(self, day: Day, is_test: bool) -> float:
         start = time.time()
-        self._do_run(day)
+        self._do_run(day, is_test)
         return time.time() - start
 
     @abc.abstractmethod
-    def _do_run(self, day: Day):
+    def _do_run(self, day: Day, is_test: bool):
         pass
 
     @abc.abstractmethod

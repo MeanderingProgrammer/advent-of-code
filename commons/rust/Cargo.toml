@@ -7,5 +7,6 @@ edition = "2021"
 path = "lib.rs"
 
 [dependencies]
+clap = { version = "4.0", features = ["derive"] }
 itertools = "0.10.5"
 snowflake = "1.2"

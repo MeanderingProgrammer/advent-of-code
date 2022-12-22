@@ -59,7 +59,7 @@ class Java(Language):
     def __delete_classes(self):
         os.system('find . -name "*class" | xargs rm -f')
     
-    def _do_run(self, day: Day):
+    def _do_run(self, day: Day, is_test: bool):
         os.system(f'java main.Solver')
     
     def template_processing(self, day: Day):
