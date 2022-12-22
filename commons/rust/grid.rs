@@ -20,6 +20,20 @@ impl<T: GridValue> Grid<T> {
         }
     }
 
+    pub fn from_lines(lines: Vec<String>, f : impl Fn(char) -> Option<T>) -> Self {
+        let mut grid = Self::new();
+        for (y, line) in lines.iter().enumerate() {
+            for (x, ch) in line.char_indices() {
+                let point = Point::new_2d(x as i64, y as i64);
+                match f(ch) {
+                    Some(value) => grid.add(point, value),
+                    None => (),
+                };
+            }
+        }
+        grid
+    }
+
     pub fn add(&mut self, point: Point, value: T) {
         self.grid.insert(point, value);
     }
@@ -76,7 +90,7 @@ impl<T: GridValue> Grid<T> {
         }
     }
 
-    pub fn as_string(&self, buffer: i64) -> String {
+    pub fn as_string(&self, default: &str, buffer: i64) -> String {
         if self.grid.len() == 0 {
             return "".to_string();
         }
@@ -88,7 +102,7 @@ impl<T: GridValue> Grid<T> {
                 .map(|x| Point::new_2d(x, y))
                 .map(|point| match self.get_or(&point) {
                     Some(value) => value.to_string(),
-                    None => String::from("."),
+                    None => String::from(default),
                 })
                 .join("")
             )
@@ -98,7 +112,7 @@ impl<T: GridValue> Grid<T> {
 
 impl<T: GridValue> fmt::Display for Grid<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_string(0))
+        write!(f, "{}", self.as_string(".", 0))
     }
 }
 

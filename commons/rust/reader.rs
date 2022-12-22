@@ -26,14 +26,7 @@ pub fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
 }
 
 pub fn read_grid<T: GridValue>(f : fn(char) -> T) -> Grid<T> {
-    let mut grid: Grid<T> = Grid::new();
-    for (y, line) in read_lines().iter().enumerate() {
-        for (x, ch) in line.char_indices() {
-            let point = Point::new_2d(x as i64, y as i64);
-            grid.add(point, f(ch));
-        }
-    }
-    grid
+    Grid::from_lines(read_lines(), |ch| Some(f(ch)))
 }
 
 pub fn read_points() -> Vec<Point> {
