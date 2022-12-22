@@ -1,6 +1,6 @@
 import abc
 import time
-import os
+import subprocess
 from pathlib import Path
 from pojo.day import Day
 
@@ -40,7 +40,12 @@ class Language(abc.ABC):
     def run(self, day: Day, is_test: bool) -> float:
         start = time.time()
         command = self._get_run_command(day, is_test)
-        os.system(command)
+
+        pipe = subprocess.Popen(command, stderr=subprocess.PIPE, shell=True)
+        err = pipe.communicate()[1].decode()
+        if len(err) > 0:
+            raise Exception(f'Failed due to: {err}')
+
         return time.time() - start
 
     @abc.abstractmethod
