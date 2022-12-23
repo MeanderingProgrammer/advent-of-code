@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::string::ToString;
 
-pub trait GridValue: PartialEq + ToString {}
-impl<T: PartialEq + ToString> GridValue for T {}
+pub trait GridValue: PartialEq + ToString + Clone {}
+impl<T: PartialEq + ToString + Clone> GridValue for T {}
 
 #[derive(Debug)]
 pub struct Grid<T: GridValue> {
@@ -15,9 +15,7 @@ pub struct Grid<T: GridValue> {
 
 impl<T: GridValue> Grid<T> {
     pub fn new() -> Self {
-        Grid {
-            grid: HashMap::new(),
-        }
+        Self { grid: HashMap::new() }
     }
 
     pub fn from_lines(lines: Vec<String>, f : impl Fn(char) -> Option<T>) -> Self {
@@ -56,6 +54,14 @@ impl<T: GridValue> Grid<T> {
 
     pub fn points(&self) -> Vec<&Point> {
         self.grid.keys().collect()
+    }
+
+    pub fn rotate_cw(&self) -> Self {
+        let mut rotated = Self::new();
+        for (point, value) in &self.grid {
+            rotated.add(point.rotate_cw(), value.clone());
+        }
+        rotated
     }
 
     pub fn points_with_value(&self, target: T) -> Vec<&Point> {
