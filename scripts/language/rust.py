@@ -37,9 +37,14 @@ class Rust(Language):
             'path': f'{day.year}/{day.day}/{self.solution_file}'
         }
         if bin_config in cargo['bin']:
-            raise Exception(f'{day} has already been added to {_CARGO_FILE}')
-        cargo['bin'].append(bin_config)
+            print('Do not need to update Cargo file')
+            return
 
+        cargo['bin'].append(bin_config)
+        Rust.__save_cargo_file(cargo)
+
+    @staticmethod
+    def __save_cargo_file(cargo):
         f = open(_CARGO_FILE, 'w+')
         f.write(toml.dumps(cargo))
         f.close()
