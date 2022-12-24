@@ -7,6 +7,7 @@ class GenerateTemplate:
     def __init__(self):
         self.__template_mapping = {
             'next': GenerateTemplate.__get_next,
+            'current': GenerateTemplate.__get_current,
         }
 
     def get(self, name) -> Day:
@@ -19,3 +20,7 @@ class GenerateTemplate:
     def __get_next() -> Day:
         latest_day = DayFactory().get_latest()
         return latest_day.add(1)
+
+    @staticmethod
+    def __get_current() -> Day:
+        return DayFactory().get_latest()
