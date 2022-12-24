@@ -137,6 +137,12 @@ impl Bound {
         &self.upper
     }
 
+    pub fn size(&self) -> i64 {
+        (0..self.lower.dimensions())
+            .map(|i| (self.upper.get(i) - self.lower.get(i)) + 1)
+            .product()
+    }
+
     pub fn contain(&self, point: &Point) -> bool {
         (0..point.dimensions())
             .all(|i| {
