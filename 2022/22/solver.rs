@@ -1,8 +1,9 @@
-use aoc_lib::answer;
+//use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
+//use aoc_lib::point::Point;
 use aoc_lib::reader;
 
+/*
 #[derive(Debug)]
 struct Cube {
     faces: [Grid<char>; 6],
@@ -15,6 +16,7 @@ enum Direction {
     Left,
     Up,
 }
+*/
 
 #[derive(Debug)]
 enum Instruction {
@@ -47,6 +49,7 @@ fn parse_cube(grid_lines: &Vec<String>) {
         .max().unwrap();
     let side_length = rows.min(cols) / 3;
 
+    /*
     let face_index = 0;
     let faces: [Grid<char>; 6];
     
@@ -58,6 +61,7 @@ fn parse_cube(grid_lines: &Vec<String>) {
         (5, 0),
         (2, 0),
     ];
+    */
 
     for row_index in 0..(rows/side_length) {
         for column_index in 0..(cols/side_length) {

@@ -134,7 +134,7 @@ fn simulate_until_end() -> (i64, usize) {
 }
 
 fn get_elves() -> Elves {
-    let grid = reader::read_grid(|ch| ch);
+    let grid = reader::read_grid(|ch| Some(ch));
     let locations = grid.points_with_value('#').iter()
         .map(|elve| (elve.x(), -elve.y()))
         .collect();
