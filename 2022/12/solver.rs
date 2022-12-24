@@ -50,7 +50,7 @@ fn can_go(grid: &Grid<i64>, point: &Point, max_height: &i64) -> bool {
 }
 
 fn get_graph() -> (Grid<i64>, Point, Point) {
-    let mut grid = reader::read_grid(|ch| get_offset(ch));
+    let mut grid = reader::read_grid(|ch| Some(get_offset(ch)));
     let mut start = Point::new_2d(0, 0);
     let mut end = Point::new_2d(0, 0);
 

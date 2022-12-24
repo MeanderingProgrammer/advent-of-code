@@ -4,7 +4,7 @@ use aoc_lib::point::Point;
 use aoc_lib::reader;
 
 fn main() {
-    let grid = reader::read_grid(|ch| ch.to_digit(10).unwrap() as i64);
+    let grid = reader::read_grid(|ch| Some(ch.to_digit(10).unwrap() as i64));
     let result: Vec<(i64, bool)> = grid.points().iter()
         .map(|point| scenic_score(&grid, point))
         .collect();
