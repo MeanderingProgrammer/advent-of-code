@@ -122,7 +122,7 @@ impl<T: GridValue> fmt::Display for Grid<T> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Bound {
     lower: Point,
     upper: Point,
