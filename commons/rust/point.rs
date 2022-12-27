@@ -53,14 +53,6 @@ impl Point {
         self.add(2, value)
     }
 
-    pub fn rotate_cw(&self) -> Self {
-        if self.dimensions() != 2 {
-            panic!("Cannot rotate anything outside 2 dimensions");
-        }
-        // Grids grow downwards, hence the non-standard rotate clock-wise
-        Self::new_2d(-self.y(), self.x())
-    }
-
     fn add(&self, index: usize, value: i64) -> Self {
         self.check_index(index);
         let mut copied = self.values.clone();

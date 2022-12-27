@@ -56,14 +56,6 @@ impl<T: GridValue> Grid<T> {
         self.grid.keys().collect()
     }
 
-    pub fn rotate_cw(&self) -> Self {
-        let mut rotated = Self::new();
-        for (point, value) in &self.grid {
-            rotated.add(point.rotate_cw(), value.clone());
-        }
-        rotated
-    }
-
     pub fn points_with_value(&self, target: T) -> Vec<&Point> {
         self.grid.iter()
             .filter(|(_, value)| value == &&target)

@@ -1,7 +1,8 @@
 use aoc_lib::answer;
-use aoc_lib::grid::{Bound, Grid};
+use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
+use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,26 +21,35 @@ impl fmt::Display for Space {
     }
 }
 
+#[derive(Debug, Clone)]
 struct Edge {
-    bound: Bound,
-    direction: Direction,
-    next: fn(i64, i64, i64) -> Point,
+    block: Block,
+    rotations: usize,
 }
 
-impl Edge {
-    fn new(start: Point, end: Point, direction: Direction, next: fn(i64, i64, i64) -> Point) -> Self {
-        Self {
-            bound: Bound::new(start, end),
-            direction: direction,
-            next: next,
+#[derive(Debug)]
+struct Edges {
+    above: Edge,
+    right: Edge,
+    below: Edge,
+    left: Edge,
+}
+
+impl Edges {
+    fn get_edge(&self, direction: &Direction) -> &Edge {
+        match direction {
+            Direction::Right => &self.right,
+            Direction::Down => &self.below,
+            Direction::Left => &self.left,
+            Direction::Up => &self.above,
         }
     }
 }
 
+#[derive(Debug)]
 struct Cube {
     grid: Grid<Space>,
     size: i64,
-    edges: Vec<Edge>,
 }
 
 impl Cube {
@@ -48,122 +58,46 @@ impl Cube {
         let spaces_per_face = total_spaces / 6;
         let size = (spaces_per_face as f64).sqrt() as i64;
 
-        Self {
-            grid,
-            size,
-            // Hard coding edge behavior :(
-            edges: vec![
-                Edge::new(
-                    Point::new_2d(size, 0),
-                    Point::new_2d(2 * size - 1, 0),
-                    Direction::Right,
-                    |x, _, size| Point::new_2d(0, 2 * size + x),
-                ),
-                Edge::new(
-                    Point::new_2d(2 * size, 0),
-                    Point::new_2d(3 * size - 1, 0),
-                    Direction::Up,
-                    |x, _, size| Point::new_2d(x - 2 * size, 4 * size - 1),
-                ),
-                Edge::new(
-                    Point::new_2d(3 * size - 1, 0),
-                    Point::new_2d(3 * size - 1, size - 1),
-                    Direction::Left,
-                    |_, y, size| Point::new_2d(2 * size - 1, 2 * size + (size - y - 1)),
-                ),
-                Edge::new(
-                    Point::new_2d(2 * size, size - 1),
-                    Point::new_2d(3 * size - 1, size -1),
-                    Direction::Left,
-                    |x, _, size| Point::new_2d(2 * size - 1, x - size),
-                ),
-                Edge::new(
-                    Point::new_2d(2 * size -1, size),
-                    Point::new_2d(2 * size - 1, 2 * size - 1),
-                    Direction::Up,
-                    |_, y, size| Point::new_2d(y + size, size - 1),
-                ),
-                Edge::new(
-                    Point::new_2d(2 * size - 1, 2 * size),
-                    Point::new_2d(2 * size - 1, 3 * size - 1),
-                    Direction::Left,
-                    |_, y, size| Point::new_2d(3 * size - 1, size - (y - 2 * size)),
-                ),
-                Edge::new(
-                    Point::new_2d(size, 3 * size - 1),
-                    Point::new_2d(2 * size - 1, 3 * size - 1),
-                    Direction::Left,
-                    |x, _, size| Point::new_2d(size - 1, x + 2 * size),
-                ),
-                Edge::new(
-                    Point::new_2d(size - 1, 3 * size),
-                    Point::new_2d(size - 1, 4 * size - 1),
-                    Direction::Up,
-                    |_, y, size| Point::new_2d(y - 2 * size, 3 * size - 1),
-                ),
-                Edge::new(
-                    Point::new_2d(0, 4 * size - 1),
-                    Point::new_2d(size - 1, 4 * size - 1),
-                    Direction::Down,
-                    |x, _, size| Point::new_2d(3 * size - 1 - x, 0),
-                ),
-                Edge::new(
-                    Point::new_2d(0, 3 * size),
-                    Point::new_2d(0, 4 * size - 1),
-                    Direction::Down,
-                    |_, y, size| Point::new_2d(y - 2 * size, 0),
-                ),
-                Edge::new(
-                    Point::new_2d(0, 2 * size),
-                    Point::new_2d(0, 3 * size - 1),
-                    Direction::Right,
-                    |_, y, size| Point::new_2d(size, 3 * size - 1 - y),
-                ),
-                Edge::new(
-                    Point::new_2d(0, 2 * size),
-                    Point::new_2d(size - 1, 2 * size),
-                    Direction::Right,
-                    |x, _, size| Point::new_2d(size, size + x),
-                ),
-                Edge::new(
-                    Point::new_2d(size, size),
-                    Point::new_2d(size, 2 * size - 1),
-                    Direction::Down,
-                    |_, y, size| Point::new_2d(y - size, 2 * size),
-                ),
-                Edge::new(
-                    Point::new_2d(size, 0),
-                    Point::new_2d(size, size - 1),
-                    Direction::Right,
-                    |_, y, size| Point::new_2d(0, 3 * size - 1 - y),
-                ),
-            ],
+        Self { grid, size }
+    }
+
+    fn next(&self, current: &mut State, edges: &HashMap<Block, Edges>) {
+        let mut next_relative_position = current.next();
+        if self.in_relative_bounds(&next_relative_position) {
+            if self.legal(&current.block.absolute(self.size, &next_relative_position)) {
+                current.relative = next_relative_position;
+            }
+        } else {
+            next_relative_position = Point::new_2d(
+                (next_relative_position.x() + self.size) % self.size,
+                (next_relative_position.y() + self.size) % self.size,
+            );
+            let mut next_direction = current.direction.clone();
+
+            let edge = edges.get(&current.block).unwrap().get_edge(&current.direction);
+            for _ in 0..edge.rotations {
+                next_relative_position = Point::new_2d(
+                    self.size - next_relative_position.y() - 1,
+                    next_relative_position.x(),
+                );
+                next_direction = next_direction.turn(&Turn::Right);
+            }
+
+            if self.legal(&edge.block.absolute(self.size, &next_relative_position)) {
+                current.block = edge.block.clone();
+                current.relative = next_relative_position;
+                current.direction = next_direction;
+            }
         }
     }
 
-    fn next(&self, current: &mut State) {
-        let next_position = current.next();
-        if self.grid.contains(&next_position) {
-            if self.legal(&next_position) {
-                current.position = next_position;
-            }
-        } else {
-            let edge = self.edges.iter()
-                .find(|edge| edge.bound.contain(&current.position))
-                .unwrap();
-            let (x, y) = (current.position.x(), current.position.y());
-            let cube_position = (edge.next)(x, y, self.size);
-            //println!("{:?}", current.position);
-            //println!("{:?}", cube_position);
-            if self.legal(&cube_position) {
-                current.position = cube_position;
-                current.direction = edge.direction.clone();
-            }
-        }
+    fn in_relative_bounds(&self, position: &Point) -> bool {
+        let (x, y) = (position.x(), position.y());
+        x >= 0 && x < self.size && y >= 0 && y < self.size
     }
 
     fn legal(&self, position: &Point) -> bool {
-        self.grid.get(position) != &Space::Wall
+        self.grid.get(position) == &Space::Open
     }
 }
 
@@ -202,16 +136,81 @@ impl Direction {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+enum Block {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+}
+
+impl Block {
+    fn from_str(block: &str) -> Self {
+        match block {
+            "A" => Self::A,
+            "B" => Self::B,
+            "C" => Self::C,
+            "D" => Self::D,
+            "E" => Self::E,
+            "F" => Self::F,
+            _ => unreachable!(),
+        }
+    }
+
+    fn top_left(&self, size: i64) -> Point {
+        // This will differ for different inputs
+        let (col, row) = match self {
+            Self::A => (1, 0),
+            Self::B => (2, 0),
+            Self::C => (1, 1),
+            Self::D => (0, 2),
+            Self::E => (1, 2),
+            Self::F => (0, 3),
+        };
+        Point::new_2d(col * size, row * size)
+    }
+
+    fn absolute(&self, size: i64, relative: &Point) -> Point {
+        self.top_left(size)
+            .add_x(relative.x())
+            .add_y(relative.y())
+    }
+}
+
 #[derive(Debug)]
 struct State {
-    position: Point,
+    block: Block,
+    size: i64,
+    relative: Point,
     direction: Direction,
 }
 
 impl State {
+    fn new(cube: &Cube) -> Self {
+        // This will differ for different inputs
+        Self {
+            block: Block::A,
+            size: cube.size,
+            relative: Point::new_2d(0, 0),
+            direction: Direction::Right,
+        }
+    }
+
+    fn next(&self) -> Point {
+        match self.direction {
+            Direction::Up => self.relative.add_y(-1),
+            Direction::Right => self.relative.add_x(1),
+            Direction::Down => self.relative.add_y(1),
+            Direction::Left => self.relative.add_x(-1),
+        }
+    }
+
     fn score(&self) -> i64 {
-        let row_score = (self.position.y() + 1) * 1_000;
-        let column_score = (self.position.x() + 1) * 4;
+        let position = self.block.absolute(self.size, &self.relative);
+        let row_score = (position.y() + 1) * 1_000;
+        let column_score = (position.x() + 1) * 4;
         let direction_score = match self.direction {
             Direction::Right => 0,
             Direction::Down => 1,
@@ -222,50 +221,68 @@ impl State {
     }
 }
 
-impl State {
-    fn next(&self) -> Point {
-        match self.direction {
-            Direction::Up => self.position.add_y(-1),
-            Direction::Right => self.position.add_x(1),
-            Direction::Down => self.position.add_y(1),
-            Direction::Left => self.position.add_x(-1),
-        }
-    }
-}
-
 fn main() {
     let (cube, instructions) = get_input();
-    simulate(&cube, &instructions);
-    //answer::part1(3590, simulate(false));
-    // 15217 too low
-    answer::part2(15217, simulate(&cube, &instructions));
+    answer::part1(3590, simulate(&cube, &instructions, vec![
+        // This will differ for different inputs
+        "A -> E:0 B:0 C:0 B:0",
+        "B -> B:0 A:0 B:0 A:0",
+        "C -> A:0 C:0 E:0 C:0",
+        "D -> F:0 E:0 F:0 E:0",
+        "E -> C:0 D:0 A:0 D:0",
+        "F -> D:0 F:0 D:0 F:0",
+    ]));
+    answer::part2(86382, simulate(&cube, &instructions, vec![
+        // This will differ for different inputs
+        "A -> F:1 B:0 C:0 D:2",
+        "B -> F:0 E:2 C:1 A:0",
+        "C -> A:0 B:3 E:0 D:3",
+        "D -> C:1 E:0 F:0 A:2",
+        "E -> C:0 B:2 F:1 D:0",
+        "F -> D:0 E:3 B:0 A:3",
+    ]));
 }
 
-fn simulate(cube: &Cube, instructions: &Vec<Instruction>) -> i64 {
-    // This will differ for different inputs
-    let mut state = State {
-        position: Point::new_2d(cube.size, 0),
-        direction: Direction::Right,
-    };
-
-    println!("{:?}", state);
+fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edge_mappings: Vec<&str>) -> i64 {
+    let mut state = State::new(cube);
+    let edges = parse_mappings(edge_mappings);
     for instruction in instructions {
-        //println!("{:?}", instruction);
         match instruction {
             Instruction::Move(amount) => {
                 for _ in 0..*amount {
-                    cube.next(&mut state);
-                    //println!("{} - {:?}", i, state);
+                    cube.next(&mut state, &edges);
                 }
             },
             Instruction::Turn(turn) => {
                 state.direction = state.direction.turn(turn);
             },
         }
-        //println!("{:?}", state);
     }
-
     state.score()
+}
+
+fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
+    let mut result = HashMap::new();
+    edge_mappings.iter()
+        .for_each(|edge_mapping| {
+            let (block, edges) = edge_mapping.split_once(" -> ").unwrap();
+            let edges: Vec<Edge> = edges.split(" ")
+                .map(|edge| {
+                    let (neighbor, rotations) = edge.split_once(":").unwrap();
+                    Edge {
+                        block: Block::from_str(neighbor),
+                        rotations: rotations.parse::<usize>().unwrap(),
+                    }
+                })
+                .collect();
+            result.insert(Block::from_str(block), Edges {
+                above: edges[0].clone(),
+                right: edges[1].clone(),
+                below: edges[2].clone(),
+                left: edges[3].clone(),
+            });
+        });
+    result
 }
 
 fn get_input() -> (Cube, Vec<Instruction>) {
