@@ -90,10 +90,7 @@ impl<T: GridValue> Grid<T> {
             maxs.push(points.iter().map(|point| point.get(i)).max().unwrap() + buffer);
         }
 
-        Bound {
-            lower: Point::new_nd(mins),
-            upper: Point::new_nd(maxs),
-        }
+        Bound::new(Point::new_nd(mins), Point::new_nd(maxs))
     }
 
     pub fn as_string(&self, default: &str, buffer: i64) -> String {
@@ -129,6 +126,10 @@ pub struct Bound {
 }
 
 impl Bound {
+    pub fn new(lower: Point, upper: Point) -> Self {
+        Self { lower, upper }
+    }
+
     pub fn lower(&self) -> &Point {
         &self.lower
     }
