@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
 import os
+from argparse import ArgumentParser
 from pathlib import Path
 
 from component.generate_template import GenerateTemplate
@@ -67,7 +67,7 @@ def create_data_if_necessary(day: Day, date_path: Path):
         print(f'{data_path} already exists, leaving as is')
 
 
-def download_input(day: Day, data_path):
+def download_input(day: Day, data_path: Path):
     os.system(f'''aoc download  \\
         --year {day.year} --day {day.day} \\
         --input-file {data_path} \\
@@ -76,11 +76,13 @@ def download_input(day: Day, data_path):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = ArgumentParser(description='Generate starter files and pull input')
+
     parser.add_argument('-t', '--template', type=str)
     parser.add_argument('-y', '--year', type=str)
     parser.add_argument('-d', '--day', type=str)
-    parser.add_argument('-l', '--lang', type=str)
+    parser.add_argument('-l', '--lang', type=str, default='rust')
+    parser.add_argument('--info', action='store_true')
 
     args = parser.parse_args()
 
@@ -88,12 +90,13 @@ if __name__ == '__main__':
         template = args.template or 'next'
         day = GenerateTemplate().get(template)
     elif args.template is not None:
-        raise Exception('If --year or --day is provided then --template should not be')
+        raise Exception('If "year" or "day" is provided then "template" should not be')
     elif args.year is None or args.day is None:
-        raise Exception('Both --year and --day are required if either is provided')
+        raise Exception('Both "year" and "day" are required if either is provided')
     else:
         day = Day(args.year, args.day)
 
-    lang = args.lang or 'rust'
-
-    main(day, lang)
+    if args.info:
+        print(f'Would generate files for {day} in {args.lang}')
+    else:
+        main(day, args.lang)

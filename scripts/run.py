@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
 import os
-
+from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
@@ -15,12 +14,9 @@ from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
 
 
-def main(years: List[str], days: List[str], is_test: bool):
-    run_days = DayFactory(years, days).get_days()
-    if len(run_days) == 0:
-        raise Exception('Could not find any days to run given input')
+def main(days: List[Day], is_test: bool):
     factory = LanguageFactory()
-    runtimes = get_runtimes(factory, run_days, is_test)
+    runtimes = get_runtimes(factory, days, is_test)
     Displayer(runtimes).display()
 
 
@@ -57,20 +53,28 @@ def run_language(language: Language, day: Day, is_test: bool) -> RuntimeInfo:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = ArgumentParser(description='Run specific years / days')
+
     parser.add_argument('-t', '--template', type=str)
     parser.add_argument('-y', '--years', type=str, nargs='+')
     parser.add_argument('-d', '--days', type=str, nargs='+')
     parser.add_argument('--test', action='store_true')
+    parser.add_argument('--info', action='store_true')
 
     args = parser.parse_args()
 
     if args.years is None and args.days is None:
         template = args.template or 'latest'
-        years, days = RunTemplate().get(template)
+        days = RunTemplate().get(template)
     elif args.template is not None:
-        raise Exception('If --years or --days is provided then --template should not be')
+        raise Exception('If "years" or "days" is provided then "template" should not be')
     else:
-        years, days = args.years or [], args.days or []
+        days = DayFactory(args.years or [], args.days or []).get_days()
 
-    main(years, days, args.test)
+    if len(days) == 0:
+        raise Exception('Could not find any days to run given input')
+
+    if args.info:
+        print(f'Would run {days}')
+    else:
+        main(days, args.test)
