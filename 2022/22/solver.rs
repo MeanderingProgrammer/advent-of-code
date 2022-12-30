@@ -2,6 +2,14 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
+use nom::{
+    bytes::complete::tag,
+    character::complete::{alpha0, digit0},
+    combinator::map_res,
+    error::Error,
+    multi::separated_list0,
+    sequence::separated_pair,
+};
 use std::collections::HashMap;
 use std::fmt;
 
@@ -25,6 +33,12 @@ impl fmt::Display for Space {
 struct Edge {
     block: Block,
     rotations: usize,
+}
+
+impl Edge {
+    fn new(block: Block, rotations: usize) -> Result<Self, String> {
+        Ok(Edge { block, rotations })
+    }
 }
 
 #[derive(Debug)]
@@ -147,15 +161,15 @@ enum Block {
 }
 
 impl Block {
-    fn from_str(block: &str) -> Self {
+    fn from_str(block: &str) -> Result<Self, String> {
         match block {
-            "A" => Self::A,
-            "B" => Self::B,
-            "C" => Self::C,
-            "D" => Self::D,
-            "E" => Self::E,
-            "F" => Self::F,
-            _ => unreachable!(),
+            "A" => Ok(Self::A),
+            "B" => Ok(Self::B),
+            "C" => Ok(Self::C),
+            "D" => Ok(Self::D),
+            "E" => Ok(Self::E),
+            "F" => Ok(Self::F),
+            _ => Err("Cannot parse block".to_string()),
         }
     }
 
@@ -223,7 +237,7 @@ impl State {
 
 fn main() {
     let (cube, instructions) = get_input();
-    answer::part1(3590, simulate(&cube, &instructions, vec![
+    answer::part1(3590, simulate(&cube, &instructions, parse_mappings(vec![
         // This will differ for different inputs
         "A -> E:0 B:0 C:0 B:0",
         "B -> B:0 A:0 B:0 A:0",
@@ -231,8 +245,8 @@ fn main() {
         "D -> F:0 E:0 F:0 E:0",
         "E -> C:0 D:0 A:0 D:0",
         "F -> D:0 F:0 D:0 F:0",
-    ]));
-    answer::part2(86382, simulate(&cube, &instructions, vec![
+    ])));
+    answer::part2(86382, simulate(&cube, &instructions, parse_mappings(vec![
         // This will differ for different inputs
         "A -> F:1 B:0 C:0 D:2",
         "B -> F:0 E:2 C:1 A:0",
@@ -240,12 +254,11 @@ fn main() {
         "D -> C:1 E:0 F:0 A:2",
         "E -> C:0 B:2 F:1 D:0",
         "F -> D:0 E:3 B:0 A:3",
-    ]));
+    ])));
 }
 
-fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edge_mappings: Vec<&str>) -> i64 {
+fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, Edges>) -> i64 {
     let mut state = State::new(cube);
-    let edges = parse_mappings(edge_mappings);
     for instruction in instructions {
         match instruction {
             Instruction::Move(amount) => {
@@ -262,20 +275,27 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edge_mappings: Vec<&st
 }
 
 fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
+    let mut parser = separated_pair::<_, _, _, _, Error<_>, _, _, _>(
+        map_res(alpha0, Block::from_str),
+        tag(" -> "),
+        separated_list0(
+            tag(" "),
+            map_res(
+                separated_pair(
+                    map_res(alpha0, Block::from_str),
+                    tag(":"),
+                    map_res(digit0, |s: &str| s.parse::<usize>()),
+                ),
+                |(block, rotations)| Edge::new(block, rotations),
+            ),
+        ),
+    );
+
     let mut result = HashMap::new();
     edge_mappings.iter()
-        .for_each(|edge_mapping| {
-            let (block, edges) = edge_mapping.split_once(" -> ").unwrap();
-            let edges: Vec<Edge> = edges.split(" ")
-                .map(|edge| {
-                    let (neighbor, rotations) = edge.split_once(":").unwrap();
-                    Edge {
-                        block: Block::from_str(neighbor),
-                        rotations: rotations.parse::<usize>().unwrap(),
-                    }
-                })
-                .collect();
-            result.insert(Block::from_str(block), Edges {
+        .map(|edge_mapping| parser(edge_mapping).unwrap().1)
+        .for_each(|(block, edges)| {
+            result.insert(block, Edges {
                 above: edges[0].clone(),
                 right: edges[1].clone(),
                 below: edges[2].clone(),
@@ -306,12 +326,10 @@ fn parse_instructions(line: &str) -> Vec<Instruction> {
     line.replace("L", ",L,")
         .replace("R", ",R,")
         .split(",")
-        .map(|part| {
-            match part {
-                "L" => Instruction::Turn(Turn::Left),
-                "R" => Instruction::Turn(Turn::Right),
-                amount => Instruction::Move(amount.parse::<i64>().unwrap()),
-            }
+        .map(|part| match part {
+            "L" => Instruction::Turn(Turn::Left),
+            "R" => Instruction::Turn(Turn::Right),
+            amount => Instruction::Move(amount.parse::<i64>().unwrap()),
         })
         .collect()
 }
