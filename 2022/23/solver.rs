@@ -38,7 +38,7 @@ impl Elves {
             .for_each(|&location| {
                 result.insert(location);
             });
-        Self { 
+        Self {
             locations: result,
             round: round,
         }
@@ -57,13 +57,13 @@ impl Elves {
             } else {
                 proposals.iter()
                     .map(|(n1, n2, n3)| (
-                        (x + n1.0, y + n1.1), 
-                        (x + n2.0, y + n2.1), 
+                        (x + n1.0, y + n1.1),
+                        (x + n2.0, y + n2.1),
                         (x + n3.0, y + n3.1),
                     ))
                     .filter(|(l1, l2, l3)| {
-                        !self.locations.contains(&l1) 
-                            && !self.locations.contains(&l2) 
+                        !self.locations.contains(&l1)
+                            && !self.locations.contains(&l2)
                             && !self.locations.contains(&l3)
                     })
                     .map(|(_, l2, _)| l2)
@@ -93,7 +93,7 @@ impl Elves {
 
     fn get_proposals(&self) -> Vec<Dir> {
         CHECK_ORDER.iter().cycle()
-            .skip(self.round)
+            .skip(self.round % 4)
             .take(4)
             .map(|&proposal| proposal)
             .collect()
@@ -122,15 +122,16 @@ fn main() {
 }
 
 fn simulate_until_end() -> (i64, usize) {
-    let mut round_10 = 0;
-    let (mut elves, mut any_move) = (get_elves(), true);
+    let mut elves = get_elves();
+    let mut any_move = true;
+    let mut round_10 = None;
     while any_move {
         (elves, any_move) = elves.apply();
         if elves.round == 10 {
-            round_10 = elves.empty_tiles();
+            round_10 = Some(elves.empty_tiles());
         }
     }
-    (round_10, elves.round)
+    (round_10.unwrap(), elves.round)
 }
 
 fn get_elves() -> Elves {
