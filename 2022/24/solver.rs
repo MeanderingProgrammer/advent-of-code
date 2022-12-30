@@ -9,8 +9,29 @@ use std::collections::HashSet;
 enum Direction {
     Up,
     Right,
-    Down, 
+    Down,
     Left,
+}
+
+impl Direction {
+    fn from_ch(ch: &char) -> Self {
+        match ch {
+            '^' => Direction::Up,
+            '>' => Direction::Right,
+            'v' => Direction::Down,
+            '<' => Direction::Left,
+            _ => unreachable!(),
+        }
+    }
+
+    fn next(&self, position: &Point) -> Point {
+        match self {
+            Self::Up    => position.add_y(-1),
+            Self::Right => position.add_x(1),
+            Self::Down  => position.add_y(1),
+            Self::Left  => position.add_x(-1),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -21,12 +42,7 @@ struct Blizzard {
 
 impl Blizzard {
     fn next(&self, valley: &Valley) -> Self {
-        let suggested_position = match self.direction {
-            Direction::Up    => self.position.add_y(-1),
-            Direction::Right => self.position.add_x(1),
-            Direction::Down  => self.position.add_y(1),
-            Direction::Left  => self.position.add_x(-1),
-        };
+        let suggested_position = self.direction.next(&self.position);
         let next_position = if valley.valid_position(&suggested_position) {
             suggested_position
         } else {
@@ -45,36 +61,31 @@ impl Blizzard {
     }
 }
 
-type BlizzardGrid = Grid<char>;
-type Blizzards = HashSet<Blizzard>;
-
 #[derive(Debug, Clone)]
 struct Valley {
     bounds: Bound,
-    blizzards: Blizzards,
+    blizzards: HashSet<Blizzard>,
+    blizzard_positions: HashSet<Point>,
 }
 
 impl Valley {
-    fn new(grid: BlizzardGrid) -> Self {
-        let bounds = grid.bounds(0);
-        let mut blizzards = Blizzards::new();
+    fn new(grid: Grid<char>) -> Self {
+        let mut blizzards = HashSet::new();
+        let mut blizzard_positions = HashSet::new();
+
         grid.points().iter()
             .map(|point| (point, grid.get(point)))
             .filter(|(_, &value)| value != '.')
             .for_each(|(&point, value)| {
-                let direction = match value {
-                    '^' => Direction::Up,
-                    '>' => Direction::Right,
-                    'v' => Direction::Down,
-                    '<' => Direction::Left,
-                    _ => unreachable!(),
-                };
+                blizzard_positions.insert(point.clone());
                 blizzards.insert(Blizzard {
                     position: point.clone(),
-                    direction: direction,
+                    direction: Direction::from_ch(value),
                 });
             });
-        Self { bounds, blizzards }
+
+        let bounds = grid.bounds(0);
+        Self { bounds, blizzards, blizzard_positions }
     }
 
     fn start(&self) -> &Point {
@@ -86,12 +97,18 @@ impl Valley {
     }
 
     fn next(&mut self) {
-        let mut next_blizzards = Blizzards::new();
+        let mut next_blizzards = HashSet::new();
+        let mut next_blizzard_positions = HashSet::new();
+
         self.blizzards.iter()
             .for_each(|blizzard| {
-                next_blizzards.insert(blizzard.next(self));
+                let next_blizzard = blizzard.next(self);
+                next_blizzard_positions.insert(next_blizzard.position.clone());
+                next_blizzards.insert(next_blizzard);
             });
+
         self.blizzards = next_blizzards;
+        self.blizzard_positions = next_blizzard_positions;
     }
 
     fn valid_position(&self, position: &Point) -> bool {
@@ -105,17 +122,15 @@ impl Valley {
         true
     }
 
-    fn hits_blizzard(&self, position: &Point) -> bool {
-        self.blizzards.iter()
-            .map(|blizzard| &blizzard.position)
-            .any(|bliz_pos| bliz_pos == position)
+    fn hits_blizzard(&self, state: &Point) -> bool {
+        self.blizzard_positions.contains(state)
     }
 }
 
 fn main() {
     let mut valley = Valley::new(reader::read_grid(|ch| match ch {
         '<' | '^' | '>' | 'v' | '.' => Some(ch),
-        _ => None,    
+        _ => None,
     }));
     let (start, end) = (valley.start().clone(), valley.end().clone());
 
@@ -151,9 +166,9 @@ fn search(valley: &mut Valley, start: &Point, end: &Point) -> i64 {
 
         valley.next();
         next_states.into_iter()
-            .filter(|point| !valley.hits_blizzard(point))
-            .for_each(|point| {
-                q.add(point).unwrap();
+            .filter(|next_state| !valley.hits_blizzard(next_state))
+            .for_each(|next_state| {
+                q.add(next_state).unwrap();
             });
         minutes += 1;
     }
