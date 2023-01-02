@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+from typing import List
+
 from language.language import Language
 from pojo.day import Day
 
@@ -12,7 +14,7 @@ class Java(Language):
     @property
     def name(self) -> str:
         return 'java'
-    
+
     @property
     def solution_file(self) -> str:
         return 'Solver.java'
@@ -29,7 +31,7 @@ class Java(Language):
         ])
         # Change back to directory we were running in
         os.chdir(run_directory)
-    
+
     def _create_uber_jar(self, file_paths):
         uber_jar = 'uber-jar.jar'
 
@@ -44,22 +46,22 @@ class Java(Language):
             # Include * in class path to use local jars, such as Lombok
             os.system(f'javac -cp "*" -d . {Path(file_path).stem}.java')
             class_files.append(f'{file_path}.class')
-        
+
         # Create the uber jar and validate it was successfully created
         os.system(f'jar cf {uber_jar} {" ".join(class_files)}')
         if not Path(uber_jar).exists():
             raise Exception(f'Failed to generate Java uber jar: {uber_jar}')
-    
+
     def compile(self, day: Day):
-        # Delete existing classes, that way if compiling fails nothing 
+        # Delete existing classes, that way if compiling fails nothing
         # gets run, as opposed to runnning with previous artifacts
         self.__delete_classes()
         os.system(f'find . -name "*java" | xargs javac -d .')
-    
+
     def __delete_classes(self):
         os.system('find . -name "*class" | xargs rm -f')
-    
-    def _get_run_command(self, day: Day, is_test: bool) -> str:
+
+    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
         return 'java main.Solver'
 
     def template_processing(self, day: Day):
