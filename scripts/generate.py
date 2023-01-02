@@ -4,7 +4,7 @@ import os
 from argparse import ArgumentParser
 from pathlib import Path
 
-from component.generate_template import GenerateTemplate
+from args.generate_template import GenerateTemplate
 from component.language_factory import LanguageFactory
 from language.language import Language
 from pojo.day import Day
