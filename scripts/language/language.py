@@ -2,6 +2,8 @@ import abc
 import time
 import subprocess
 from pathlib import Path
+from typing import List
+
 from pojo.day import Day
 
 
@@ -9,7 +11,7 @@ class Language(abc.ABC):
 
     def __init__(self):
         self.__setup = False
-    
+
     @property
     @abc.abstractmethod
     def name(self) -> str:
@@ -28,18 +30,18 @@ class Language(abc.ABC):
         if not self.__setup:
             self._run_setup()
         self.__setup = True
-    
+
     @abc.abstractmethod
     def _run_setup(self):
         pass
-    
+
     @abc.abstractmethod
     def compile(self, day: Day):
         pass
-    
-    def run(self, day: Day, is_test: bool) -> float:
+
+    def run(self, day: Day, run_args: List[str]) -> float:
         start = time.time()
-        command = self._get_run_command(day, is_test)
+        command = self._get_run_command(day, run_args)
 
         pipe = subprocess.Popen(command, stderr=subprocess.PIPE, shell=True)
         err = pipe.communicate()[1].decode()
@@ -49,7 +51,7 @@ class Language(abc.ABC):
         return time.time() - start
 
     @abc.abstractmethod
-    def _get_run_command(self, day: Day, is_test: bool) -> str:
+    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
         pass
 
     @abc.abstractmethod
