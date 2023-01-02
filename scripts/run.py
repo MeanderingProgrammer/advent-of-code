@@ -5,10 +5,10 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
+from args.run_template import RunTemplate
 from component.day_factory import DayFactory
 from component.display_runtimes import Displayer
 from component.language_factory import LanguageFactory
-from component.run_template import RunTemplate
 from language.language import Language
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
