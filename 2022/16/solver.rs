@@ -1,12 +1,27 @@
 use aoc_lib::answer;
 use aoc_lib::graph::Graph;
 use aoc_lib::reader;
+use nom::{
+    branch::alt,
+    bytes::complete::tag,
+    character::complete::{alpha0, digit0},
+    combinator::map_res,
+    error::Error,
+    multi::separated_list0,
+    sequence::{separated_pair, tuple},
+};
 use priority_queue::PriorityQueue;
 
 #[derive(Debug, Clone)]
 struct Valve {
     name: String,
     flow_rate: i64,
+}
+
+impl Valve {
+    fn new(name: &str, flow_rate: i64) -> Result<Self, String> {
+        Ok(Self { name: name.to_string(), flow_rate })
+    }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
@@ -49,8 +64,8 @@ impl FullState {
     }
 
     fn score(&self) -> Score {
-        Score { 
-            minutes_left: self.minutes_left, 
+        Score {
+            minutes_left: self.minutes_left,
             score: self.score,
         }
     }
@@ -75,7 +90,7 @@ impl FullState {
     fn next_options_for(&self, index: usize, graph: &Graph<Valve>, minutes_remaining: i64) -> Vec<Self> {
         let mut result = Vec::new();
         let location = &self.locations[index];
-        
+
         let valve = graph.get_node(location);
         if !self.already_open(valve) && valve.flow_rate > 0 {
             result.push(self.open_valve(valve, minutes_remaining));
@@ -98,7 +113,7 @@ impl FullState {
         updated_valves_opened.sort();
 
         Self {
-            locations: self.locations.clone(), 
+            locations: self.locations.clone(),
             minutes_left: minutes_remaining,
             valves_opened: updated_valves_opened,
             score: self.score + (valve.flow_rate * minutes_remaining),
@@ -122,6 +137,17 @@ impl FullState {
 struct ScanLine {
     valve: Valve,
     leads_to: Vec<String>,
+}
+
+impl ScanLine {
+    fn new(valve: Valve, leads_to: Vec<&str>) -> Self {
+        Self {
+            valve,
+            leads_to: leads_to.iter()
+                .map(|to| to.to_string())
+                .collect(),
+        }
+    }
 }
 
 fn main() {
@@ -169,28 +195,8 @@ fn traverse_graph(graph: &Graph<Valve>, starting_time: i64, individuals: usize) 
 }
 
 fn create_graph() -> Graph<Valve> {
-    let scan_lines = reader::read(|line| {
-        let (valve_part, leads_to_part) = line.split_once("; ").unwrap();
-
-        let valve_parts: Vec<&str> = valve_part.split(" ").collect();
-        let (_, rate) = valve_parts[4].split_once("=").unwrap();
-        let valve = Valve {
-            name: valve_parts[1].to_string(),
-            flow_rate: rate.parse::<i64>().unwrap()
-        };
-
-        let (amount_indicator, _) = leads_to_part.split_once(" ").unwrap();
-        let valve_delim = match amount_indicator {
-            "tunnels" => " valves ",
-            "tunnel" => " valve ",
-            _ => panic!("Unhandled value indicator"),
-        };
-        let (_, valves_part) = leads_to_part.split_once(valve_delim).unwrap();
-        let leads_to: Vec<String> = valves_part.split(", ").map(String::from).collect();
-
-        ScanLine {valve, leads_to}
-
-    });
+    let lines = reader::read_lines();
+    let scan_lines = parse(lines.as_slice());
 
     let mut graph: Graph<Valve> = Graph::new();
 
@@ -208,4 +214,34 @@ fn create_graph() -> Graph<Valve> {
         });
 
     graph
+}
+
+fn parse(values: &[String]) -> Vec<ScanLine> {
+    let mut parser = separated_pair::<_, _, _, _, Error<_>, _, _, _>(
+        map_res(
+            tuple((
+                tag("Valve "),
+                alpha0,
+                tag(" has flow rate="),
+                map_res(digit0, |s: &str| s.parse::<i64>()),
+            )),
+            |(_, name, _, flow_rate)| Valve::new(name, flow_rate),
+        ),
+        tag("; "),
+        tuple((
+            alt((
+                tag("tunnel leads to valve "),
+                tag("tunnels lead to valves "),
+            )),
+            separated_list0(
+                tag(", "),
+                alpha0,
+            ),
+        )),
+    );
+
+    values.iter()
+        .map(|value| parser(value).unwrap().1)
+        .map(|(valve, (_, leads_to))| ScanLine::new(valve, leads_to))
+        .collect()
 }

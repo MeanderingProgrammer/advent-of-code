@@ -37,7 +37,7 @@ struct Edge {
 
 impl Edge {
     fn new(block: Block, rotations: usize) -> Result<Self, String> {
-        Ok(Edge { block, rotations })
+        Ok(Self { block, rotations })
     }
 }
 
