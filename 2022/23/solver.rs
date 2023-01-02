@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::grid::Grid;
 use aoc_lib::reader;
+use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
 type Loc = (i64, i64);
@@ -27,27 +28,35 @@ const CHECK_ORDER: [Dir; 4] = [NORTH, SOUTH, WEST, EAST];
 
 #[derive(Debug, Clone)]
 struct Elves {
-    locations: HashSet<(i64, i64)>,
+    locations: HashSet<Loc>,
     round: usize,
 }
 
 impl Elves {
-    fn new(locations: Vec<(i64, i64)>, round: usize) -> Self {
-        let mut result = HashSet::new();
-        locations.iter()
-            .for_each(|&location| {
-                result.insert(location);
-            });
-        Self {
-            locations: result,
-            round: round,
-        }
+    fn apply(&mut self) -> bool {
+        let proposed_locations = self.get_proposed_locations();
+        let end_to_proposals = proposed_locations.values().counts();
+
+        let mut any_move = false;
+        self.locations = proposed_locations.iter()
+            .map(|(&start, &end)| {
+                let num_proposals = *end_to_proposals.get(&end).unwrap();
+                let actual_end = if num_proposals == 1 { end } else { start };
+                if start != actual_end {
+                    any_move = true;
+                }
+                actual_end
+            })
+            .collect();
+        self.round += 1;
+
+        any_move
     }
 
-    fn apply(&self) -> (Self, bool) {
+    fn get_proposed_locations(&self) -> HashMap<Loc, Loc> {
         let proposals = self.get_proposals();
 
-        let mut proposed_locations: HashMap<Loc, Loc> = HashMap::new();
+        let mut proposed_locations = HashMap::new();
         for (x, y) in self.locations.iter() {
             let isolated = NEIGHBORS.iter()
                 .map(|(dx, dy)| (x + dx, y + dy))
@@ -72,23 +81,7 @@ impl Elves {
             };
             proposed_locations.insert((*x, *y), new_location);
         }
-
-        let mut any_move = false;
-        let updated_locations = proposed_locations.iter()
-            .map(|(&start, &end)| {
-                let num_proposals = proposed_locations.values()
-                    .map(|&location| location)
-                    .filter(|&location| location == end)
-                    .count();
-                let actual_end = if num_proposals == 1 { end } else { start };
-                if start != actual_end {
-                    any_move = true;
-                }
-                actual_end
-            })
-            .collect();
-
-        (Self::new(updated_locations, self.round + 1), any_move)
+        proposed_locations
     }
 
     fn get_proposals(&self) -> Vec<Dir> {
@@ -123,10 +116,11 @@ fn main() {
 
 fn simulate_until_end() -> (i64, usize) {
     let mut elves = get_elves();
-    let mut any_move = true;
     let mut round_10 = None;
+
+    let mut any_move = true;
     while any_move {
-        (elves, any_move) = elves.apply();
+        any_move = elves.apply();
         if elves.round == 10 {
             round_10 = Some(elves.empty_tiles());
         }
@@ -136,8 +130,10 @@ fn simulate_until_end() -> (i64, usize) {
 
 fn get_elves() -> Elves {
     let grid = reader::read_grid(|ch| Some(ch));
-    let locations = grid.points_with_value('#').iter()
-        .map(|elve| (elve.x(), -elve.y()))
-        .collect();
-    Elves::new(locations, 0)
+    Elves {
+        locations: grid.points_with_value('#').iter()
+            .map(|elve| (elve.x(), -elve.y()))
+            .collect(),
+        round: 0,
+    }
 }
