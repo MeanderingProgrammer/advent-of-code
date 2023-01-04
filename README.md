@@ -4,6 +4,12 @@ Public Repo for Advent of Code Solutions
 
 ![Years Completed](advent-completed.png)
 
+## Install Requirements
+
+```
+pip install -r scripts/requirements.txt
+```
+
 ## Set Aliases
 
 Add to your `~/.bashrc` or `~/.zshrc`:
