@@ -8,7 +8,7 @@ from pojo.day import Day
 ADVENT_COOKIE_FILE = '.adventofcode.session'
 
 
-def generate(day: Day, language_name: str):
+def do_generate(day: Day, language_name: str):
     language = LanguageFactory().get_by_name(language_name)
     date_path = get_date_path(day)
 
