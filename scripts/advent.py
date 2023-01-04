@@ -5,14 +5,16 @@ from typing import List
 
 from args.generate_template import GenerateTemplate
 from args.run_template import RunTemplate
-from command.generate import do_generate
-from command.run import do_run
+from command.generate import Generator
+from command.run import Runner
 from component.day_factory import DayFactory
 from pojo.day import Day
+
 
 @click.group()
 def cli():
     pass
+
 
 @cli.command()
 @click.option('-t', '--template', type=str)
@@ -34,7 +36,8 @@ def generate(template: str, year: str, day: str, lang: str, info: bool):
     if info:
         click.echo(f'Would generate files for {day} in {lang}')
     else:
-        do_generate(day, lang)
+        Generator(day, lang).generate()
+
 
 @cli.command()
 @click.option('-t', '--template', type=str)
@@ -61,7 +64,8 @@ def run(template: str, years: List[str], days: List[str], info: bool, test: bool
     if info:
         click.echo(f'Would run {days} with {run_args}')
     else:
-        do_run(days, run_args)
+        Runner(days, run_args).run()
+
 
 if __name__ == '__main__':
     cli()
