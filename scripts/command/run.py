@@ -1,12 +1,7 @@
-#!/usr/bin/env python3
-
 import os
-from argparse import ArgumentParser
 from pathlib import Path
 from typing import List
 
-from args.run_template import RunTemplate
-from component.day_factory import DayFactory
 from component.display_runtimes import Displayer
 from component.language_factory import LanguageFactory
 from language.language import Language
@@ -50,35 +45,3 @@ def run_language(language: Language, day: Day, run_args: List[str]) -> RuntimeIn
     runtime = language.run(day, run_args)
     print(f'Runtime: {runtime}')
     return RuntimeInfo(day, language.name, runtime)
-
-
-if __name__ == '__main__':
-    parser = ArgumentParser(description='Run specific years / days')
-
-    parser.add_argument('-t', '--template', type=str)
-    parser.add_argument('-y', '--years', type=str, nargs='+')
-    parser.add_argument('-d', '--days', type=str, nargs='+')
-    parser.add_argument('--test', action='store_true')
-    parser.add_argument('--info', action='store_true')
-
-    args = parser.parse_args()
-
-    if args.years is None and args.days is None:
-        template = args.template or 'latest'
-        days = RunTemplate().get(template)
-    elif args.template is not None:
-        raise Exception('If "years" or "days" is provided then "template" should not be')
-    else:
-        days = DayFactory(args.years or [], args.days or []).get_days()
-
-    if len(days) == 0:
-        raise Exception('Could not find any days to run given input')
-
-    run_args = []
-    if args.test:
-        run_args.append('--test')
-
-    if args.info:
-        print(f'Would run {days} with {run_args}')
-    else:
-        run(days, run_args)

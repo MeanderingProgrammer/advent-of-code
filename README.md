@@ -16,8 +16,8 @@ Add to your `~/.bashrc` or `~/.zshrc`:
 
 ```
 # Advent Aliases
-alias a_run="./scripts/run.py"
-alias a_gen="./scripts/generate.py"
+alias a_run="./scripts/advent.py run"
+alias a_gen="./scripts/advent.py generate"
 ```
 
 ## Running a Day
@@ -28,7 +28,7 @@ Does lots of hacky stuff to set environment variables, compile common directorie
 and set arguments to run commands.
 
 * Alias Command: `a_run`
-* Direct Command: `./scripts/run.py`
+* Direct Command: `./scripts/advent.py run`
 
 ### Usage
 
@@ -54,7 +54,7 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 Will pull down your puzzle input if [instructions](##install-aoc-cli) are followed.
 
 * Alias Command: `a_gen`
-* Direct Command: `./scripts/generate.py`
+* Direct Command: `./scripts/advent.py generate`
 
 ### Usage
 
