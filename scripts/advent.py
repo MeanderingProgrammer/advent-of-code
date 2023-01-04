@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 import click
+from typing import List
 
 from command.generate import generate
 from command.run import run
 
 from args.generate_template import GenerateTemplate
+from args.run_template import RunTemplate
+from component.day_factory import DayFactory
 from pojo.day import Day
 
 @click.group()
@@ -19,7 +22,6 @@ def cli():
 @click.option('-l', '--lang', type=str, default='rust')
 @click.option('-i', '--info', is_flag=True)
 def generate(template: str, year: int, day: int, lang: str, info: bool):
-    click.echo(f'This is generate() with')
     if year is None and day is None:
         template = template or 'next'
         day = GenerateTemplate().get(template)
@@ -33,18 +35,34 @@ def generate(template: str, year: int, day: int, lang: str, info: bool):
     if info:
         click.echo(f'Would generate files for {day} in {lang}')
     else:
-        #generate(day, lang)
-        print('hi', day, lang)
+        generate(day, lang)
 
 @cli.command()
 @click.option('-t', '--template', type=str)
-@click.option('-y', '--years', type=int)
-@click.option('-d', '--days', type=str)
+@click.option('-y', '--years', type=int, multiple=True)
+@click.option('-d', '--days', type=str, multiple=True)
 @click.option('-i', '--info', is_flag=True)
 @click.option('--test', is_flag=True)
-def run(template, years):
-    click.echo('This is run()')
-    # run()
+def run(template: str, years: List[int], days: List[str], info: bool, test: bool):
+    if len(years) == 0 and len(days) == 0:
+        template = template or 'latest'
+        days = RunTemplate().get(template)
+    elif template is not None:
+        raise Exception('If "years" or "days" is provided then "template" should not be')
+    else:
+        days = DayFactory(list(years), list(days)).get_days()
+
+    if len(days) == 0:
+        raise Exception('Could not find any days to run given input')
+
+    run_args = []
+    if test:
+        run_args.append('--test')
+
+    if info:
+        click.echo(f'Would run {days} with {run_args}')
+    else:
+        run(days, run_args)
 
 if __name__ == '__main__':
     cli()

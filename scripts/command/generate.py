@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-
 import os
-from argparse import ArgumentParser
 from pathlib import Path
 
-from args.generate_template import GenerateTemplate
 from component.language_factory import LanguageFactory
 from language.language import Language
 from pojo.day import Day
@@ -73,30 +69,3 @@ def download_input(day: Day, data_path: Path):
         --input-file {data_path} \\
         --input-only \\
         --session-file ./.adventofcode.session''')
-
-
-if __name__ == '__main__':
-    parser = ArgumentParser(description='Generate starter files and pull input')
-
-    parser.add_argument('-t', '--template', type=str)
-    parser.add_argument('-y', '--year', type=str)
-    parser.add_argument('-d', '--day', type=str)
-    parser.add_argument('-l', '--lang', type=str, default='rust')
-    parser.add_argument('--info', action='store_true')
-
-    args = parser.parse_args()
-
-    if args.year is None and args.day is None:
-        template = args.template or 'next'
-        day = GenerateTemplate().get(template)
-    elif args.template is not None:
-        raise Exception('If "year" or "day" is provided then "template" should not be')
-    elif args.year is None or args.day is None:
-        raise Exception('Both "year" and "day" are required if either is provided')
-    else:
-        day = Day(args.year, args.day)
-
-    if args.info:
-        print(f'Would generate files for {day} in {args.lang}')
-    else:
-        generate(day, args.lang)
