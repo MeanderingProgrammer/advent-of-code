@@ -9,7 +9,7 @@ from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
 
 
-def run(days: List[Day], run_args: List[str]):
+def do_run(days: List[Day], run_args: List[str]):
     factory = LanguageFactory()
     runtimes = get_runtimes(factory, days, run_args)
     Displayer(runtimes).display()
