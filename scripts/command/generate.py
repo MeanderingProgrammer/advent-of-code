@@ -12,7 +12,7 @@ from pojo.day import Day
 ADVENT_COOKIE_FILE = '.adventofcode.session'
 
 
-def main(day: Day, language_name: str):
+def generate(day: Day, language_name: str):
     language = LanguageFactory().get_by_name(language_name)
     date_path = get_date_path(day)
 
@@ -99,4 +99,4 @@ if __name__ == '__main__':
     if args.info:
         print(f'Would generate files for {day} in {args.lang}')
     else:
-        main(day, args.lang)
+        generate(day, args.lang)

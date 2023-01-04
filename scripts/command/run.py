@@ -14,7 +14,7 @@ from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
 
 
-def main(days: List[Day], run_args: List[str]):
+def run(days: List[Day], run_args: List[str]):
     factory = LanguageFactory()
     runtimes = get_runtimes(factory, days, run_args)
     Displayer(runtimes).display()
@@ -81,4 +81,4 @@ if __name__ == '__main__':
     if args.info:
         print(f'Would run {days} with {run_args}')
     else:
-        main(days, run_args)
+        run(days, run_args)
