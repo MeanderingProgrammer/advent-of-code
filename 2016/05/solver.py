@@ -1,20 +1,19 @@
-import hashlib 
+import hashlib
 
 import commons.answer as answer
-
-
-DOOR_ID = 'ugkcyxxp'
+from commons.aoc_parser import Parser
 
 
 def main():
-    answer.part1('d4cd2ee1', generate_password(populate_v1))
-    answer.part2('f2c730e5', generate_password(populate_v2))
+    door_id = Parser().string()
+    answer.part1('d4cd2ee1', generate_password(door_id, populate_v1))
+    answer.part2('f2c730e5', generate_password(door_id, populate_v2))
 
 
-def generate_password(populator):
+def generate_password(door_id, populator):
     password, i = [None]*8, 0
     while not all(password):
-        value = DOOR_ID + str(i)
+        value = door_id + str(i)
         hashed = hash(value)
         if hashed[:5] == '00000':
             populator(password, hashed)
