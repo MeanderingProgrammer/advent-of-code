@@ -1,5 +1,4 @@
 use aoc_lib::answer;
-use aoc_lib::graph::Graph;
 use aoc_lib::reader;
 use nom::{
     branch::alt,
@@ -10,238 +9,240 @@ use nom::{
     multi::separated_list0,
     sequence::{separated_pair, tuple},
 };
+use petgraph::{
+    algo::floyd_warshall::floyd_warshall,
+    graphmap::DiGraphMap,
+};
 use priority_queue::PriorityQueue;
+use std::collections::HashMap;
 
-#[derive(Debug, Clone)]
-struct Valve {
-    name: String,
-    flow_rate: i64,
-}
-
-impl Valve {
-    fn new(name: &str, flow_rate: i64) -> Result<Self, String> {
-        Ok(Self { name: name.to_string(), flow_rate })
-    }
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct IndividualState {
+    location: String,
+    minutes_left: i64,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct State {
-    locations: Vec<String>,
-    minutes_left: i64,
-    valves_opened: Vec<String>,
-}
-
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct Score {
-    minutes_left: i64,
-    score: i64,
-}
-
-#[derive(Debug)]
 struct FullState {
-    locations: Vec<String>,
-    minutes_left: i64,
+    individuals: Vec<IndividualState>,
     valves_opened: Vec<String>,
-    score: i64,
 }
 
-impl FullState {
-    fn from_state(state: State, score: Score) -> Self {
-        Self {
-            locations: state.locations,
-            minutes_left: state.minutes_left,
-            valves_opened: state.valves_opened,
-            score: score.score,
-        }
+#[derive(Debug)]
+struct Cave<'a> {
+    graph: DiGraphMap<&'a str, i64>,
+    valve_to_flow: &'a HashMap<String, i64>,
+}
+
+impl<'a> Cave<'a> {
+    fn next_options(&self, state: &FullState, score: i64, i: usize) -> Vec<(FullState, i64)> {
+        let individual = &state.individuals[i];
+        self.graph.edges(&individual.location)
+            .map(|(_, destination, &time)| (destination, time))
+            .filter(|(_, time)| individual.minutes_left - time > 0)
+            .filter(|(destination, _)| !state.valves_opened.contains(&(destination.to_owned().to_owned())))
+            .map(|(destination, time)| {
+                let next_time_left = individual.minutes_left - time - 1;
+                let flow_rate = self.valve_to_flow.get(destination).unwrap();
+
+                let mut next_valves_opened = state.valves_opened.clone();
+                next_valves_opened.push(destination.to_string());
+                next_valves_opened.sort();
+
+                let mut next_individuals = state.individuals.clone();
+                next_individuals[i] = IndividualState {
+                    location: destination.to_string(),
+                    minutes_left: next_time_left,
+                };
+
+                let next_state = FullState {
+                    individuals: next_individuals,
+                    valves_opened: next_valves_opened,
+                };
+                let next_score = score + (flow_rate * next_time_left);
+
+                (next_state, next_score)
+            })
+            .collect()
     }
 
-    fn state(&self) -> State {
-        State {
-            locations: self.locations.clone(),
-            minutes_left: self.minutes_left,
-            valves_opened: self.valves_opened.clone(),
+    fn optimistic_additional_score(&self, state: &FullState) -> i64 {
+        let mut unopened: Vec<i64> = self.valve_to_flow.iter()
+            .filter(|(name, _)| !state.valves_opened.contains(name))
+            .map(|(_, &flow_rate)| flow_rate)
+            .collect();
+        unopened.sort();
+        unopened.reverse();
+
+        let mut highest_values = unopened.iter().peekable();
+
+        let mut times_left: Vec<i64> = state.individuals.iter()
+            .map(|individual| individual.minutes_left)
+            .collect();
+
+        let mut additional_score = 0;
+        while times_left.iter().max().unwrap() > &2 && !highest_values.peek().is_none() {
+            let index_of_max = times_left.iter().enumerate()
+                .max_by(|(_, a), (_, b)| a.cmp(b))
+                .map(|(index, _)| index)
+                .unwrap();
+
+            times_left[index_of_max] -= 2;
+            additional_score += times_left[index_of_max] * highest_values.next().unwrap();
         }
-    }
-
-    fn score(&self) -> Score {
-        Score {
-            minutes_left: self.minutes_left,
-            score: self.score,
-        }
-    }
-
-    fn next_options(&self, graph: &Graph<Valve>) -> Vec<Self> {
-        let minutes_remaining = self.minutes_left - 1;
-
-        let next_options = self.next_options_for(0, graph, minutes_remaining);
-
-        if self.locations.len() == 1 {
-            next_options
-        } else {
-            let mut result = Vec::new();
-            for next_option in next_options {
-                let mut further_options = next_option.next_options_for(1, graph, minutes_remaining);
-                result.append(&mut further_options);
-            }
-            result
-        }
-    }
-
-    fn next_options_for(&self, index: usize, graph: &Graph<Valve>, minutes_remaining: i64) -> Vec<Self> {
-        let mut result = Vec::new();
-        let location = &self.locations[index];
-
-        let valve = graph.get_node(location);
-        if !self.already_open(valve) && valve.flow_rate > 0 {
-            result.push(self.open_valve(valve, minutes_remaining));
-        }
-
-        for neighbor in graph.neighbors(location) {
-            result.push(self.move_to(index, neighbor, minutes_remaining));
-        }
-
-        result
-    }
-
-    fn already_open(&self, valve: &Valve) -> bool {
-        self.valves_opened.contains(&valve.name.to_string())
-    }
-
-    fn open_valve(&self, valve: &Valve, minutes_remaining: i64) -> Self {
-        let mut updated_valves_opened = self.valves_opened.clone();
-        updated_valves_opened.push(valve.name.to_string());
-        updated_valves_opened.sort();
-
-        Self {
-            locations: self.locations.clone(),
-            minutes_left: minutes_remaining,
-            valves_opened: updated_valves_opened,
-            score: self.score + (valve.flow_rate * minutes_remaining),
-        }
-    }
-
-    fn move_to(&self, index: usize, destination: &Valve, minutes_remaining: i64) -> Self {
-        let mut updated_locations = self.locations.clone();
-        updated_locations[index] = destination.name.to_string();
-
-        Self {
-            locations: updated_locations,
-            minutes_left: minutes_remaining,
-            valves_opened: self.valves_opened.clone(),
-            score: self.score,
-        }
+        additional_score
     }
 }
 
 #[derive(Debug)]
-struct ScanLine {
-    valve: Valve,
+struct Valve {
+    name: String,
+    flow_rate: i64,
     leads_to: Vec<String>,
 }
 
-impl ScanLine {
-    fn new(valve: Valve, leads_to: Vec<&str>) -> Self {
-        Self {
-            valve,
+impl Valve {
+    fn new(name: &str, flow_rate: i64, leads_to: Vec<&str>) -> Result<Self, String> {
+        Ok(Self {
+            name: name.to_string(),
+            flow_rate: flow_rate,
             leads_to: leads_to.iter()
                 .map(|to| to.to_string())
                 .collect(),
-        }
+        })
     }
 }
 
 fn main() {
-    let graph = create_graph();
-    answer::part1(1873, traverse_graph(&graph, 30, 1).unwrap());
-    answer::part2(2425, traverse_graph(&graph, 26, 2).unwrap());
+    let lines = reader::read_lines();
+    let valves = parse(lines.as_slice());
+    let valve_to_flow = get_valve_to_flow(&valves);
+    let cave = create_cave(&valves, &valve_to_flow);
+
+    answer::part1(1873, traverse_cave(&cave, 30, 1).unwrap());
+    answer::part2(2425, traverse_cave(&cave, 26, 2).unwrap());
 }
 
-fn traverse_graph(graph: &Graph<Valve>, starting_time: i64, individuals: usize) -> Option<i64> {
+fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<i64> {
     let mut queue = PriorityQueue::new();
+    let mut max_score = None;
 
     let starting_state = FullState {
-        locations: vec!["AA".to_string(); individuals],
-        minutes_left: starting_time,
-        valves_opened: Vec::new(),
-        score: 0,
+        individuals: vec![
+            IndividualState {
+                location: "AA".to_string(),
+                minutes_left: starting_time,
+            }; individuals
+        ],
+        valves_opened: vec!["AA".to_string()],
     };
 
-    queue.push(starting_state.state(), starting_state.score());
+    queue.push(starting_state, 0);
 
     while !queue.is_empty() {
-        let (partial_state, score) = queue.pop().unwrap();
-        let state = FullState::from_state(partial_state, score);
+        let (state, score) = queue.pop().unwrap();
 
-        if state.minutes_left == 0 {
-            return Some(state.score);
+        if max_score == None || max_score.unwrap() < score {
+            max_score = Some(score);
         }
 
-        // Super hacky pruning logic, based on looking at states and seeing
-        // which ones could never reach the maximum score
-        if individuals == 2 && state.minutes_left < 19 && state.score < 1000 {
-            continue;
-        }
-        if individuals == 2 && state.minutes_left < 12 && state.score < 2000 {
+        // Mechanism to filter out states that cannot possibly reach an already seen value
+        if max_score != None && score + cave.optimistic_additional_score(&state) < max_score.unwrap() {
             continue;
         }
 
-        let next_options = state.next_options(graph);
-        for next_option in next_options {
-            queue.push_increase(next_option.state(), next_option.score());
+        let mut across_individuals = vec![
+            (state, score),
+        ];
+
+        for i in 0..individuals {
+            let mut next_options = Vec::new();
+            for (state, score) in &across_individuals {
+                let options = cave.next_options(state, *score, i);
+                if options.len() == 0 && i < individuals - 1 {
+                    next_options = across_individuals.clone();
+                } else {
+                    for (next_state, next_score) in options {
+                        next_options.push((next_state, next_score));
+                    }
+                }
+            }
+            across_individuals = next_options;
+        }
+
+        for (next_state, next_score) in across_individuals {
+            queue.push_increase(next_state, next_score);
         }
     }
 
-    None
+    max_score
 }
 
-fn create_graph() -> Graph<Valve> {
-    let lines = reader::read_lines();
-    let scan_lines = parse(lines.as_slice());
-
-    let mut graph: Graph<Valve> = Graph::new();
-
-    // Add nodes
-    scan_lines.iter()
-        .map(|scan_line| &scan_line.valve)
-        .for_each(|valve| graph.add_node(valve.name.clone(), valve.clone()));
-
-    // Add edges between nodes
-    scan_lines.iter()
-        .for_each(|scan_line| {
-            let valve = &scan_line.valve;
-            scan_line.leads_to.iter()
-                .for_each(|destination| graph.add_edge(&valve.name, destination));
+fn create_cave<'a>(valves: &'a Vec<Valve>, valve_to_flow: &'a HashMap<String, i64>) -> Cave<'a> {
+    // First create a graph where all edges are weighted at 1
+    let mut base_graph: DiGraphMap<&str, ()> = DiGraphMap::new();
+    valves.iter().for_each(|valve| {
+        valve.leads_to.iter().for_each(|destination| {
+            base_graph.add_edge(&valve.name, destination, ());
         });
+    });
 
-    graph
+    // Use a fast algorithm to get distances between all pairs
+    let all_distances = floyd_warshall(&base_graph, |_| 1).unwrap();
+
+    // Create a graph weighted by distance for all important valves
+    let mut graph: DiGraphMap<&str, i64> = DiGraphMap::new();
+    for v1 in valve_to_flow.keys() {
+        for v2 in valve_to_flow.keys() {
+            if v1 != v2 {
+                let weight = all_distances.get(&(v1, v2)).unwrap();
+                graph.add_edge(v1, v2, *weight);
+            }
+        }
+    }
+
+    Cave {
+        graph,
+        valve_to_flow,
+    }
 }
 
-fn parse(values: &[String]) -> Vec<ScanLine> {
-    let mut parser = separated_pair::<_, _, _, _, Error<_>, _, _, _>(
-        map_res(
+fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
+    let mut valve_to_flow = HashMap::new();
+    valves.iter()
+        // Only some of the valves actually matter, in particular the ones with some flow rate + start
+        .filter(|valve| valve.name.clone() == "AA" || valve.flow_rate > 0)
+        .for_each(|valve| {
+            valve_to_flow.insert(valve.name.clone(), valve.flow_rate);
+        });
+    valve_to_flow
+}
+
+fn parse(values: &[String]) -> Vec<Valve> {
+    let mut parser = map_res::<_, _, _, Error<_>, _, _, _>(
+        separated_pair(
             tuple((
                 tag("Valve "),
                 alpha0,
                 tag(" has flow rate="),
                 map_res(digit0, |s: &str| s.parse::<i64>()),
             )),
-            |(_, name, _, flow_rate)| Valve::new(name, flow_rate),
-        ),
-        tag("; "),
-        tuple((
-            alt((
-                tag("tunnel leads to valve "),
-                tag("tunnels lead to valves "),
+            tag("; "),
+            tuple((
+                alt((
+                    tag("tunnel leads to valve "),
+                    tag("tunnels lead to valves "),
+                )),
+                separated_list0(
+                    tag(", "),
+                    alpha0,
+                ),
             )),
-            separated_list0(
-                tag(", "),
-                alpha0,
-            ),
-        )),
+        ),
+        |((_, name, _, flow_rate), (_, leads_to))| Valve::new(name, flow_rate, leads_to),
     );
 
     values.iter()
         .map(|value| parser(value).unwrap().1)
-        .map(|(valve, (_, leads_to))| ScanLine::new(valve, leads_to))
         .collect()
 }
