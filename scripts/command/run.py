@@ -11,9 +11,10 @@ from pojo.runtime_info import RuntimeInfo
 
 class Runner:
 
-    def __init__(self, days: List[Day], run_args: List[str]):
-        self.__factory = LanguageFactory()
+    def __init__(self, days: List[Day], lang: str, run_args: List[str]):
+        factory = LanguageFactory()
         self.__days = days
+        self.__languages = factory.get_all() if lang is None else [factory.get_by_name(lang)]
         self.__run_args = run_args
 
     def run(self):
@@ -39,7 +40,7 @@ class Runner:
     def __available_languages(self) -> List[Language]:
         return [
             language
-            for language in self.__factory.get_all()
+            for language in self.__languages
             if Path(language.solution_file).is_file()
         ]
 

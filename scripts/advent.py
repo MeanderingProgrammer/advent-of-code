@@ -22,7 +22,13 @@ def cli():
 @click.option('-d', '--day', type=str)
 @click.option('-l', '--lang', type=str, default='rust')
 @click.option('-i', '--info', is_flag=True)
-def generate(template: str, year: str, day: str, lang: str, info: bool):
+def generate(
+    template: str,
+    year: str,
+    day: str,
+    lang: str,
+    info: bool,
+):
     if year is None and day is None:
         template = template or 'next'
         day = GenerateTemplate().get(template)
@@ -43,9 +49,17 @@ def generate(template: str, year: str, day: str, lang: str, info: bool):
 @click.option('-t', '--template', type=str)
 @click.option('-y', '--year', type=str, multiple=True)
 @click.option('-d', '--day', type=str, multiple=True)
+@click.option('-l', '--lang', type=str)
 @click.option('-i', '--info', is_flag=True)
 @click.option('--test', is_flag=True)
-def run(template: str, year: List[str], day: List[str], info: bool, test: bool):
+def run(
+    template: str,
+    year: List[str],
+    day: List[str],
+    lang: str,
+    info: bool,
+    test: bool,
+):
     if len(year) == 0 and len(day) == 0:
         template = template or 'latest'
         days = RunTemplate().get(template)
@@ -62,9 +76,9 @@ def run(template: str, year: List[str], day: List[str], info: bool, test: bool):
         run_args.append('--test')
 
     if info:
-        click.echo(f'Would run {days} with {run_args}')
+        click.echo(f'Would run {days} in {lang} with {run_args}')
     else:
-        Runner(days, run_args).run()
+        Runner(days, lang, run_args).run()
 
 
 if __name__ == '__main__':
