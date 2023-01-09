@@ -27,8 +27,7 @@ def hash(value):
 
 def populate_v1(password, hashed):
     index = sum([ch is not None for ch in password])
-    value = hashed[5]
-    password[index] = value
+    password[index] = hashed[5]
 
 
 def populate_v2(password, hashed):
@@ -37,8 +36,7 @@ def populate_v2(password, hashed):
     if index in valid_indexes:
         index = int(index)
         if password[index] is None:
-            value = hashed[6]
-            password[index] = value
+            password[index] = hashed[6]
 
 
 if __name__ == '__main__':

@@ -76,13 +76,12 @@ fn get_instructions(raw: &[String]) -> Vec<Instruction> {
 }
 
 fn get_result(
-    mut arrangement: HashMap<usize, Vec<char>>, 
-    instructions: &[Instruction], 
+    mut arrangement: HashMap<usize, Vec<char>>,
+    instructions: &[Instruction],
     f: fn(&Instruction, &mut HashMap<usize, Vec<char>>) -> (),
 ) -> String {
     instructions.iter().for_each(|instruction| {
         f(instruction, &mut arrangement);
-        //instruction.apply_single(&mut arrangement);
     });
     (1..arrangement.len() + 1)
         .map(|i| arrangement.get(&i).unwrap().last().unwrap())
