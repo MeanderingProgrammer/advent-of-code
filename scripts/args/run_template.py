@@ -7,7 +7,7 @@ from pojo.day import Day
 class RunTemplate:
 
     def __init__(self):
-        self.__template_mapping = {
+        self.__templates = {
             'latest': RunTemplate.__get_latest,
             'prev': RunTemplate.__get_previous,
             'all_days': RunTemplate.__get_all_days,
@@ -15,10 +15,10 @@ class RunTemplate:
         }
 
     def get(self, name) -> List[Day]:
-        valid_values = list(self.__template_mapping.keys())
+        valid_values = list(self.__templates.keys())
         if name not in valid_values:
             raise Exception(f'Unknown template {name}, should be one of {valid_values}')
-        return self.__template_mapping[name]()
+        return self.__templates[name]()
 
     @staticmethod
     def __get_latest() -> List[Day]:
