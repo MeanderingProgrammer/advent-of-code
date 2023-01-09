@@ -33,17 +33,19 @@ and set arguments to run commands.
 ### Usage
 
 ```
-a_run --template <template>? --years <years>? --days <days>?
+a_run --template <template>? (--year <year>)+ (--day <day>)+ --info? --test?
 ```
 
-| Variable Name | Alt  | Description                             | Required  | Default  | Example     |
-| ------------- | ---- | --------------------------------------- | --------- | -------- | ----------- |
-| template      | `-t` | Name that targets specific years / days | False     | `latest` | `all_langs` |
-| years         | `-y` | List of years to run                    | False     | None     | `2022`      |
-| days          | `-d` | List of days to run                     | False     | None     | `01 03 05`  |
+| Variable Name | Alt  | Description                             | Required  | Default  | Example             |
+| ------------- | ---- | --------------------------------------- | --------- | -------- | ------------------- |
+| template      | `-t` | Name that targets specific years / days | False     | `latest` | `-t all_langs`      |
+| year          | `-y` | List of years to run                    | False     | None     | `-y 2021 -y 2022`   |
+| day           | `-d` | List of days to run                     | False     | None     | `-d 01 -d 03 -d 05` |
+| info          | `-i` | Outputs which days would run            | False     | `False`  | `-i`                |
+| test          | N/A  | Passes test flag to each day            | False     | `False`  | `--test`            |
 
-* If `template` is provided then `years` & `days` must not be provided
-* If  `years` or `days` are provided then `template` must not be provided
+* If `template` is provided then `year` & `day` must not be provided
+* If  `year` or `day` are provided then `template` must not be provided
 
 ## Generate Template
 
@@ -59,15 +61,16 @@ Will pull down your puzzle input if [instructions](##install-aoc-cli) are follow
 ### Usage
 
 ```
-a_gen --template <template>? --year <year>? --day <day>? --lang <lang>?
+a_gen --template <template>? --year <year>? --day <day>? --lang <lang>? --info?
 ```
 
-| Variable Name | Alt  | Description                              | Required  | Default | Example  |
-| ------------- | ---- | ---------------------------------------- | --------- | ------- | -------- |
-| template      | `-t` | Name that targets specific year / day    | False     | `next`  | `next`   |
-| year          | `-y` | Year to generate starting files for      | False     | None    | `2022`   |
-| day           | `-d` | Day to generate starting files for       | False     | None    | `05`     |
-| lang          | `-l` | Language to generate starting files for  | False     | `rust`  | `python` |
+| Variable Name | Alt  | Description                              | Required  | Default | Example     |
+| ------------- | ---- | ---------------------------------------- | --------- | ------- | ----------- |
+| template      | `-t` | Name that targets specific year / day    | False     | `next`  | `-t next`   |
+| year          | `-y` | Year to generate starting files for      | False     | None    | `-y 2022`   |
+| day           | `-d` | Day to generate starting files for       | False     | None    | `-d 05`     |
+| lang          | `-l` | Language to generate starting files for  | False     | `rust`  | `-l python` |
+| info          | `-i` | Outputs which day would get generated    | False     | `False` | `-i`        |
 
 * If `template` is provided then `year` & `day` must not be provided
 * If  `year` or `day` are provided then `template` must not be provided

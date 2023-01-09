@@ -41,18 +41,18 @@ def generate(template: str, year: str, day: str, lang: str, info: bool):
 
 @cli.command()
 @click.option('-t', '--template', type=str)
-@click.option('-y', '--years', type=str, multiple=True)
-@click.option('-d', '--days', type=str, multiple=True)
+@click.option('-y', '--year', type=str, multiple=True)
+@click.option('-d', '--day', type=str, multiple=True)
 @click.option('-i', '--info', is_flag=True)
 @click.option('--test', is_flag=True)
-def run(template: str, years: List[str], days: List[str], info: bool, test: bool):
-    if len(years) == 0 and len(days) == 0:
+def run(template: str, year: List[str], day: List[str], info: bool, test: bool):
+    if len(year) == 0 and len(day) == 0:
         template = template or 'latest'
         days = RunTemplate().get(template)
     elif template is not None:
-        raise Exception('If "years" or "days" is provided then "template" should not be')
+        raise Exception('If "year" or "day" is provided then "template" should not be')
     else:
-        days = DayFactory(list(years), list(days)).get_days()
+        days = DayFactory(list(year), list(day)).get_days()
 
     if len(days) == 0:
         raise Exception('Could not find any days to run given input')
