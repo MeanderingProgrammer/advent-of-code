@@ -41,6 +41,7 @@ class Rust(Language):
             return
 
         cargo['bin'].append(bin_config)
+        cargo['bin'].sort(key=lambda bin: bin['name'])
         Rust.__save_cargo_file(cargo)
 
     @staticmethod

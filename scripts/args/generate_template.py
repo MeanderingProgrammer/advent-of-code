@@ -5,16 +5,16 @@ from pojo.day import Day
 class GenerateTemplate:
 
     def __init__(self):
-        self.__template_mapping = {
+        self.__templates = {
             'next': GenerateTemplate.__get_next,
             'current': GenerateTemplate.__get_current,
         }
 
     def get(self, name) -> Day:
-        valid_values = list(self.__template_mapping.keys())
+        valid_values = list(self.__templates.keys())
         if name not in valid_values:
             raise Exception(f'Unknown template {name}, should be one of {valid_values}')
-        return self.__template_mapping[name]()
+        return self.__templates[name]()
 
     @staticmethod
     def __get_next() -> Day:
