@@ -1,7 +1,6 @@
 import abc
 import time
 import subprocess
-from pathlib import Path
 from typing import List
 
 from pojo.day import Day
@@ -21,10 +20,6 @@ class Language(abc.ABC):
     @abc.abstractmethod
     def solution_file(self) -> str:
         pass
-
-    @property
-    def suffix(self) -> str:
-        return Path(self.solution_file).suffix
 
     def initial_setup(self):
         if not self.__setup:

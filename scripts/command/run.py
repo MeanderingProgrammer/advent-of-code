@@ -30,16 +30,18 @@ class Runner:
         return runtimes
 
     def __run_day(self, day: Day) -> List[RuntimeInfo]:
-        def is_solution(file_path):
-            return file_path.is_file() and file_path.stem.lower() == 'solver'
-        solution_files = [file_path for file_path in Path('.').iterdir() if is_solution(file_path)]
-
         runtimes = []
-        for solution_file in solution_files:
-            language = self.__factory.get_by_suffix(solution_file)
+        for language in self.__available_languages():
             runtime = self.__run_language(language, day)
             runtimes.append(runtime)
         return runtimes
+
+    def __available_languages(self) -> List[Language]:
+        return [
+            language
+            for language in self.__factory.get_all()
+            if Path(language.solution_file).is_file()
+        ]
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f'Running year {day.year} day {day.day} with {language.name}')
