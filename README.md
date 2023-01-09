@@ -41,6 +41,7 @@ a_run --template <template>? (--year <year>)+ (--day <day>)+ --info? --test?
 | template      | `-t` | Name that targets specific years / days | False     | `latest` | `-t all_langs`      |
 | year          | `-y` | List of years to run                    | False     | None     | `-y 2021 -y 2022`   |
 | day           | `-d` | List of days to run                     | False     | None     | `-d 01 -d 03 -d 05` |
+| lang          | `-l` | Limit runs to the specified language    | False     | None     | `-l golang`         |
 | info          | `-i` | Outputs which days would run            | False     | `False`  | `-i`                |
 | test          | N/A  | Passes test flag to each day            | False     | `False`  | `--test`            |
 
