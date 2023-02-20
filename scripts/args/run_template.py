@@ -14,10 +14,10 @@ class RunTemplate:
             'all_langs': RunTemplate.__get_all_languages,
         }
 
+    def get_names(self) -> List[str]:
+        return list(self.__templates.keys())
+
     def get(self, name) -> List[Day]:
-        valid_values = list(self.__templates.keys())
-        if name not in valid_values:
-            raise Exception(f'Unknown template {name}, should be one of {valid_values}')
         return self.__templates[name]()
 
     @staticmethod

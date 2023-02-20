@@ -17,7 +17,7 @@ def cli():
 
 
 @cli.command()
-@click.option('-t', '--template', type=str)
+@click.option('-t', '--template', type=click.Choice(GenerateTemplate().get_names()))
 @click.option('-y', '--year', type=str)
 @click.option('-d', '--day', type=str)
 @click.option('-l', '--lang', type=str, default='rust', show_default=True)
@@ -50,7 +50,7 @@ def generate(
 
 
 @cli.command()
-@click.option('-t', '--template', type=str)
+@click.option('-t', '--template', type=click.Choice(RunTemplate().get_names()))
 @click.option('-y', '--year', type=str, multiple=True)
 @click.option('-d', '--day', type=str, multiple=True)
 @click.option('-l', '--lang', type=str)
