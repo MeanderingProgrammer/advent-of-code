@@ -36,7 +36,12 @@ latest day in all languages it is implemented in.
 ### Usage
 
 ```
-a_run --template <template>? (--year <year>)+ (--day <day>)+ --info? --test?
+a_run \
+  --template <template>? \
+  (--year <year>)* \
+  (--day <day>)* \
+  --test? \
+  --info?
 ```
 
 | Variable Name | Alt  | Description                             | Default  | Example             |
@@ -45,8 +50,8 @@ a_run --template <template>? (--year <year>)+ (--day <day>)+ --info? --test?
 | year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022`   |
 | day           | `-d` | List of days to run                     | None     | `-d 01 -d 03 -d 05` |
 | lang          | `-l` | Limit runs to the specified language    | None     | `-l golang`         |
-| info          | `-i` | Outputs which days would run            | `False`  | `-i`                |
 | test          | N/A  | Passes test flag to each day            | `False`  | `--test`            |
+| info          | `-i` | Outputs which days would run            | `False`  | `-i`                |
 
 * If `template` is provided then `year` & `day` must not be provided
 * If  `year` or `day` are provided then `template` must not be provided
@@ -68,7 +73,12 @@ next day using the rust template.
 ### Usage
 
 ```
-a_gen --template <template>? --year <year>? --day <day>? --lang <lang>? --info?
+a_gen \
+  --template <template>? \
+  --year <year>? \
+  --day <day>? \
+  --lang <lang>? \
+  --info?
 ```
 
 | Variable Name | Alt  | Description                              | Default | Example     |
