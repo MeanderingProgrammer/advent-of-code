@@ -20,7 +20,7 @@ def cli():
 @click.option('-t', '--template', type=str)
 @click.option('-y', '--year', type=str)
 @click.option('-d', '--day', type=str)
-@click.option('-l', '--lang', type=str, default='rust')
+@click.option('-l', '--lang', type=str, default='rust', show_default=True)
 @click.option('-i', '--info', is_flag=True)
 def generate(
     template: str,

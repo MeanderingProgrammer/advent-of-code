@@ -76,7 +76,7 @@ def main():
         data.append(sum([item.cost for item in items]))
         player.reset()
         enemy.reset()
-        
+
     answer.part1(121, min(win_costs))
     answer.part2(201, max(loss_costs))
 
@@ -118,7 +118,7 @@ def get_character(stats):
     return Character(
         int(stats[0].split()[-1]),
         int(stats[1].split()[-1]),
-        int(stats[2].split()[-1])
+        int(stats[2].split()[-1]),
     )
 
 
