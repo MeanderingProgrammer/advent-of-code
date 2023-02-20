@@ -27,6 +27,9 @@ Used to run various days rather than running directly.
 Does lots of hacky stuff to set environment variables, compile common directories,
 and set arguments to run commands.
 
+None of the parameters are required, the default behavior in this case is to run the
+latest day in all languages it is implemented in.
+
 * Alias Command: `a_run`
 * Direct Command: `./scripts/advent.py run`
 
@@ -36,14 +39,14 @@ and set arguments to run commands.
 a_run --template <template>? (--year <year>)+ (--day <day>)+ --info? --test?
 ```
 
-| Variable Name | Alt  | Description                             | Required  | Default  | Example             |
-| ------------- | ---- | --------------------------------------- | --------- | -------- | ------------------- |
-| template      | `-t` | Name that targets specific years / days | False     | `latest` | `-t all_langs`      |
-| year          | `-y` | List of years to run                    | False     | None     | `-y 2021 -y 2022`   |
-| day           | `-d` | List of days to run                     | False     | None     | `-d 01 -d 03 -d 05` |
-| lang          | `-l` | Limit runs to the specified language    | False     | None     | `-l golang`         |
-| info          | `-i` | Outputs which days would run            | False     | `False`  | `-i`                |
-| test          | N/A  | Passes test flag to each day            | False     | `False`  | `--test`            |
+| Variable Name | Alt  | Description                             | Default  | Example             |
+| ------------- | ---- | --------------------------------------- | -------- | ------------------- |
+| template      | `-t` | Name that targets specific years / days | `latest` | `-t all_langs`      |
+| year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022`   |
+| day           | `-d` | List of days to run                     | None     | `-d 01 -d 03 -d 05` |
+| lang          | `-l` | Limit runs to the specified language    | None     | `-l golang`         |
+| info          | `-i` | Outputs which days would run            | `False`  | `-i`                |
+| test          | N/A  | Passes test flag to each day            | `False`  | `--test`            |
 
 * If `template` is provided then `year` & `day` must not be provided
 * If  `year` or `day` are provided then `template` must not be provided
@@ -56,6 +59,9 @@ Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
 Will pull down your puzzle input if [instructions](##install-aoc-cli) are followed.
 
+None of the parameters are required, the default behavior in this case is to generate the
+next day using the rust template.
+
 * Alias Command: `a_gen`
 * Direct Command: `./scripts/advent.py generate`
 
@@ -65,13 +71,13 @@ Will pull down your puzzle input if [instructions](##install-aoc-cli) are follow
 a_gen --template <template>? --year <year>? --day <day>? --lang <lang>? --info?
 ```
 
-| Variable Name | Alt  | Description                              | Required  | Default | Example     |
-| ------------- | ---- | ---------------------------------------- | --------- | ------- | ----------- |
-| template      | `-t` | Name that targets specific year / day    | False     | `next`  | `-t next`   |
-| year          | `-y` | Year to generate starting files for      | False     | None    | `-y 2022`   |
-| day           | `-d` | Day to generate starting files for       | False     | None    | `-d 05`     |
-| lang          | `-l` | Language to generate starting files for  | False     | `rust`  | `-l python` |
-| info          | `-i` | Outputs which day would get generated    | False     | `False` | `-i`        |
+| Variable Name | Alt  | Description                              | Default | Example     |
+| ------------- | ---- | ---------------------------------------- | ------- | ----------- |
+| template      | `-t` | Name that targets specific year / day    | `next`  | `-t next`   |
+| year          | `-y` | Year to generate starting files for      | None    | `-y 2022`   |
+| day           | `-d` | Day to generate starting files for       | None    | `-d 05`     |
+| lang          | `-l` | Language to generate starting files for  | `rust`  | `-l python` |
+| info          | `-i` | Outputs which day would get generated    | `False` | `-i`        |
 
 * If `template` is provided then `year` & `day` must not be provided
 * If  `year` or `day` are provided then `template` must not be provided
@@ -91,6 +97,30 @@ Commands:
 sudo apt-get install pkg-config libssl-dev
 cargo install aoc-cli
 touch .adventofcode.session
+```
+
+## In Progress Updates
+
+### Add Threading to 2016/05
+
+```
+fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
+    let (tx, rx) = mpsc::channel();
+
+    for i in 0..1_000_000 {
+        let tx1 = tx.clone();
+        thread::spawn(move || {
+            let hash = get_hash("abc", i);
+            if &hash[0..5] == "00000" {
+                tx1.send(hash).unwrap();
+            }
+        });
+    }
+
+    for received in rx {
+        println!("Got: {}", received);
+    }
+}
 ```
 
 ## Take Over 10 Seconds (On My Decent Laptop)
