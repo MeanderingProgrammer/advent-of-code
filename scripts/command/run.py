@@ -13,9 +13,9 @@ class Runner:
 
     def __init__(self, days: List[Day], lang: str, run_args: List[str]):
         factory = LanguageFactory()
-        self.__days = days
-        self.__languages = factory.get_all() if lang is None else [factory.get_by_name(lang)]
-        self.__run_args = run_args
+        self.__days: List[Day] = days
+        self.__languages: List[Language] = factory.get_all() if lang is None else [factory.get_by_name(lang)]
+        self.__run_args: List[str] = run_args
 
     def run(self):
         runtimes = self.__get_runtimes()
