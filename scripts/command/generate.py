@@ -11,8 +11,8 @@ ADVENT_COOKIE_FILE = '.adventofcode.session'
 class Generator:
 
     def __init__(self, day: Day, language_name: str):
-        self.__day = day
-        self.__language = LanguageFactory().get_by_name(language_name)
+        self.__day: Day = day
+        self.__language: Language = LanguageFactory().get_by_name(language_name)
 
     def generate(self):
         date_path = self.__get_date_path()
