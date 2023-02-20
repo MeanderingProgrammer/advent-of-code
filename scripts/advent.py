@@ -29,6 +29,10 @@ def generate(
     lang: str,
     info: bool,
 ):
+    '''
+    Generates starting files for a specific day & language
+    '''
+
     if year is None and day is None:
         template = template or 'next'
         day = GenerateTemplate().get(template)
@@ -60,6 +64,10 @@ def run(
     info: bool,
     test: bool,
 ):
+    '''
+    Runs specific days / years for either specific or all languages
+    '''
+
     if len(year) == 0 and len(day) == 0:
         template = template or 'latest'
         days = RunTemplate().get(template)
