@@ -40,7 +40,7 @@ a_run \
   --template <template>? \
   (--year <year>)* \
   (--day <day>)* \
-  --lang <lang>? \
+  --language <language>? \
   --test? \
   --info?
 ```
@@ -50,7 +50,7 @@ a_run \
 | template      | `-t` | Name that targets specific years / days | `latest` | `-t all_langs`      |
 | year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022`   |
 | day           | `-d` | List of days to run                     | None     | `-d 01 -d 03 -d 05` |
-| lang          | `-l` | Limit runs to the specified language    | None     | `-l golang`         |
+| language      | `-l` | Limit runs to the specified language    | None     | `-l golang`         |
 | test          | N/A  | Passes test flag to each day            | `False`  | `--test`            |
 | info          | `-i` | Outputs which days would run            | `False`  | `-i`                |
 
@@ -78,7 +78,7 @@ a_gen \
   --template <template>? \
   --year <year>? \
   --day <day>? \
-  --lang <lang>? \
+  --language <language>? \
   --info?
 ```
 
@@ -87,7 +87,7 @@ a_gen \
 | template      | `-t` | Name that targets specific year / day    | `next`  | `-t next`   |
 | year          | `-y` | Year to generate starting files for      | None    | `-y 2022`   |
 | day           | `-d` | Day to generate starting files for       | None    | `-d 05`     |
-| lang          | `-l` | Language to generate starting files for  | `rust`  | `-l python` |
+| language      | `-l` | Language to generate starting files for  | `rust`  | `-l python` |
 | info          | `-i` | Outputs which day would get generated    | `False` | `-i`        |
 
 * If `template` is provided then `year` & `day` must not be provided

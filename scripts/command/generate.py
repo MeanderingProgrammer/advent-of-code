@@ -1,18 +1,18 @@
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
-from component.language_factory import LanguageFactory
 from language.language import Language
 from pojo.day import Day
 
 ADVENT_COOKIE_FILE = '.adventofcode.session'
 
 
+@dataclass(frozen=True)
 class Generator:
 
-    def __init__(self, day: Day, language_name: str):
-        self.__day: Day = day
-        self.__language: Language = LanguageFactory().get_by_name(language_name)
+    day: Day
+    language: Language
 
     def generate(self):
         date_path = self.__get_date_path()
@@ -20,7 +20,7 @@ class Generator:
         solution_path = self.__get_solution_path(date_path)
         # At this point we can assume this is the first time we are processing
         # this day for this language, since the solution path does not exist
-        self.__language.template_processing(self.__day)
+        self.language.template_processing(self.day)
 
         self.__copy_template_to(solution_path)
         self.__create_sample_if_necessary(date_path)
@@ -28,18 +28,18 @@ class Generator:
 
     def __get_date_path(self) -> Path:
         # Create date directory, okay if it already exists
-        date_path = Path(self.__day.year).joinpath(self.__day.day)
+        date_path = Path(self.day.year).joinpath(self.day.day)
         date_path.mkdir(parents=True, exist_ok=True)
         return date_path
 
     def __get_solution_path(self, date_path: Path) -> Path:
-        solution_path = date_path.joinpath(self.__language.solution_file)
+        solution_path = date_path.joinpath(self.language.solution_file)
         if solution_path.exists():
             raise Exception(f'Solution already exists under: {solution_path}')
         return solution_path
 
     def __copy_template_to(self, solution_path: Path):
-        template_file = f'scripts/templates/{self.__language.solution_file}'
+        template_file = f'scripts/templates/{self.language.solution_file}'
         print(f'Copying {template_file} to {solution_path}')
         os.system(f'cp {template_file} {solution_path}')
 
@@ -64,7 +64,7 @@ class Generator:
 
     def __download_input(self, data_path: Path):
         os.system(f'''aoc download  \\
-            --year {self.__day.year} --day {self.__day.day} \\
+            --year {self.day.year} --day {self.day.day} \\
             --input-file {data_path} \\
             --input-only \\
             --session-file ./.adventofcode.session''')
