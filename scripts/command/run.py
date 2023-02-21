@@ -1,21 +1,20 @@
 import os
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
 from component.display_runtimes import Displayer
-from component.language_factory import LanguageFactory
 from language.language import Language
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
 
 
+@dataclass(frozen=True)
 class Runner:
 
-    def __init__(self, days: List[Day], lang: str, run_args: List[str]):
-        factory = LanguageFactory()
-        self.__days: List[Day] = days
-        self.__languages: List[Language] = factory.get_all() if lang is None else [factory.get_by_name(lang)]
-        self.__run_args: List[str] = run_args
+    days: List[Day]
+    languages: List[Language]
+    run_args: List[str]
 
     def run(self):
         runtimes = self.__get_runtimes()
@@ -23,7 +22,7 @@ class Runner:
 
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []
-        for day in self.__days:
+        for day in self.days:
             os.chdir(f'{day.year}/{day.day}')
             runtimes.extend(self.__run_day(day))
             # Change back out of day directory
@@ -40,7 +39,7 @@ class Runner:
     def __available_languages(self) -> List[Language]:
         return [
             language
-            for language in self.__languages
+            for language in self.languages
             if Path(language.solution_file).is_file()
         ]
 
@@ -48,6 +47,6 @@ class Runner:
         print(f'Running year {day.year} day {day.day} with {language.name}')
         language.initial_setup()
         language.compile(day)
-        runtime = language.run(day, self.__run_args)
+        runtime = language.run(day, self.run_args)
         print(f'Runtime: {runtime}')
         return RuntimeInfo(day, language.name, runtime)

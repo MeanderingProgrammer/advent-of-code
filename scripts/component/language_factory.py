@@ -17,11 +17,13 @@ class LanguageFactory:
             Rust(),
         ]
 
+    def get_names(self) -> List[str]:
+        return [language.name for language in self.__languages]
+
     def get_all(self) -> List[Language]:
         return self.__languages
 
     def get_by_name(self, name) -> Language:
-        mapping = { language.name: language for language in self.__languages }
-        if name not in mapping:
-            raise Exception(f'{name} is not one of {list(mapping.keys())}')
-        return mapping[name]
+        for language in self.__languages:
+            if language.name == name:
+                return language

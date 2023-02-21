@@ -53,6 +53,12 @@ class Language(abc.ABC):
     def template_processing(self, day: Day):
         pass
 
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return self.name
+
 
 class InterprettedLanguage(Language):
 
