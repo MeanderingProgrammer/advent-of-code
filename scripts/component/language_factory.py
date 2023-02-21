@@ -23,7 +23,7 @@ class LanguageFactory:
     def get_all(self) -> List[Language]:
         return self.__languages
 
-    def get_by_name(self, name) -> Language:
+    def get_by_name(self, name: str) -> Language:
         for language in self.__languages:
             if language.name == name:
                 return language
