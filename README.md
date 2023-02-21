@@ -40,6 +40,7 @@ a_run \
   --template <template>? \
   (--year <year>)* \
   (--day <day>)* \
+  --lang <lang>? \
   --test? \
   --info?
 ```
