@@ -25,7 +25,7 @@ class DayFactory:
             for day in DayFactory._get_dirs_wth_prefix(self.days, None):
                 days.append(Day(year, day))
             os.chdir('..')
-        return days
+        return sorted(days)
     
     @staticmethod
     def _get_dirs_wth_prefix(values: List[str], valid_prefix) -> List[str]:
