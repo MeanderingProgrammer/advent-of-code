@@ -48,7 +48,7 @@ class Java(Language):
             class_files.append(f"{file_path}.class")
 
         # Create the uber jar and validate it was successfully created
-        os.system(f'jar cf {uber_jar} {" ".join(class_files)}')
+        os.system(f"jar cf {uber_jar} {' '.join(class_files)}")
         if not Path(uber_jar).exists():
             raise Exception(f"Failed to generate Java uber jar: {uber_jar}")
 

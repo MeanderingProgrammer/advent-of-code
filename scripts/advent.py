@@ -21,9 +21,8 @@ class LanguageType(click.ParamType):
         if value in factory.get_names():
             return factory.get_by_name(value)
         else:
-            self.fail(
-                f"{value} is not a valid language: {factory.get_names()}", param, ctx
-            )
+            error = f"{value} is not a valid language: {factory.get_names()}"
+            self.fail(error, param, ctx)
 
 
 @click.group()
@@ -35,9 +34,7 @@ def cli():
 @click.option("-t", "--template", type=click.Choice(GenerateTemplate().get_names()))
 @click.option("-y", "--year", type=str)
 @click.option("-d", "--day", type=str)
-@click.option(
-    "-l", "--language", type=LanguageType(), default="rust", show_default=True
-)
+@click.option("-l", "--language", type=LanguageType(), default="rust")
 @click.option("-i", "--info", is_flag=True)
 def generate(
     template: str,
