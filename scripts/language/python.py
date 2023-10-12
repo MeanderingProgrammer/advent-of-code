@@ -14,13 +14,13 @@ class Python(InterprettedLanguage):
     def solution_file(self) -> str:
         return "solver.py"
 
-    def _run_setup(self):
+    def _run_setup(self) -> None:
         pwd = os.environ["PWD"]
         os.environ["PYTHONPATH"] = f"{pwd}/commons/python/"
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
         return "python3 solver.py"
 
-    def template_processing(self, day: Day):
+    def template_processing(self, day: Day) -> None:
         # No additional template processing needed
         pass

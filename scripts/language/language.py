@@ -20,17 +20,17 @@ class Language(abc.ABC):
     def solution_file(self) -> str:
         pass
 
-    def initial_setup(self):
+    def initial_setup(self) -> None:
         if not self.__setup:
             self._run_setup()
         self.__setup = True
 
     @abc.abstractmethod
-    def _run_setup(self):
+    def _run_setup(self) -> None:
         pass
 
     @abc.abstractmethod
-    def compile(self, day: Day):
+    def compile(self, day: Day) -> None:
         pass
 
     def run(self, day: Day, run_args: List[str]) -> float:
@@ -49,7 +49,7 @@ class Language(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def template_processing(self, day: Day):
+    def template_processing(self, day: Day) -> None:
         pass
 
     def __repr__(self) -> str:
@@ -60,6 +60,6 @@ class Language(abc.ABC):
 
 
 class InterprettedLanguage(Language):
-    def compile(self, day: Day):
+    def compile(self, day: Day) -> None:
         # Interpreted languages do not need to be compiled
         pass
