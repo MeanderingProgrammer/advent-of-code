@@ -13,16 +13,16 @@ class Go(Language):
     def solution_file(self) -> str:
         return "solver.go"
 
-    def _run_setup(self):
+    def _run_setup(self) -> None:
         pass
 
-    def compile(self, day: Day):
+    def compile(self, day: Day) -> None:
         # For now we use go run, which both compiles and runs our code
         pass
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
         return "go run solver.go"
 
-    def template_processing(self, day: Day):
+    def template_processing(self, day: Day) -> None:
         # No additional template processing needed
         pass

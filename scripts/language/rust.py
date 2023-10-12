@@ -17,10 +17,10 @@ class Rust(Language):
     def solution_file(self) -> str:
         return "solver.rs"
 
-    def _run_setup(self):
+    def _run_setup(self) -> None:
         os.system("cargo build -rq --bins")
 
-    def compile(self, day: Day):
+    def compile(self, day: Day) -> None:
         # Since our setup command builds all binary targets, each day does not
         # need to be individually compiled
         pass
@@ -29,7 +29,7 @@ class Rust(Language):
         args = " ".join(run_args)
         return f'cargo run -rq --bin "{Rust.__binary_name(day)}" -- {args}'
 
-    def template_processing(self, day: Day):
+    def template_processing(self, day: Day) -> None:
         cargo = toml.load(_CARGO_FILE)
         bin_config = {
             "name": Rust.__binary_name(day),
@@ -48,7 +48,7 @@ class Rust(Language):
         return f"aoc_{day.year}_{day.day}"
 
     @staticmethod
-    def __save_cargo_file(cargo):
+    def __save_cargo_file(cargo) -> None:
         f = open(_CARGO_FILE, "w+")
         f.write(toml.dumps(cargo))
         f.close()
