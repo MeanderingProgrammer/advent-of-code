@@ -26,3 +26,4 @@ class LanguageFactory:
         for language in self.__languages:
             if language.name == name:
                 return language
+        raise Exception(f"Could not find language with name: {name}")
