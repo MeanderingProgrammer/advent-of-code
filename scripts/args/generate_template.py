@@ -5,11 +5,10 @@ from pojo.day import Day
 
 
 class GenerateTemplate:
-
     def __init__(self):
         self.__templates = {
-            'next': GenerateTemplate.__get_next,
-            'current': GenerateTemplate.__get_current,
+            "next": GenerateTemplate.__get_next,
+            "current": GenerateTemplate.__get_current,
         }
 
     def get_names(self) -> List[str]:

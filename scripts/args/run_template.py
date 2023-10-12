@@ -5,13 +5,12 @@ from pojo.day import Day
 
 
 class RunTemplate:
-
     def __init__(self):
         self.__templates = {
-            'latest': RunTemplate.__get_latest,
-            'prev': RunTemplate.__get_previous,
-            'all_days': RunTemplate.__get_all_days,
-            'all_langs': RunTemplate.__get_all_languages,
+            "latest": RunTemplate.__get_latest,
+            "prev": RunTemplate.__get_previous,
+            "all_days": RunTemplate.__get_all_days,
+            "all_langs": RunTemplate.__get_all_languages,
         }
 
     def get_names(self) -> List[str]:
@@ -36,7 +35,7 @@ class RunTemplate:
     @staticmethod
     def __get_all_languages() -> List[Day]:
         return [
-            Day('2019', '01'), # Python
-            Day('2019', '20'), # Java
-            Day('2021', '01'), # Rust & Go
+            Day("2019", "01"),  # Python
+            Day("2019", "20"),  # Java
+            Day("2021", "01"),  # Rust & Go
         ]

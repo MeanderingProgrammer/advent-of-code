@@ -8,8 +8,7 @@ from language.rust import Rust
 
 
 class LanguageFactory:
-
-    def __init__(self) -> str:
+    def __init__(self):
         self.__languages = [
             Go(),
             Java(),

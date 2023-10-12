@@ -6,16 +6,15 @@ _PER_YEAR = 25
 
 @dataclass(order=True)
 class Day:
-
     year: str
     day: str
 
     def __post_init__(self):
         year, day = int(self.year), int(self.day)
-        assert _START_YEAR <= year <= 2100, 'year must between 2015 & 2100'
-        assert 1 <= day <= _PER_YEAR, 'day must be between 1 & 25'
+        assert _START_YEAR <= year <= 2100, "year must between 2015 & 2100"
+        assert 1 <= day <= _PER_YEAR, "day must be between 1 & 25"
 
-    def add(self, amount: int) -> 'Day':
+    def add(self, amount: int) -> "Day":
         value = self.__to_day_number()
         value += amount
         return Day.__from_day_number(value)
@@ -26,8 +25,8 @@ class Day:
         return year_number * _PER_YEAR + day
 
     @staticmethod
-    def __from_day_number(value: int) -> 'Day':
-        assert value > 0, 'Day number must be > 0'
+    def __from_day_number(value: int) -> "Day":
+        assert value > 0, "Day number must be > 0"
 
         year_number = value // _PER_YEAR
         day_number = value % _PER_YEAR

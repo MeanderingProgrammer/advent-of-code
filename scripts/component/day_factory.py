@@ -9,7 +9,6 @@ from pojo.day import Day
 
 @dataclass
 class DayFactory:
-
     years: List[str] = field(default_factory=list)
     days: List[str] = field(default_factory=list)
 
@@ -20,13 +19,13 @@ class DayFactory:
 
     def get_days(self) -> List[Day]:
         days = []
-        for year in DayFactory._get_dirs_wth_prefix(self.years, '20'):
+        for year in DayFactory._get_dirs_wth_prefix(self.years, "20"):
             os.chdir(year)
             for day in DayFactory._get_dirs_wth_prefix(self.days, None):
                 days.append(Day(year, day))
-            os.chdir('..')
+            os.chdir("..")
         return sorted(days)
-    
+
     @staticmethod
     def _get_dirs_wth_prefix(values: List[str], valid_prefix) -> List[str]:
         def path_predicate(file_path: Path) -> bool:
@@ -44,4 +43,8 @@ class DayFactory:
             # Passes all checks, should be a valid directory
             return True
 
-        return [file_path.name for file_path in Path('.').iterdir() if path_predicate(file_path)]
+        return [
+            file_path.name
+            for file_path in Path(".").iterdir()
+            if path_predicate(file_path)
+        ]
