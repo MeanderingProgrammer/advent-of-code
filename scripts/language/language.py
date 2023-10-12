@@ -7,7 +7,6 @@ from pojo.day import Day
 
 
 class Language(abc.ABC):
-
     def __init__(self):
         self.__setup = False
 
@@ -41,7 +40,7 @@ class Language(abc.ABC):
         pipe = subprocess.Popen(command, stderr=subprocess.PIPE, shell=True)
         err = pipe.communicate()[1].decode()
         if len(err) > 0:
-            raise Exception(f'Failed due to: {err}')
+            raise Exception(f"Failed due to: {err}")
 
         return time.time() - start
 
@@ -61,7 +60,6 @@ class Language(abc.ABC):
 
 
 class InterprettedLanguage(Language):
-
     def compile(self, day: Day):
-         # Interpreted languages do not need to be compiled
+        # Interpreted languages do not need to be compiled
         pass

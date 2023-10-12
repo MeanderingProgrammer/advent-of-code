@@ -6,21 +6,20 @@ from pojo.day import Day
 
 
 class Python(InterprettedLanguage):
-
     @property
     def name(self) -> str:
-        return 'python'
+        return "python"
 
     @property
     def solution_file(self) -> str:
-        return 'solver.py'
+        return "solver.py"
 
     def _run_setup(self):
-        pwd = os.environ['PWD']
-        os.environ['PYTHONPATH'] = f'{pwd}/commons/python/'
+        pwd = os.environ["PWD"]
+        os.environ["PYTHONPATH"] = f"{pwd}/commons/python/"
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return 'python3 solver.py'
+        return "python3 solver.py"
 
     def template_processing(self, day: Day):
         # No additional template processing needed

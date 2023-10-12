@@ -5,14 +5,13 @@ from pojo.day import Day
 
 
 class Go(Language):
-
     @property
     def name(self) -> str:
-        return 'golang'
+        return "golang"
 
     @property
     def solution_file(self) -> str:
-        return 'solver.go'
+        return "solver.go"
 
     def _run_setup(self):
         pass
@@ -22,7 +21,7 @@ class Go(Language):
         pass
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return 'go run solver.go'
+        return "go run solver.go"
 
     def template_processing(self, day: Day):
         # No additional template processing needed

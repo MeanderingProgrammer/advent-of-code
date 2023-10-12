@@ -11,7 +11,6 @@ from pojo.runtime_info import RuntimeInfo
 
 @dataclass(frozen=True)
 class Runner:
-
     days: List[Day]
     languages: List[Language]
     run_args: List[str]
@@ -23,10 +22,10 @@ class Runner:
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []
         for day in self.days:
-            os.chdir(f'{day.year}/{day.day}')
+            os.chdir(f"{day.year}/{day.day}")
             runtimes.extend(self.__run_day(day))
             # Change back out of day directory
-            os.chdir('../..')
+            os.chdir("../..")
         return runtimes
 
     def __run_day(self, day: Day) -> List[RuntimeInfo]:
@@ -44,9 +43,9 @@ class Runner:
         ]
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
-        print(f'Running year {day.year} day {day.day} with {language.name}')
+        print(f"Running year {day.year} day {day.day} with {language.name}")
         language.initial_setup()
         language.compile(day)
         runtime = language.run(day, self.run_args)
-        print(f'Runtime: {runtime}')
+        print(f"Runtime: {runtime}")
         return RuntimeInfo(day, language.name, runtime)
