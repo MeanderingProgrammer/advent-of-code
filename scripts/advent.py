@@ -26,7 +26,7 @@ class LanguageType(click.ParamType):
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -42,22 +42,22 @@ def generate(
     day: str,
     language: Language,
     info: bool,
-):
+) -> None:
     """
     Generates starting files for a specific day & language
     """
 
     if year is None and day is None:
         template = template or "next"
-        day = GenerateTemplate().get(template)
+        gen_day = GenerateTemplate().get(template)
     elif template is not None:
         raise Exception('If "year" or "day" is provided then "template" should not be')
     elif year is None or day is None:
         raise Exception('Both "year" and "day" are required if either is provided')
     else:
-        day = Day(year, day)
+        gen_day = Day(year, day)
 
-    generator = Generator(day, language)
+    generator = Generator(gen_day, language)
     click.echo(f"{generator}") if info else generator.generate()
 
 
@@ -75,7 +75,7 @@ def run(
     language: Language,
     info: bool,
     test: bool,
-):
+) -> None:
     """
     Runs specific days / years for either specific or all languages
     """
