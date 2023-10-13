@@ -15,7 +15,7 @@ class Runner:
     languages: List[Language]
     run_args: List[str]
 
-    def run(self):
+    def run(self) -> None:
         runtimes = self.__get_runtimes()
         Displayer(runtimes).display()
 
