@@ -1,11 +1,10 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 
 class Beam:
-
     def __init__(self):
         self.__computer = Computer(self)
 
@@ -31,7 +30,6 @@ class Beam:
 
 
 class Tester:
-
     def __init__(self, memory):
         self.__beam = Beam()
         self.__memory = memory
@@ -63,8 +61,8 @@ def main():
 
 def affected_points(tester, x_start, y_start, amount):
     affected = []
-    for y in range(y_start, y_start+amount):
-        for x in range(x_start, x_start+amount):
+    for y in range(y_start, y_start + amount):
+        for x in range(x_start, x_start + amount):
             result = tester.test(Point(x, y))
             affected.append(result)
     return sum(affected)
@@ -82,5 +80,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

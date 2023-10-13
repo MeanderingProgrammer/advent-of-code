@@ -1,10 +1,9 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 
 class BasicProgram:
-
     def __init__(self, memory, system_id):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
@@ -19,6 +18,7 @@ class BasicProgram:
 
     def add_output(self, value):
         self.diagnostic_code = value
+
 
 def main():
     answer.part1(12234644, run_program(1))
@@ -35,5 +35,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

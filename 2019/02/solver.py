@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Instruction:
-
     def __init__(self, parts):
         self.opcode = parts[0]
         self.first = parts[1]
@@ -24,7 +23,6 @@ class Instruction:
 
 
 class Memory:
-
     def __init__(self, commands):
         self.commands = commands
         self.index = 0
@@ -39,13 +37,12 @@ class Memory:
         return self.index < len(self.commands)
 
     def next(self):
-        portion = self.commands[self.index:self.index+4]
+        portion = self.commands[self.index : self.index + 4]
         self.index += 4
         return Instruction(portion)
 
 
 class Computer:
-
     def __init__(self, memory):
         self.memory = memory
 
@@ -87,5 +84,5 @@ def get_memory():
     return Memory(Parser().int_csv())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

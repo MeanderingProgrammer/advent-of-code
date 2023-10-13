@@ -1,11 +1,9 @@
-import commons.answer as answer
-
+from aoc import answer
 
 PASSWORD_RANGE = 256_310, 732_736
 
 
 class Password:
-
     def __init__(self, value):
         self.value = str(value)
 
@@ -33,7 +31,7 @@ class Password:
 
     def only_increase(self):
         for i, digit in enumerate(self.value[:-1]):
-            if int(digit) > int(self.value[i+1]):
+            if int(digit) > int(self.value[i + 1]):
                 return False
         return True
 
@@ -54,5 +52,5 @@ def get_range():
     return range(PASSWORD_RANGE[0], PASSWORD_RANGE[1] + 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

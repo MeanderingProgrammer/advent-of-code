@@ -1,21 +1,15 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 
 class Direction:
-
     def __init__(self):
         self.index = 0
-        self.directions = [
-            (0, 1),
-            (1, 0),
-            (0, -1),
-            (-1, 0)
-        ]
+        self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
     def rotate(self, value):
-        self.index += (value if value == 1 else -1)
+        self.index += value if value == 1 else -1
 
     def step(self, position):
         to_go = self.directions[self.index % len(self.directions)]
@@ -23,13 +17,12 @@ class Direction:
 
 
 class PaintBot:
-
     def __init__(self, memory, starting_color):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
 
         self.color = True
-        
+
         self.direction = Direction()
         self.grid = {}
         self.position = (0, 0)
@@ -54,20 +47,20 @@ class PaintBot:
         ys = [position[1] for position in self.grid]
 
         rows = []
-        for y in range(min(ys), max(ys)+1):
+        for y in range(min(ys), max(ys) + 1):
             row = []
             for x in range(max(xs), min(xs) - 1, -1):
                 value = self.grid.get((x, y), 0)
-                value = '.' if value == 0 else '#'
+                value = "." if value == 0 else "#"
                 row.append(value)
-            rows.append(''.join(row))
-        return '\n'.join(rows)
+            rows.append("".join(row))
+        return "\n".join(rows)
 
 
 def main():
     answer.part1(1909, len(run(0).grid))
     # Part 2: JUFEKHPH
-    print('Part 2')
+    print("Part 2")
     print(run(1).get_grid())
 
 
@@ -81,5 +74,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,26 +1,14 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
+STATE_MAPPING = {"^": 0, ">": 1, "v": 2, "<": 3}
 
-STATE_MAPPING = {
-    '^': 0,
-    '>': 1,
-    'v': 2,
-    '<': 3
-}
-
-DIRECTIONS = [
-    Point(0, -1),
-    Point(1, 0),
-    Point(0, 1),
-    Point(-1, 0)
-]
+DIRECTIONS = [Point(0, -1), Point(1, 0), Point(0, 1), Point(-1, 0)]
 
 
 class DroidState:
-
     def __init__(self, location, scafolding, direction):
         self.location = location
         self.scafolding = scafolding
@@ -40,9 +28,9 @@ class DroidState:
         right = DIRECTIONS[(direction_index + 1) % len(DIRECTIONS)]
 
         if (self.location + left) in self.scafolding:
-            return 'L', left
+            return "L", left
         elif (self.location + right) in self.scafolding:
-            return 'R', right
+            return "R", right
         else:
             return None
 
@@ -54,11 +42,10 @@ class DroidState:
         return amount
 
     def __str__(self):
-        return 'Location = {}\nPosition = {}'.format(self.location, self.direction)
+        return "Location = {}\nPosition = {}".format(self.location, self.direction)
 
 
 class VacuumDroid:
-
     def __init__(self):
         self.__computer = Computer(self)
 
@@ -79,7 +66,7 @@ class VacuumDroid:
 
     def get_input(self):
         if self.__index >= len(self.__instructions):
-            raise Exception('PASSED END')
+            raise Exception("PASSED END")
         value = self.__instructions[self.__index]
         self.__index += 1
         return value
@@ -89,12 +76,12 @@ class VacuumDroid:
             self.value = value
             return
         value = chr(value)
-        if value == '\n':
+        if value == "\n":
             self.__current = Point(0, self.__current.y() + 1)
         else:
-            if value != '.':
+            if value != ".":
                 self.__scafolding.add(self.__current)
-                if value != '#':
+                if value != "#":
                     self.__state = DroidState(self.__current, self.__scafolding, value)
             self.__current = self.__current.right()
 
@@ -110,20 +97,24 @@ class VacuumDroid:
         instructions = []
         while self.__state.has_next():
             instructions.append(self.__state.get_instruction())
-        a, a_bounds, b, b_bounds, c, c_bounds = self.compress_instructions(instructions, 5)
+        a, a_bounds, b, b_bounds, c, c_bounds = self.compress_instructions(
+            instructions, 5
+        )
         routine = self.create_routine(a_bounds, b_bounds, c_bounds, len(instructions))
         self.add_instruction(routine)
         self.add_instruction(a)
         self.add_instruction(b)
         self.add_instruction(c)
-        self.__instructions.append(ord('n'))
+        self.__instructions.append(ord("n"))
         self.__instructions.append(10)
 
     def add_instruction(self, instructions):
         if type(instructions[0]) is str:
-            instructions = ','.join(instructions)
+            instructions = ",".join(instructions)
         else:
-            instructions = ','.join(['{},{}'.format(*instruction) for instruction in instructions])
+            instructions = ",".join(
+                ["{},{}".format(*instruction) for instruction in instructions]
+            )
         for ch in instructions:
             self.__instructions.append(ord(ch))
         self.__instructions.append(10)
@@ -136,21 +127,21 @@ class VacuumDroid:
             b_end = self.get_end_bound(i, b_bounds)
             c_end = self.get_end_bound(i, c_bounds)
             if a_end is not None:
-                routine.append('A')
+                routine.append("A")
                 i = a_end
             elif b_end is not None:
-                routine.append('B')
+                routine.append("B")
                 i = b_end
             elif c_end is not None:
-                routine.append('C')
+                routine.append("C")
                 i = c_end
             else:
-                raise Exception('OOOPS')
+                raise Exception("OOOPS")
         return routine
 
     def compress_instructions(self, instructions, max_length):
         total_instructions = len(instructions)
-        for i in range(1, 1+max_length):
+        for i in range(1, 1 + max_length):
             a = instructions[:i]
             a_bounds = self.get_bounds(a, instructions)
 
@@ -158,18 +149,20 @@ class VacuumDroid:
             while self.in_bounds(start_j, a_bounds):
                 start_j += len(a)
 
-            for j in range(1+start_j, 1+start_j+max_length):
+            for j in range(1 + start_j, 1 + start_j + max_length):
                 b = instructions[start_j:j]
                 b_bounds = self.get_bounds(b, instructions)
 
                 start_k = j
-                while self.in_bounds(start_k, a_bounds) or self.in_bounds(start_k, b_bounds):
+                while self.in_bounds(start_k, a_bounds) or self.in_bounds(
+                    start_k, b_bounds
+                ):
                     if self.in_bounds(start_k, a_bounds):
                         start_k += len(a)
                     else:
                         start_k += len(b)
 
-                for k in range(1+start_k, 1+start_k+max_length):
+                for k in range(1 + start_k, 1 + start_k + max_length):
                     c = instructions[start_k:k]
                     c_bounds = self.get_bounds(c, instructions)
 
@@ -184,7 +177,7 @@ class VacuumDroid:
         while i < (len(main) - len(sublist)) + 1:
             contained = True
             for j in range(len(sublist)):
-                if main[i+j] != sublist[j]:
+                if main[i + j] != sublist[j]:
                     contained = False
             if contained:
                 bounds.append((i, i + len(sublist)))
@@ -211,7 +204,7 @@ class VacuumDroid:
         return None
 
     def __str__(self):
-        return 'Scafolding = {}\nLocation = {}'.format(self.__scafolding, self.__state)
+        return "Scafolding = {}\nLocation = {}".format(self.__scafolding, self.__state)
 
 
 def main():
@@ -251,5 +244,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

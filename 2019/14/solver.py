@@ -1,43 +1,40 @@
 import math
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Reactant:
-
     def __init__(self, raw):
         parts = raw.split()
         self.amount = int(parts[0])
         self.product = parts[1]
 
     def __mul__(self, other):
-        return Reactant('{} {}'.format(self.amount * other, self.product))
+        return Reactant("{} {}".format(self.amount * other, self.product))
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}({})'.format(self.amount, self.product)
+        return "{}({})".format(self.amount, self.product)
 
 
 class Reactions:
-
     def __init__(self):
         self.reactions = {}
 
     def add(self, raw):
-        parts = raw.split(' => ')
+        parts = raw.split(" => ")
         outcome = Reactant(parts[1])
-        components = [Reactant(comp) for comp in parts[0].split(', ')]
+        components = [Reactant(comp) for comp in parts[0].split(", ")]
         self.reactions[outcome] = components
 
     def ore_needed(self, reactant, excess=None):
         if excess is None:
             excess = defaultdict(float)
 
-        if reactant.product == 'ORE':
+        if reactant.product == "ORE":
             return reactant.amount
 
         times, reaction = self.get_reaction(reactant)
@@ -50,7 +47,9 @@ class Reactions:
 
         needed = 0
         for further_reactant in reaction:
-            amount_had = min(math.floor(excess[further_reactant.product]), further_reactant.amount)
+            amount_had = min(
+                math.floor(excess[further_reactant.product]), further_reactant.amount
+            )
             excess[further_reactant.product] -= amount_had
             further_reactant.amount -= amount_had
             if further_reactant.amount > 0:
@@ -65,7 +64,7 @@ class Reactions:
         return None
 
     def ore_for_fuel(self, amount):
-        return self.ore_needed(Reactant('{} FUEL'.format(amount)))
+        return self.ore_needed(Reactant("{} FUEL".format(amount)))
 
     def __str__(self):
         return str(self.reactions)
@@ -86,7 +85,7 @@ def binary_search(reactions, goal, start, end):
 
     if value < goal:
         return binary_search(reactions, goal, mid_point, end)
-    else: 
+    else:
         return binary_search(reactions, goal, start, mid_point)
 
 
@@ -96,5 +95,5 @@ def get_reactions():
     return reactions
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

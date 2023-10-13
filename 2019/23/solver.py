@@ -1,10 +1,9 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 
 class Network:
-
     def __init__(self, memory):
         self.__nat = None
         self.__nat_history = []
@@ -47,7 +46,6 @@ class Network:
 
 
 class Node:
-
     def __init__(self, memory, address, network):
         self.__computer = Computer(self)
         self.__computer.set_memory(memory)
@@ -78,12 +76,11 @@ class Node:
 
 
 class Packet:
-
     def __init__(self, dest, x, y):
         self.dest, self.x, self.y = dest, x, y
 
     def __str__(self):
-        return 'To: {}, X={}, Y={}'.format(self.dest, self.x, self.y)
+        return "To: {}, X={}, Y={}".format(self.dest, self.x, self.y)
 
 
 def main():
@@ -97,5 +94,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

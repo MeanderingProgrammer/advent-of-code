@@ -1,33 +1,25 @@
 import itertools
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
-
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 BAD_ITEMS = [
-  'giant electromagnet',
-  'molten lava',
-  'photons',
-  'escape pod',
-  'infinite loop'
+    "giant electromagnet",
+    "molten lava",
+    "photons",
+    "escape pod",
+    "infinite loop",
 ]
 
-SECURITY = 'Security Checkpoint'
+SECURITY = "Security Checkpoint"
 
 
 class Direction:
-
     def __init__(self, value):
         self.value = value
 
     def opposite(self):
-        OPPOSITES = {
-            'north': 'south',
-            'south': 'north',
-            'east': 'west',
-            'west': 'east'
-        }
+        OPPOSITES = {"north": "south", "south": "north", "east": "west", "west": "east"}
         return Direction(OPPOSITES[self.value])
 
     def __eq__(self, o):
@@ -44,15 +36,14 @@ class Direction:
 
 
 class Game:
-
     def __init__(self):
-        self.instruction = ''
+        self.instruction = ""
 
     def add(self, ch):
         self.instruction += ch
 
     def clear(self):
-        self.instruction = ''
+        self.instruction = ""
 
     def location(self):
         components = self.get_componenets()
@@ -65,7 +56,9 @@ class Game:
         # Remove direction which takes us to analyzer, for initial traversal
         if self.is_checkpoint():
             likely_directions = likely_directions[1:]
-        return [Direction(likely_direction[2:]) for likely_direction in likely_directions]
+        return [
+            Direction(likely_direction[2:]) for likely_direction in likely_directions
+        ]
 
     def items(self):
         components = self.get_componenets()
@@ -79,12 +72,15 @@ class Game:
         return self.location() == SECURITY
 
     def get_componenets(self):
-        components = [[component for component in components.split('\n') if component != ''] for components in self.instruction.split('\n\n')]
+        components = [
+            [component for component in components.split("\n") if component != ""]
+            for components in self.instruction.split("\n\n")
+        ]
         last_index = len(components) - components[::-1].index([]) - 1
-        return components[last_index+1:-1]
+        return components[last_index + 1 : -1]
 
     def get_key(self):
-        key_line = self.instruction.split('\n')[-2]
+        key_line = self.instruction.split("\n")[-2]
         key_parts = key_line.split()
         return int(key_parts[-8])
 
@@ -93,7 +89,6 @@ class Game:
 
 
 class Graph:
-
     def __init__(self):
         self.graph = {}
 
@@ -110,12 +105,11 @@ class Graph:
         return [direction for direction in directions if direction not in explored]
 
     def __str__(self):
-        values = ['{}: {}'.format(name, self.graph[name]) for name in self.graph]
-        return '\n'.join(values)
+        values = ["{}: {}".format(name, self.graph[name]) for name in self.graph]
+        return "\n".join(values)
 
 
 class ItemBag:
-
     def __init__(self):
         self.items = []
 
@@ -132,7 +126,6 @@ class ItemBag:
 
 
 class Droid:
-
     def __init__(self, memory):
         # Computer setup, to run instructions
         self.__computer = Computer(self)
@@ -141,7 +134,7 @@ class Droid:
         # Storing output of game and move to make
         self.game = Game()
         self.move = []
-        
+
         # State information to be able to traverse ship
         self.grid = Graph()
         self.previous = None
@@ -168,7 +161,7 @@ class Droid:
             if not self.exploring and not self.solving:
                 for move in self.path_to_security:
                     self.move.extend(self.__transform(str(move)))
-                self.move.extend(self.__transform(str('south')))
+                self.move.extend(self.__transform(str("south")))
                 self.solving = True
 
         return ord(self.move.pop(0))
@@ -179,7 +172,7 @@ class Droid:
     def continue_exploring(self):
         for item in self.game.items():
             self.items.add(item)
-            self.move.extend(self.__transform('take {}'.format(item)))
+            self.move.extend(self.__transform("take {}".format(item)))
 
         location = self.game.location()
         directions = self.game.directions()
@@ -189,7 +182,7 @@ class Droid:
         self.grid.add_node(location)
         if self.previous is not None:
             self.grid.add_edge(self.previous[0], self.previous[1], location)
-        
+
         unexplored = self.grid.get_unexplored(location, directions)
 
         # Done exploring the ship, all paths explored, nothing to recurse back to
@@ -213,17 +206,17 @@ class Droid:
         self.game.clear()
 
         for to_drop in self.items.items:
-            self.move.extend(self.__transform('drop {}'.format(to_drop)))
+            self.move.extend(self.__transform("drop {}".format(to_drop)))
 
         for to_pickup in next(self.item_generator):
-            self.move.extend(self.__transform('take {}'.format(to_pickup)))
+            self.move.extend(self.__transform("take {}".format(to_pickup)))
 
-        self.move.extend(self.__transform('south'))
+        self.move.extend(self.__transform("south"))
 
     @staticmethod
     def __transform(move):
         program = [ch for ch in move]
-        program.append('\n')
+        program.append("\n")
         return program
 
 
@@ -237,5 +230,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,17 +1,15 @@
 import math
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Point:
-
     def __init__(self, x, y):
         self.x, self.y = x, y
 
     def angle(self, other):
-        dy = other.y - self.y 
+        dy = other.y - self.y
         dx = other.x - self.x
         # Correct for inverted y coordinates
         angle = math.degrees(math.atan2(-dy, dx))
@@ -21,7 +19,7 @@ class Point:
         return -angle if angle <= 0 else 360 - angle
 
     def distance(self, other):
-        dy = self.y - other.y 
+        dy = self.y - other.y
         dx = self.x - other.x
         return pow(pow(dx, 2) + pow(dy, 2), 0.5)
 
@@ -32,16 +30,15 @@ class Point:
         return str(self)
 
     def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+        return "({}, {})".format(self.x, self.y)
 
 
 class Grid:
-
     def __init__(self, data):
         self.asteroids = []
         for y, row in enumerate(data):
             for x, value in enumerate(row):
-                if value == '#':
+                if value == "#":
                     self.asteroids.append(Point(x, y))
 
     def get_most_seen(self):
@@ -92,5 +89,5 @@ def get_grid():
     return Grid(Parser().lines())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

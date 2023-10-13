@@ -1,11 +1,9 @@
 import math
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Vector:
-
     def __init__(self, x=0, y=0, z=0):
         self.x, self.y, self.z = x, y, z
 
@@ -13,7 +11,7 @@ class Vector:
         return Vector(
             self.simple_component(self.x),
             self.simple_component(self.y),
-            self.simple_component(self.z)
+            self.simple_component(self.z),
         )
 
     def simple_component(self, value):
@@ -43,15 +41,14 @@ class Vector:
         return str(self)
 
     def __str__(self):
-        return '<x={}, y={}, z={}>'.format(self.x, self.y, self.z)
+        return "<x={}, y={}, z={}>".format(self.x, self.y, self.z)
 
 
 class Body:
-
     def __init__(self, raw):
         raw = raw[1:-1]
-        parts = raw.split(', ')
-        parts = [int(part.split('=')[1]) for part in parts]
+        parts = raw.split(", ")
+        parts = [int(part.split("=")[1]) for part in parts]
         self.position = Vector(*parts)
         self.velocity = Vector()
 
@@ -73,11 +70,10 @@ class Body:
         return str(self)
 
     def __str__(self):
-        return 'pos = {}, vel ={}'.format(self.position, self.velocity)
+        return "pos = {}, vel ={}".format(self.position, self.velocity)
 
 
 class System:
-
     def __init__(self):
         self.bodies = []
 
@@ -102,7 +98,7 @@ class System:
         return str(self)
 
     def __str__(self):
-        return '\n'.join([str(body) for body in self.bodies])
+        return "\n".join([str(body) for body in self.bodies])
 
 
 def main():
@@ -148,5 +144,5 @@ def get_system():
     return system
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

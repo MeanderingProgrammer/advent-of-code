@@ -1,29 +1,17 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
-
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 WALL = 0
 EMPTY = 1
 OXYGEN_SYSTEM = 2
 
-DIRECTIONS = {
-    1: (0, 1),
-    2: (0, -1),
-    3: (-1, 0),
-    4: (1, 0)
-}
+DIRECTIONS = {1: (0, 1), 2: (0, -1), 3: (-1, 0), 4: (1, 0)}
 
-OPPOSITES = {
-    1: 2,
-    2: 1,
-    3: 4,
-    4: 3
-}
+OPPOSITES = {1: 2, 2: 1, 3: 4, 4: 3}
 
 
 class RepairDroid:
-
     def __init__(self, memory):
         self.__computer = Computer(self)
         self.__computer.set_memory(memory)
@@ -33,9 +21,7 @@ class RepairDroid:
         self.__position = (0, 0)
         self.__next_position = None
         self.__path = [(0, self.__position)]
-        self.__grid = {
-            self.__position: EMPTY
-        }
+        self.__grid = {self.__position: EMPTY}
 
     def run(self):
         while self.__computer.has_next() and not self.__completed:
@@ -58,7 +44,7 @@ class RepairDroid:
     def add_output(self, status):
         # Make sure we can identify the status code
         if status not in [WALL, EMPTY, OXYGEN_SYSTEM]:
-            raise Exception('Unexpected status code: {}'.format(status))
+            raise Exception("Unexpected status code: {}".format(status))
         next_position = self.__next_position[1]
         # No matter the status we now know something about the new position
         self.__grid[next_position] = status
@@ -98,7 +84,9 @@ class RepairDroid:
     def __get_unexplored(self):
         unexplored = []
         for code, direction in DIRECTIONS.items():
-            next_position = tuple([sum(component) for component in zip(self.__position, direction)])
+            next_position = tuple(
+                [sum(component) for component in zip(self.__position, direction)]
+            )
             if next_position not in self.__grid:
                 unexplored.append((code, next_position))
         return unexplored
@@ -106,7 +94,9 @@ class RepairDroid:
     def __get_options(self, position):
         options = []
         for code, direction in DIRECTIONS.items():
-            next_position = tuple([sum(component) for component in zip(position, direction)])
+            next_position = tuple(
+                [sum(component) for component in zip(position, direction)]
+            )
             outcome = self.__grid.get(next_position, WALL)
             if outcome != WALL:
                 options.append(next_position)
@@ -137,5 +127,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
