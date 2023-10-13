@@ -67,5 +67,5 @@ class Generator:
             --year {self.day.year} --day {self.day.day} \\
             --input-file {data_path} \\
             --input-only \\
-            --session-file ./.adventofcode.session"""
+            --session-file ./{ADVENT_COOKIE_FILE}"""
         )

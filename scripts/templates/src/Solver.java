@@ -1,7 +1,5 @@
-package main;
-
-import answer.Answer;
-import io.FileReader;
+import lib.Answer;
+import lib.FileReader;
 
 public class Solver {
 
