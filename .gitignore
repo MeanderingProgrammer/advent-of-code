@@ -10,9 +10,13 @@ out
 __pycache__
 *.pyc
 
-# Java
-*.class
-*.jar
+# Gradle
+.gradle
+build
+.settings
+.project
+.classpath
+.factorypath
 
 # Rust
 *.lock
