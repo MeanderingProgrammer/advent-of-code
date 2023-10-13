@@ -30,12 +30,12 @@ class Runner:
 
     def __run_day(self, day: Day) -> List[RuntimeInfo]:
         runtimes = []
-        for language in self.__available_languages():
+        for language in self.__languages():
             runtime = self.__run_language(language, day)
             runtimes.append(runtime)
         return runtimes
 
-    def __available_languages(self) -> List[Language]:
+    def __languages(self) -> List[Language]:
         return [
             language
             for language in self.languages

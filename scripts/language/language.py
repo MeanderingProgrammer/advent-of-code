@@ -57,9 +57,3 @@ class Language(abc.ABC):
 
     def __str__(self) -> str:
         return self.name
-
-
-class InterprettedLanguage(Language):
-    def compile(self, day: Day) -> None:
-        # Interpreted languages do not need to be compiled
-        pass

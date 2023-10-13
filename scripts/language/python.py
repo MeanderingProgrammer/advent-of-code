@@ -1,11 +1,11 @@
 import os
 from typing import List
 
-from language.language import InterprettedLanguage
+from language.language import Language
 from pojo.day import Day
 
 
-class Python(InterprettedLanguage):
+class Python(Language):
     @property
     def name(self) -> str:
         return "python"
@@ -17,8 +17,12 @@ class Python(InterprettedLanguage):
     def _run_setup(self) -> None:
         os.system("pip install -e ../../commons/python")
 
+    def compile(self, day: Day) -> None:
+        # Interpreted languages do not need to be compiled
+        pass
+
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return "python solver.py"
+        return f"python {self.solution_file}"
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed
