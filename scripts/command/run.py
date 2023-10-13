@@ -24,7 +24,6 @@ class Runner:
         for day in self.days:
             os.chdir(f"{day.year}/{day.day}")
             runtimes.extend(self.__run_day(day))
-            # Change back out of day directory
             os.chdir("../..")
         return runtimes
 
@@ -45,7 +44,7 @@ class Runner:
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")
         language.initial_setup()
-        language.compile(day)
+        language.compile()
         runtime = language.run(day, self.run_args)
         print(f"Runtime: {runtime}")
         return RuntimeInfo(day, language.name, runtime)

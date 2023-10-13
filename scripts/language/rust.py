@@ -20,7 +20,7 @@ class Rust(Language):
     def _run_setup(self) -> None:
         os.system("cargo build -rq --bins")
 
-    def compile(self, day: Day) -> None:
+    def compile(self) -> None:
         # Since our setup command builds all binary targets, each day does not
         # need to be individually compiled
         pass

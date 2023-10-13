@@ -30,7 +30,7 @@ class Language(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def compile(self, day: Day) -> None:
+    def compile(self) -> None:
         pass
 
     def run(self, day: Day, run_args: List[str]) -> float:

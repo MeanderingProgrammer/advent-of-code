@@ -17,7 +17,7 @@ class Python(Language):
     def _run_setup(self) -> None:
         os.system("pip install -e ../../commons/python")
 
-    def compile(self, day: Day) -> None:
+    def compile(self) -> None:
         # Interpreted languages do not need to be compiled
         pass
 

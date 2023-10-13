@@ -17,7 +17,7 @@ class Java(Language):
     def _run_setup(self) -> None:
         pass
 
-    def compile(self, day: Day) -> None:
+    def compile(self) -> None:
         os.system("./../../gradlew build -q")
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
