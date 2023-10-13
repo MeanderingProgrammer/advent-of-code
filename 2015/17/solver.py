@@ -1,7 +1,6 @@
 import itertools
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -31,5 +30,5 @@ def get_capacities():
     return Parser().int_lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

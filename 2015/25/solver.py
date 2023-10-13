@@ -1,4 +1,4 @@
-import commons.answer as answer
+from aoc import answer
 
 
 POSITION = (2_947, 3_029)
@@ -28,5 +28,5 @@ def get_password(n):
     return password
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

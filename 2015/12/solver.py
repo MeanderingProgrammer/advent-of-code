@@ -1,11 +1,9 @@
 import json
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class SantaData:
-
     def __init__(self, value, ignore_red):
         self.value = json.loads(value)
         self.ignore_red = ignore_red
@@ -13,7 +11,7 @@ class SantaData:
     def total(self, value=None):
         value = self.value if value is None else value
         total = 0
-        
+
         if isinstance(value, list):
             for entry in value:
                 total += self.total(entry)
@@ -26,13 +24,13 @@ class SantaData:
         elif isinstance(value, str):
             pass
         else:
-            raise Exception('Unhandled: {}, Type: {}'.format(value, type(value)))
+            raise Exception("Unhandled: {}, Type: {}".format(value, type(value)))
 
         return total
 
     @staticmethod
     def contains_red(value):
-        return 'red' in value.values()
+        return "red" in value.values()
 
 
 def main():
@@ -45,5 +43,5 @@ def get_total(ignore_red):
     return santa.total()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

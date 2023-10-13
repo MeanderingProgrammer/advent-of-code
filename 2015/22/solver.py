@@ -1,5 +1,4 @@
-import commons.answer as answer
-import commons.aoc_search as aoc_search
+from aoc import answer, search
 
 
 PLAYER_STATS = (50, 500)
@@ -7,16 +6,7 @@ ENEMY_STATS = (58, 9)
 
 
 class EffectCreator:
-
-    def __init__(
-        self, 
-        name, 
-        cost, 
-        turns,
-        player_effect,
-        enemy_effect,
-        cleanup
-    ):
+    def __init__(self, name, cost, turns, player_effect, enemy_effect, cleanup):
         self.name = name
         self.cost = cost
         self.turns = turns
@@ -27,25 +17,16 @@ class EffectCreator:
     def create(self):
         return Effect(
             self.name,
-            self.cost, 
+            self.cost,
             self.turns,
             self.player_effect,
             self.enemy_effect,
-            self.cleanup
+            self.cleanup,
         )
 
 
 class Effect:
-
-    def __init__(
-        self, 
-        name, 
-        cost, 
-        turns,
-        player_effect,
-        enemy_effect,
-        cleanup
-    ):
+    def __init__(self, name, cost, turns, player_effect, enemy_effect, cleanup):
         self.name = name
         self.cost = cost
         self.turns = turns
@@ -74,7 +55,7 @@ class Effect:
             self.turns,
             self.player_effect,
             self.enemy_effect,
-            self.cleanup
+            self.cleanup,
         )
 
     def __eq__(self, o):
@@ -91,51 +72,31 @@ class Effect:
 
 
 SPELL_CREATORS = [
+    EffectCreator("Magic Missile", 53, 1, None, lambda enemy: enemy.boost_hp(-4), None),
     EffectCreator(
-        'Magic Missile',
-        53,
-        1,
-        None,
-        lambda enemy: enemy.boost_hp(-4),
-        None
-    ),
-    EffectCreator(
-        'Drain',
+        "Drain",
         73,
         1,
         lambda player: player.boost_hp(2),
         lambda enemy: enemy.boost_hp(-2),
-        None
+        None,
     ),
     EffectCreator(
-        'Shield',
+        "Shield",
         113,
         6,
         lambda player: player.boost_armor(7),
         None,
         lambda player: player.boost_armor(-7),
     ),
+    EffectCreator("Poison", 173, 6, None, lambda enemy: enemy.boost_hp(-3), None),
     EffectCreator(
-        'Poison',
-        173,
-        6,
-        None,
-        lambda enemy: enemy.boost_hp(-3),
-        None
+        "Recharge", 229, 5, lambda player: player.boost_mana(101), None, None
     ),
-    EffectCreator(
-        'Recharge',
-        229,
-        5,
-        lambda player: player.boost_mana(101),
-        None,
-        None
-    )
 ]
 
 
 class Wizard:
-
     def __init__(self, hp, mana, armor=0):
         self.hp = hp
         self.mana = mana
@@ -161,21 +122,16 @@ class Wizard:
         return self.hp > 0
 
     def copy(self):
-        return Wizard(
-            self.hp,
-            self.mana,
-            self.armor
-        )
+        return Wizard(self.hp, self.mana, self.armor)
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.hp, self.mana)
+        return "{}: {}".format(self.hp, self.mana)
 
 
 class Warlock:
-
     def __init__(self, hp, damage):
         self.hp = hp
         self.damage = damage
@@ -192,20 +148,16 @@ class Warlock:
         return self.hp > 0
 
     def copy(self):
-        return Warlock(
-            self.hp,
-            self.damage
-        )
+        return Warlock(self.hp, self.damage)
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.hp, self.damage)
+        return "{}: {}".format(self.hp, self.damage)
 
 
 class Game:
-
     def __init__(self, player, enemy, hard, effects=None):
         self.player = player
         self.enemy = enemy
@@ -283,7 +235,7 @@ class Game:
             self.player.copy(),
             self.enemy.copy(),
             self.hard,
-            set([effect.copy() for effect in self.effects])
+            set([effect.copy() for effect in self.effects]),
         )
 
     def __lt__(self, o):
@@ -296,17 +248,13 @@ def main():
 
 
 def play_game(hard):
-    game = Game(
-        Wizard(*PLAYER_STATS), 
-        Warlock(*ENEMY_STATS),
-        hard
-    )
-    return aoc_search.bfs_complete(
+    game = Game(Wizard(*PLAYER_STATS), Warlock(*ENEMY_STATS), hard)
+    return search.bfs_complete(
         (0, game),
         lambda current: current.done(),
-        lambda mana_used, current: current.get_moves(mana_used)
+        lambda mana_used, current: current.get_moves(mana_used),
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

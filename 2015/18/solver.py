@@ -1,10 +1,9 @@
-import commons.answer as answer
-from commons.aoc_board import Grid, Point
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 
 class Animator:
-
     def __init__(self, force_corners, on, min_x, max_x, min_y, max_y):
         self.force_corners = force_corners
         self.on = on
@@ -69,7 +68,7 @@ def run(force_corners, grid):
 def points_on(grid):
     on = set()
     for point, value in grid.items():
-        if value == '#':
+        if value == "#":
             on.add(point)
     return on
 
@@ -78,5 +77,5 @@ def min_max(values):
     return min(values), max(values)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

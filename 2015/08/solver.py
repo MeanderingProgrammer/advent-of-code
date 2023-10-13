@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class String:
-
     def __init__(self, value):
         self.value = value
 
@@ -16,8 +15,8 @@ class String:
             ch = self.value[i]
             if ch != '"':
                 result.append(ch)
-                if ch == '\\':
-                    if self.value[i + 1] == 'x':
+                if ch == "\\":
+                    if self.value[i + 1] == "x":
                         i += 3
                     else:
                         i += 1
@@ -27,8 +26,8 @@ class String:
     def encode(self):
         result = ['"']
         for ch in self.value:
-            if ch in ['\\', '"']:
-                result.append('\\')
+            if ch in ["\\", '"']:
+                result.append("\\")
             result.append(ch)
         result.append('"')
         return len(result)
@@ -48,5 +47,5 @@ def main():
     answer.part2(2085, encoded - total)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

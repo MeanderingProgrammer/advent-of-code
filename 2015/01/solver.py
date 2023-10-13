@@ -1,5 +1,5 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
 def get_floor(value, stop_at_basement):
     floor = 0
     for i, ch in enumerate(value):
-        if ch == '(':
+        if ch == "(":
             floor += 1
         else:
             floor -= 1
@@ -20,5 +20,5 @@ def get_floor(value, stop_at_basement):
     return floor
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

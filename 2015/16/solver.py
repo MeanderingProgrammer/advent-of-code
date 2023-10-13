@@ -1,21 +1,20 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 CHECKS = {
-    'cats': lambda x, y: x > y,
-    'trees': lambda x, y: x > y,
-    'pomeranians': lambda x, y: x < y,
-    'goldfish': lambda x, y: x < y
+    "cats": lambda x, y: x > y,
+    "trees": lambda x, y: x > y,
+    "pomeranians": lambda x, y: x < y,
+    "goldfish": lambda x, y: x < y,
 }
 
 
 class Match:
-
     def __init__(self, values):
         self.properties = {}
         for value in values:
-            value = value.split(': ')
+            value = value.split(": ")
             self.properties[value[0]] = int(value[1])
 
     def does_match(self, aunt, calibrate):
@@ -33,12 +32,11 @@ class Match:
 
 
 class Aunt:
-
     def __init__(self, value):
-        self.id, raw_properties = value.split(': ', 1)
+        self.id, raw_properties = value.split(": ", 1)
         self.properties = {}
-        for raw_property in raw_properties.split(', '):
-            raw_property = raw_property.split(': ')
+        for raw_property in raw_properties.split(", "):
+            raw_property = raw_property.split(": ")
             self.properties[raw_property[0]] = int(raw_property[1])
 
     def get_number(self):
@@ -63,5 +61,5 @@ def get_data():
     return Match(groups[0]), [Aunt(value) for value in groups[1]]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

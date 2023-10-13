@@ -1,7 +1,6 @@
 import itertools
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -30,7 +29,9 @@ def group(weights, per_compartment, compartments):
                 if compartments == 1:
                     yield [sub_weights]
                 else:
-                    for sub_group in group(remove(weights, sub_weights), per_compartment, compartments - 1):
+                    for sub_group in group(
+                        remove(weights, sub_weights), per_compartment, compartments - 1
+                    ):
                         yield [sub_weights] + sub_group
                         # No need to search for multiple matches that start with the current
                         # sub group, simply continue to next group
@@ -42,7 +43,7 @@ def remove(data, ignore):
 
 
 def get_lowest_entaglement(options):
-    entaglements = [get_entaglement(option) for option in  options]
+    entaglements = [get_entaglement(option) for option in options]
     return min(entaglements)
 
 
@@ -53,5 +54,5 @@ def get_entaglement(values):
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

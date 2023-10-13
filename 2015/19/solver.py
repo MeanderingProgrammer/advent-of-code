@@ -1,15 +1,13 @@
-import commons.answer as answer
-import commons.aoc_util as aoc_util
-from commons.aoc_parser import Parser
+from aoc import answer, util
+from aoc.parser import Parser
 
 
 class Rule:
-
     def __init__(self, raw):
-        self.start, self.end = raw.split(' => ')
+        self.start, self.end = raw.split(" => ")
 
     def replace(self, value):
-        indexes = aoc_util.find_all(value, self.start)
+        indexes = util.find_all(value, self.start)
         results = set()
         for index in indexes:
             results.add(self.replace_at(value, index))
@@ -17,7 +15,7 @@ class Rule:
 
     def replace_at(self, value, index):
         before = value[:index]
-        after = value[index+len(self.start):]
+        after = value[index + len(self.start) :]
         return before + self.end + after
 
 
@@ -38,9 +36,9 @@ def replacements_needed(molecule):
     # Solution by askalski
     # https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/
     elements = sum([letter.isupper() for letter in molecule])
-    rn_count = len(aoc_util.find_all(molecule, 'Rn'))
-    ar_count = len(aoc_util.find_all(molecule, 'Ar'))
-    y_count = len(aoc_util.find_all(molecule, 'Y'))
+    rn_count = len(util.find_all(molecule, "Rn"))
+    ar_count = len(util.find_all(molecule, "Ar"))
+    y_count = len(util.find_all(molecule, "Y"))
     return elements - rn_count - ar_count - (2 * y_count) - 1
 
 
@@ -50,5 +48,5 @@ def get_data():
     return groups[1][0], rules
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

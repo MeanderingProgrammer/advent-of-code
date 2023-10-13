@@ -1,12 +1,11 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Ingredient:
-
     def __init__(self, raw):
-        self.name, components = raw.split(': ')
-        components = components.split(', ')
+        self.name, components = raw.split(": ")
+        components = components.split(", ")
         self.capacity = self.parse_component(components[0])
         self.durability = self.parse_component(components[1])
         self.flavor = self.parse_component(components[2])
@@ -17,8 +16,15 @@ class Ingredient:
         return str(self)
 
     def __str__(self):
-        return '{}: capacity {}, durability {}, flavor {}, texture {}, calories {}'.format(
-            self.name, self.capacity, self.durability, self.flavor, self.texture, self.calories
+        return (
+            "{}: capacity {}, durability {}, flavor {}, texture {}, calories {}".format(
+                self.name,
+                self.capacity,
+                self.durability,
+                self.flavor,
+                self.texture,
+                self.calories,
+            )
         )
 
     @staticmethod
@@ -27,7 +33,6 @@ class Ingredient:
 
 
 class Recipe:
-
     def __init__(self, ingredients, teaspoons):
         self.ingredients = ingredients
         self.teaspoons = teaspoons
@@ -43,11 +48,11 @@ class Recipe:
     def get_values(self, proportion):
         capacity, durability, flavor, texture, calories = 0, 0, 0, 0, 0
         for ingredient, amount in zip(self.ingredients, proportion):
-            capacity += (ingredient.capacity * amount)
-            durability += (ingredient.durability * amount)
-            flavor += (ingredient.flavor * amount)
-            texture += (ingredient.texture * amount)
-            calories += (ingredient.calories * amount)
+            capacity += ingredient.capacity * amount
+            durability += ingredient.durability * amount
+            flavor += ingredient.flavor * amount
+            texture += ingredient.texture * amount
+            calories += ingredient.calories * amount
         score = max(capacity, 0) * max(durability, 0) * max(flavor, 0) * max(texture, 0)
         return score, calories
 
@@ -73,5 +78,5 @@ def get_ingredients():
     return [Ingredient(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

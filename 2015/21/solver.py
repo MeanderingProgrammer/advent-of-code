@@ -1,11 +1,9 @@
 import itertools
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Character:
-
     def __init__(self, hp, damage, armor):
         self.starting_hp = hp
         self.items = []
@@ -45,14 +43,13 @@ class Character:
         return str(self)
 
     def __str__(self):
-        return '{} {} {}'.format(self.hp, self.damage, self.armor)
+        return "{} {} {}".format(self.hp, self.damage, self.armor)
 
 
 class Item:
-
     def __init__(self, raw):
         parts = raw.split()
-        self.name = ' '.join(parts[:-3])
+        self.name = " ".join(parts[:-3])
         self.cost = int(parts[-3])
         self.damage = int(parts[-2])
         self.armor = int(parts[-1])
@@ -61,7 +58,7 @@ class Item:
         return str(self)
 
     def __str__(self):
-        return '{}: {} {} {}'.format(self.name, self.cost, self.damage, self.armor)
+        return "{}: {} {} {}".format(self.name, self.cost, self.damage, self.armor)
 
 
 def main():
@@ -106,7 +103,7 @@ def get_data():
     weapons = get_items(groups[0])
     armors = get_items(groups[1])
     rings = get_items(groups[2])
-    enemy =get_character(groups[3])
+    enemy = get_character(groups[3])
     return enemy, weapons, armors, rings
 
 
@@ -122,5 +119,5 @@ def get_character(stats):
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
