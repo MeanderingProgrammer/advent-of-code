@@ -1,8 +1,7 @@
 import os
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from pojo.day import Day
 
@@ -19,20 +18,19 @@ class DayFactory:
 
     def get_days(self) -> List[Day]:
         days = []
-        for year in DayFactory._get_dirs_wth_prefix(self.years, "20"):
+        for year in DayFactory._get_directories(self.years, "20"):
             os.chdir(year)
-            for day in DayFactory._get_dirs_wth_prefix(self.days, None):
+            for day in DayFactory._get_directories(self.days, None):
                 days.append(Day(year, day))
             os.chdir("..")
         return sorted(days)
 
     @staticmethod
-    def _get_dirs_wth_prefix(values: List[str], valid_prefix) -> List[str]:
+    def _get_directories(values: List[str], valid_prefix: Optional[str]) -> List[str]:
         def path_predicate(file_path: Path) -> bool:
             # Must be a directory
             if not file_path.is_dir():
                 return False
-
             dir_name = file_path.name
             # Name must match prefix if provided
             if valid_prefix is not None and not dir_name.startswith(valid_prefix):

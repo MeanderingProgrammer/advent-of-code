@@ -13,7 +13,7 @@ class Generator:
     day: Day
     language: Language
 
-    def generate(self):
+    def generate(self) -> None:
         date_path = self.__get_date_path()
 
         solution_path = self.__get_solution_path(date_path)
@@ -37,7 +37,7 @@ class Generator:
             raise Exception(f"Solution already exists under: {solution_path}")
         return solution_path
 
-    def __copy_template_to(self, solution_path: Path):
+    def __copy_template_to(self, solution_path: Path) -> None:
         template_file = f"scripts/templates/{self.language.solution_file}"
         print(f"Copying {template_file} to {solution_path}")
         os.system(f"cp {template_file} {solution_path}")
@@ -48,7 +48,7 @@ class Generator:
             print(f"Creating empty {sample_path}")
             sample_path.touch()
 
-    def __create_data_if_necessary(self, date_path: Path):
+    def __create_data_if_necessary(self, date_path: Path) -> None:
         data_path = date_path.joinpath("data.txt")
         if not data_path.exists():
             print(f"Creating data file under: {data_path}")
@@ -61,7 +61,7 @@ class Generator:
         else:
             print(f"{data_path} already exists, leaving as is")
 
-    def __download_input(self, data_path: Path):
+    def __download_input(self, data_path: Path) -> None:
         os.system(
             f"""aoc download  \\
             --year {self.day.year} --day {self.day.day} \\
