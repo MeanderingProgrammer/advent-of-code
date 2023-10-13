@@ -1,16 +1,15 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
-class BoardingPass():
-
+class BoardingPass:
     def __init__(self, identifier):
         row = identifier[:7]
-        row = self.to_binary(row, 'B')
+        row = self.to_binary(row, "B")
         self.row = self.to_decimal(row)
 
         seat = identifier[7:]
-        seat = self.to_binary(seat, 'R')
+        seat = self.to_binary(seat, "R")
         self.seat = self.to_decimal(seat)
 
     def get_id(self):
@@ -32,8 +31,8 @@ class BoardingPass():
         length = len(binary)
         for i, bit in enumerate(binary):
             exponent = length - i - 1
-            converter = 2 ** exponent
-            result += (bit * converter)
+            converter = 2**exponent
+            result += bit * converter
         return result
 
 
@@ -42,7 +41,7 @@ def main():
     data.sort()
     answer.part1(919, data[-1])
 
-    code = to_code(to_binary(find_missing(data)), 'BBBBBBBRRR', 'FFFFFFFLLL')
+    code = to_code(to_binary(find_missing(data)), "BBBBBBBRRR", "FFFFFFFLLL")
     boarding_pass = BoardingPass(code)
     answer.part2(642, boarding_pass.get_id())
 
@@ -58,7 +57,7 @@ def to_binary(value):
     result = []
     for i in range(10):
         exponent = 9 - i
-        converter = 2 ** exponent
+        converter = 2**exponent
         if value >= converter:
             result.append(1)
             value -= converter
@@ -68,7 +67,7 @@ def to_binary(value):
 
 
 def to_code(binary, high_values, low_values):
-    code = ''
+    code = ""
     for i, bit in enumerate(binary):
         if bit == 1:
             code += high_values[i]
@@ -81,5 +80,5 @@ def process():
     return [BoardingPass(line).get_id() for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

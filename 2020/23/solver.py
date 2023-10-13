@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Cup:
-
     def __init__(self, value):
         self.value = value
         self.next_cup = None
@@ -12,12 +11,11 @@ class Cup:
         return str(self)
 
     def __str__(self):
-        next_cup = 'X' if self.next_cup is None else '->'
-        return '{}: {}'.format(self.value, next_cup)
+        next_cup = "X" if self.next_cup is None else "->"
+        return "{}: {}".format(self.value, next_cup)
 
 
 class Cups:
-
     def __init__(self):
         self.root = None
         self.end = None
@@ -41,7 +39,7 @@ class Cups:
             self.end.next_cup = new_cup
             self.end = self.end.next_cup
 
-        self.references[value-1] = new_cup
+        self.references[value - 1] = new_cup
 
     def wrap(self):
         self.end.next_cup = self.root
@@ -57,14 +55,10 @@ class Cups:
 
         self.root.next_cup = self.root.next_cup.next_cup.next_cup.next_cup
 
-        in_aside = [
-            aside.value,
-            aside.next_cup.value,
-            aside.next_cup.next_cup.value
-        ]
+        in_aside = [aside.value, aside.next_cup.value, aside.next_cup.next_cup.value]
 
         aside.next_cup.next_cup.next_cup = None
-        
+
         return in_aside, aside
 
     def get_next_destination(self, in_aside):
@@ -88,16 +82,16 @@ class Cups:
     def __str__(self):
         result = []
         current = self.get_value_cup(1).next_cup
-        
+
         while current.value != 1:
             result.append(str(current.value))
             current = current.next_cup
 
-        return ''.join(result)
+        return "".join(result)
 
 
 def main():
-    answer.part1('45798623', run(None, 100))
+    answer.part1("45798623", run(None, 100))
     answer.part2(235551949822, run(1_000_000, 10_000_000))
 
 
@@ -121,12 +115,12 @@ def get_cups(num_cups):
         cups.add(int(value))
 
     if num_cups is not None:
-        for i in range(cups.high+1, num_cups+1):
+        for i in range(cups.high + 1, num_cups + 1):
             cups.add(i)
 
     cups.wrap()
     return cups
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,15 +1,12 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
+from aoc import answer
+from aoc.parser import Parser
 
 PREAMBLE_LENGTH = 25
 
 
 class MaskingInput:
-
     def __init__(self, data):
         self.data = data
-
 
     def get_first_invalid(self):
         for i in range(PREAMBLE_LENGTH, len(self.data)):
@@ -18,13 +15,13 @@ class MaskingInput:
         return None
 
     def is_valid_index(self, i):
-        preamble = self.data[i-PREAMBLE_LENGTH:i]
+        preamble = self.data[i - PREAMBLE_LENGTH : i]
         datum = self.data[i]
         return self.can_sum(preamble, datum)
 
     def get_sum_set(self, goal):
         for i in range(len(self.data)):
-            for j in range(i+2, len(self.data)):
+            for j in range(i + 2, len(self.data)):
                 subset = self.data[i:j]
                 total = sum(subset)
                 if total == goal:
@@ -32,7 +29,6 @@ class MaskingInput:
                 elif total > goal:
                     break
         return None
-
 
     @staticmethod
     def can_sum(preamble, datum):
@@ -58,5 +54,5 @@ def process():
     return MaskingInput(Parser().int_lines())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

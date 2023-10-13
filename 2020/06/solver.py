@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class BoardingGroup:
-
     def __init__(self, responders):
         self.responders = responders
 
@@ -30,5 +29,5 @@ def process():
     return [BoardingGroup(group) for group in Parser().line_groups()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

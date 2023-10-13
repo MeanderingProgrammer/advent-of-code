@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Seat:
-
     def __init__(self, i, j, state):
         self.row = i
         self.col = j
@@ -19,13 +18,13 @@ class Seat:
         return self.state
 
     def is_occupied(self):
-        return self.state == '#'
+        return self.state == "#"
 
     def is_empty(self):
-        return self.state == 'L'
+        return self.state == "L"
 
     def is_floor(self):
-        return self.state == '.'
+        return self.state == "."
 
     def __repr__(self):
         return str(self)
@@ -35,7 +34,6 @@ class Seat:
 
 
 class SeatingChart:
-
     def __init__(self, chart, transform=True):
         if transform:
             self.chart = []
@@ -55,14 +53,16 @@ class SeatingChart:
                 next_state = seat.get_state()
                 if not seat.is_floor():
                     adjacent_seats = self.get_adjacent_seats(seat, look)
-                    occupied = [adjacent_seat.is_occupied() for adjacent_seat in adjacent_seats]
+                    occupied = [
+                        adjacent_seat.is_occupied() for adjacent_seat in adjacent_seats
+                    ]
                     if seat.is_empty():
                         if not any(occupied):
-                            next_state = '#'
+                            next_state = "#"
                     else:
                         to_empty = 5 if look else 4
                         if sum(occupied) >= to_empty:
-                            next_state = 'L'
+                            next_state = "L"
                 next_row.append(Seat(seat.get_row(), seat.get_col(), next_state))
             next_chart.append(next_row)
         return SeatingChart(next_chart, False)
@@ -74,8 +74,8 @@ class SeatingChart:
         for d1 in directions:
             for d2 in directions:
                 if d1 != 0 or d2 != 0:
-                    row = seat.get_row()+d1
-                    col = seat.get_col()+d2
+                    row = seat.get_row() + d1
+                    col = seat.get_col() + d2
                     adjacent_seat = self.explore_direction(row, col, (d1, d2), look)
                     if adjacent_seat is not None and not adjacent_seat.is_floor():
                         seats.append(adjacent_seat)
@@ -96,7 +96,7 @@ class SeatingChart:
 
         if not seat.is_floor():
             return seat
-            
+
         i += direc[0]
         j += direc[1]
         return self.explore_direction(i, j, direc, look)
@@ -116,9 +116,9 @@ class SeatingChart:
         return str(self)
 
     def __str__(self):
-        result = ''
+        result = ""
         for row in self.chart:
-            result += str(row) + '\n'
+            result += str(row) + "\n"
         return result
 
 
@@ -142,5 +142,5 @@ def process():
     return SeatingChart(Parser().nested_lines())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Stats:
-
     def __init__(self, turn):
         self.turns = [turn]
 
@@ -55,5 +54,5 @@ def process():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

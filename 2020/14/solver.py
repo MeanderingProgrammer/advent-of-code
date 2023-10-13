@@ -1,15 +1,13 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
+from aoc import answer
+from aoc.parser import Parser
 
 LENGTH = 36
 
 
 class Computer:
-
     def __init__(self, version):
         self.version = version
-        self.mask = 'X' * LENGTH
+        self.mask = "X" * LENGTH
         self.memory = {}
 
     def run(self, instruction):
@@ -28,19 +26,19 @@ class Computer:
             self.memory[address] = value
 
     def get_memory_masks_v2(self, value):
-        memory_masks = ['']
+        memory_masks = [""]
         for i in range(len(value)):
             value_bit = value[i]
             mask_bit = self.mask[i]
-            if mask_bit != 'X':
-                to_add = value_bit if mask_bit == '0' else '1'
+            if mask_bit != "X":
+                to_add = value_bit if mask_bit == "0" else "1"
                 for i in range(len(memory_masks)):
                     memory_masks[i] += to_add
             else:
                 to_extend = []
                 for i in range(len(memory_masks)):
-                    to_extend.append(memory_masks[i] + '0')
-                    memory_masks[i] += '1'
+                    to_extend.append(memory_masks[i] + "0")
+                    memory_masks[i] += "1"
                 memory_masks.extend(to_extend)
         return memory_masks
 
@@ -48,18 +46,18 @@ class Computer:
         self.memory[memory_address] = self.apply_mask_v1(self.to_binary_string(value))
 
     def apply_mask_v1(self, value):
-        masked_value = ''
+        masked_value = ""
         for i in range(len(value)):
             value_bit = value[i]
             mask_bit = self.mask[i]
-            to_add = value_bit if mask_bit == 'X' else mask_bit
+            to_add = value_bit if mask_bit == "X" else mask_bit
             masked_value += to_add
         return int(masked_value, 2)
 
     def to_binary_string(self, value):
         binary = bin(value)[2:]
         zeroes_needed = LENGTH - len(binary)
-        leading_zeroes = '0' * zeroes_needed
+        leading_zeroes = "0" * zeroes_needed
         return leading_zeroes + binary
 
     def get_total_memory(self):
@@ -71,14 +69,13 @@ class Computer:
 
 
 class Instruction:
-
     def __init__(self, instruction):
-        parts = instruction.split(' = ')
+        parts = instruction.split(" = ")
         self.name = parts[0]
         self.value = parts[1]
-    
+
     def is_mask(self):
-        return self.name == 'mask'
+        return self.name == "mask"
 
     def get_memory_address(self):
         return int(self.name[4:-1])
@@ -104,5 +101,5 @@ def get_instructions():
     return [Instruction(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

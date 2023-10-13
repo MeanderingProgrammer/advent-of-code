@@ -1,22 +1,16 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
     board = get_board()
-    traversals = [
-        (1, 1),
-        (3, 1),
-        (5, 1),
-        (7, 1),
-        (1, 2)
-    ]
+    traversals = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
 
     trees = []
     for traversal in traversals:
         trees.append(traverse(board, traversal[0], traversal[1]))
     answer.part1(220, trees[1])
-    
+
     result = 1
     for tree in trees:
         result *= tree
@@ -31,7 +25,7 @@ def traverse(board, r_step, d_step):
         row = board[i]
         length = len(row)
         value = row[x_pos % length]
-        if value == '#':
+        if value == "#":
             num_trees += 1
         x_pos += r_step
 
@@ -42,5 +36,5 @@ def get_board():
     return Parser().lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

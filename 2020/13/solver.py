@@ -1,13 +1,11 @@
 import math
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Bus:
-
     def __init__(self, bus_id):
-        self.real = bus_id != 'x'
+        self.real = bus_id != "x"
         if self.real:
             self.bus_id = int(bus_id)
 
@@ -24,7 +22,7 @@ def main():
     data = process()
 
     arrive_time = int(data[0])
-    buses = [Bus(bus) for bus in data[1].split(',')]
+    buses = [Bus(bus) for bus in data[1].split(",")]
 
     answer.part1(296, solve_part_1(arrive_time, buses))
     answer.part2(535296695251210, solve_part_2(buses))
@@ -47,7 +45,7 @@ def solve_part_2(buses):
             a = (n - i) % n
             y = multiple // n
             z = get_inverse_mod(y, n)
-            total += (a*y*z)
+            total += a * y * z
     return total % multiple
 
 
@@ -91,8 +89,8 @@ def consecutive_from_start(start_time, buses):
 
 
 def process():
-   return Parser().lines()
+    return Parser().lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

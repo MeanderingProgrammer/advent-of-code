@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Point:
-
     def __init__(self, dimensions, x, y, z=0, w=0):
         self.dimensions = dimensions
         self.coords = (x, y, z, w)
@@ -35,7 +34,6 @@ class Point:
 
 
 class Status:
-
     def __init__(self, active=False):
         self.active = active
         self.active_neighbors = 0
@@ -56,11 +54,10 @@ class Status:
         return str(self)
 
     def __str__(self):
-        return '#' if self.active else '.'
+        return "#" if self.active else "."
 
 
 class Grid:
-
     def __init__(self, dimensions):
         self.dimensions = dimensions
         self.grid = {}
@@ -95,18 +92,20 @@ class Grid:
         y_bounds = self.get_dimen_bounds(lambda point: point.coords[1])
         x_bounds = self.get_dimen_bounds(lambda point: point.coords[0])
 
-        result = ''
+        result = ""
 
-        for w in range(w_bounds[0], w_bounds[1]+1):
-            for z in range(z_bounds[0], z_bounds[1]+1):
-                result += 'z = {}, w = {} \n'.format(z, w)
-                for y in range(y_bounds[1], y_bounds[0]-1, -1):
-                    row = ''
-                    for x in range(x_bounds[0], x_bounds[1]+1):
-                        status = self.grid.get(Point(self.dimensions, x, y, z, w), Status())
+        for w in range(w_bounds[0], w_bounds[1] + 1):
+            for z in range(z_bounds[0], z_bounds[1] + 1):
+                result += "z = {}, w = {} \n".format(z, w)
+                for y in range(y_bounds[1], y_bounds[0] - 1, -1):
+                    row = ""
+                    for x in range(x_bounds[0], x_bounds[1] + 1):
+                        status = self.grid.get(
+                            Point(self.dimensions, x, y, z, w), Status()
+                        )
                         row += str(status)
-                    result += row + '\n'
-                result += '\n'
+                    result += row + "\n"
+                result += "\n"
 
         return result
 
@@ -134,9 +133,9 @@ def get_grid(dimensions):
         y = len(lines) - y - 1
         for x in range(len(datum)):
             status = datum[x]
-            grid.add(Point(dimensions, x, y), Status(status == '#'))
+            grid.add(Point(dimensions, x, y), Status(status == "#"))
     return grid
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

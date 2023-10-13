@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class PuzzleBoard:
-
     def __init__(self):
         self.board = {}
 
@@ -45,9 +44,9 @@ class PuzzleBoard:
             ys.append(position[1])
 
         rows = []
-        for y in range(max(ys), min(ys)-1, -1):
+        for y in range(max(ys), min(ys) - 1, -1):
             row = self.board[(min(xs), y)].remove_boarder()
-            for x in range(min(xs)+1, max(xs)+1):
+            for x in range(min(xs) + 1, max(xs) + 1):
                 row = row.add_horizontal(self.board[(x, y)].remove_boarder())
             rows.append(row)
 
@@ -58,18 +57,18 @@ class PuzzleBoard:
         return combined
 
     def __str__(self):
-        result = ''
+        result = ""
         for position in self.board:
-            result += '{}: {} \n'.format(position, self.board[position].identifier)
+            result += "{}: {} \n".format(position, self.board[position].identifier)
         return result
 
     @staticmethod
     def get_adjacent(position):
         return [
-            (position[0]-1, position[1]),   # LEFT
-            (position[0], position[1]+1),   # TOP
-            (position[0]+1, position[1]),   # RIGHT
-            (position[0], position[1]-1)    # BOTTOM
+            (position[0] - 1, position[1]),  # LEFT
+            (position[0], position[1] + 1),  # TOP
+            (position[0] + 1, position[1]),  # RIGHT
+            (position[0], position[1] - 1),  # BOTTOM
         ]
 
     @staticmethod
@@ -83,7 +82,6 @@ class PuzzleBoard:
 
 
 class ImageTile:
-
     def __init__(self, data, identifier=None):
         if identifier is None:
             self.identifier = int(data[0][5:-1])
@@ -93,10 +91,10 @@ class ImageTile:
             self.data = data
         size = len(self.data)
         self.edges = [
-            ''.join(row[0] for row in self.data),       # LEFT
-            self.data[0],                               # TOP
-            ''.join(row[size-1] for row in self.data),  # RIGHT
-            self.data[size-1]                           # BOTTOM
+            "".join(row[0] for row in self.data),  # LEFT
+            self.data[0],  # TOP
+            "".join(row[size - 1] for row in self.data),  # RIGHT
+            self.data[size - 1],  # BOTTOM
         ]
 
     def remove_boarder(self):
@@ -106,14 +104,14 @@ class ImageTile:
         return ImageTile(boarderless, self.identifier)
 
     def add_horizontal(self, other):
-        new_id = '{} + {}'.format(self.identifier, other.identifier)
+        new_id = "{} + {}".format(self.identifier, other.identifier)
         combined = []
         for i, row in enumerate(self.data):
             combined.append(row + other.data[i])
         return ImageTile(combined, new_id)
 
     def add_vertical(self, other):
-        new_id = '{}\n{}'.format(self.identifier, other.identifier)
+        new_id = "{}\n{}".format(self.identifier, other.identifier)
         combined = [row for row in self.data]
         combined.extend(other.data)
         return ImageTile(combined, new_id)
@@ -138,7 +136,7 @@ class ImageTile:
                 new_i = size - 1 - j
                 new_j = i
                 rotated[new_i][new_j] = value
-        rotated = [''.join(row) for row in rotated]
+        rotated = ["".join(row) for row in rotated]
         return ImageTile(rotated, self.identifier)
 
     def flip(self):
@@ -149,14 +147,14 @@ class ImageTile:
                 value = self.data[i][j]
                 new_j = size - 1 - j
                 rotated[i][new_j] = value
-        rotated = [''.join(row) for row in rotated]
+        rotated = ["".join(row) for row in rotated]
         return ImageTile(rotated, self.identifier)
 
     def get_num_positive(self):
         num_positive = 0
         for row in self.data:
             for value in row:
-                if value == '#':
+                if value == "#":
                     num_positive += 1
         return num_positive
 
@@ -169,12 +167,11 @@ class ImageTile:
         return str(self)
 
     def __str__(self):
-        result = '{} \n'.format(self.identifier)
-        return result + '\n'.join(self.data)
+        result = "{} \n".format(self.identifier)
+        return result + "\n".join(self.data)
 
 
 class SearchImage:
-
     def __init__(self, image):
         length = len(image)
         width = len(image[0])
@@ -202,14 +199,14 @@ class SearchImage:
     def crop(self, point, tile):
         cropped = []
         for i in range(self.dimensions[1]):
-            row = tile.data[i+point[1]]
-            cropped.append(row[point[0]:point[0]+self.dimensions[0]])
+            row = tile.data[i + point[1]]
+            cropped.append(row[point[0] : point[0] + self.dimensions[0]])
         return cropped
 
     def does_match(self, image):
         for point in self.points:
             value = image[point[1]][point[0]]
-            if value != '#':
+            if value != "#":
                 return False
         return True
 
@@ -219,7 +216,7 @@ class SearchImage:
         for row in range(len(image)):
             for col in range(len(image[row])):
                 value = image[row][col]
-                if value == '#':
+                if value == "#":
                     positive_points.append((col, row))
         return positive_points
 
@@ -242,12 +239,12 @@ def solve_board(board):
             if not board.add(tile):
                 still_remaining.append(tile)
 
-        # Luckily they didn't give input that caused us to need to 
+        # Luckily they didn't give input that caused us to need to
         # implement recursive backtracking, yay!
         if len(remaining_tiles) == len(still_remaining):
             # Nothing was added should break with exception
             print(board.board)
-            raise Exception('Was unable to add anything, something broken')
+            raise Exception("Was unable to add anything, something broken")
 
         remaining_tiles = still_remaining
 
@@ -262,7 +259,7 @@ def corner_values(board):
         board.board[(min(xs), min(ys))].identifier,
         board.board[(min(xs), max(ys))].identifier,
         board.board[(max(xs), min(ys))].identifier,
-        board.board[(max(xs), max(ys))].identifier
+        board.board[(max(xs), max(ys))].identifier,
     ]
     value = 1
     for corner in corners:
@@ -289,8 +286,8 @@ def get_image_tiles():
 
 
 def get_image_search():
-    return SearchImage(Parser('sea-monster').lines())
+    return SearchImage(Parser("sea-monster").lines())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

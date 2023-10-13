@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Transformer:
-
     def __init__(self, subject):
         self.subject = subject
 
@@ -41,5 +40,5 @@ def get_keys():
     return keys[0], keys[1]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

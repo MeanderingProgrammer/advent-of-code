@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class RuleGraph:
-
     def __init__(self):
         self.graph = {}
 
@@ -29,7 +28,9 @@ class RuleGraph:
                 return True
             next_nodes = self.graph[node]
             next_nodes = [next_node.get_node() for next_node in next_nodes]
-            next_nodes = list(filter(lambda next_node: next_node not in seen, next_nodes))
+            next_nodes = list(
+                filter(lambda next_node: next_node not in seen, next_nodes)
+            )
             for next_node in next_nodes:
                 seen.add(next_node)
             to_explore.extend(next_nodes)
@@ -43,16 +44,15 @@ class RuleGraph:
             weight = edge.get_weight()
 
             bags_needed += weight
-            bags_needed += (weight * self.get_bags_needed(node))
+            bags_needed += weight * self.get_bags_needed(node)
 
         return bags_needed
 
 
 class Edge:
-
     def __init__(self, raw_edge):
-        parts = raw_edge.split()        
-        self.node = ' '.join(parts[1:-1])
+        parts = raw_edge.split()
+        self.node = " ".join(parts[1:-1])
         self.weight = int(parts[0])
 
     def get_node(self):
@@ -63,14 +63,13 @@ class Edge:
 
 
 class BagRule:
-
     def __init__(self, line):
-        key_raw_edges = line.split(' bags contain ')
+        key_raw_edges = line.split(" bags contain ")
         raw_edges = key_raw_edges[1]
         self.node = key_raw_edges[0]
         self.edges = []
-        if raw_edges != 'no other bags':
-            raw_edges = raw_edges.split(', ')
+        if raw_edges != "no other bags":
+            raw_edges = raw_edges.split(", ")
             for raw_edge in raw_edges:
                 self.edges.append(Edge(raw_edge))
 
@@ -88,8 +87,8 @@ def main():
     for bag_rule in bag_rules:
         graph.add(bag_rule)
 
-    answer.part1(172, get_connected_to(graph, 'shiny gold'))
-    answer.part2(39645, graph.get_bags_needed('shiny gold'))
+    answer.part1(172, get_connected_to(graph, "shiny gold"))
+    answer.part2(39645, graph.get_bags_needed("shiny gold"))
 
 
 def get_connected_to(graph, end):
@@ -105,5 +104,5 @@ def process():
     return [BagRule(line[:-1]) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
