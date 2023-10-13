@@ -1,22 +1,15 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
+OR = "|"
+OPEN_PAREN = "("
+CLOSE_PAREN = ")"
 
-OR = '|'
-OPEN_PAREN = '('
-CLOSE_PAREN = ')'
-
-MAPPING = {
-    'N': Point(0 ,1),
-    'E': Point(1 ,0),
-    'W': Point(-1 ,0),
-    'S': Point(0 ,-1)
-}
+MAPPING = {"N": Point(0, 1), "E": Point(1, 0), "W": Point(-1, 0), "S": Point(0, -1)}
 
 
 class Regex:
-
     def __init__(self, expression):
         self.expression = expression
 
@@ -41,7 +34,9 @@ class Regex:
                 if self.current not in self.distances:
                     self.distances[self.current] = previous_distance + 1
                 else:
-                    self.distances[self.current] = min(self.distances[self.current], previous_distance + 1)
+                    self.distances[self.current] = min(
+                        self.distances[self.current], previous_distance + 1
+                    )
             self.previous = self.current
 
     def longest_path(self):
@@ -54,7 +49,7 @@ class Regex:
         return str(self)
 
     def __str__(self):
-        return str(self.expression)        
+        return str(self.expression)
 
 
 def main():
@@ -79,5 +74,5 @@ def follow_path(path):
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

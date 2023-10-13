@@ -1,10 +1,8 @@
+from aoc import answer
 from collections import deque
-
-import commons.answer as answer
 
 
 class Player:
-
     def __init__(self, id):
         self.id = id
         self.score = 0
@@ -16,11 +14,10 @@ class Player:
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.id, self.score)
+        return "{}: {}".format(self.id, self.score)
 
 
 class Game:
-
     def __init__(self, num_players):
         self.players = [Player(i + 1) for i in range(num_players)]
         self.board = deque([0])
@@ -37,11 +34,11 @@ class Game:
             else:
                 self.board.rotate(1)
             self.board.appendleft(value)
-        
+
     def get_high_score(self):
         scores = [player.score for player in self.players]
         return max(scores)
-                
+
     def __repr__(self):
         return str(self)
 
@@ -62,5 +59,5 @@ def solve(num_players, num_moves):
     return game.get_high_score()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

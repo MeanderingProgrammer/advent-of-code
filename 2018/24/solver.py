@@ -1,17 +1,16 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Group:
-
     def __init__(self, group, id, raw):
         self.id = (group, id)
         self.units = self.get_units(raw)
         self.hp = self.get_hp(raw)
 
         traits = self.get_traits(raw)
-        self.weaknesses = traits.get('weak', [])
-        self.immunities = traits.get('immune', [])
+        self.weaknesses = traits.get("weak", [])
+        self.immunities = traits.get("immune", [])
 
         self.damage = self.get_damage(raw)
         self.damage_type = self.get_damage_type(raw)
@@ -46,7 +45,7 @@ class Group:
     def would_deal(self, o):
         multiplier = 1
         if o.immune_to(self):
-            multiplier = 0 
+            multiplier = 0
         elif o.weak_to(self):
             multiplier = 2
         return self.effective_power() * multiplier
@@ -63,11 +62,17 @@ class Group:
         return str(self)
 
     def __str__(self):
-        return '{' + ', '.join([
-            'Units = {}'.format(self.units),
-            'HP = {}'.format(self.hp),
-            'Damage = {}'.format(self.damage)
-        ]) + '}'
+        return (
+            "{"
+            + ", ".join(
+                [
+                    "Units = {}".format(self.units),
+                    "HP = {}".format(self.hp),
+                    "Damage = {}".format(self.damage),
+                ]
+            )
+            + "}"
+        )
 
     @staticmethod
     def get_units(raw):
@@ -81,15 +86,15 @@ class Group:
     def get_traits(raw):
         traits = {}
 
-        start = raw.find('(')
+        start = raw.find("(")
         if start == -1:
             return traits
-        end = raw.index(')')
-        raw = raw[start+1:end]
+        end = raw.index(")")
+        raw = raw[start + 1 : end]
 
-        for part in raw.split('; '):
-            trait_details = part.split(' to ')
-            traits[trait_details[0]] = trait_details[1].split(', ')
+        for part in raw.split("; "):
+            trait_details = part.split(" to ")
+            traits[trait_details[0]] = trait_details[1].split(", ")
 
         return traits
 
@@ -107,7 +112,6 @@ class Group:
 
 
 class Battle:
-
     def __init__(self, armies):
         self.immune_system = armies[0]
         self.infection = armies[1]
@@ -172,15 +176,17 @@ class Battle:
 
     def get_groups(self):
         return self.immune_system + self.infection
-    
+
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '\n'.join([
-            'Immune System:\n{}'.format(self.immune_system),
-            'Infection:\n{}'.format(self.infection)
-        ])
+        return "\n".join(
+            [
+                "Immune System:\n{}".format(self.immune_system),
+                "Infection:\n{}".format(self.infection),
+            ]
+        )
 
 
 def main():
@@ -203,7 +209,7 @@ def solve_part_2():
         battle.boost_immune(boost)
         battle.simulate()
         immune_won |= battle.immune_won()
-    
+
     return battle.winning_units()
 
 
@@ -214,5 +220,5 @@ def get_armies():
     return armies
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

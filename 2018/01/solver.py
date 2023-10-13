@@ -1,5 +1,5 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -20,5 +20,5 @@ def get_first_repeated(values):
         i += 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

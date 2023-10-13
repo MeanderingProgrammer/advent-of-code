@@ -1,12 +1,10 @@
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 from operator import attrgetter
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
 
 
 class Character:
-
     def __init__(self, symbol, position, attack):
         self.symbol = symbol
         self.position = position
@@ -32,11 +30,10 @@ class Character:
         return str(self)
 
     def __str__(self):
-        return '{} HP = {} @ {}'.format(self.symbol, self.hp, self.position)
+        return "{} HP = {} @ {}".format(self.symbol, self.hp, self.position)
 
 
 class Game:
-
     def __init__(self, grid, goblins, elves):
         self.grid = grid
         self.goblins = goblins
@@ -85,12 +82,12 @@ class Game:
 
     def opponents(self, character):
         symbol = character.symbol
-        if symbol == 'G':
+        if symbol == "G":
             return self.elves
-        elif symbol == 'E':
+        elif symbol == "E":
             return self.goblins
         else:
-            raise Exception('Unknown symbol: {}'.format(symbol))
+            raise Exception("Unknown symbol: {}".format(symbol))
 
     def can_attack(self, character):
         symbol = character.symbol
@@ -100,7 +97,7 @@ class Game:
         for opponent in self.opponents(character):
             if opponent.position in adjacent:
                 to_attack.append(opponent)
-        to_attack.sort(key = attrgetter('hp', 'position'))
+        to_attack.sort(key=attrgetter("hp", "position"))
         return to_attack
 
     def move(self, character):
@@ -113,9 +110,7 @@ class Game:
             closest = self.get_closest(character.position, possibilities, seen)
             if closest is not None:
                 next_position = self.get_closest(
-                    closest, 
-                    self.adjacent(character.position, set(seen)),
-                    seen
+                    closest, self.adjacent(character.position, set(seen)), seen
                 )
                 character.position = next_position
         return True
@@ -136,20 +131,22 @@ class Game:
 
         result = []
         for adjacent in position.adjacent():
-            if self.grid[adjacent] == '.' and adjacent not in seen:
+            if self.grid[adjacent] == "." and adjacent not in seen:
                 result.append(adjacent)
         return result
-    
+
     def get_closest(self, start, possibilities, seen):
         distances = []
         for possibility in possibilities:
             distance = self.distance(start, possibility, set(seen))
             if distance is not None:
                 distances.append((possibility, distance))
-        
+
         if len(distances) > 0:
             min_dist = min([distance[1] for distance in distances])
-            minimums = [distance[0] for distance in distances if distance[1] == min_dist]
+            minimums = [
+                distance[0] for distance in distances if distance[1] == min_dist
+            ]
             minimums.sort()
             return minimums[0]
 
@@ -173,12 +170,12 @@ class Game:
 
     def remove(self, character):
         symbol = character.symbol
-        if symbol == 'G':
+        if symbol == "G":
             self.goblins.remove(character)
-        elif symbol == 'E':
+        elif symbol == "E":
             self.elves.remove(character)
         else:
-            raise Exception('Unknown symbol: {}'.format(symbol))
+            raise Exception("Unknown symbol: {}".format(symbol))
 
     def __getitem__(self, position):
         for character in self.characters():
@@ -194,14 +191,14 @@ class Game:
 
     def __str__(self):
         result = []
-        for y, row in enumerate(str(self.grid).split('\n')):
+        for y, row in enumerate(str(self.grid).split("\n")):
             result_row = []
             for x, value in enumerate(row):
                 position = Point(x, y)
                 value = value if position not in self else self[position].symbol
                 result_row.append(value)
-            result.append(''.join(result_row))
-        return '\n'.join(result)
+            result.append("".join(result_row))
+        return "\n".join(result)
 
 
 def main():
@@ -225,9 +222,7 @@ def play_game(data, play_until_elf_win):
 
 def get_game(data, attack):
     return Game(
-        get_grid(data),
-        get_characters(data, 'G', 3), 
-        get_characters(data, 'E', attack)
+        get_grid(data), get_characters(data, "G", 3), get_characters(data, "E", attack)
     )
 
 
@@ -236,7 +231,7 @@ def get_grid(data):
     for y, row in enumerate(data):
         for x, value in enumerate(row):
             point = Point(x, y)
-            value = '#' if value == '#' else '.'
+            value = "#" if value == "#" else "."
             grid[point] = value
     return grid
 
@@ -251,5 +246,5 @@ def get_characters(data, symbol, attack):
     return characters
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

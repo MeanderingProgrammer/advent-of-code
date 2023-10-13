@@ -1,10 +1,9 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 
 class Constallation:
-
     def __init__(self):
         self.points = set()
 
@@ -56,6 +55,7 @@ def get_options(point, constallations):
             options.append(constallation)
     return options
 
+
 def merge(point, options):
     to_keep = options[0]
     to_keep.add(point)
@@ -70,10 +70,10 @@ def merge(point, options):
 def get_points():
     points = []
     for line in Parser().lines():
-        point = Point(*[int(c) for c in line.split(',')])
+        point = Point(*[int(c) for c in line.split(",")])
         points.append(point)
     return points
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

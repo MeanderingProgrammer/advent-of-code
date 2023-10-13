@@ -1,13 +1,11 @@
 import math
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
 
 
 class PointGrid:
-
     def __init__(self, points):
         self.points = points
 
@@ -55,7 +53,10 @@ class PointGrid:
         return infinite
 
     def on_boarder(self, point):
-        return point.x() in [self.min_x, self.max_x] or point.y() in [self.min_y, self.max_y]
+        return point.x() in [self.min_x, self.max_x] or point.y() in [
+            self.min_y,
+            self.max_y,
+        ]
 
     def within_max_distance(self, max_distance):
         within = 0
@@ -91,11 +92,11 @@ def main():
 def get_point_grid():
     points = set()
     for line in Parser().lines():
-        parts = line.split(', ')
+        parts = line.split(", ")
         point = Point(int(parts[0]), int(parts[1]))
         points.add(point)
     return PointGrid(points)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

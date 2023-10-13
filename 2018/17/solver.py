@@ -1,28 +1,25 @@
 import sys
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 sys.setrecursionlimit(10_000)
 
-
-CLAY = '#'
-DOWN = 'd'
-LEFT = 'l'
-RIGHT = 'r'
+CLAY = "#"
+DOWN = "d"
+LEFT = "l"
+RIGHT = "r"
 
 
 class PointRange:
-
     def __init__(self, raw):
-        parts = raw.split(', ')
+        parts = raw.split(", ")
         coord_range = {}
         for part in parts:
-            part = part.split('=')
+            part = part.split("=")
             coord_range[part[0]] = self.get_range(part[1])
-        self.xs = coord_range['x']
-        self.ys = coord_range['y']
+        self.xs = coord_range["x"]
+        self.ys = coord_range["y"]
 
     def get_points(self):
         points = []
@@ -34,22 +31,16 @@ class PointRange:
 
     @staticmethod
     def get_range(values):
-        values = values.split('..')
+        values = values.split("..")
         if len(values) == 1:
-            return [
-                int(values[0])
-            ]
+            return [int(values[0])]
         elif len(values) == 2:
-            return list(range(
-                int(values[0]),
-                int(values[1]) + 1
-            ))
+            return list(range(int(values[0]), int(values[1]) + 1))
         else:
-            raise Exception('Can not handle such a range')
+            raise Exception("Can not handle such a range")
 
 
 class GroundReservoir:
-
     def __init__(self, grid):
         self.grid = grid
 
@@ -89,7 +80,9 @@ class GroundReservoir:
                 self.settled.add(right)
                 right = right.right()
 
-        return (direction == LEFT and left_filled) or (direction == RIGHT and right_filled)
+        return (direction == LEFT and left_filled) or (
+            direction == RIGHT and right_filled
+        )
 
     def in_range(self, point, use_min=True):
         y = point.y()
@@ -106,12 +99,16 @@ class GroundReservoir:
 def main():
     start = Point(500, 0)
     grid = get_grid()
-    grid[start] = '.'
+    grid[start] = "."
 
     reservoir = GroundReservoir(grid)
     reservoir.fill(start)
-    answer.part1(38409, len([point for point in reservoir.flowing if reservoir.in_range(point)]))
-    answer.part2(32288, len([point for point in reservoir.settled if reservoir.in_range(point)]))
+    answer.part1(
+        38409, len([point for point in reservoir.flowing if reservoir.in_range(point)])
+    )
+    answer.part2(
+        32288, len([point for point in reservoir.settled if reservoir.in_range(point)])
+    )
 
 
 def get_grid():
@@ -123,5 +120,5 @@ def get_grid():
     return grid
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

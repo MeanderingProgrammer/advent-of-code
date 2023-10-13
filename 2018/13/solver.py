@@ -1,37 +1,30 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
+LEFT = "<"
+RIGHT = ">"
+UP = "^"
+DOWN = "v"
 
-LEFT = '<'
-RIGHT = '>'
-UP = '^'
-DOWN = 'v'
-
-OPPOSITES = {
-    LEFT: RIGHT,
-    RIGHT: LEFT,
-    UP: DOWN, 
-    DOWN: UP
-}
+OPPOSITES = {LEFT: RIGHT, RIGHT: LEFT, UP: DOWN, DOWN: UP}
 
 AS_POSITION = {
     LEFT: Point(-1, 0),
     RIGHT: Point(1, 0),
-    UP: Point(0, -1), 
-    DOWN: Point(0, 1)
+    UP: Point(0, -1),
+    DOWN: Point(0, 1),
 }
 
 INTERSECTION_OPTIONS = {
     LEFT: [DOWN, LEFT, UP],
     RIGHT: [UP, RIGHT, DOWN],
     UP: [LEFT, UP, RIGHT],
-    DOWN: [RIGHT, DOWN, LEFT]
+    DOWN: [RIGHT, DOWN, LEFT],
 }
 
 
 class Cart:
-
     def __init__(self, position, direction):
         self.position = position
         self.direction = direction
@@ -43,7 +36,7 @@ class Cart:
         elif len(options) == 2:
             self.standard_movement(options)
         else:
-            raise Exception('Unhandled number of options')
+            raise Exception("Unhandled number of options")
 
     def handle_intersection(self):
         options = INTERSECTION_OPTIONS[self.direction]
@@ -57,7 +50,7 @@ class Cart:
         options.remove(dont_go)
 
         if len(options) != 1:
-            raise Exception('Unable to eliminate enough options')
+            raise Exception("Unable to eliminate enough options")
 
         new_position = options[0]
         self.direction = self.how_to_get(new_position)
@@ -67,7 +60,7 @@ class Cart:
         for direction in AS_POSITION:
             if self.position + AS_POSITION[direction] == new_position:
                 return direction
-        raise Exception('Unable to determine how to reach position')
+        raise Exception("Unable to determine how to reach position")
 
     def __eq__(self, o):
         return str(self) == str(o)
@@ -84,11 +77,10 @@ class Cart:
         return str(self)
 
     def __str__(self):
-        return '{} @ {}'.format(self.direction, self.position)
+        return "{} @ {}".format(self.direction, self.position)
 
 
 class CartSystem:
-
     def __init__(self, track, carts):
         self.track = track
         self.carts = carts
@@ -122,47 +114,24 @@ class CartSystem:
 
     def adjacent(self, point):
         value = self.track[point]
-        if value == '+':
-            return [
-                point.left(), 
-                point.right(), 
-                point.up(), 
-                point.down()
-            ]
-        elif value == '|':
-            return [
-                point.up(), 
-                point.down()
-            ]
-        elif value == '-':
-            return [
-                point.left(), 
-                point.right()
-            ]
-        elif value == '/':
-            if self.track[point.up()] in ['|', '+']:
-                return [
-                    point.up(), 
-                    point.right()
-                ]
+        if value == "+":
+            return [point.left(), point.right(), point.up(), point.down()]
+        elif value == "|":
+            return [point.up(), point.down()]
+        elif value == "-":
+            return [point.left(), point.right()]
+        elif value == "/":
+            if self.track[point.up()] in ["|", "+"]:
+                return [point.up(), point.right()]
             else:
-                return [
-                    point.down(), 
-                    point.left()
-                ]
-        elif value == '\\':
-            if self.track[point.up()] in ['|', '+']:
-                return [
-                    point.up(), 
-                    point.left()
-                ]
+                return [point.down(), point.left()]
+        elif value == "\\":
+            if self.track[point.up()] in ["|", "+"]:
+                return [point.up(), point.left()]
             else:
-                return [
-                    point.down(), 
-                    point.right()
-                ]
+                return [point.down(), point.right()]
         else:
-            raise Exception('Unknown value at point')
+            raise Exception("Unknown value at point")
 
     def carts_at(self, position):
         return [cart for cart in self.carts if cart.position == position]
@@ -171,14 +140,14 @@ class CartSystem:
         return str(self)
 
     def __str__(self):
-        values = [[value for value in row] for row in str(self.track).split('\n')]
+        values = [[value for value in row] for row in str(self.track).split("\n")]
 
         for cart in self.carts:
             position = cart.position
             values[position.y][position.x] = cart.direction
 
-        values = [''.join(row) for row in values]
-        return '\n'.join(values)
+        values = ["".join(row) for row in values]
+        return "\n".join(values)
 
 
 def main():
@@ -203,9 +172,9 @@ def get_track(data):
     track = Grid()
     for point in data:
         value = data[point]
-        if value != ' ':
-            value = '-' if value in [LEFT, RIGHT] else value
-            value = '|' if value in [UP, DOWN] else value
+        if value != " ":
+            value = "-" if value in [LEFT, RIGHT] else value
+            value = "|" if value in [UP, DOWN] else value
             track[point] = value
     return track
 
@@ -219,5 +188,5 @@ def get_carts(data):
     return carts
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

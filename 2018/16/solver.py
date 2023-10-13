@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Parameter:
-
     def __init__(self, register):
         self.register = register
 
@@ -14,11 +13,10 @@ class Parameter:
         return str(self)
 
     def __str__(self):
-        return 'r' if self.register else 'i'
+        return "r" if self.register else "i"
 
 
 class Operator:
-
     def __init__(self, register, symbol, f):
         self.v1 = Parameter(True)
         self.v2 = Parameter(register)
@@ -34,35 +32,30 @@ class Operator:
         return str(self)
 
     def __str__(self):
-        return '{}{}'.format(self.symbol, self.v2)
+        return "{}{}".format(self.symbol, self.v2)
 
 
 class Add(Operator):
-
     def __init__(self, register):
-        super().__init__(register, 'add', lambda x, y: x + y)
+        super().__init__(register, "add", lambda x, y: x + y)
 
 
 class Mult(Operator):
-
     def __init__(self, register):
-        super().__init__(register, 'mul', lambda x, y: x * y)
+        super().__init__(register, "mul", lambda x, y: x * y)
 
 
 class And(Operator):
-
     def __init__(self, register):
-        super().__init__(register, 'ban', lambda x, y: x & y)
+        super().__init__(register, "ban", lambda x, y: x & y)
 
 
 class Or(Operator):
-
     def __init__(self, register):
-        super().__init__(register, 'bor', lambda x, y: x | y)
+        super().__init__(register, "bor", lambda x, y: x | y)
 
 
 class Set:
-
     def __init__(self, register):
         self.v1 = Parameter(register)
 
@@ -74,11 +67,10 @@ class Set:
         return str(self)
 
     def __str__(self):
-        return 'set{}'.format(self.v1)
+        return "set{}".format(self.v1)
 
 
 class Comparison:
-
     def __init__(self, reg1, reg2, symbol, f):
         self.v1 = Parameter(reg1)
         self.v2 = Parameter(reg2)
@@ -95,44 +87,42 @@ class Comparison:
         return str(self)
 
     def __str__(self):
-        return '{}{}{}'.format(self.symbol, self.v1, self.v2)
+        return "{}{}{}".format(self.symbol, self.v1, self.v2)
 
 
 class GreaterThan(Comparison):
-
     def __init__(self, reg1, reg2):
-        super().__init__(reg1, reg2, 'gt', lambda x, y: x > y)
+        super().__init__(reg1, reg2, "gt", lambda x, y: x > y)
 
 
 class Equals(Comparison):
-
     def __init__(self, reg1, reg2):
-        super().__init__(reg1, reg2, 'eq', lambda x, y: x == y)
+        super().__init__(reg1, reg2, "eq", lambda x, y: x == y)
 
 
 ALL_INSTRUCTIONS = {
-    'addr': Add(True),                  
-    'addi': Add(False),                 
-    'mulr': Mult(True),                 
-    'muli': Mult(False),                
-    'banr': And(True),                  
-    'bani': And(False),                 
-    'borr': Or(True),
-    'bori': Or(False),
-    'setr': Set(True),
-    'seti': Set(False),
-    'gtir': GreaterThan(False, True),
-    'gtri': GreaterThan(True, False), 
-    'gtrr': GreaterThan(True, True),
-    'eqir': Equals(False, True),
-    'eqri': Equals(True, False),
-    'eqrr': Equals(True, True)
+    "addr": Add(True),
+    "addi": Add(False),
+    "mulr": Mult(True),
+    "muli": Mult(False),
+    "banr": And(True),
+    "bani": And(False),
+    "borr": Or(True),
+    "bori": Or(False),
+    "setr": Set(True),
+    "seti": Set(False),
+    "gtir": GreaterThan(False, True),
+    "gtri": GreaterThan(True, False),
+    "gtrr": GreaterThan(True, True),
+    "eqir": Equals(False, True),
+    "eqri": Equals(True, False),
+    "eqrr": Equals(True, True),
 }
 
-class Registers:
 
+class Registers:
     def __init__(self, values, parse=True):
-        self.values = [int(part) for part in values.split(', ')] if parse else values
+        self.values = [int(part) for part in values.split(", ")] if parse else values
 
     def set(self, index, value):
         self.values[index] = value
@@ -157,7 +147,6 @@ class Registers:
 
 
 class Instruction:
-
     def __init__(self, instruction):
         self.instruction = [int(part) for part in instruction.split()]
 
@@ -181,11 +170,10 @@ class Instruction:
 
 
 class SampleInstruction:
-
     def __init__(self, parts):
-        self.before = Registers(parts[0].split(' [')[1][:-1])
+        self.before = Registers(parts[0].split(" [")[1][:-1])
         self.instruction = Instruction(parts[1])
-        self.after = Registers(parts[2].split(' [')[1][:-1])
+        self.after = Registers(parts[2].split(" [")[1][:-1])
 
     def opcode(self):
         return self.instruction.opcode()
@@ -204,11 +192,11 @@ class SampleInstruction:
 
     def __str__(self):
         result = [
-            'Before: {}'.format(self.before),
-            '{}'.format(self.instruction),
-            'After: {}'.format(self.after)
+            "Before: {}".format(self.before),
+            "{}".format(self.instruction),
+            "After: {}".format(self.after),
         ]
-        return '\n'.join(result)
+        return "\n".join(result)
 
 
 def main():
@@ -247,7 +235,7 @@ def collapse(mapping):
             value = mapping[key]
             if len(value) == 1:
                 new_mapping[key] = list(value)[0]
-        
+
         for key in new_mapping:
             value = new_mapping[key]
             mapping.pop(key, None)
@@ -257,5 +245,5 @@ def collapse(mapping):
     return new_mapping
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

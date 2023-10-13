@@ -1,11 +1,9 @@
 import re
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
-
-
-PATTERN = '^position=<(.*), (.*)> velocity=<(.*), (.*)>$'
+PATTERN = "^position=<(.*), (.*)> velocity=<(.*), (.*)>$"
 
 
 def main():
@@ -14,7 +12,7 @@ def main():
     grid = grid_at_time(point_velocities, min_time)
 
     # Part 1: GPJLLLLH
-    print('Part 1')
+    print("Part 1")
     print(grid)
 
     answer.part2(10515, min_time)
@@ -34,8 +32,8 @@ def get_min_area_time(point_velocities):
 def grid_at_time(point_velocities, i):
     grid = Grid()
     for point, velocity in point_velocities:
-        point += (i * velocity)
-        grid[point] = '#'
+        point += i * velocity
+        grid[point] = "#"
     return grid
 
 
@@ -49,5 +47,5 @@ def get_point_velocities():
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

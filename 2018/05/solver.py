@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Polymer:
-
     def __init__(self, units):
         self.units = units
 
@@ -14,7 +13,7 @@ class Polymer:
         return unit_types
 
     def remove_unit_type(self, unit_type):
-        new_polymer_units = ''
+        new_polymer_units = ""
         for unit in self.units:
             if unit.lower() != unit_type:
                 new_polymer_units += unit
@@ -23,7 +22,7 @@ class Polymer:
     def react(self):
         reaction_index = self.get_reaction_index()
         while reaction_index is not None:
-            self.units = self.units[:reaction_index] + self.units[reaction_index+2:]
+            self.units = self.units[:reaction_index] + self.units[reaction_index + 2 :]
             reaction_index = self.get_reaction_index(reaction_index)
 
     def get_reaction_index(self, previous=None):
@@ -73,5 +72,5 @@ def solve_part_2(polymer):
     return min(lengths)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

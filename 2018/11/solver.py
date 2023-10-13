@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
 
 
 class PowerGrid:
-
     def __init__(self, serial_number, grid_size):
         self.serial_number = serial_number
         self.grid_size = grid_size
@@ -41,22 +40,10 @@ class PowerGrid:
         return largest
 
     def get_total_power(self, point, size):
-        total = self.grid[Point(
-            point.x() + size - 1, 
-            point.y() + size - 1
-        )]
-        above = self.grid.get(Point(
-            point.x() + size - 1, 
-            point.y() - 1
-        ), 0)
-        left = self.grid.get(Point(
-            point.x() - 1, 
-            point.y() + size - 1
-        ), 0)
-        overlap = self.grid.get(Point(
-            point.x() - 1, 
-            point.y() - 1
-        ), 0)
+        total = self.grid[Point(point.x() + size - 1, point.y() + size - 1)]
+        above = self.grid.get(Point(point.x() + size - 1, point.y() - 1), 0)
+        left = self.grid.get(Point(point.x() - 1, point.y() + size - 1), 0)
+        overlap = self.grid.get(Point(point.x() - 1, point.y() - 1), 0)
         return total - above - left + overlap
 
     def get_power_level(self, point):
@@ -84,5 +71,5 @@ def main():
     answer.part2(Point(236, 151, 15), power_grid.get_largest_any())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

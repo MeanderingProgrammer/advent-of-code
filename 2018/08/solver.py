@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Node:
-
     def __init__(self, values):
         num_children = values[0]
         num_metadata = values[1]
@@ -13,7 +12,7 @@ class Node:
         for i in range(num_children):
             child = Node(values)
             self.children.append(child)
-            values = values[len(child):]
+            values = values[len(child) :]
 
         self.metadata = values[:num_metadata]
 
@@ -41,7 +40,7 @@ class Node:
         return str(self)
 
     def __str__(self):
-        return '(Children = {}, Metadata = {})'.format(self.children, self.metadata)
+        return "(Children = {}, Metadata = {})".format(self.children, self.metadata)
 
 
 def main():
@@ -50,5 +49,5 @@ def main():
     answer.part2(21810, tree.value())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
