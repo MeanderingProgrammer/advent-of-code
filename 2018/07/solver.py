@@ -1,14 +1,11 @@
 import re
+from aoc import answer
+from aoc.parser import Parser
 
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
-
-STEP_PATTERN = '^Step (.) must be finished before step (.) can begin.$'
+STEP_PATTERN = "^Step (.) must be finished before step (.) can begin.$"
 
 
 class Graph:
-
     def __init__(self):
         self.nodes = set()
         self.graph = {}
@@ -30,7 +27,7 @@ class Graph:
     def get_duration(self, num_workers, base_time):
         completed = []
         queue = WorkerQueue(num_workers, base_time)
-        
+
         duration = 0
         while len(completed) != len(self.nodes):
             duration += 1
@@ -62,7 +59,6 @@ class Graph:
 
 
 class WorkerQueue:
-
     def __init__(self, num_workers, base_time):
         self.queue = [Worker(base_time) for i in range(num_workers)]
         self.tasks_seen = set()
@@ -72,7 +68,7 @@ class WorkerQueue:
         completed = []
         for worker in self.queue:
             worker.tick()
-            if worker.done() and worker.task is not None: 
+            if worker.done() and worker.task is not None:
                 completed.append(worker.task)
                 worker.clear()
         return completed
@@ -90,7 +86,6 @@ class WorkerQueue:
 
 
 class Worker:
-
     def __init__(self, base_time):
         self.base_time = base_time
         self.task = None
@@ -113,23 +108,23 @@ class Worker:
         self.time_spent_on_task = 0
 
     def task_time(self):
-        return ord(self.task) - ord('A') + 1 + self.base_time
+        return ord(self.task) - ord("A") + 1 + self.base_time
 
 
 def main():
     graph = get_graph()
-    answer.part1('LAPFCRGHVZOTKWENBXIMSUDJQY', solve_part_1(graph))
+    answer.part1("LAPFCRGHVZOTKWENBXIMSUDJQY", solve_part_1(graph))
     answer.part2(936, solve_part_2(graph))
 
 
 def solve_part_1(graph):
     order = graph.topo_sort()
-    return ''.join(order)
+    return "".join(order)
 
 
 def solve_part_2(graph):
     return graph.get_duration(5, 60)
-    
+
 
 def get_graph():
     graph = Graph()
@@ -139,5 +134,5 @@ def get_graph():
     return graph
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

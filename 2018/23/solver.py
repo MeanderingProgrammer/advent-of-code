@@ -1,17 +1,15 @@
 import heapq
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
 
 
 class NanoBot:
-
     def __init__(self, value):
-        pos, radius = value.split(', ')
-        self.pos = Point(*[int(c) for c in pos.split('=')[1][1:-1].split(',')])
-        self.r = int(radius.split('=')[1])
+        pos, radius = value.split(", ")
+        self.pos = Point(*[int(c) for c in pos.split("=")[1][1:-1].split(",")])
+        self.r = int(radius.split("=")[1])
 
     def in_range(self, o):
         diff = self.pos - o
@@ -27,7 +25,7 @@ class NanoBot:
         return str(self)
 
     def __str__(self):
-        return '{}, {}'.format(self.pos, self.r)
+        return "{}, {}".format(self.pos, self.r)
 
 
 def main():
@@ -71,5 +69,5 @@ def get_bots():
     return [NanoBot(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

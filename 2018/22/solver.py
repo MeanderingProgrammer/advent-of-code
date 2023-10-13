@@ -1,11 +1,9 @@
-import heapq 
-
-import commons.answer as answer
-from commons.aoc_board import Grid, Point
+import heapq
+from aoc import answer
+from aoc.board import Grid, Point
 
 
 class Region:
-
     def __init__(self, depth, target, location, left, below):
         self.depth = depth
         self.target = target
@@ -52,24 +50,20 @@ class Region:
     def __str__(self):
         region_type = self.type()
         if region_type == 0:
-            return '.'
+            return "."
         elif region_type == 1:
-            return '='
+            return "="
         elif region_type == 2:
-            return '|'
+            return "|"
         else:
-            raise Exception('Unknown type {}'.format(region_type))
+            raise Exception("Unknown type {}".format(region_type))
 
 
-GEAR = 'g'
-TORCH = 't'
-NEITHER = 'n'
+GEAR = "g"
+TORCH = "t"
+NEITHER = "n"
 
-VALID_TOOL = {
-    0: set([GEAR, TORCH]),
-    1: set([GEAR, NEITHER]),
-    2: set([TORCH, NEITHER])
-}
+VALID_TOOL = {0: set([GEAR, TORCH]), 1: set([GEAR, NEITHER]), 2: set([TORCH, NEITHER])}
 
 
 def main():
@@ -77,7 +71,7 @@ def main():
     target = Point(14, 778)
     cave = build_out_cave(11_541, target)
 
-    answer.part1(11575, risk_within(cave, target)) 
+    answer.part1(11575, risk_within(cave, target))
     answer.part2(1068, traverse(cave, start, target, TORCH))
 
 
@@ -88,11 +82,7 @@ def build_out_cave(depth, target):
         for y in range(target.y() + 1 + buff):
             location = Point(x, y)
             grid[location] = Region(
-                depth,
-                target,
-                location,
-                grid[location.left()],
-                grid[location.down()]
+                depth, target, location, grid[location.left()], grid[location.down()]
             )
     return grid
 
@@ -122,19 +112,23 @@ def traverse(cave, start, end, equipped):
             heapq.heappush(queue, (time + 7, (location, TORCH)))
         else:
             valid_items_in_current_location = VALID_TOOL[cave[location].type()]
-            for adjacent in [adjacent for adjacent in location.adjacent() if adjacent in cave]:
+            for adjacent in [
+                adjacent for adjacent in location.adjacent() if adjacent in cave
+            ]:
                 valid_items_in_adjacent = VALID_TOOL[cave[adjacent].type()]
                 if item in valid_items_in_adjacent:
                     combination = adjacent, item
                     if combination not in seen:
                         heapq.heappush(queue, (time + 1, combination))
                 else:
-                    valid_items = valid_items_in_adjacent & valid_items_in_current_location
+                    valid_items = (
+                        valid_items_in_adjacent & valid_items_in_current_location
+                    )
                     for other_item in valid_items:
                         combination = location, other_item
                         if combination not in seen:
                             heapq.heappush(queue, (time + 7, combination))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

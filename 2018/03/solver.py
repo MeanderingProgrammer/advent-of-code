@@ -1,15 +1,12 @@
 import re
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
-
-
-CLAIM_PATTERN = '^#(.*) @ (.*),(.*): (.*)x(.*)$'
+CLAIM_PATTERN = "^#(.*) @ (.*),(.*): (.*)x(.*)$"
 
 
 class Claim:
-
     def __init__(self, value):
         match = re.match(CLAIM_PATTERN, value)
         self.claim_id = int(match[1])
@@ -28,7 +25,7 @@ class Claim:
         return str(self)
 
     def __str__(self):
-        return '{} @ {}: {}x{}'.format(
+        return "{} @ {}: {}x{}".format(
             self.claim_id, self.point, self.width, self.height
         )
 
@@ -56,5 +53,5 @@ def main():
     answer.part2(1276, next(iter(all_claims)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

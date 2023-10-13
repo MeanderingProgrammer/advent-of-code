@@ -1,15 +1,13 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-
-OPEN = '.'
-TREES = '|'
-YARD = '#'
+OPEN = "."
+TREES = "|"
+YARD = "#"
 
 
 class Landscape:
-
     def __init__(self, grid):
         self.grid = grid
 
@@ -26,11 +24,10 @@ class Landscape:
                 if self.count(point, YARD) == 0 or self.count(point, TREES) == 0:
                     new_grid[point] = OPEN
             else:
-                raise Exception('Unknown value {}'.format(value))
+                raise Exception("Unknown value {}".format(value))
 
         for point in new_grid:
             self.grid[point] = new_grid[point]
-
 
     def count(self, point, value):
         return sum([self.grid[adjacent] == value for adjacent in point.adjacent(True)])
@@ -107,5 +104,5 @@ def get_grid():
     return grid
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

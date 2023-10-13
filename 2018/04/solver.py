@@ -1,14 +1,11 @@
 import re
+from aoc import answer
+from aoc.parser import Parser
 
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
-
-EVENT_PATTERN = '^\[(.*)-(.*)-(.*) (.*):(.*)\] (.*)$'
+EVENT_PATTERN = "^\[(.*)-(.*)-(.*) (.*):(.*)\] (.*)$"
 
 
 class Event:
-
     def __init__(self, value):
         match = re.match(EVENT_PATTERN, value)
         self.minute = int(match[5])
@@ -16,17 +13,16 @@ class Event:
 
     def guard_id(self):
         parts = self.name.split()
-        return int(parts[1][1:]) if parts[0] == 'Guard' else None
+        return int(parts[1][1:]) if parts[0] == "Guard" else None
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.minute, self.name)
+        return "{}: {}".format(self.minute, self.name)
 
 
 class TimeRange:
-
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -41,11 +37,10 @@ class TimeRange:
         return str(self)
 
     def __str__(self):
-        return '{} - {}'.format(self.start, self.end)
+        return "{} - {}".format(self.start, self.end)
 
 
 class GuardEvents:
-
     def __init__(self):
         self.time_ranges = []
         self.start = None
@@ -96,10 +91,12 @@ def main():
 
 def solve_strategy_1(guard_events):
     guard_ids = [guard_id for guard_id in guard_events]
-    guard_ids = sorted(guard_ids, key=lambda guard_id: guard_events[guard_id].get_sleep_time())
+    guard_ids = sorted(
+        guard_ids, key=lambda guard_id: guard_events[guard_id].get_sleep_time()
+    )
 
     sleepiest_guard, sleepiest_events = guard_ids[-1], guard_events[guard_ids[-1]]
-    
+
     minute_frequencies = sleepiest_events.get_minute_frequencies()
     minutes = [minute for minute in minute_frequencies]
     minutes = sorted(minutes, key=lambda minute: minute_frequencies[minute])
@@ -117,13 +114,20 @@ def solve_strategy_2(guard_events):
         minutes = [minute for minute in minute_frequencies]
         minutes = sorted(minutes, key=lambda minute: minute_frequencies[minute])
 
-        most_common_minute, most_common_minute_frequency = minutes[-1], minute_frequencies[minutes[-1]]
+        most_common_minute, most_common_minute_frequency = (
+            minutes[-1],
+            minute_frequencies[minutes[-1]],
+        )
 
         if most_common_minute_frequency > frequncy:
-            chosen_guard, chosen_minute, frequncy = guard_id, most_common_minute, most_common_minute_frequency
+            chosen_guard, chosen_minute, frequncy = (
+                guard_id,
+                most_common_minute,
+                most_common_minute_frequency,
+            )
 
     return chosen_guard * chosen_minute
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,17 +1,15 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
+from aoc import answer
+from aoc.parser import Parser
 
 RULE_LENGTH = 5
 RULE_BUFFER = 2
 
 
 class State:
-
     def __init__(self, value):
         self.state = {}
 
-        value = value.split(': ')[1]
+        value = value.split(": ")[1]
         for i, state in enumerate(value):
             self.state[i] = state
 
@@ -22,13 +20,13 @@ class State:
         changes = {}
         for i in range(self.min - RULE_BUFFER, self.max + RULE_BUFFER + 1):
             rule = self.get_matching_rule(rules, i)
-            output = rule.output if rule is not None else '.'
+            output = rule.output if rule is not None else "."
             if i < self.min:
-                if output == '#':
+                if output == "#":
                     changes[i] = output
                     self.min = i
             elif i > self.max:
-                if output == '#':
+                if output == "#":
                     changes[i] = output
                     self.max = i
             else:
@@ -39,10 +37,13 @@ class State:
     def apply(self, changes):
         for i in changes:
             self.state[i] = changes[i]
-        
+
     def get_matching_rule(self, rules, i):
         for rule in rules:
-            values = [self.state.get(index, '.') for index in range(i - RULE_BUFFER, i + RULE_BUFFER + 1)]
+            values = [
+                self.state.get(index, ".")
+                for index in range(i - RULE_BUFFER, i + RULE_BUFFER + 1)
+            ]
             if rule.matches(values):
                 return rule
         return None
@@ -50,7 +51,7 @@ class State:
     def value(self):
         values = []
         for i in self.state:
-            if self.state[i] == '#':
+            if self.state[i] == "#":
                 values.append(i)
         return sum(values)
 
@@ -61,13 +62,12 @@ class State:
         indexes = [i for i in self.state]
         indexes.sort()
         values = [self.state[i] for i in indexes]
-        return ''.join(values)
+        return "".join(values)
 
 
 class Rule:
-
     def __init__(self, value):
-        parts = value.split(' => ')
+        parts = value.split(" => ")
         self.pattern = [value for value in parts[0]]
         self.output = parts[1]
 
@@ -78,7 +78,7 @@ class Rule:
         return str(self)
 
     def __str__(self):
-        return '{} -> {}'.format(self.pattern, self.output)
+        return "{} -> {}".format(self.pattern, self.output)
 
 
 def main():
@@ -108,5 +108,5 @@ def get():
     return state, rules
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
