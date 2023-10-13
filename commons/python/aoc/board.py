@@ -1,5 +1,4 @@
 class Grid:
-
     def __init__(self):
         self.__grid = {}
         self.__dimensionality = None
@@ -39,7 +38,7 @@ class Grid:
         if self.__dimensionality is None:
             self.__dimensionality = point.dimensions()
         elif self.__dimensionality != point.dimensions():
-            raise Exception('Cannot create grid with mismatching dimensions')
+            raise Exception("Cannot create grid with mismatching dimensions")
         self.__grid[point] = value
 
     def __getitem__(self, point):
@@ -56,24 +55,23 @@ class Grid:
         if ys is None:
             return self.__make_row()
         if len(ys) == 0:
-            return ''
+            return ""
 
         rows = []
         for y in range(max(ys), min(ys) - 1, -1):
             rows.append(self.__make_row(y))
-        return '\n'.join(rows)
+        return "\n".join(rows)
 
     def __make_row(self, y=None):
         row, xs = [], self.xs()
         for x in range(min(xs), max(xs) + 1):
             point = Point(x) if y is None else Point(x, y)
-            value = str(self[point]) if point in self else '.'
-            row.append(value) 
-        return ''.join(row)
+            value = str(self[point]) if point in self else "."
+            row.append(value)
+        return "".join(row)
 
 
 class Point:
-
     def __init__(self, *coords):
         self.__coords = coords
 
@@ -106,7 +104,7 @@ class Point:
 
     def __verify_2d(self):
         if self.dimensions() != 2:
-            raise Exception('This function only works on 2D points')
+            raise Exception("This function only works on 2D points")
 
     # Get Adjacent points (either includes diagonals or not)
 
@@ -145,7 +143,7 @@ class Point:
 
     def validate(self, o):
         if self.dimensions() != o.dimensions():
-            raise Exception('Cannot compare points of different dimensionality')
+            raise Exception("Cannot compare points of different dimensionality")
 
     def __len__(self):
         return sum([abs(coord) for coord in self.__coords])

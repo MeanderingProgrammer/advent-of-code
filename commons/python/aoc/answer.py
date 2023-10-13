@@ -8,5 +8,7 @@ def part2(expected, result):
 
 def part(part, expected, result):
     if expected != result:
-        raise Exception('Part {} incorrect, expected {} but got {}'.format(part, expected, result))
-    print('Part {}: {}'.format(part, result))
+        raise Exception(
+            "Part {} incorrect, expected {} but got {}".format(part, expected, result)
+        )
+    print("Part {}: {}".format(part, result))
