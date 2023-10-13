@@ -16,7 +16,7 @@ class Go(Language):
     def _run_setup(self) -> None:
         pass
 
-    def compile(self, day: Day) -> None:
+    def compile(self) -> None:
         # For now we use go run, which both compiles and runs our code
         pass
 
