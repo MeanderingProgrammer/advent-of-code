@@ -1,3 +1,6 @@
+from typing import Set
+
+
 class Grid:
     def __init__(self):
         self.__grid = {}
@@ -26,10 +29,10 @@ class Grid:
             result[point.rotate()] = value
         return result
 
-    def xs(self):
+    def xs(self) -> Set[int]:
         return set([point.x() for point in self.__grid])
 
-    def ys(self):
+    def ys(self) -> Set[int]:
         if self.__dimensionality < 2:
             return None
         return set([point.y() for point in self.__grid])
@@ -72,24 +75,24 @@ class Grid:
 
 
 class Point:
-    def __init__(self, *coords):
+    def __init__(self, *coords: int):
         self.__coords = coords
 
     # Basic Getters
 
-    def dimensions(self):
+    def dimensions(self) -> int:
         return len(self.__coords)
 
-    def x(self):
+    def x(self) -> int:
         return self.__get(0)
 
-    def y(self):
+    def y(self) -> int:
         return self.__get(1)
 
-    def z(self):
+    def z(self) -> int:
         return self.__get(2)
 
-    def __get(self, i):
+    def __get(self, i) -> int:
         return self.__coords[i]
 
     # 2D Transformers
