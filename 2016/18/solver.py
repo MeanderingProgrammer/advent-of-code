@@ -1,10 +1,9 @@
-import commons.answer as answer
+from aoc import answer
 
+STARTING_ROW = ".^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^...."
 
-STARTING_ROW = '.^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^....'
-
-TRAP = '^'
-SAFE = '.'
+TRAP = "^"
+SAFE = "."
 
 
 def main():
@@ -30,11 +29,11 @@ def get_next_row(previous_row):
             previous_row[i + 1] if i < len(previous_row) - 1 else SAFE,
         )
         next_row.append(element)
-    return ''.join(next_row)
+    return "".join(next_row)
 
 
 def get_element(left, right):
-    '''
+    """
     Raw conditions for a TRAP can be summed up as an or of:
     1)  L &  C & ~R
     2) ~L &  C &  R
@@ -47,7 +46,7 @@ def get_element(left, right):
 
     Further simplifies to an exclusive or, i.e. not equal (one true one false)
     (L & ~R) | (~L & R) -> L ^ R
-    '''
+    """
     return TRAP if left != right else SAFE
 
 
@@ -59,5 +58,5 @@ def count_safe(row):
     return count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

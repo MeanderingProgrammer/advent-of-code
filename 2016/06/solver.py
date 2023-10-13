@@ -1,12 +1,11 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 def main():
-    answer.part1('liwvqppc', error_correct_message(-1))
-    answer.part2('caqfbzlh', error_correct_message(0))
+    answer.part1("liwvqppc", error_correct_message(-1))
+    answer.part2("caqfbzlh", error_correct_message(0))
 
 
 def error_correct_message(n):
@@ -16,9 +15,9 @@ def error_correct_message(n):
     for word in words:
         for i, letter in enumerate(word):
             frequencies[i][letter] += 1
-    
+
     message = [nth_most_common(frequency, n) for frequency in frequencies]
-    return ''.join(message)
+    return "".join(message)
 
 
 def nth_most_common(frequency, n):
@@ -31,5 +30,5 @@ def get_words():
     return Parser().lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

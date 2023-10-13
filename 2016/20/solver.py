@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class DataRange:
-
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -28,7 +27,7 @@ class DataRange:
         return str(self)
 
     def __str__(self):
-        return '[{}, {}]'.format(self.start, self.end)
+        return "[{}, {}]".format(self.start, self.end)
 
 
 def main():
@@ -64,7 +63,7 @@ def combine(data_ranges):
             new_ranges.append(data_range.join(matches))
         else:
             new_ranges.append(data_range)
-    
+
     return new_ranges, combined
 
 
@@ -79,7 +78,7 @@ def get_matches(data_range, data_ranges):
 def get_total_unblocked(data_ranges):
     total = 0
     for i, data_range in enumerate(data_ranges[:-1]):
-        next_data_range = data_ranges[i+1]
+        next_data_range = data_ranges[i + 1]
         total += count_between(data_range, next_data_range)
     return total
 
@@ -93,12 +92,10 @@ def count_between(prev_range, next_range):
 def get_data_ranges():
     data_ranges = []
     for line in Parser().lines():
-        line = line.split('-')
-        data_ranges.append(DataRange(
-            int(line[0]), int(line[1])
-        ))
+        line = line.split("-")
+        data_ranges.append(DataRange(int(line[0]), int(line[1])))
     return data_ranges
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

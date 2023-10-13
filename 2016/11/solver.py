@@ -1,12 +1,9 @@
 import itertools
-
-import commons.answer as answer
-import commons.aoc_search as aoc_search
-from commons.aoc_parser import Parser
+from aoc import answer, search
+from aoc.parser import Parser
 
 
 class State:
-
     def __init__(self):
         # 4 floors with nothing on at first
         self.state = {i: set() for i in range(4)}
@@ -16,9 +13,9 @@ class State:
         if parse:
             item = item.split()
             value, item_type = item[-2], item[-1]
-            if item_type == 'generator':
+            if item_type == "generator":
                 item = Generator(value)
-            elif item_type == 'microchip':
+            elif item_type == "microchip":
                 item = Chip(value)
             else:
                 item = None
@@ -29,9 +26,7 @@ class State:
         return self.state[floor]
 
     def total_below(self, floor):
-        return sum([
-            len(self.state[level]) for level in range(floor)
-        ])
+        return sum([len(self.state[level]) for level in range(floor)])
 
     def move(self, items_to_move, new_level):
         new_state = State()
@@ -88,7 +83,6 @@ class State:
 
 
 class Generator:
-
     def __init__(self, value):
         self.value = value.upper()
 
@@ -106,9 +100,8 @@ class Generator:
 
 
 class Chip:
-
     def __init__(self, value):
-        self.value = value.split('-')[0].lower()
+        self.value = value.split("-")[0].lower()
 
     def generator(self):
         return Generator(self.value)
@@ -128,29 +121,29 @@ class Chip:
 
 def main():
     answer.part1(37, count_steps([]))
-    answer.part2(61, count_steps([
-        'elerium generator',
-        'elerium-compatible microchip',
-        'dilithium generator',
-        'dilithium-compatible microchip'
-    ]))
+    answer.part2(
+        61,
+        count_steps(
+            [
+                "elerium generator",
+                "elerium-compatible microchip",
+                "dilithium generator",
+                "dilithium-compatible microchip",
+            ]
+        ),
+    )
 
 
 def count_steps(add_to_first):
     start_state = get_start_state(add_to_first)
     end_state = get_end_state(start_state)
-
-    return aoc_search.bfs(
-        (0, start_state),
-        (3, end_state),
-        get_adjacent
-    )
+    return search.bfs((0, start_state), (3, end_state), get_adjacent)
 
 
 def get_start_state(additonal):
     state = State()
     for i, line in enumerate(Parser().lines()):
-        components = line[:-1].split(' contains ')[1].split(', ')
+        components = line[:-1].split(" contains ")[1].split(", ")
         if i == 0:
             components += additonal
         for component in components:
@@ -177,7 +170,7 @@ def get_adjacent(item):
         adjacent.add((level - 1, legal_state))
 
     for legal_state in get_legal(level, state, options, True):
-        adjacent.add((level + 1, legal_state)) 
+        adjacent.add((level + 1, legal_state))
 
     return adjacent
 
@@ -248,5 +241,5 @@ def get_legal(start_level, state, options, up):
     return legal
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

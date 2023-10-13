@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Disk:
-
     def __init__(self, id, positions, start):
         self.id = id
         self.positions = positions
@@ -17,7 +16,7 @@ class Disk:
         return str(self)
 
     def __str__(self):
-        return '({}, {}, {})'.format(self.id, self.positions, self.start)
+        return "({}, {}, {})".format(self.id, self.positions, self.start)
 
 
 def main():
@@ -28,11 +27,7 @@ def main():
 def calculate_first_pass(add_disk):
     disks = get_disks()
     if add_disk:
-        disks.append(Disk(
-            len(disks) + 1,
-            11,
-            0
-        ))
+        disks.append(Disk(len(disks) + 1, 11, 0))
 
     passed, time = False, 0
     while not passed:
@@ -52,13 +47,9 @@ def get_disks():
     disks = []
     for line in Parser().lines():
         line = line.split()
-        disks.append(Disk(
-            int(line[1][1:]),
-            int(line[3]),
-            int(line[11][:-1])
-        ))
+        disks.append(Disk(int(line[1][1:]), int(line[3]), int(line[11][:-1])))
     return disks
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

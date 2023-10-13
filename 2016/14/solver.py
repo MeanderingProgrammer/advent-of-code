@@ -1,9 +1,8 @@
-import hashlib 
+import hashlib
+from aoc import answer
 
-import commons.answer as answer
 
-
-SALT = 'qzyelonm'
+SALT = "qzyelonm"
 
 
 def main():
@@ -31,7 +30,7 @@ def generate_keys(n, num_hashes):
     keys = list(keys)
     keys.sort()
     return keys[n - 1]
-    
+
 
 def hash(value, n):
     for i in range(n):
@@ -41,8 +40,8 @@ def hash(value, n):
 
 def get_repeats(hashed, length):
     repeats = []
-    for i in range(len(hashed)-length+1):
-        value = hashed[i:i+length]
+    for i in range(len(hashed) - length + 1):
+        value = hashed[i : i + length]
         if all_same(value):
             repeats.append(value[0])
     return repeats
@@ -54,12 +53,12 @@ def all_same(value):
 
 def get_matches(i, cinq, hash_data):
     matches = []
-    for ii in range(i-1_000, i):
+    for ii in range(i - 1_000, i):
         if ii in hash_data:
             if hash_data[ii] == cinq:
                 matches.append(ii)
     return matches
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

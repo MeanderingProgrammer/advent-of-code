@@ -1,24 +1,23 @@
 import hashlib
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
     door_id = Parser().string()
-    answer.part1('d4cd2ee1', generate_password(door_id, populate_v1))
-    answer.part2('f2c730e5', generate_password(door_id, populate_v2))
+    answer.part1("d4cd2ee1", generate_password(door_id, populate_v1))
+    answer.part2("f2c730e5", generate_password(door_id, populate_v2))
 
 
 def generate_password(door_id, populator):
-    password, i = [None]*8, 0
+    password, i = [None] * 8, 0
     while not all(password):
         value = door_id + str(i)
         hashed = hash(value)
-        if hashed[:5] == '00000':
+        if hashed[:5] == "00000":
             populator(password, hashed)
         i += 1
-    return ''.join(password)
+    return "".join(password)
 
 
 def hash(value):
@@ -39,5 +38,5 @@ def populate_v2(password, hashed):
             password[index] = hashed[6]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

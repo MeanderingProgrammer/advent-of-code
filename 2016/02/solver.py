@@ -1,38 +1,30 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
-CONTROLS = {
-    'U': Point(0, -1),
-    'D': Point(0, 1),
-    'L': Point(-1, 0),
-    'R': Point(1, 0)
-}
+CONTROLS = {"U": Point(0, -1), "D": Point(0, 1), "L": Point(-1, 0), "R": Point(1, 0)}
 
 
 def main():
-    answer.part1('47978', get_code(
-        [
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 8, 9]
-        ]
-    ))
-    answer.part2('659AD', get_code(
-        [
-            ['*', '*',  1 , '*', '*'],
-            ['*',  2 ,  3 ,  4 , '*'],
-            [ 5 ,  6 ,  7 ,  8 ,  9 ],
-            ['*', 'A', 'B', 'C', '*'],
-            ['*', '*', 'D', '*', '*']
-        ]
-    ))
+    answer.part1("47978", get_code([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+    answer.part2(
+        "659AD",
+        get_code(
+            [
+                ["*", "*", 1, "*", "*"],
+                ["*", 2, 3, 4, "*"],
+                [5, 6, 7, 8, 9],
+                ["*", "A", "B", "C", "*"],
+                ["*", "*", "D", "*", "*"],
+            ]
+        ),
+    )
 
 
 def get_code(pattern):
     phone, position = create_phone(pattern)
-    code = ''
+    code = ""
     for instruction in get_instructions():
         position = follow(phone, position, instruction)
         code += str(phone[position])
@@ -52,7 +44,7 @@ def create_phone(pattern):
     for y, row in enumerate(pattern):
         for x, value in enumerate(row):
             point = Point(x, y)
-            if value != '*':
+            if value != "*":
                 phone[point] = value
             if value == 5:
                 start = point
@@ -63,5 +55,5 @@ def get_instructions():
     return Parser().lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

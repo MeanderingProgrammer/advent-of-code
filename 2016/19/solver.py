@@ -1,6 +1,5 @@
+from aoc import answer
 from collections import deque
-
-import commons.answer as answer
 
 
 NUM_ELVES = 3_014_603
@@ -33,8 +32,8 @@ def get_patterns():
     # the pattern over.
     run_for_pattern(location_v1)
     # Part 2 pattern is the winning elve inceases by 1
-    # for each elve we add. If the winning elve is 
-    # greater than half of the total number of elves we instead 
+    # for each elve we add. If the winning elve is
+    # greater than half of the total number of elves we instead
     # increase by 2. We roll over to back to 1 same as Part 1.
     run_for_pattern(location_v2)
 
@@ -67,5 +66,5 @@ def get_start_state(n):
     return deque(range(n)), n
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

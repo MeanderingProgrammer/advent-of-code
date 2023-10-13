@@ -1,11 +1,9 @@
-import commons.answer as answer
-import commons.aoc_search as aoc_search
-from commons.aoc_board import Grid, Point
-from commons.aoc_parser import Parser
+from aoc import answer, search
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
 class Node:
-
     def __init__(self, total, used, available):
         self.total = self.parse_size(total)
         self.used = self.parse_size(used)
@@ -24,7 +22,7 @@ class Node:
         return str(self)
 
     def __str__(self):
-        return '({0: <3}/{1: <3})'.format(self.used, self.total)
+        return "({0: <3}/{1: <3})".format(self.used, self.total)
 
     @staticmethod
     def parse_size(size):
@@ -42,7 +40,7 @@ def calculate_transfers(nodes):
 
     goal_node = Point(max(xs) - 1, 1)
     free_node = get_free_node(nodes)
-    moves_needed_to_free = aoc_search.bfs(free_node, goal_node, get_adjacent(nodes))
+    moves_needed_to_free = search.bfs(free_node, goal_node, get_adjacent(nodes))
 
     horizontal_transfers = max(xs) - 1
     # Amount of movements needed to get free space above node to the left of goal
@@ -66,6 +64,7 @@ def get_adjacent(nodes):
                 if value.coult_store(adj_value):
                     result.append(adj)
         return result
+
     return actual
 
 
@@ -95,11 +94,11 @@ def get_nodes():
 
 
 def parse_node(node):
-    node = node.split('/')[3].split('-')
+    node = node.split("/")[3].split("-")
     x = int(node[1][1:])
     y = int(node[2][1:])
     return Point(x, y)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,13 +1,11 @@
 import itertools
-
-import commons.answer as answer
-import commons.aoc_search as aoc_search
-from commons.aoc_board import Grid, Point
-from commons.aoc_parser import Parser
+from aoc import answer, search
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
-WALL = '#'
-OPEN = '.'
+WALL = "#"
+OPEN = "."
 
 
 def main():
@@ -26,7 +24,7 @@ def traverse(distances, go_home):
     for permutation in generator(len(distances) - 1):
         permutation = list(permutation)
         if go_home:
-            permutation += ['0']
+            permutation += ["0"]
         length = get_length(distances, permutation)
         if shortest is None or length < shortest:
             shortest = length
@@ -34,7 +32,7 @@ def traverse(distances, go_home):
 
 
 def get_length(distances, permutation):
-    total, previous = 0, '0'
+    total, previous = 0, "0"
     for current in permutation:
         distance = distances[previous][current]
         total += distance
@@ -57,10 +55,8 @@ def calculate_distances(markers, grid):
             if end_name in distances:
                 distances[start_name][end_name] = distances[end_name][start_name]
             else:
-                distances[start_name][end_name] = aoc_search.bfs(
-                    start_position,
-                    end_position,
-                    get_adjacent(grid)
+                distances[start_name][end_name] = search.bfs(
+                    start_position, end_position, get_adjacent(grid)
                 )
     return distances
 
@@ -72,6 +68,7 @@ def get_adjacent(grid):
             if adjacent in grid and grid[adjacent] != WALL:
                 result.append(adjacent)
         return result
+
     return actual
 
 
@@ -86,5 +83,5 @@ def get_grid():
     return markers, grid
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
