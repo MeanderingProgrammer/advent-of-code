@@ -1,5 +1,4 @@
 class Computer:
-
     def __init__(self, registers, num_outputs=None):
         self.registers = {register: 0 for register in registers}
         self.ip = 0

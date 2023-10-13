@@ -1,5 +1,4 @@
 import sys
-
 from .board import Point, Grid
 
 

@@ -1,5 +1,4 @@
 class Parameter:
-
     def __init__(self, value, mode):
         self.__value = value
         self.__mode = mode
@@ -10,7 +9,7 @@ class Parameter:
         elif self.__mode == 1:
             return self.__value
         else:
-            raise Exception('Unknown parameter mode: {}'.format(self.__mode))
+            raise Exception("Unknown parameter mode: {}".format(self.__mode))
 
     def set(self, computer, value):
         computer.memory[self.__get_position(computer)] = value
@@ -21,7 +20,9 @@ class Parameter:
         elif self.__mode == 2:
             position = computer.base + self.__value
         else:
-            raise Exception('Should not ask for position in mode: {}'.format(self.__mode))
+            raise Exception(
+                "Should not ask for position in mode: {}".format(self.__mode)
+            )
 
         # Increase memory by amount needed when indexing past end
         memory = computer.memory
@@ -36,31 +37,25 @@ class Parameter:
         return str(self)
 
     def __str__(self):
-        modes = {
-            0: 'Position',
-            1: 'Immediate',
-            2: 'Relative'
-        }
-        return '({} {})'.format(modes[self.__mode], self.__value)
+        modes = {0: "Position", 1: "Immediate", 2: "Relative"}
+        return "({} {})".format(modes[self.__mode], self.__value)
 
 
 class Halt:
-
     def set_params(self):
         pass
 
     def __len__(self):
         return 0
-    
+
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return 'HALT!'
+        return "HALT!"
 
 
 class Math:
-
     def __init__(self, symbol, f):
         self.__symbol, self.__f = symbol, f
         self.__v1, self.__v2, self.__v3 = None, None, None
@@ -79,23 +74,20 @@ class Math:
         return str(self)
 
     def __str__(self):
-        return '{} = {} {} {}'.format(self.__v3, self.__v1, self.__symbol, self.__v2)
+        return "{} = {} {} {}".format(self.__v3, self.__v1, self.__symbol, self.__v2)
 
 
 class Addition(Math):
-
     def __init__(self):
-        super().__init__('+', lambda x, y: x + y)
+        super().__init__("+", lambda x, y: x + y)
 
 
 class Multiplication(Math):
-
     def __init__(self):
-        super().__init__('*', lambda x, y: x * y)
+        super().__init__("*", lambda x, y: x * y)
 
 
 class Store:
-
     def __init__(self):
         self.__v1 = None
 
@@ -112,11 +104,10 @@ class Store:
         return str(self)
 
     def __str__(self):
-        return 'Storing value at: {}'.format(self.__v1)
+        return "Storing value at: {}".format(self.__v1)
 
 
 class Load:
-
     def __init__(self):
         self.__v1 = None
 
@@ -134,11 +125,10 @@ class Load:
         return str(self)
 
     def __str__(self):
-        return 'Setting output from: {}'.format(self.__v1)
+        return "Setting output from: {}".format(self.__v1)
 
 
 class Jump:
-
     def __init__(self, symbol, f):
         self.__symbol, self.__f = symbol, f
         self.__v1, self.__v2 = None, None
@@ -157,23 +147,20 @@ class Jump:
         return str(self)
 
     def __str__(self):
-        return 'if {} {} Jump to {}'.format(self.__v1, self.__symbol, self.__v2)
+        return "if {} {} Jump to {}".format(self.__v1, self.__symbol, self.__v2)
 
 
 class JumpIfTrue(Jump):
-
     def __init__(self):
-        super().__init__('!= 0', lambda x: x != 0)
+        super().__init__("!= 0", lambda x: x != 0)
 
 
 class JumpIfFalse(Jump):
-
     def __init__(self):
-        super().__init__('== 0', lambda x: x == 0)
+        super().__init__("== 0", lambda x: x == 0)
 
 
 class Equality:
-
     def __init__(self, symbol, f):
         self.__symbol, self.__f = symbol, f
         self.__v1, self.__v2, self.__v3 = None, None, None
@@ -193,23 +180,22 @@ class Equality:
         return str(self)
 
     def __str__(self):
-        return '{} = 1 if {} {} {} else 0'.format(self.__v3, self.__v1, self.__symbol, self.__v2)
+        return "{} = 1 if {} {} {} else 0".format(
+            self.__v3, self.__v1, self.__symbol, self.__v2
+        )
 
 
 class LessThan(Equality):
-
     def __init__(self):
-        super().__init__('<', lambda x, y: x < y)
+        super().__init__("<", lambda x, y: x < y)
 
 
 class Equals(Equality):
-
     def __init__(self):
-        super().__init__('==', lambda x, y: x == y)
+        super().__init__("==", lambda x, y: x == y)
 
 
 class BaseAdjuster:
-
     def __init__(self):
         self.__v1 = None
 
@@ -226,7 +212,7 @@ class BaseAdjuster:
         return str(self)
 
     def __str__(self):
-        return 'Changing base to {}'.format(self.__v1)
+        return "Changing base to {}".format(self.__v1)
 
 
 INSTRUCTION_FACTORY = {
@@ -244,20 +230,19 @@ INSTRUCTION_FACTORY = {
 
 
 class Instruction:
-
     def __init__(self, memory):
         code = memory[0]
         opcode = code % 100
 
         if opcode not in INSTRUCTION_FACTORY:
-            raise Exception('Unknown opcode: {}'.format(opcode))
+            raise Exception("Unknown opcode: {}".format(opcode))
 
         self.__instruction = INSTRUCTION_FACTORY[opcode]()
 
         parameters = []
         for i in range(len(self.__instruction)):
-            index = i+1
-            mode = (code % pow(10, index+2)) // pow(10, index+1)
+            index = i + 1
+            mode = (code % pow(10, index + 2)) // pow(10, index + 1)
             parameters.append(Parameter(memory[index], mode))
 
         self.__instruction.set_params(*parameters)
@@ -288,7 +273,6 @@ class Instruction:
 
 
 class Computer:
-
     def __init__(self, bus, debug=False):
         self.memory, self.__pointer, self.base = None, None, 0
         self.bus, self.__debug = bus, debug
@@ -313,7 +297,7 @@ class Computer:
         self.__adjust_base(instruction, result)
 
     def __next_instruction(self):
-        return Instruction(self.memory[self.__pointer:])
+        return Instruction(self.memory[self.__pointer :])
 
     def __move_pointer(self, instruction, result):
         if instruction.jump() and result is not None:
