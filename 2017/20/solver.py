@@ -1,26 +1,25 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 
 class Particle:
-
     def __init__(self, value):
         self.id = value[0]
-        values = value[1].split(', ')
+        values = value[1].split(", ")
 
         components = {}
         for value in values:
-            value = value.split('=')
-            
+            value = value.split("=")
+
             name = value[0]
             value = value[1][1:-1]
-            value = [int(val) for val in value.split(',')]
+            value = [int(val) for val in value.split(",")]
             components[name] = Point(*value)
 
-        self.pos = components['p']
-        self.vel = components['v']
-        self.acc = components['a']
+        self.pos = components["p"]
+        self.vel = components["v"]
+        self.acc = components["a"]
 
     def step(self):
         self.vel += self.acc
@@ -36,7 +35,7 @@ class Particle:
         return str(self)
 
     def __str__(self):
-        return '{}: p={}, v={}, a={}'.format(self.id, self.pos, self.vel, self.acc)
+        return "{}: p={}, v={}, a={}".format(self.id, self.pos, self.vel, self.acc)
 
 
 def main():
@@ -76,5 +75,5 @@ def get_particles():
     return [Particle(line) for line in enumerate(Parser().lines())]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

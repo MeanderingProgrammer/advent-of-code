@@ -1,5 +1,5 @@
-import commons.answer as answer
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
 
 
 def main():
@@ -17,7 +17,7 @@ def build_grid(goal, value_updater):
     point = Point(0, 0)
     value = 1
     grid[point] = value
-    
+
     while value < goal:
         up_in = point.up() in grid
         down_in = point.down() in grid
@@ -58,17 +58,19 @@ def value_updater_v1(previous, grid, point):
 
 
 def value_updater_v2(previous, grid, point):
-    return sum([
-        grid.get(point.right(), 0),
-        grid.get(point.right().up(), 0),
-        grid.get(point.up(), 0), 
-        grid.get(point.up().left(), 0),
-        grid.get(point.left(), 0), 
-        grid.get(point.left().down(), 0), 
-        grid.get(point.down(), 0),
-        grid.get(point.down().right(), 0)
-    ])
+    return sum(
+        [
+            grid.get(point.right(), 0),
+            grid.get(point.right().up(), 0),
+            grid.get(point.up(), 0),
+            grid.get(point.up().left(), 0),
+            grid.get(point.left(), 0),
+            grid.get(point.left().down(), 0),
+            grid.get(point.down(), 0),
+            grid.get(point.down().right(), 0),
+        ]
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

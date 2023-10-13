@@ -1,27 +1,23 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Bridge:
-
     def __init__(self, components):
         self.components = components
 
     def build(self):
         statistics = []
         for bridge in self.generate():
-            statistics.append(
-                (len(bridge), self.strength(bridge))
-            )
+            statistics.append((len(bridge), self.strength(bridge)))
         return statistics
 
     def generate(self, bridge=None):
         bridge = bridge or []
         current_end = bridge[-1][1] if len(bridge) > 0 else 0
         for new_end in self.components[current_end]:
-            if not self.contains(current_end,new_end, bridge):
+            if not self.contains(current_end, new_end, bridge):
                 new_bridge = bridge + [(current_end, new_end)]
                 yield new_bridge
                 yield from self.generate(new_bridge)
@@ -30,7 +26,7 @@ class Bridge:
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.components, self.needed)
+        return "{}: {}".format(self.components, self.needed)
 
     @staticmethod
     def contains(start, end, bridge):
@@ -62,11 +58,11 @@ def get_longest_strongest(statistics):
 def get_components():
     components = defaultdict(set)
     for line in Parser().lines():
-        p1, p2 = [int(x) for x in line.split('/')]
+        p1, p2 = [int(x) for x in line.split("/")]
         components[p1].add(p2)
         components[p2].add(p1)
     return components
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

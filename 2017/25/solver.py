@@ -1,16 +1,11 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-
-MOVEMENTS = {
-    'left': Point(-1),
-    'right': Point(1)
-}
+MOVEMENTS = {"left": Point(-1), "right": Point(1)}
 
 
 class Rule:
-
     def __init__(self, raw):
         self.write = int(self.get_last(raw[0]))
         self.move = MOVEMENTS[self.get_last(raw[1])]
@@ -20,7 +15,7 @@ class Rule:
         return str(self)
 
     def __str__(self):
-        return '({}, {}, {})'.format(self.write, self.move, self.next_state)
+        return "({}, {}, {})".format(self.write, self.move, self.next_state)
 
     @staticmethod
     def get_last(raw):
@@ -28,11 +23,10 @@ class Rule:
 
 
 class ConditionalRule:
-
     def __init__(self, raw):
         self.conditions = {}
         for i in range(0, len(raw), 4):
-            self.conditions[self.get_value(raw[i])] = Rule(raw[i+1:i+4])
+            self.conditions[self.get_value(raw[i])] = Rule(raw[i + 1 : i + 4])
 
     def get(self, value):
         return self.conditions[value]
@@ -49,7 +43,6 @@ class ConditionalRule:
 
 
 class TuringMachine:
-
     def __init__(self, state, rules):
         self.state = state
         self.rules = rules
@@ -96,5 +89,5 @@ def get_name(raw):
     return raw.split()[-1][:-1]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

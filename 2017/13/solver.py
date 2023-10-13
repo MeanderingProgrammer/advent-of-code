@@ -1,11 +1,10 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Scanner:
-
     def __init__(self, value):
-        parts = value.split(': ')
+        parts = value.split(": ")
         self.layer = int(parts[0])
         self.layer_range = int(parts[1])
         self.roundtrip = (self.layer_range - 1) * 2
@@ -21,7 +20,7 @@ def main():
     scanners = get_scanners()
 
     answer.part1(632, get_trip_severity(scanners))
-    
+
     offset = 1
     while is_caught(scanners, offset):
         offset += 1
@@ -47,5 +46,5 @@ def get_scanners():
     return [Scanner(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

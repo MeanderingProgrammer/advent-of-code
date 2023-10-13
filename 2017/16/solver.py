@@ -1,11 +1,10 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Dance:
-
     def __init__(self, length):
-        self.dancers = [chr(ord('a') + i) for i in range(length)]
+        self.dancers = [chr(ord("a") + i) for i in range(length)]
 
     def spin(self, n):
         self.dancers = self.dancers[-n:] + self.dancers[:-n]
@@ -24,7 +23,7 @@ class Dance:
         return str(self)
 
     def __str__(self):
-        return ''.join(self.dancers)
+        return "".join(self.dancers)
 
 
 def main():
@@ -32,9 +31,9 @@ def main():
     moves = get_moves()
     pattern = get_pattern(dance, moves)
 
-    answer.part1('eojfmbpkldghncia', pattern[1])
+    answer.part1("eojfmbpkldghncia", pattern[1])
     index = 1_000_000_000 % len(pattern)
-    answer.part2('iecopnahgdflmkjb', pattern[index])
+    answer.part2("iecopnahgdflmkjb", pattern[index])
 
 
 def get_pattern(dance, moves):
@@ -51,21 +50,21 @@ def perform_dance(dance, moves):
     for move in moves:
         op = move[0]
         args = move[1:]
-        if op == 's':
+        if op == "s":
             dance.spin(int(args))
-        elif op == 'x':
-            indexes = args.split('/')
+        elif op == "x":
+            indexes = args.split("/")
             dance.exchange(int(indexes[0]), int(indexes[1]))
-        elif op == 'p':
-            parners = args.split('/')
+        elif op == "p":
+            parners = args.split("/")
             dance.partner(parners[0], parners[1])
         else:
-            raise Exception('Unkown operation: {}'.format(op))
+            raise Exception("Unkown operation: {}".format(op))
 
 
 def get_moves():
     return Parser().csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

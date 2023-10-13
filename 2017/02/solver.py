@@ -1,5 +1,5 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -22,12 +22,12 @@ def checksum_v1(values):
 
 def checksum_v2(values):
     for i, v1 in enumerate(values[:-1]):
-        for v2 in values[i + 1:]:
+        for v2 in values[i + 1 :]:
             num = max(v1, v2)
             denom = min(v1, v2)
             if num % denom == 0:
                 return num // denom
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

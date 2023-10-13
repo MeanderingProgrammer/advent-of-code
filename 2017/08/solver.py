@@ -1,20 +1,19 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 def modifier(r_id, amount, f):
     def result(registers):
         current = registers[r_id]
         registers[r_id] = f(current, amount)
+
     return result
 
 
-
 MODIFIERS = {
-    'inc': lambda r_id, amount: modifier(r_id, amount, lambda a, b: a + b),
-    'dec': lambda r_id, amount: modifier(r_id, amount, lambda a, b: a - b)
+    "inc": lambda r_id, amount: modifier(r_id, amount, lambda a, b: a + b),
+    "dec": lambda r_id, amount: modifier(r_id, amount, lambda a, b: a - b),
 }
 
 
@@ -22,21 +21,21 @@ def condition(r_id, value, f):
     def result(registers):
         current = registers[r_id]
         return f(current, value)
+
     return result
 
 
 CONDITIONS = {
-    '>': lambda r_id, value: condition(r_id, value, lambda a, b: a > b),
-    '<': lambda r_id, value: condition(r_id, value, lambda a, b: a < b),
-    '==': lambda r_id, value: condition(r_id, value, lambda a, b: a == b),
-    '!=': lambda r_id, value: condition(r_id, value, lambda a, b: a != b),
-    '>=': lambda r_id, value: condition(r_id, value, lambda a, b: a >= b),
-    '<=': lambda r_id, value: condition(r_id, value, lambda a, b: a <= b)
+    ">": lambda r_id, value: condition(r_id, value, lambda a, b: a > b),
+    "<": lambda r_id, value: condition(r_id, value, lambda a, b: a < b),
+    "==": lambda r_id, value: condition(r_id, value, lambda a, b: a == b),
+    "!=": lambda r_id, value: condition(r_id, value, lambda a, b: a != b),
+    ">=": lambda r_id, value: condition(r_id, value, lambda a, b: a >= b),
+    "<=": lambda r_id, value: condition(r_id, value, lambda a, b: a <= b),
 }
 
 
 class Instruction:
-
     def __init__(self, raw):
         parts = raw.split()
         self.modifier = MODIFIERS[parts[1]](parts[0], int(parts[2]))
@@ -65,5 +64,5 @@ def get_instructions():
     return [Instruction(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

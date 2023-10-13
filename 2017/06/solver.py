@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Memory:
-
     def __init__(self, state):
         self.state = state
 
@@ -40,17 +39,21 @@ def main():
     memory = Memory(Parser().int_entries())
 
     seen = set()
+
     def unique(memory):
         seen_before = memory in seen
         seen.add(memory)
         return not seen_before
+
     memory, cycles = run_as_long(memory, unique)
 
     answer.part1(7864, cycles)
 
     caused_repitition = memory
+
     def not_equal(memory):
         return memory != caused_repitition
+
     memory, cycles = run_as_long(memory.redistribute(), not_equal)
 
     answer.part2(1695, cycles + 1)
@@ -64,5 +67,5 @@ def run_as_long(memory, f):
     return memory, cycles
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

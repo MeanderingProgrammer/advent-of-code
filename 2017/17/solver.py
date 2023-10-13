@@ -1,13 +1,10 @@
+from aoc import answer
 from collections import deque
-
-import commons.answer as answer
-
 
 STEPS = 344
 
 
 class Lock:
-
     def __init__(self, steps):
         self.q = deque()
         self.steps = steps
@@ -39,5 +36,5 @@ def run_lock_after(steps, after):
     return lock.after(after)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

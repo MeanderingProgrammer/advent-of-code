@@ -1,16 +1,14 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-
-INPUT = '.#./..#/###'
+INPUT = ".#./..#/###"
 
 
 class Art:
-
     def __init__(self, value):
-        self.value = value.split('/')
-    
+        self.value = value.split("/")
+
     def split(self):
         components = []
 
@@ -20,7 +18,7 @@ class Art:
             for c in range(0, len(self.value[r]), size):
                 component = []
                 for i in range(size):
-                    component.append(self.value[r + i][c:c+size])
+                    component.append(self.value[r + i][c : c + size])
                 component_row.append(component)
             components.append(component_row)
 
@@ -29,29 +27,28 @@ class Art:
     def on(self):
         count = 0
         for value in self.value:
-            count += sum([v == '#' for v in value])
+            count += sum([v == "#" for v in value])
         return count
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '\n'.join(self.value)
+        return "\n".join(self.value)
 
 
 class Pattern:
-
     def __init__(self, value):
-        value = value.split(' => ')
+        value = value.split(" => ")
         self.matchers = self.permute(value[0])
         self.output = value[1]
 
     def matches(self, component):
-        return '/'.join(component) in self.matchers
+        return "/".join(component) in self.matchers
 
-    def permute(self, value): 
+    def permute(self, value):
         grid = Grid()
-        for y, row in enumerate(value.split('/')):
+        for y, row in enumerate(value.split("/")):
             for x, value in enumerate(row):
                 point = Point(x, y)
                 grid[point] = value
@@ -73,7 +70,7 @@ class Pattern:
     @staticmethod
     def stringify(grid):
         as_string = str(grid)
-        return '/'.join(as_string.split('\n'))
+        return "/".join(as_string.split("\n"))
 
 
 def main():
@@ -91,9 +88,9 @@ def run_iterations(patterns, n):
             new_row = []
             for component in component_row:
                 pattern = get_matching_pattern(component, patterns)
-                new_row.append(pattern.output.split('/'))
+                new_row.append(pattern.output.split("/"))
             rows.extend(join_row(new_row))
-        art = Art('/'.join(rows))
+        art = Art("/".join(rows))
 
     return art.on()
 
@@ -104,7 +101,7 @@ def join_row(row):
         rs = []
         for r in row:
             rs.append(r[i])
-        result.append(''.join(rs))
+        result.append("".join(rs))
     return result
 
 
@@ -118,5 +115,5 @@ def get_patterns():
     return [Pattern(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,5 +1,5 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -29,5 +29,5 @@ def increment_v2(current):
         return current + 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

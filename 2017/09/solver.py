@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Group:
-
     def __init__(self, group):
         group = self.remove_special(group)
         self.garbage_removed = 0
@@ -13,10 +12,10 @@ class Group:
     def score(self):
         score, level = 0, 0
         for char in self.group:
-            if char == '{':
+            if char == "{":
                 level += 1
                 score += level
-            elif char == '}':
+            elif char == "}":
                 level -= 1
         return score
 
@@ -24,25 +23,25 @@ class Group:
         result, index = [], 0
         while index < len(group):
             char = group[index]
-            if char == '!':
+            if char == "!":
                 index += 2
             else:
                 result.append(char)
                 index += 1
-        return ''.join(result)
+        return "".join(result)
 
     def remove_garbage(self, group):
         result, index = [], 0
         while index < len(group):
             char = group[index]
-            if char == '<':
-                end = group[index:].index('>')
-                self.garbage_removed += (end - 1)
+            if char == "<":
+                end = group[index:].index(">")
+                self.garbage_removed += end - 1
                 index += end
             else:
                 result.append(char)
             index += 1
-        return ''.join(result)
+        return "".join(result)
 
 
 def main():
@@ -55,5 +54,5 @@ def get_group():
     return Group(Parser().string())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

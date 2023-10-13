@@ -1,7 +1,6 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
-
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 UP = Point(0, -1)
 DOWN = Point(0, 1)
@@ -12,7 +11,6 @@ DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
 
 
 class Traverser:
-
     def __init__(self, grid):
         self.grid = grid
 
@@ -34,7 +32,7 @@ class Traverser:
             if len(options) == 0:
                 self.done = True
             elif len(options) > 1:
-                raise Exception('No Idea: {} -> {}'.format(self.pos, options))
+                raise Exception("No Idea: {} -> {}".format(self.pos, options))
             else:
                 self.direction, self.pos = options[0]
                 self.seen.append(self.pos)
@@ -58,9 +56,9 @@ class Traverser:
         letters = []
         for position in self.seen:
             value = self.grid[position]
-            if value not in ['-', '|', '+']:
+            if value not in ["-", "|", "+"]:
                 letters.append(value)
-        return ''.join(letters)
+        return "".join(letters)
 
     def steps(self):
         return len(self.seen)
@@ -70,7 +68,7 @@ def main():
     grid = get_grid()
     traverser = Traverser(grid)
     traverser.traverse()
-    answer.part1('NDWHOYRUEA', traverser.letters())
+    answer.part1("NDWHOYRUEA", traverser.letters())
     answer.part2(17540, traverser.steps())
 
 
@@ -79,10 +77,10 @@ def get_grid():
     for y, line in enumerate(Parser().nested_lines()):
         for x, value in enumerate(line):
             point = Point(x, y)
-            if value != ' ':
+            if value != " ":
                 grid[point] = value
     return grid
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
