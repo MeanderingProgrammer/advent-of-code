@@ -1,7 +1,7 @@
 import heapq
 
 
-def bfs(start, end, get_adjacent):
+def bfs(start, end, get_adjacent) -> int:
     queue = [(0, start)]
     seen = set()
 
