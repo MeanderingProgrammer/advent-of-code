@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Number:
-
     def __init__(self, value):
         self.value = int(value)
 
@@ -14,11 +13,10 @@ class Number:
         return str(self)
 
     def __str__(self):
-        return '{}'.format(self.value)
+        return "{}".format(self.value)
 
 
 class Expression:
-
     def __init__(self, expression):
         self.expressions = []
         self.operators = []
@@ -26,9 +24,9 @@ class Expression:
         i = 0
         while i < len(expression):
             char = expression[i]
-            if char == '(':
+            if char == "(":
                 end_index = self.get_end_index(i, expression)
-                self.expressions.append(Expression(expression[i+1:end_index]))
+                self.expressions.append(Expression(expression[i + 1 : end_index]))
                 i = end_index + 1
             elif char.isdigit():
                 self.expressions.append(Number(char))
@@ -42,22 +40,22 @@ class Expression:
             return self.expressions[0].evaluate(prefer_addition)
 
         if prefer_addition:
-            operator = '+' if '+' in self.operators else '*'
+            operator = "+" if "+" in self.operators else "*"
             index = self.operators.index(operator)
         else:
             operator = self.operators[0]
             index = 0
-        
+
         left = self.expressions[index]
-        right = self.expressions[index+1]
-        
-        if operator == '+':
+        right = self.expressions[index + 1]
+
+        if operator == "+":
             result = left.evaluate(prefer_addition) + right.evaluate(prefer_addition)
         else:
             result = left.evaluate(prefer_addition) * right.evaluate(prefer_addition)
 
         self.expressions[index] = Number(result)
-        del self.expressions[index+1]
+        del self.expressions[index + 1]
         del self.operators[index]
 
         return self.evaluate(prefer_addition)
@@ -66,20 +64,20 @@ class Expression:
         return str(self)
 
     def __str__(self):
-        result = '(' + str(self.expressions[0])
+        result = "(" + str(self.expressions[0])
         for i in range(len(self.operators)):
             result += str(self.operators[i])
-            result += str(self.expressions[i+1])
-        return result + ')'
+            result += str(self.expressions[i + 1])
+        return result + ")"
 
     @staticmethod
     def get_end_index(start_index, expression):
         count = 0
         for i in range(start_index, len(expression)):
             letter = expression[i]
-            if letter == '(':
+            if letter == "(":
                 count += 1
-            elif letter == ')':
+            elif letter == ")":
                 count -= 1
                 if count == 0:
                     return i
@@ -97,8 +95,8 @@ def sum_expressions(prefer_addition):
 
 
 def get_expressions():
-    return [Expression(line.replace(' ', '')) for line in Parser().lines()]
+    return [Expression(line.replace(" ", "")) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

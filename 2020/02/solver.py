@@ -1,20 +1,18 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class PasswordEntry:
-
     def __init__(self, raw_value):
         parts = raw_value.strip().split()
 
-        value_range = parts[0].split('-')
-        self.range_start =  int(value_range[0])
+        value_range = parts[0].split("-")
+        self.range_start = int(value_range[0])
         self.range_end = int(value_range[1])
 
         self.letter = parts[1][:-1]
 
         self.password = parts[2]
-
 
     def valid_v1(self):
         letter_count = sum([letter == self.letter for letter in self.password])
@@ -22,7 +20,7 @@ class PasswordEntry:
 
     def valid_v2(self):
         letter1 = self.password[self.range_start - 1]
-        letter2 = self.password[self.range_end -1]
+        letter2 = self.password[self.range_end - 1]
 
         match1 = letter1 == self.letter
         match2 = letter2 == self.letter
@@ -40,5 +38,5 @@ def get_passwords():
     return [PasswordEntry(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

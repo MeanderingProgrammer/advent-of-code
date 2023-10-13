@@ -1,32 +1,31 @@
+from aoc import answer
+from aoc.parser import Parser
 from functools import reduce
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class ValueRange:
-
     def __init__(self, value_range):
-        parts = value_range.split('-')
+        parts = value_range.split("-")
         self.start = int(parts[0])
         self.end = int(parts[1])
 
     def contains(self, value):
         return value >= self.start and value <= self.end
-    
+
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}-{}'.format(self.start, self.end)
+        return "{}-{}".format(self.start, self.end)
 
 
 class Rule:
-
     def __init__(self, rule):
-        parts = rule.split(': ')
+        parts = rule.split(": ")
         self.field_name = parts[0]
-        self.value_ranges = [ValueRange(value_range) for value_range in parts[1].split(' or ')]
+        self.value_ranges = [
+            ValueRange(value_range) for value_range in parts[1].split(" or ")
+        ]
         self.row = None
 
     def matches(self, value):
@@ -51,13 +50,14 @@ class Rule:
         return str(self)
 
     def __str__(self):
-        return '{}: {} assigned to {}'.format(self.field_name, self.value_ranges, self.row)
+        return "{}: {} assigned to {}".format(
+            self.field_name, self.value_ranges, self.row
+        )
 
 
 class Ticket:
-
     def __init__(self, ticket):
-        self.values = [int(value) for value in ticket.split(',')]
+        self.values = [int(value) for value in ticket.split(",")]
 
     def get_value(self, i):
         return self.values[i]
@@ -81,7 +81,7 @@ class Ticket:
             if rule.matches(value):
                 return True
         return False
-        
+
 
 def main():
     rules, my_ticket, nearby_tickets = process()
@@ -103,7 +103,9 @@ def solve_part_2(rules, my_ticket, nearby_tickets):
             remaining_tickets.append(ticket)
 
     assign_rules(rules, remaining_tickets)
-    departure_indexes = [rule.get_row() for rule in rules if rule.starts_with('departure')]
+    departure_indexes = [
+        rule.get_row() for rule in rules if rule.starts_with("departure")
+    ]
     departure_values = [my_ticket.get_value(i) for i in departure_indexes]
     return reduce((lambda x, y: x * y), departure_values)
 
@@ -136,5 +138,5 @@ def process():
     return rules, my_ticket, nearby_tickets
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

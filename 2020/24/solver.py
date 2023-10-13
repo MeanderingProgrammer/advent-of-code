@@ -1,17 +1,16 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Tile:
-
     def __init__(self):
-        self.color = 'w'
+        self.color = "w"
 
     def flip(self):
-        self.color = 'w' if self.is_black() else 'b'
+        self.color = "w" if self.is_black() else "b"
 
     def is_black(self):
-        return self.color == 'b'
+        return self.color == "b"
 
     def __repr__(self):
         return str(self)
@@ -21,17 +20,16 @@ class Tile:
 
 
 class Point:
-
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.directions = {
-            'e': (2 , 0),
-            'w': (-2, 0),
-            'ne': (1, 1),
-            'nw': (-1, 1),
-            'se': (1, -1),
-            'sw': (-1, -1),
+            "e": (2, 0),
+            "w": (-2, 0),
+            "ne": (1, 1),
+            "nw": (-1, 1),
+            "se": (1, -1),
+            "sw": (-1, -1),
         }
 
     def go(self, instruction):
@@ -57,11 +55,10 @@ class Point:
         return str(self)
 
     def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+        return "({}, {})".format(self.x, self.y)
 
 
 class Floor:
-
     def __init__(self):
         self.floor = {}
         self.floor[Point(0, 0)] = Tile()
@@ -80,7 +77,10 @@ class Floor:
         to_flip = []
         for point in self.floor:
             tile = self.floor[point]
-            are_black = [self.floor.get(adjacent_point, Tile()).is_black() for adjacent_point in point.get_adjacent()]
+            are_black = [
+                self.floor.get(adjacent_point, Tile()).is_black()
+                for adjacent_point in point.get_adjacent()
+            ]
             black_count = sum(are_black)
 
             if tile.is_black():
@@ -88,7 +88,7 @@ class Floor:
                     to_flip.append(tile)
             else:
                 if black_count == 2:
-                    to_flip.append(tile)                
+                    to_flip.append(tile)
 
         for tile in to_flip:
             tile.flip()
@@ -113,12 +113,11 @@ class Floor:
 
 
 class Path:
-
     def __init__(self, path):
         self.instructions = []
         it = iter(path)
         for letter in it:
-            instruction = letter if letter in ['e', 'w'] else letter + next(it)
+            instruction = letter if letter in ["e", "w"] else letter + next(it)
             self.instructions.append(instruction)
 
     def __repr__(self):
@@ -146,5 +145,5 @@ def get_paths():
     return [Path(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

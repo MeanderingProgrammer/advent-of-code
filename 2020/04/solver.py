@@ -1,7 +1,6 @@
 import re
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def in_range(value, minimum, maximum):
@@ -26,49 +25,48 @@ def experation_year(value):
 def height(value):
     height = int(value[:-2])
     unit = value[-2:]
-    if unit == 'cm':
+    if unit == "cm":
         return in_range(height, 150, 193)
-    elif unit == 'in':
+    elif unit == "in":
         return in_range(height, 59, 76)
     else:
         return False
 
 
 def hair_color(value):
-    expression = '^#[0-9,a-f]{6}$'
+    expression = "^#[0-9,a-f]{6}$"
     match = re.search(expression, value)
     return match is not None
 
 
 def eye_color(value):
-    valid = ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth']
+    valid = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
     return value in valid
 
 
 def passport_id(value):
-    expression = '^[0-9]{9}$'
+    expression = "^[0-9]{9}$"
     match = re.search(expression, value)
     return match is not None
 
 
 FIELD_VALIDATORS = {
-    'byr': birth_year,
-    'iyr': issue_year,
-    'eyr': experation_year,
-    'hgt': height,
-    'hcl': hair_color,
-    'ecl': eye_color,
-    'pid': passport_id
+    "byr": birth_year,
+    "iyr": issue_year,
+    "eyr": experation_year,
+    "hgt": height,
+    "hcl": hair_color,
+    "ecl": eye_color,
+    "pid": passport_id,
 }
 
 
 class Passport:
-
     def __init__(self, lines):
         self.data = {}
         for line in lines:
             for part in line.split():
-                kv = part.split(':')
+                kv = part.split(":")
                 self.data[kv[0]] = kv[1]
 
     def validate(self, run_validation):
@@ -92,5 +90,5 @@ def get_passports():
     return [Passport(group) for group in Parser().line_groups()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,11 +1,11 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
     values = read_data()
-    
-    pair =  find_pair(2020, values)
+
+    pair = find_pair(2020, values)
     answer.part1(1020084, pair[0] * pair[1])
 
     triple = find_triple(values)
@@ -36,5 +36,5 @@ def read_data():
     return Parser().int_lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

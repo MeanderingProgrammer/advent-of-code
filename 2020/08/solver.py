@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Acc:
-
     def __init__(self, value):
         self.value = value
 
@@ -13,7 +12,6 @@ class Acc:
 
 
 class Jmp:
-
     def __init__(self, value):
         self.value = value
 
@@ -22,7 +20,6 @@ class Jmp:
 
 
 class Nop:
-
     def __init__(self, value):
         self.value = value
 
@@ -31,7 +28,6 @@ class Nop:
 
 
 class InstructionSet:
-
     def __init__(self):
         self.instructions = []
 
@@ -44,11 +40,11 @@ class InstructionSet:
         parts = instruction.split()
         command = parts[0]
         value = self.get_value(parts[1])
-        if command == 'acc':
+        if command == "acc":
             instruction = Acc(value)
-        elif command == 'jmp':
+        elif command == "jmp":
             instruction = Jmp(value)
-        elif command == 'nop':
+        elif command == "nop":
             instruction = Nop(value)
         self.instructions.append(instruction)
 
@@ -89,7 +85,7 @@ class InstructionSet:
     def get_value(value):
         sign = value[0]
         value = int(value[1:])
-        if sign == '-':
+        if sign == "-":
             value *= -1
         return value
 
@@ -107,5 +103,5 @@ def get_instructions():
     return instructions
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

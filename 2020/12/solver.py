@@ -1,24 +1,22 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-
+from aoc import answer
+from aoc.parser import Parser
 
 COMMANDS_V1 = {
-    'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
-    'N': lambda point, pos, amount: (point, pos + Position(0, amount)),
-    'E': lambda point, pos, amount: (point, pos + Position(amount, 0)),
-    'F': lambda point, pos, amount: (point, pos + point * amount)
+    "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
+    "N": lambda point, pos, amount: (point, pos + Position(0, amount)),
+    "E": lambda point, pos, amount: (point, pos + Position(amount, 0)),
+    "F": lambda point, pos, amount: (point, pos + point * amount),
 }
 
 COMMANDS_V2 = {
-    'L': lambda point, pos, amount: (point.rotate_left(amount), pos),
-    'N': lambda point, pos, amount: (point + Position(0, amount), pos),
-    'E': lambda point, pos, amount: (point + Position(amount, 0), pos),
-    'F': lambda point, pos, amount: (point, pos + point * amount)
+    "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
+    "N": lambda point, pos, amount: (point + Position(0, amount), pos),
+    "E": lambda point, pos, amount: (point + Position(amount, 0), pos),
+    "F": lambda point, pos, amount: (point, pos + point * amount),
 }
 
 
 class Ship:
-
     def __init__(self, commands, is_v1):
         self.commands = commands
         self.__point = Position(1, 0) if is_v1 else Position(10, 1)
@@ -34,7 +32,6 @@ class Ship:
 
 
 class Position:
-
     def __init__(self, x, y):
         self.__x, self.__y = x, y
 
@@ -48,19 +45,13 @@ class Position:
         return abs(self.x) + abs(self.y)
 
     def __add__(self, other):
-        return Position(
-            self.__x + other.__x, 
-            self.__y + other.__y
-        )
+        return Position(self.__x + other.__x, self.__y + other.__y)
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __mul__(self, amount):
-        return Position(
-            self.__x * amount, 
-            self.__y * amount
-        )
+        return Position(self.__x * amount, self.__y * amount)
 
     def __rmul__(self, amount):
         return self.__mul__(amount)
@@ -70,14 +61,13 @@ class Position:
 
 
 TRANSFORMS = {
-    'R': lambda amount: ('L', 360 - amount),
-    'S': lambda amount: ('N', amount * -1),
-    'W': lambda amount: ('E', amount * -1)
+    "R": lambda amount: ("L", 360 - amount),
+    "S": lambda amount: ("N", amount * -1),
+    "W": lambda amount: ("E", amount * -1),
 }
 
 
 class Instruction:
-
     def __init__(self, instruction):
         self.__command, self.__amount = instruction[0], int(instruction[1:])
         if self.__command in TRANSFORMS:
@@ -107,5 +97,5 @@ def get_instructions():
     return [Instruction(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

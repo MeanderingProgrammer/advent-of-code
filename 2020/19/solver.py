@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class LetterRule:
-
     def __init__(self, letter):
         self.letter = letter
 
@@ -21,9 +20,8 @@ class LetterRule:
 
 
 class OrRule:
-
     def __init__(self, rules):
-        self.rules = [AndRule(rule) for rule in rules.split(' | ')]
+        self.rules = [AndRule(rule) for rule in rules.split(" | ")]
 
     def get_match_indexes(self, rules, value, start_index):
         match_indexes = set()
@@ -35,13 +33,12 @@ class OrRule:
         return str(self)
 
     def __str__(self):
-        return ' or '.join([str(rule) for rule in self.rules])
+        return " or ".join([str(rule) for rule in self.rules])
 
 
 class AndRule:
-
     def __init__(self, rules):
-        self.rules = [int(rule) for rule in rules.split(' ')]
+        self.rules = [int(rule) for rule in rules.split(" ")]
 
     def get_match_indexes(self, rules, value, start_index):
         match_indexes = set()
@@ -49,7 +46,9 @@ class AndRule:
         for rule in self.rules:
             new_matches = set()
             for match_index in match_indexes:
-                new_matches.update(rules[rule].get_match_indexes(rules, value, match_index))
+                new_matches.update(
+                    rules[rule].get_match_indexes(rules, value, match_index)
+                )
             match_indexes = new_matches
         return match_indexes
 
@@ -57,20 +56,19 @@ class AndRule:
         return str(self)
 
     def __str__(self):
-        return '(' + ' and '.join([str(rule) for rule in self.rules]) + ')'
+        return "(" + " and ".join([str(rule) for rule in self.rules]) + ")"
 
 
 class Rules:
-
     def __init__(self, rules):
         self.rules = {}
         for raw_rule in rules:
-            parts = raw_rule.split(': ')
+            parts = raw_rule.split(": ")
             rule_number = int(parts[0])
             rule = parts[1]
             if rule.startswith('"') and rule.endswith('"'):
                 rule = LetterRule(rule[1])
-            elif '|' in rule:
+            elif "|" in rule:
                 rule = OrRule(rule)
             else:
                 rule = AndRule(rule)
@@ -81,8 +79,8 @@ class Rules:
         return len(value) in match_indexes
 
     def update_for_part_2(self):
-        self.rules[8] = OrRule('42 | 42 8')
-        self.rules[11] = OrRule('42 31 | 42 11 31')
+        self.rules[8] = OrRule("42 | 42 8")
+        self.rules[11] = OrRule("42 31 | 42 11 31")
 
     def __repr__(self):
         return str(self)
@@ -109,5 +107,5 @@ def process():
     return Rules(groups[0]), groups[1]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

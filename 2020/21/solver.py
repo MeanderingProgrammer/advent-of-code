@@ -1,32 +1,33 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Food:
-
     def __init__(self, raw):
-        allergen_start = raw.index(' (')
+        allergen_start = raw.index(" (")
 
         raw_ingredients = raw[:allergen_start]
         self.ingredients = set(raw_ingredients.split())
 
-        raw_allergens = raw[allergen_start+11:-1]
-        self.allergens = set(raw_allergens.split(', '))
+        raw_allergens = raw[allergen_start + 11 : -1]
+        self.allergens = set(raw_allergens.split(", "))
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         details = {}
-        details['Ingredients'] = ', '.join(self.ingredients)
-        details['Allergens'] = ', '.join(self.allergens)
+        details["Ingredients"] = ", ".join(self.ingredients)
+        details["Allergens"] = ", ".join(self.allergens)
         return str(details)
 
 
 def main():
     foods = get_foods()
     answer.part1(1679, occurrences_of_non_allergens(foods))
-    answer.part2('lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq', sorted_by_allergen(foods))
+    answer.part2(
+        "lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq", sorted_by_allergen(foods)
+    )
 
 
 def occurrences_of_non_allergens(foods):
@@ -58,8 +59,10 @@ def sorted_by_allergen(foods):
             remove_possibility(allergen_possibilities, ingredient)
 
     ingredients = [ingredient for ingredient in allergen_definitions]
-    ingredients = sorted(ingredients, key=lambda ingredient: allergen_definitions[ingredient])
-    return ','.join(ingredients)
+    ingredients = sorted(
+        ingredients, key=lambda ingredient: allergen_definitions[ingredient]
+    )
+    return ",".join(ingredients)
 
 
 def get_allergen_possibilities(foods):
@@ -67,7 +70,7 @@ def get_allergen_possibilities(foods):
     for allergen in get_all_allergens(foods):
         allergen_possibilities[allergen] = get_possibilities(foods, allergen)
     return allergen_possibilities
-        
+
 
 def get_all_allergens(foods):
     return get_all(foods, lambda food: food.allergens)
@@ -112,5 +115,5 @@ def get_foods():
     return [Food(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Game:
-
     def __init__(self, deck1, deck2, recursive=False):
         self.deck1 = deck1
         self.deck2 = deck2
@@ -17,18 +16,24 @@ class Game:
     def get_winner(self):
         while not self.deck1.empty() and not self.deck2.empty():
             # Prevents infnity
-            if not self.update_state():                
+            if not self.update_state():
                 return self.deck1.identifier
 
             card1 = self.deck1.next()
             card2 = self.deck2.next()
 
             if self.recursive and card1 <= len(self.deck1) and card2 <= len(self.deck2):
-                winner = Game(self.deck1.copy(card1), self.deck2.copy(card2), self.recursive).get_winner()
+                winner = Game(
+                    self.deck1.copy(card1), self.deck2.copy(card2), self.recursive
+                ).get_winner()
             else:
-                winner = self.deck1.identifier if card1 > card2 else self.deck2.identifier
+                winner = (
+                    self.deck1.identifier if card1 > card2 else self.deck2.identifier
+                )
 
-            self.deck1.add([card1, card2]) if winner == 1 else self.deck2.add([card2, card1])
+            self.deck1.add([card1, card2]) if winner == 1 else self.deck2.add(
+                [card2, card1]
+            )
 
         return self.deck2.identifier if self.deck1.empty() else self.deck1.identifier
 
@@ -42,7 +47,6 @@ class Game:
 
 
 class Deck:
-
     def __init__(self, cards, identifier):
         self.cards = [int(card) for card in cards]
         self.identifier = identifier
@@ -62,7 +66,7 @@ class Deck:
         score = 0
         for i, card in enumerate(self.cards):
             multiplier = len(self.cards) - i
-            score += (multiplier * card)
+            score += multiplier * card
         return score
 
     def copy(self, n):
@@ -95,5 +99,5 @@ def get_decks():
     return Deck(groups[0][1:], 1), Deck(groups[1][1:], 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
