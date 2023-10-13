@@ -79,11 +79,7 @@ class State:
         return self.hashed
 
     def __lt__(self, o):
-        for i in range(3, 0, -1):
-            s_len, o_len = len(self.get(i)), len(o.get(i))
-            if s_len != o_len:
-                return s_len < o_len
-        return False
+        return len(self.get(3)) < len(o.get(3))
 
     def __repr__(self):
         return str(self)
@@ -160,14 +156,13 @@ def pair(items: Set[Item]) -> List[List[Item]]:
     for item in items:
         result.append([item])
 
-    chips = [item for item in items if item.item_type == ItemType.CHIP]
-    generators = [item for item in items if item.item_type == ItemType.GENERATOR]
-
     # Any pair of microcips
+    chips = [item for item in items if item.item_type == ItemType.CHIP]
     for pair in itertools.combinations(chips, 2):
         result.append(list(pair))
 
     # Any pair of generators
+    generators = [item for item in items if item.item_type == ItemType.GENERATOR]
     for pair in itertools.combinations(generators, 2):
         result.append(list(pair))
 
