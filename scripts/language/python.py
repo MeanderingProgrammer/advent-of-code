@@ -15,7 +15,7 @@ class Python(Language):
         return "solver.py"
 
     def _run_setup(self) -> None:
-        os.system("pip install -e ../../commons/python")
+        os.system("pip install -q -e ../../commons/python")
 
     def compile(self) -> None:
         # Interpreted languages do not need to be compiled
