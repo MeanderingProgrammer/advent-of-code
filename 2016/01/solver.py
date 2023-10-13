@@ -1,14 +1,9 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 
-DIRECTIONS = [
-    Point(0, 1),
-    Point(1, 0),
-    Point(0, -1),
-    Point(-1, 0)
-]
+DIRECTIONS = [Point(0, 1), Point(1, 0), Point(0, -1), Point(-1, 0)]
 
 
 def main():
@@ -22,7 +17,7 @@ def traverse():
     visited = [position]
 
     for instruction in Parser().csv():
-        change = -1 if instruction[0] == 'L' else 1
+        change = -1 if instruction[0] == "L" else 1
         index = (index + change) % len(DIRECTIONS)
         amount = int(instruction[1:])
         for i in range(amount):
@@ -41,5 +36,5 @@ def repeated(visited):
             seen.add(position)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

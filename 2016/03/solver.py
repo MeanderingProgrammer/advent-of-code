@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Triangle:
-
     def __init__(self, values):
         sides = [int(value) for value in values]
         sides.sort()
@@ -32,7 +31,7 @@ def get_triangles_horizontally():
     triangles, lines = [], get_lines()
 
     for i in range(0, len(lines), 3):
-        top_3 = [line.split() for line in lines[i:i+3]]
+        top_3 = [line.split() for line in lines[i : i + 3]]
         for j in range(3):
             sides = [line[j] for line in top_3]
             triangles.append(Triangle(sides))
@@ -44,5 +43,5 @@ def get_lines():
     return Parser().lines()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

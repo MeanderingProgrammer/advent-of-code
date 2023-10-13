@@ -1,32 +1,29 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Entity:
-
     def __init__(self, to, value):
         self.to = to
         self.value = value
 
     def process(self, value, bots, outputs):
-        if self.to == 'bot':
+        if self.to == "bot":
             bots[self.value].process(value, bots, outputs)
-        elif self.to == 'output':
+        elif self.to == "output":
             outputs[self.value].append(value)
         else:
-            raise Exception('Unknown type: {}'.format(self.to))
+            raise Exception("Unknown type: {}".format(self.to))
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '({} {})'.format(self.to, self.value)
+        return "({} {})".format(self.to, self.value)
 
 
 class Bot:
-
     def __init__(self, id, low, high):
         self.id = id
         self.low = low
@@ -57,7 +54,7 @@ class Bot:
         return str(self)
 
     def __str__(self):
-        return 'low = {} high = {}'.format(self.low, self.high)
+        return "low = {} high = {}".format(self.low, self.high)
 
 
 def main():
@@ -88,18 +85,18 @@ def get_data():
     for line in Parser().lines():
         parts = line.split()
 
-        if parts[0] == 'value':
+        if parts[0] == "value":
             initial_values[int(parts[5])].append(int(parts[1]))
 
-        if parts[0] == 'bot':
+        if parts[0] == "bot":
             bots[int(parts[1])] = Bot(
                 int(parts[1]),
-                Entity(parts[5], int(parts[6])), 
-                Entity(parts[10], int(parts[11]))
+                Entity(parts[5], int(parts[6])),
+                Entity(parts[10], int(parts[11])),
             )
 
     return initial_values, bots, outputs
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
