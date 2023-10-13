@@ -1,36 +1,23 @@
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 from collections import deque
 
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Grid, Point
+CLEAN = "."
+WEAKENED = "W"
+FLAGGED = "F"
+INFECTED = "#"
 
-
-CLEAN = '.'
-WEAKENED = 'W'
-FLAGGED = 'F'
-INFECTED = '#'
-
-STATE_DIRECTION_CHANGE = {
-    WEAKENED: 0,
-    CLEAN: 1,
-    FLAGGED: 2,
-    INFECTED: -1
-}
+STATE_DIRECTION_CHANGE = {WEAKENED: 0, CLEAN: 1, FLAGGED: 2, INFECTED: -1}
 
 
 class Virus:
-
     def __init__(self, grid, state_chage):
         self.grid = grid
         self.state_chage = state_chage
         self.position = self.get_start_position()
 
-        self.directions = deque([
-            Point(0, 1), 
-            Point(-1, 0), 
-            Point(0, -1), 
-            Point(1, 0)
-        ])
+        self.directions = deque([Point(0, 1), Point(-1, 0), Point(0, -1), Point(1, 0)])
         self.infections = 0
 
     def burst(self):
@@ -58,17 +45,14 @@ class Virus:
 
 
 def main():
-    simplified_state_change = {
-        CLEAN: INFECTED,
-        INFECTED: CLEAN
-    }
+    simplified_state_change = {CLEAN: INFECTED, INFECTED: CLEAN}
     answer.part1(5575, run(10_000, simplified_state_change))
-    
+
     expanded_state_change = {
         CLEAN: WEAKENED,
         WEAKENED: INFECTED,
         FLAGGED: CLEAN,
-        INFECTED: FLAGGED
+        INFECTED: FLAGGED,
     }
     answer.part2(2511991, run(10_000_000, expanded_state_change))
 
@@ -84,5 +68,5 @@ def get_grid():
     return Parser().as_grid()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

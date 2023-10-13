@@ -1,16 +1,14 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Computer:
-
     def __init__(self, instructions, debug):
         self.regs = defaultdict(int)
 
         if debug:
-            self.regs['a'] = 1
+            self.regs["a"] = 1
 
         self.instructions = instructions
         self.ip = 0
@@ -24,36 +22,35 @@ class Computer:
 
 
 class Intstruction:
-
     def __init__(self, value):
         parts = value.split()
         self.op = parts[0]
         self.args = parts[1:]
 
     def run(self, comp):
-        if self.op == 'set':
+        if self.op == "set":
             comp.regs[self.args[0]] = self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'sub':
+        elif self.op == "sub":
             comp.regs[self.args[0]] -= self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'mul':
+        elif self.op == "mul":
             comp.regs[self.args[0]] *= self.to_value(comp, self.args[1])
             comp.ip += 1
             comp.multiplies += 1
-        elif self.op == 'jnz':
+        elif self.op == "jnz":
             if self.to_value(comp, self.args[0]) != 0:
                 comp.ip += self.to_value(comp, self.args[1])
             else:
                 comp.ip += 1
         else:
-            raise Exception('Unknown operation: {}'.format(self.op))
+            raise Exception("Unknown operation: {}".format(self.op))
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.op, self.args)
+        return "{}: {}".format(self.op, self.args)
 
     @staticmethod
     def to_value(comp, arg):
@@ -94,5 +91,5 @@ def get_instructions():
     return [Intstruction(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

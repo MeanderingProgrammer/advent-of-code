@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Password:
-
     def __init__(self, raw):
         self.words = raw.split()
 
@@ -39,5 +38,5 @@ def count_valid(check_anagram):
     return sum(are_valid)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

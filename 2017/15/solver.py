@@ -1,12 +1,10 @@
-import commons.answer as answer
-
+from aoc import answer
 
 GEN_A_START = 277
 GEN_B_START = 349
 
 
 class Generator:
-
     def __init__(self, value, factor, mult):
         self.value = value
         self.factor = factor
@@ -25,7 +23,6 @@ class Generator:
 
 
 class Judge:
-
     def equal(self, v1, v2):
         v1 = bin(v1)[-16:]
         v2 = bin(v2)[-16:]
@@ -49,5 +46,5 @@ def count_matches(judge, n, wait_for_mult):
     return count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

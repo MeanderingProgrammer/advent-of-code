@@ -1,11 +1,9 @@
 import collections
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Knot:
-
     def __init__(self, size, lengths):
         self.q = collections.deque(range(size))
         self.lengths = lengths
@@ -46,7 +44,7 @@ class Knot:
             block = as_list[start:end]
             hashed.append(self.hash_block(block))
 
-        return ''.join(hashed)
+        return "".join(hashed)
 
     def __repr__(self):
         return str(self)
@@ -60,7 +58,7 @@ class Knot:
         for value in values:
             hashed ^= value
         hex_value = hex(hashed)[2:]
-        return hex_value if len(hex_value) == 2 else '0' + hex_value
+        return hex_value if len(hex_value) == 2 else "0" + hex_value
 
 
 def main():
@@ -72,7 +70,7 @@ def main():
 
     knot = Knot(size, get_lengths(True) + [17, 31, 73, 47, 23])
     knot.run_hash(64)
-    answer.part2('9de8846431eef262be78f590e39a4848', knot.dense_hash())
+    answer.part2("9de8846431eef262be78f590e39a4848", knot.dense_hash())
 
 
 def get_lengths(to_ord):
@@ -80,5 +78,5 @@ def get_lengths(to_ord):
     return parser.ord_string() if to_ord else parser.int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

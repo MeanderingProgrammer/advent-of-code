@@ -1,14 +1,12 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Computer:
-
     def __init__(self, id, instructions):
         self.regs = defaultdict(int)
-        self.regs['p'] = id
+        self.regs["p"] = id
 
         self.instructions = instructions
         self.ip = 0
@@ -47,48 +45,47 @@ class Computer:
 
 
 class Instruction:
-
     def __init__(self, value):
         parts = value.split()
         self.op = parts[0]
         self.args = parts[1:]
 
     def run(self, comp):
-        if self.op == 'snd':
+        if self.op == "snd":
             comp.send(self.to_value(comp, self.args[0]))
             comp.ip += 1
-        elif self.op == 'set':
+        elif self.op == "set":
             comp.regs[self.args[0]] = self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'add':
+        elif self.op == "add":
             comp.regs[self.args[0]] += self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'mul':
+        elif self.op == "mul":
             comp.regs[self.args[0]] *= self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'mod':
+        elif self.op == "mod":
             comp.regs[self.args[0]] %= self.to_value(comp, self.args[1])
             comp.ip += 1
-        elif self.op == 'rcv':
+        elif self.op == "rcv":
             value = comp.get()
             if value is None:
                 comp.waiting = True
             else:
                 comp.regs[self.args[0]] = value
                 comp.ip += 1
-        elif self.op == 'jgz':
+        elif self.op == "jgz":
             if self.to_value(comp, self.args[0]) > 0:
                 comp.ip += self.to_value(comp, self.args[1])
             else:
                 comp.ip += 1
         else:
-            raise Exception('Unknown operation: {}'.format(self.op))
+            raise Exception("Unknown operation: {}".format(self.op))
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.op, self.args)
+        return "{}: {}".format(self.op, self.args)
 
     @staticmethod
     def to_value(comp, arg):
@@ -119,7 +116,7 @@ def run_2_computers():
     comp2.set_other(comp1)
 
     comp1.run()
-    
+
     return comp2.sent
 
 
@@ -127,5 +124,5 @@ def get_instructions():
     return [Instruction(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

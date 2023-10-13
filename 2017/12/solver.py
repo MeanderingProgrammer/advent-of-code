@@ -1,24 +1,21 @@
+from aoc import answer, search
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-import commons.aoc_search as aoc_search
-from commons.aoc_parser import Parser
 
 
 def main():
     graph = get_graph()
-    
-    connected_to_0 = aoc_search.connected(graph, '0')
-    answer.part1(306, len(connected_to_0))
-    
 
-    heads = set(['0'])
+    connected_to_0 = search.connected(graph, "0")
+    answer.part1(306, len(connected_to_0))
+
+    heads = set(["0"])
     grouped = set(connected_to_0)
 
     head = get_ungrouped(graph, grouped)
     while head is not None:
         heads.add(head)
-        connected = aoc_search.connected(graph, head)
+        connected = search.connected(graph, head)
         grouped |= connected
         head = get_ungrouped(graph, grouped)
 
@@ -34,12 +31,12 @@ def get_ungrouped(graph, grouped):
 def get_graph():
     graph = defaultdict(set)
     for line in Parser().lines():
-        parts = line.split(' <-> ')
+        parts = line.split(" <-> ")
         start = parts[0]
-        for end in parts[1].split(', '):
+        for end in parts[1].split(", "):
             graph[start].add(end)
     return graph
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

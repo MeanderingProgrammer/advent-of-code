@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Graph:
-
     def __init__(self):
         self.graph = {}
         self.to_change = None
@@ -16,7 +15,9 @@ class Graph:
 
     def top_most(self):
         all_ids = set([node.id for node in self.graph])
-        are_dependencies = set([value for values in self.graph.values() for value in values])
+        are_dependencies = set(
+            [value for values in self.graph.values() for value in values]
+        )
 
         top_most = all_ids - are_dependencies
         if len(top_most) == 1:
@@ -75,7 +76,6 @@ class Graph:
 
 
 class Node:
-
     def __init__(self, value):
         value = value.split()
         self.id = value[0]
@@ -91,14 +91,14 @@ class Node:
         return str(self)
 
     def __str__(self):
-        return '{}: {}'.format(self.id, self.weight)
+        return "{}: {}".format(self.id, self.weight)
 
 
 def main():
     graph = get_graph()
 
     top_most = graph.top_most()
-    answer.part1('xegshds', top_most)
+    answer.part1("xegshds", top_most)
 
     graph.get_weight(graph.get_node(top_most))
     answer.part2(299, graph.to_change)
@@ -107,16 +107,16 @@ def main():
 def get_graph():
     graph = Graph()
     for line in Parser().lines():
-        line = line.split(' -> ')
+        line = line.split(" -> ")
 
         node = Node(line[0])
         graph.add_node(node)
 
         if len(line) == 2:
-            for edge in line[1].split(', '):
+            for edge in line[1].split(", "):
                 graph.add_edge(node, edge)
     return graph
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

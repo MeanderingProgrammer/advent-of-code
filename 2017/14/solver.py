@@ -1,15 +1,13 @@
 import collections
-
-import commons.answer as answer
-from commons.aoc_board import Point
+from aoc import answer
+from aoc.board import Point
 
 
 SIZE = 256
-INPUT = 'ffayrhll'
+INPUT = "ffayrhll"
 
 
 class Knot:
-
     def __init__(self, size, lengths):
         self.q = collections.deque(range(size))
         self.lengths = lengths
@@ -50,12 +48,12 @@ class Knot:
             block = as_list[start:end]
             hashed.append(self.hash_block(block))
 
-        return ''.join(hashed)
+        return "".join(hashed)
 
     def binary_hash(self):
         hashed = self.dense_hash()
         binary_blocks = [self.binary_block(value) for value in hashed]
-        return ''.join(binary_blocks)
+        return "".join(binary_blocks)
 
     def __repr__(self):
         return str(self)
@@ -69,14 +67,14 @@ class Knot:
         for value in values:
             hashed ^= value
         hex_value = hex(hashed)[2:]
-        return hex_value if len(hex_value) == 2 else '0' + hex_value
+        return hex_value if len(hex_value) == 2 else "0" + hex_value
 
     @staticmethod
     def binary_block(value):
         binary = bin(int(value, 16))
         binary = binary[2:]
         to_add = 4 - len(binary)
-        return ''.join(['0'] * to_add) + binary
+        return "".join(["0"] * to_add) + binary
 
 
 def main():
@@ -101,7 +99,7 @@ def group_points(points):
             groups.add(frozenset(joined))
 
     return groups
-        
+
 
 def get_matching_groups(point, groups):
     matching_groups = set()
@@ -110,6 +108,7 @@ def get_matching_groups(point, groups):
         if matches_group(possiblities, group):
             matching_groups.add(group)
     return matching_groups
+
 
 def matches_group(possiblities, group):
     for point in possiblities:
@@ -125,17 +124,17 @@ def get_enabled_points(limit=128):
         knot.run_hash()
         hashed = knot.binary_hash()
         for x, value in enumerate(hashed[:limit]):
-            if value == '1':
+            if value == "1":
                 points.append(Point(x, y))
     return points
 
 
 def get_lengths(row):
     suffix = [17, 31, 73, 47, 23]
-    values = INPUT + '-' + str(row)
+    values = INPUT + "-" + str(row)
     lengths = [ord(value) for value in values]
     return lengths + suffix
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
