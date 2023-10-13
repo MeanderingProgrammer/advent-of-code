@@ -1,19 +1,11 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
-
-TILE_MAPPING = {
-    0: 'empty',
-    1: 'wall',
-    2: 'block',
-    3: 'horizontal paddle',
-    4: 'ball'
-}
+TILE_MAPPING = {0: "empty", 1: "wall", 2: "block", 3: "horizontal paddle", 4: "ball"}
 
 
 class Tile:
-
     def __init__(self, x_pos, y_pos, tile):
         self.x_pos, self.y_pos, self.tile = x_pos, y_pos, tile
         self.tile_name = TILE_MAPPING[tile]
@@ -22,11 +14,10 @@ class Tile:
         return str(self)
 
     def __str__(self):
-        return '{} at ({}, {})'.format(self.tile_name, self.x_pos, self.y_pos)
+        return "{} at ({}, {})".format(self.tile_name, self.x_pos, self.y_pos)
 
 
 class Game:
-
     def __init__(self, memory):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
@@ -39,8 +30,8 @@ class Game:
         self.computer.run()
 
     def get_input(self):
-        ball_x = self.get_tiles('ball')[-1].x_pos
-        paddle_x = self.get_tiles('horizontal paddle')[-1].x_pos
+        ball_x = self.get_tiles("ball")[-1].x_pos
+        paddle_x = self.get_tiles("horizontal paddle")[-1].x_pos
         pos_diff = ball_x - paddle_x
         if pos_diff < 0:
             return -1
@@ -78,12 +69,12 @@ def play_game(play_for_free):
     if play_for_free:
         return game.score
     else:
-        return len(game.get_tiles('block'))
+        return len(game.get_tiles("block"))
 
 
 def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

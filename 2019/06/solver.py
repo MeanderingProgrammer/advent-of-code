@@ -1,16 +1,14 @@
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 class Orbits:
-
     def __init__(self):
         self.orbits = defaultdict(list)
 
     def add(self, orbit):
-        orbit = orbit.split(')')
+        orbit = orbit.split(")")
         self.orbits[orbit[0]].append(orbit[1])
 
     def get_distance(self, start, finish):
@@ -22,7 +20,7 @@ class Orbits:
                 if adjacent == finish:
                     return value
                 elif adjacent not in explored:
-                    to_explore.append((adjacent, value+1))
+                    to_explore.append((adjacent, value + 1))
             explored.add(orbit)
 
     def get_adjacent(self, node):
@@ -35,11 +33,11 @@ class Orbits:
     def __len__(self):
         count = 0
 
-        to_explore = [('COM', 0)]
+        to_explore = [("COM", 0)]
         for orbit, value in to_explore:
             count += value
             for adjacent in self.orbits[orbit]:
-                to_explore.append((adjacent, value+1))
+                to_explore.append((adjacent, value + 1))
 
         return count
 
@@ -50,7 +48,7 @@ class Orbits:
 def main():
     orbits = get_orbits()
     answer.part1(358244, len(orbits))
-    answer.part2(517, orbits.get_distance('YOU', 'SAN'))
+    answer.part2(517, orbits.get_distance("YOU", "SAN"))
 
 
 def get_orbits():
@@ -60,5 +58,5 @@ def get_orbits():
     return orbits
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

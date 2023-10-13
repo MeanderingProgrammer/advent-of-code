@@ -1,20 +1,18 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point
-
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 POINT_MAPPING = {
-    'R': Point(1, 0),
-    'L': Point(-1, 0),
-    'U': Point(0, 1),
-    'D': Point(0, -1)
+    "R": Point(1, 0),
+    "L": Point(-1, 0),
+    "U": Point(0, 1),
+    "D": Point(0, -1),
 }
 
 
 class Path:
-
     def __init__(self, path):
-        self.points, self.step_counts = self.all_points_on_path(path.split(','))
+        self.points, self.step_counts = self.all_points_on_path(path.split(","))
 
     def get_intersection(self, other):
         return self.points & other.points
@@ -43,7 +41,10 @@ def main():
     lengths = [len(intersection) for intersection in intersections]
     answer.part1(870, min(lengths))
 
-    steps = [p1.steps(intersection) + p2.steps(intersection) for intersection in intersections]
+    steps = [
+        p1.steps(intersection) + p2.steps(intersection)
+        for intersection in intersections
+    ]
     answer.part2(13698, min(steps))
 
 
@@ -52,5 +53,5 @@ def get_paths():
     return Path(data[0]), Path(data[1])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

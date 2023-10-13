@@ -1,14 +1,12 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
-
-DEAL = 'deal with increment '
-CUT = 'cut '
-NEW_STACK = 'deal into new stack'
+DEAL = "deal with increment "
+CUT = "cut "
+NEW_STACK = "deal into new stack"
 
 
 class Processors:
-
     def __init__(self, raw_values):
         self.processors = [self.__create(raw_value) for raw_value in raw_values]
 
@@ -19,19 +17,18 @@ class Processors:
     @staticmethod
     def __create(raw_value):
         if raw_value.startswith(DEAL):
-            argument = int(raw_value[len(DEAL):])
+            argument = int(raw_value[len(DEAL) :])
             return lambda deck: deck.deal(argument)
         elif raw_value.startswith(CUT):
-            argument = int(raw_value[len(CUT):])
+            argument = int(raw_value[len(CUT) :])
             return lambda deck: deck.cut(argument)
         elif raw_value == NEW_STACK:
             return lambda deck: deck.deal_into_new()
         else:
-            raise Exception('Unknown processor = {}'.format(raw_value))
+            raise Exception("Unknown processor = {}".format(raw_value))
 
 
 class Deck:
-
     def __init__(self, n):
         # Start in factory order, 0 at start up to n - 1
         self.__n = n
@@ -67,7 +64,7 @@ class Deck:
     def calc_b(self, a):
         return (self.__b * (a - 1) * self.inv(self.__a - 1)) % self.__n
 
-    def inv(self, a): 
+    def inv(self, a):
         return pow(a, self.__n - 2, self.__n)
 
     def __str__(self):
@@ -77,7 +74,9 @@ class Deck:
 def main():
     # I have no idea how this one works, I definitely took it off the Reddits
     answer.part1(4684, process_deck(10_007).index_of(2019, 1))
-    answer.part2(452290953297, process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661))
+    answer.part2(
+        452290953297, process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661)
+    )
 
 
 def process_deck(n):
@@ -91,5 +90,5 @@ def get_processors():
     return Processors(Parser().lines())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

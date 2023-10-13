@@ -1,16 +1,14 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.aoc_board import Point, Grid
+from aoc import answer
+from aoc.board import Grid, Point
+from aoc.parser import Parser
 
-
-ALIVE = '#'
-EMPTY = '.'
+ALIVE = "#"
+EMPTY = "."
 
 MIDDLE = Point(2, 2)
 
 
 class Layout:
-
     def __init__(self, grid, recursive):
         self.grids = [grid]
         self.recursive = recursive
@@ -83,8 +81,14 @@ class Layout:
             # interested in the left most points
             point_of_interest = lambda point: point.x() == 0
         else:
-            raise Exception('Unhandled original point')
-        return sum([value == ALIVE for point, value in grid.items() if point_of_interest(point)])
+            raise Exception("Unhandled original point")
+        return sum(
+            [
+                value == ALIVE
+                for point, value in grid.items()
+                if point_of_interest(point)
+            ]
+        )
 
     def count_outer(self, original, adjacent, grid):
         if original.up() == adjacent:
@@ -104,13 +108,19 @@ class Layout:
             # interested in the point just to the right of the middle
             point_of_interest = MIDDLE.right()
         else:
-            raise Exception('Unhandled adjacent point')
+            raise Exception("Unhandled adjacent point")
         return 1 if grid[point_of_interest] == ALIVE else 0
 
     def diversity(self):
         total = 0
         for grid in self.grids:
-            total += sum([pow(2, self.to_index(point)) for point, value in grid.items() if value == ALIVE])
+            total += sum(
+                [
+                    pow(2, self.to_index(point))
+                    for point, value in grid.items()
+                    if value == ALIVE
+                ]
+            )
         return total
 
     def count_bugs(self):
@@ -123,7 +133,7 @@ class Layout:
         return str(self)
 
     def __str__(self):
-        return '\n\n'.join([str(grid) for grid in self.grids])
+        return "\n\n".join([str(grid) for grid in self.grids])
 
     @staticmethod
     def to_index(point):
@@ -155,5 +165,5 @@ def get_grid():
     return Parser().as_grid()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

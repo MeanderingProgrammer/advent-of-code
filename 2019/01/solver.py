@@ -1,12 +1,11 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Module:
-
     def __init__(self, value):
         self.mass = int(value)
-    
+
     def fuel(self, recursive):
         fuel = (self.mass // 3) - 2
         if not recursive:
@@ -30,5 +29,5 @@ def get_modules():
     return [Module(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

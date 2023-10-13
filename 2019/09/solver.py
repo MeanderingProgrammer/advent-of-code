@@ -1,10 +1,9 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
-from commons.int_code import Computer
+from aoc import answer
+from aoc.int_code import Computer
+from aoc.parser import Parser
 
 
 class BoostProgram:
-
     def __init__(self, memory, setting):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
@@ -45,5 +44,5 @@ def get_memory():
     return Parser().int_csv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
