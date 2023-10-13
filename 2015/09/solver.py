@@ -1,7 +1,6 @@
 import itertools
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 def main():
@@ -12,10 +11,10 @@ def main():
     for permutation in itertools.permutations(locations):
         result = distance(permutation, distances)
         options.append(result)
-        
+
     answer.part1(141, min(options))
     answer.part2(736, max(options))
-    
+
 
 def get_distances():
     distances = {}
@@ -42,5 +41,5 @@ def distance(locations, distances):
     return sum(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

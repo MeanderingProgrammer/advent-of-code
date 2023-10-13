@@ -1,9 +1,7 @@
-import hashlib 
+import hashlib
+from aoc import answer
 
-import commons.answer as answer
-
-
-SALT = 'iwrupvqb'
+SALT = "iwrupvqb"
 
 
 def main():
@@ -13,7 +11,7 @@ def main():
 
 
 def first_index(leading_zeros, index):
-    goal = '0' * leading_zeros
+    goal = "0" * leading_zeros
     while True:
         value = SALT + str(index)
         hashed = hash(value)
@@ -26,5 +24,5 @@ def hash(value):
     return hashlib.md5(value.encode()).hexdigest()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

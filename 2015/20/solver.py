@@ -1,4 +1,4 @@
-import commons.answer as answer
+from aoc import answer
 
 
 GOAL = 29_000_000
@@ -16,7 +16,7 @@ def find_first(lazy):
         elve_end = min((i * 50) + 1, max_value) if lazy else max_value
         multiplier = 11 if lazy else 10
         for house in range(i, elve_end, i):
-            houses[house] += (i * multiplier)
+            houses[house] += i * multiplier
     return first(houses)
 
 
@@ -26,5 +26,5 @@ def first(houses):
             return i
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

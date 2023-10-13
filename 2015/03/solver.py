@@ -1,14 +1,9 @@
-import commons.answer as answer
-from commons.aoc_board import Point
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.board import Point
+from aoc.parser import Parser
 
 
-DIRECTIONS = {
-    '^': Point(0, 1),
-    'v': Point(0, -1),
-    '<': Point(-1, 0),
-    '>': Point(1, 0)
-}
+DIRECTIONS = {"^": Point(0, 1), "v": Point(0, -1), "<": Point(-1, 0), ">": Point(1, 0)}
 
 
 def main():
@@ -31,5 +26,5 @@ def run(santas):
     return len(set(visited))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

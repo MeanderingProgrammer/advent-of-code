@@ -1,9 +1,8 @@
-import commons.answer as answer
-from commons.aoc_parser import Parser
+from aoc import answer
+from aoc.parser import Parser
 
 
 class Reindeer:
-
     def __init__(self, raw):
         parts = raw.split()
         self.speed = int(parts[3])
@@ -17,12 +16,12 @@ class Reindeer:
         remainder_at_speed = min(remainder, self.time)
         total_seconds_at_speed = (complete * self.time) + remainder_at_speed
         return self.speed * total_seconds_at_speed
-    
+
     def __repr__(self):
         return str(self)
 
     def __str__(self):
-        return '{} km/s for {}, rest {}'.format(self.speed, self.time, self.rest)
+        return "{} km/s for {}, rest {}".format(self.speed, self.time, self.rest)
 
 
 def main():
@@ -61,5 +60,5 @@ def get_reindeers():
     return [Reindeer(line) for line in Parser().lines()]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

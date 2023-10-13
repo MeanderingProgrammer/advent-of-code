@@ -1,20 +1,17 @@
-import commons.answer as answer
+from aoc import answer
 
 
-START = '1113122113'
+START = "1113122113"
 
 
 class Game:
-
     def __init__(self, value):
         self.value = value
 
     def play(self):
-        result = [
-            [1, self.value[0]]
-        ]
+        result = [[1, self.value[0]]]
         for n in range(1, len(self.value)):
-            previous = self.value[n-1]
+            previous = self.value[n - 1]
             current = self.value[n]
             if previous == current:
                 result[-1][0] += 1
@@ -39,5 +36,5 @@ def run(n):
     return len(game.value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -9,6 +9,7 @@ out
 # Python
 __pycache__
 *.pyc
+aoc.egg-info
 
 # Java / Gradle
 .gradle

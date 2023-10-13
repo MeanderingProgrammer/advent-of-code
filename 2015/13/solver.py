@@ -1,8 +1,7 @@
 import itertools
+from aoc import answer
+from aoc.parser import Parser
 from collections import defaultdict
-
-import commons.answer as answer
-from commons.aoc_parser import Parser
 
 
 def main():
@@ -22,7 +21,7 @@ def get_max_score(include_self):
 def get_permutations(graph, include_self):
     keys = set(graph.keys())
     if include_self:
-        keys.add('MeanderingProgrammer')
+        keys.add("MeanderingProgrammer")
     return itertools.permutations(keys)
 
 
@@ -34,7 +33,7 @@ def get_score(permutation, graph):
 
         left = permutation[(i - 1) % len(permutation)]
         right = permutation[(i + 1) % len(permutation)]
-        
+
         score += values[left]
         score += values[right]
     return score
@@ -47,7 +46,7 @@ def get_graph():
 
         who = line[0]
 
-        multiplier = 1 if line[2] == 'gain' else -1
+        multiplier = 1 if line[2] == "gain" else -1
         amount = int(line[3])
         weight = multiplier * amount
 
@@ -57,5 +56,5 @@ def get_graph():
     return graph
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
