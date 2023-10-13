@@ -10,7 +10,7 @@ out
 __pycache__
 *.pyc
 
-# Gradle
+# Java / Gradle
 .gradle
 build
 .settings
