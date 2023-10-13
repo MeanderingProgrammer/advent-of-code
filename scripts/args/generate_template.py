@@ -7,8 +7,8 @@ from pojo.day import Day
 class GenerateTemplate:
     def __init__(self):
         self.__templates = {
-            "next": GenerateTemplate.__get_next,
-            "current": GenerateTemplate.__get_current,
+            "next": GenerateTemplate.__next,
+            "current": GenerateTemplate.__current,
         }
 
     def get_names(self) -> List[str]:
@@ -18,10 +18,10 @@ class GenerateTemplate:
         return self.__templates[name]()
 
     @staticmethod
-    def __get_next() -> Day:
+    def __next() -> Day:
         latest_day = DayFactory().get_latest()
         return latest_day.add(1)
 
     @staticmethod
-    def __get_current() -> Day:
+    def __current() -> Day:
         return DayFactory().get_latest()
