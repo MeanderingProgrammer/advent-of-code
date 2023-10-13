@@ -21,7 +21,7 @@ class Go(Language):
         pass
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return "go run solver.go"
+        return f"go run {self.solution_file}"
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed
