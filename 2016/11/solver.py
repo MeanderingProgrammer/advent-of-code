@@ -27,6 +27,7 @@ class State:
         # 4 floors with nothing on at first
         self.state: Dict[int, Set[Item]] = {i: set() for i in range(4)}
         self.hashed = None
+        self.equalized = None
 
     def add(self, floor: int, item: Item) -> None:
         self.state[floor].add(item)
@@ -64,14 +65,37 @@ class State:
                 return True
         return False
 
-    def _freeze(self):
-        result = set()
-        for floor, items in self.state.items():
-            result.add((floor, frozenset(items)))
-        return frozenset(result)
+    def _get_floor(self, target: Item) -> int:
+        for i, items in self.state.items():
+            for item in items:
+                if item == target:
+                    return i
+        raise Exception(f"Could not find item: {target}")
+
+    def _equalize(self) -> Dict[int, Set[str]]:
+        if self.equalized is not None:
+            return self.equalized
+        result: Dict[int, Set[str]] = {i: set() for i in range(4)}
+        item_index = 0
+        for i, items in self.state.items():
+            for item in items:
+                if item.item_type == ItemType.CHIP:
+                    result[i].add(f"{item_index}C")
+                    generator_item = item.generator()
+                    generator_floor = self._get_floor(generator_item)
+                    result[generator_floor].add(f"{item_index}G")
+                    item_index += 1
+        self.equalized = result
+        return self.equalized
 
     def __eq__(self, o):
-        return self.state == o.state
+        return self._equalize() == o._equalize()
+
+    def _freeze(self):
+        result = set()
+        for floor, items in self._equalize().items():
+            result.add((floor, frozenset(items)))
+        return frozenset(result)
 
     def __hash__(self):
         if self.hashed is None:
