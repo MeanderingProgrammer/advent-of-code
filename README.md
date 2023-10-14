@@ -45,14 +45,14 @@ a_run \
   --info?
 ```
 
-| Variable Name | Alt  | Description                             | Default  | Example             |
-| ------------- | ---- | --------------------------------------- | -------- | ------------------- |
-| template      | `-t` | Name that targets specific years / days | `latest` | `-t all_langs`      |
-| year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022`   |
-| day           | `-d` | List of days to run                     | None     | `-d 01 -d 03 -d 05` |
-| language      | `-l` | Limit runs to the specified language    | None     | `-l golang`         |
-| test          | N/A  | Passes test flag to each day            | `False`  | `--test`            |
-| info          | `-i` | Outputs which days would run            | `False`  | `-i`                |
+| Variable Name | Alt  | Description                             | Default  | Example           |
+| ------------- | ---- | --------------------------------------- | -------- | ----------------- |
+| template      | `-t` | Name that targets specific years / days | `latest` | `-t all_langs`    |
+| year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022` |
+| day           | `-d` | List of days to run                     | None     | `-d 1 -d 3 -d 5`  |
+| language      | `-l` | Limit runs to the specified language    | None     | `-l golang`       |
+| test          | N/A  | Passes test flag to each day            | `False`  | `--test`          |
+| info          | `-i` | Outputs which days would run            | `False`  | `-i`              |
 
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
@@ -86,7 +86,7 @@ a_gen \
 | ------------- | ---- | --------------------------------------- | ------- | ----------- |
 | template      | `-t` | Name that targets specific year / day   | `next`  | `-t next`   |
 | year          | `-y` | Year to generate starting files for     | None    | `-y 2022`   |
-| day           | `-d` | Day to generate starting files for      | None    | `-d 05`     |
+| day           | `-d` | Day to generate starting files for      | None    | `-d 5`      |
 | language      | `-l` | Language to generate starting files for | `rust`  | `-l python` |
 | info          | `-i` | Outputs which day would get generated   | `False` | `-i`        |
 
