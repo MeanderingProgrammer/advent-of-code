@@ -148,7 +148,6 @@ fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
 | 2018 | 14  | 0:35.87          | 0:11.54     |
 | 2018 | 18  | 1:09.36          | 0:14.82     |
 | 2019 | 13  | 0:24.05          | 0:12.27     |
-| 2019 | 25  | 1:52.72          | 0:55.82     |
 | 2020 | 15  | 0:58.97          | 0:31.61     |
 
 ## Take Over 10 Seconds On Only Dell XPS 15
@@ -174,6 +173,7 @@ fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
 | 2019 | 19  | 0:17.07          | 0:05.00     |
 | 2019 | 21  | 0:10.37          | 0:03.25     |
 | 2019 | 24  | 0:20:31          | 0:05.73     |
+| 2019 | 25  | UNKNOWN          | 0:02.87     |
 | 2020 | 11  | 0:14.67          | 0:03.87     |
 | 2020 | 23  | 0:21.99          | 0:05.66     |
 | 2020 | 24  | 0:13.45          | 0:04.85     |
