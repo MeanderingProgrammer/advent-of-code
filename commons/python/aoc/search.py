@@ -1,10 +1,12 @@
 import heapq
+from typing import Callable, List, Optional, Tuple, TypeVar
+
+T = TypeVar("T")
 
 
-def bfs(start, end, get_adjacent) -> int:
-    queue = [(0, start)]
+def bfs(start: T, end: T, get_adjacent: Callable[[T], List[T]]) -> Optional[int]:
+    queue: List[Tuple[int, T]] = [(0, start)]
     seen = set()
-
     while len(queue) > 0:
         length, item = heapq.heappop(queue)
 
@@ -18,13 +20,13 @@ def bfs(start, end, get_adjacent) -> int:
         for adjacent in get_adjacent(item):
             if adjacent not in seen:
                 heapq.heappush(queue, (length + 1, adjacent))
+    return None
 
 
 def bfs_paths(start, end, get_adjacent):
     queue = [(0, start)]
     seen = set()
     paths = []
-
     while len(queue) > 0:
         length, item = heapq.heappop(queue)
 
@@ -40,7 +42,6 @@ def bfs_paths(start, end, get_adjacent):
         for adjacent in get_adjacent(item):
             if adjacent not in seen:
                 heapq.heappush(queue, (length + 1, adjacent))
-
     return paths
 
 
