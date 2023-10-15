@@ -1,49 +1,43 @@
 from aoc import answer
-
-GEN_A_START = 277
-GEN_B_START = 349
+from dataclasses import dataclass
 
 
+@dataclass
 class Generator:
-    def __init__(self, value, factor, mult):
-        self.value = value
-        self.factor = factor
-        self.mult = mult
+    value: int
+    factor: int
+    mult: int
 
-    def next(self, wait_for_mult):
+    def next(self, wait_mult: bool) -> int:
         self.calculate()
-        if wait_for_mult:
-            while self.value % self.mult != 0:
-                self.calculate()
+        while wait_mult and self.value % self.mult != 0:
+            self.calculate()
         return self.value
 
-    def calculate(self):
+    def calculate(self) -> None:
         self.value *= self.factor
         self.value %= 2_147_483_647
 
 
-class Judge:
-    def equal(self, v1, v2):
-        v1 = bin(v1)[-16:]
-        v2 = bin(v2)[-16:]
-        return v1 == v2
+def main() -> None:
+    answer.part1(592, matches(40_000_000, False))
+    answer.part2(320, matches(5_000_000, True))
 
 
-def main():
-    judge = Judge()
-    answer.part1(592, count_matches(judge, 40_000_000, False))
-    answer.part2(320, count_matches(judge, 5_000_000, True))
-
-
-def count_matches(judge, n, wait_for_mult):
-    gen_a = Generator(GEN_A_START, 16_807, 4)
-    gen_b = Generator(GEN_B_START, 48_271, 8)
-
+def matches(n: int, wait_mult: bool) -> int:
+    gen_a = Generator(value=277, factor=16_807, mult=4)
+    gen_b = Generator(value=349, factor=48_271, mult=8)
     count = 0
-    for i in range(n):
-        if judge.equal(gen_a.next(wait_for_mult), gen_b.next(wait_for_mult)):
+    for _ in range(n):
+        if equal(gen_a.next(wait_mult), gen_b.next(wait_mult)):
             count += 1
     return count
+
+
+def equal(v1: int, v2: int) -> bool:
+    v1_bin = bin(v1)[-16:]
+    v2_bin = bin(v2)[-16:]
+    return v1_bin == v2_bin
 
 
 if __name__ == "__main__":
