@@ -11,7 +11,7 @@ struct Cli {
 }
 
 pub fn read_group_int() -> Vec<Vec<i64>> {
-    read_groups(|item| item.parse::<i64>().unwrap())
+    read_groups(|item| to_int(item))
 }
 
 pub fn read_group_lines() -> Vec<Vec<String>> {
@@ -25,16 +25,14 @@ pub fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
         .collect()
 }
 
-pub fn read_grid<T: GridValue>(f : fn(char) -> Option<T>) -> Grid<T> {
+pub fn read_grid<T: GridValue>(f: fn(char) -> Option<T>) -> Grid<T> {
     Grid::from_lines(read_lines(), |ch| f(ch))
 }
 
 pub fn read_points() -> Vec<Point> {
     let mut result: Vec<Point> = Vec::new();
     for line in read_lines().iter() {
-        let values = line.split(",")
-            .map(|coord| coord.parse::<i64>().unwrap())
-            .collect();
+        let values = line.split(",").map(|coord| to_int(coord)).collect();
         result.push(Point::new_nd(values));
     }
     result
@@ -48,8 +46,17 @@ pub fn read_lines() -> Vec<String> {
     read(|line| line.to_string())
 }
 
+pub fn read_csv() -> Vec<i64> {
+    let line = &read_lines()[0];
+    line.split(",").map(|value| to_int(value)).collect()
+}
+
 pub fn read_chars() -> Vec<char> {
     read_lines()[0].chars().collect()
+}
+
+fn to_int(value: &str) -> i64 {
+    value.parse::<i64>().unwrap()
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
@@ -58,8 +65,5 @@ pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
     let reader = File::open(file_name)
         .map(|file| BufReader::new(file))
         .expect(&format!("could not open '{}'", file_name));
-
-    reader.lines()
-        .map(|line| f(&line.unwrap()))
-        .collect()
+    reader.lines().map(|line| f(&line.unwrap())).collect()
 }
