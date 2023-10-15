@@ -1,4 +1,5 @@
 import sys
+from typing import List
 from .board import Point, Grid
 
 
@@ -24,13 +25,13 @@ class Parser:
     def int_csv(self):
         return self.__to_int(self.csv())
 
-    def lines(self):
+    def lines(self) -> List[str]:
         return self.__read(sep="\n")
 
     def int_lines(self):
         return self.__to_int(self.lines())
 
-    def nested_lines(self):
+    def nested_lines(self) -> List[List[str]]:
         return [[value for value in line] for line in self.lines()]
 
     def line_groups(self):
