@@ -1,27 +1,20 @@
 from aoc import answer
 from aoc.parser import Parser
+from dataclasses import dataclass
+from typing import Optional
 
 
+@dataclass
 class Stats:
-    def __init__(self, turn):
-        self.turns = [turn]
+    new: int
+    old: Optional[int] = None
 
-    def is_new(self):
-        return len(self.turns) == 1
+    def next(self) -> int:
+        return 0 if self.old is None else self.new - self.old
 
-    def said(self, turn):
-        self.turns.append(turn)
-        if len(self.turns) > 2:
-            self.turns = self.turns[1:]
-
-    def get_difference(self):
-        return self.turns[-1] - self.turns[-2]
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.turns)
+    def said(self, turn: int) -> None:
+        self.old = self.new
+        self.new = turn
 
 
 def main():
@@ -29,29 +22,21 @@ def main():
     answer.part2(505, run(30_000_000))
 
 
-def run(n):
+def run(n) -> int:
     numbers = {}
-    for i, value in enumerate(process()):
-        stats = Stats(i)
-        numbers[value] = stats
-        previous = (value, stats)
+    starter_numbers = Parser().int_csv()
+    for i, value in enumerate(starter_numbers):
+        numbers[value] = Stats(i)
 
+    number = starter_numbers[-1]
     for i in range(len(numbers), n):
-        to_say = 0 if previous[1].is_new() else previous[1].get_difference()
-        next_stats = numbers[to_say] if to_say in numbers else None
-
-        if next_stats is None:
-            next_stats = Stats(i)
-            numbers[to_say] = next_stats
+        number = numbers[number].next()
+        stats = numbers.get(number)
+        if stats is None:
+            numbers[number] = Stats(i)
         else:
-            next_stats.said(i)
-        previous = (to_say, next_stats)
-
-    return previous[0]
-
-
-def process():
-    return Parser().int_csv()
+            stats.said(i)
+    return number
 
 
 if __name__ == "__main__":
