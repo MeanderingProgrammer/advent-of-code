@@ -1,4 +1,5 @@
 import os
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
@@ -16,8 +17,11 @@ class Runner:
     run_args: List[str]
 
     def run(self) -> None:
+        start = time.time()
         runtimes = self.__get_runtimes()
+        overall_runtime = time.time() - start
         Displayer(runtimes).display()
+        print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []
@@ -46,5 +50,5 @@ class Runner:
         language.initial_setup()
         language.compile()
         runtime = language.run(day, self.run_args)
-        print(f"Runtime: {runtime}")
+        print(f"Runtime: {runtime:.3f} seconds")
         return RuntimeInfo(day, language.name, runtime)
