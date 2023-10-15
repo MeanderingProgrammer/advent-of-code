@@ -71,7 +71,7 @@ class Game:
                 move = self.get_move(character, opponents)
                 if move is not None:
                     character.position = move
-                target = character.find_target(opponents)
+                    target = character.find_target(opponents)
 
             if target is None:
                 continue
