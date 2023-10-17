@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from dataclasses import dataclass
@@ -15,13 +16,24 @@ class Runner:
     days: List[Day]
     languages: List[Language]
     run_args: List[str]
+    save_slow: bool
 
     def run(self) -> None:
         start = time.time()
         runtimes = self.__get_runtimes()
         overall_runtime = time.time() - start
-        Displayer(runtimes).display()
+
+        displayer = Displayer()
+        displayer.display("ALL", runtimes)
+        slow = list(filter(lambda runtime: runtime.runtime > 10, runtimes))
+        displayer.display("SLOW", slow)
+
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
+
+        if self.save_slow:
+            with open("slow.json", "w") as f:
+                save_value = [runtime.as_dict() for runtime in slow]
+                f.write(json.dumps(save_value))
 
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []

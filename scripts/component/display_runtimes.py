@@ -6,19 +6,15 @@ from pojo.runtime_info import RuntimeInfo
 
 
 class Displayer:
-    def __init__(self, runtimes: List[RuntimeInfo]):
-        self.__df = pd.DataFrame([runtime.as_dict() for runtime in runtimes])
-
-    def display(self) -> None:
-        self._print_df("ALL", self.__df)
-        self._print_df("SLOW", self.__df[self.__df["runtime"] > 10])
-
-    def _print_df(self, label: str, df) -> None:
-        if df.shape[0] == 0:
+    def display(self, label: str, runtimes: List[RuntimeInfo]) -> None:
+        if len(runtimes) == 0:
             print("{}: NONE".format(label))
             return
-
         print(label)
+        df = pd.DataFrame([runtime.as_dict() for runtime in runtimes])
+        self._print_df(df)
+
+    def _print_df(self, df) -> None:
         markdown = df.to_markdown(index=False)
         rows = markdown.split("\n")
         print("\n".join(rows[:2]))
