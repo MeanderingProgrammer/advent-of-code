@@ -4,7 +4,7 @@ _START_YEAR = 2015
 _PER_YEAR = 25
 
 
-@dataclass(order=True)
+@dataclass(frozen=True, order=True)
 class Day:
     year: str
     day: str

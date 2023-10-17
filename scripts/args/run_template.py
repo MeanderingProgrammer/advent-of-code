@@ -48,8 +48,8 @@ class RunTemplate:
         slow_file = Path("slow.json")
         if not slow_file.is_file():
             raise Exception("Looks like slow runtimes were never determined")
-        days = []
+        days = set()
         for runtime in json.loads(slow_file.read_text()):
             day = Day(runtime["year"], runtime["day"])
-            days.append(day)
-        return days
+            days.add(day)
+        return sorted(list(days))
