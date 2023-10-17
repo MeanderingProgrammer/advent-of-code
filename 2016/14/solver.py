@@ -1,63 +1,61 @@
 import hashlib
 from aoc import answer
+from collections import deque
+from dataclasses import dataclass
+from typing import Deque, List
 
 
-SALT = "qzyelonm"
+@dataclass(frozen=True)
+class HashInfo:
+    value: str
+    cinqs: List[str]
 
 
-def main():
-    answer.part1(15168, generate_keys(64, 1))
-    answer.part2(20864, generate_keys(64, 2_017))
+def main() -> None:
+    answer.part1(15168, generate(64, 1))
+    answer.part2(20864, generate(64, 2_017))
 
 
-def generate_keys(n, num_hashes):
-    keys = set()
-
-    i, hash_data = 1, {}
-    while len(keys) < n + 5:
-        value = SALT + str(i)
-        hashed = hash(value, num_hashes)
-        triples = get_repeats(hashed, 3)
-        cinqs = get_repeats(hashed, 5)
-        if len(triples) > 0:
-            hash_data[i] = triples[0]
-            for cinq in cinqs:
-                matches = get_matches(i, cinq, hash_data)
-                for match in matches:
-                    keys.add(match)
+def generate(n: int, num_hashes: int) -> int:
+    i = 0
+    hash_infos = deque()
+    while i < 1_000:
+        hash_infos.append(get_hash(i, num_hashes))
         i += 1
 
-    keys = list(keys)
-    keys.sort()
-    return keys[n - 1]
+    keys = []
+    while len(keys) < n:
+        hash_info = hash_infos.popleft()
+        hash_infos.append(get_hash(i, num_hashes))
+        triples = get_repeats(hash_info.value, 3)
+        if len(triples) > 0:
+            if contains(hash_infos, triples[0]):
+                keys.append(i - len(hash_infos))
+        i += 1
+    return keys[-1]
 
 
-def hash(value, n):
-    for i in range(n):
+def get_hash(index: int, n: int) -> HashInfo:
+    value = "qzyelonm" + str(index)
+    for _ in range(n):
         value = hashlib.md5(str.encode(value)).hexdigest()
-    return value
+    return HashInfo(value=value, cinqs=get_repeats(value, 5))
 
 
-def get_repeats(hashed, length):
+def get_repeats(hashed: str, length: int) -> List[str]:
     repeats = []
     for i in range(len(hashed) - length + 1):
         value = hashed[i : i + length]
-        if all_same(value):
+        if len(set([v for v in value])) == 1:
             repeats.append(value[0])
     return repeats
 
 
-def all_same(value):
-    return len(set([v for v in value])) == 1
-
-
-def get_matches(i, cinq, hash_data):
-    matches = []
-    for ii in range(i - 1_000, i):
-        if ii in hash_data:
-            if hash_data[ii] == cinq:
-                matches.append(ii)
-    return matches
+def contains(hash_infos: Deque[HashInfo], value: str) -> bool:
+    for hash_info in hash_infos:
+        if value in hash_info.cinqs:
+            return True
+    return False
 
 
 if __name__ == "__main__":
