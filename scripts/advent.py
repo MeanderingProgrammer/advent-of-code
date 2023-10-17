@@ -97,7 +97,7 @@ def run(
 
     languages = LanguageFactory().get_all() if len(language) == 0 else list(language)
     run_args = ["--test"] if test else []
-    save_slow = template == "days"
+    save_slow = template in ["days", "slow"]
 
     runner = Runner(days, languages, run_args, save_slow)
     click.echo(f"{runner}") if info else runner.run()
