@@ -1,21 +1,16 @@
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
+from typing import Dict, List, Tuple
 
 MOVEMENTS = {"left": Point(-1), "right": Point(1)}
 
 
 class Rule:
-    def __init__(self, raw):
+    def __init__(self, raw: List[str]):
         self.write = int(self.get_last(raw[0]))
         self.move = MOVEMENTS[self.get_last(raw[1])]
         self.next_state = self.get_last(raw[2])
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "({}, {}, {})".format(self.write, self.move, self.next_state)
 
     @staticmethod
     def get_last(raw):
@@ -23,34 +18,28 @@ class Rule:
 
 
 class ConditionalRule:
-    def __init__(self, raw):
+    def __init__(self, raw: List[str]):
         self.conditions = {}
         for i in range(0, len(raw), 4):
             self.conditions[self.get_value(raw[i])] = Rule(raw[i + 1 : i + 4])
 
-    def get(self, value):
+    def get(self, value: int) -> Rule:
         return self.conditions[value]
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.conditions)
-
     @staticmethod
-    def get_value(raw):
+    def get_value(raw: str) -> int:
         return int(raw.split()[-1][:-1])
 
 
 class TuringMachine:
-    def __init__(self, state, rules):
+    def __init__(self, state: str, rules: Dict[str, ConditionalRule]):
         self.state = state
         self.rules = rules
 
         self.pos = Point(0)
         self.tape = Grid()
 
-    def step(self):
+    def step(self) -> None:
         value = self.tape[self.pos] or 0
         transition = self.rules[self.state].get(value)
 
@@ -58,19 +47,19 @@ class TuringMachine:
         self.pos += transition.move
         self.state = transition.next_state
 
-    def checksum(self):
-        return sum([value for point, value in self.tape.items()])
+    def checksum(self) -> int:
+        return sum([value for _, value in self.tape.items()])
 
 
-def main():
+def main() -> None:
     state, rules = get_state_rules()
     machine = TuringMachine(state[0], rules)
-    for i in range(state[1]):
+    for _ in range(state[1]):
         machine.step()
     answer.part1(3099, machine.checksum())
 
 
-def get_state_rules():
+def get_state_rules() -> Tuple[Tuple[str, int], Dict[str, ConditionalRule]]:
     groups = Parser().line_groups()
     state = get_state(groups[0])
     rules = {}
@@ -79,13 +68,13 @@ def get_state_rules():
     return state, rules
 
 
-def get_state(raw):
+def get_state(raw) -> Tuple[str, int]:
     start = get_name(raw[0])
     steps = int(raw[1].split()[-2])
     return start, steps
 
 
-def get_name(raw):
+def get_name(raw: str) -> str:
     return raw.split()[-1][:-1]
 
 
