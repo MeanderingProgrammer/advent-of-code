@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 from typing import List
 
 from component.day_factory import DayFactory
@@ -11,6 +13,7 @@ class RunTemplate:
             "previous": RunTemplate.__previous,
             "days": RunTemplate.__days,
             "languages": RunTemplate.__languages,
+            "slow": RunTemplate.__slow,
         }
 
     def get_names(self) -> List[str]:
@@ -39,3 +42,14 @@ class RunTemplate:
             Day("2019", "20"),  # Java
             Day("2021", "01"),  # Rust & Go
         ]
+
+    @staticmethod
+    def __slow() -> List[Day]:
+        slow_file = Path("slow.json")
+        if not slow_file.is_file():
+            raise Exception("Looks like slow runtimes were never determined")
+        days = []
+        for runtime in json.loads(slow_file.read_text()):
+            day = Day(runtime["year"], runtime["day"])
+            days.append(day)
+        return days

@@ -65,14 +65,14 @@ def generate(
 @click.option("-t", "--template", type=click.Choice(RunTemplate().get_names()))
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
-@click.option("-l", "--language", type=LanguageType())
+@click.option("-l", "--language", type=LanguageType(), multiple=True)
 @click.option("-i", "--info", is_flag=True)
 @click.option("--test", is_flag=True)
 def run(
     template: Optional[str],
     year: Tuple[int],
     day: Tuple[int],
-    language: Language,
+    language: Tuple[Language],
     info: bool,
     test: bool,
 ) -> None:
@@ -95,10 +95,11 @@ def run(
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
-    languages = LanguageFactory().get_all() if language is None else [language]
+    languages = LanguageFactory().get_all() if len(language) == 0 else list(language)
     run_args = ["--test"] if test else []
+    save_slow = template == "days"
 
-    runner = Runner(days, languages, run_args)
+    runner = Runner(days, languages, run_args, save_slow)
     click.echo(f"{runner}") if info else runner.run()
 
 

@@ -5,6 +5,7 @@ out
 
 # Used by helper scripts
 .adventofcode.session
+slow.json
 
 # Python
 __pycache__
