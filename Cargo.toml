@@ -1,8 +1,4 @@
 [[bin]]
-name = "aoc_2016_05"
-path = "2016/05/solver.rs"
-
-[[bin]]
 name = "aoc_2017_15"
 path = "2017/15/solver.rs"
 
