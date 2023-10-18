@@ -57,7 +57,7 @@ def generate(
     else:
         gen_day = Day(year=str(year), day=str(day).zfill(2))
 
-    generator = Generator(gen_day, language)
+    generator = Generator(day=gen_day, language=language)
     click.echo(f"{generator}") if info else generator.generate()
 
 
@@ -66,6 +66,7 @@ def generate(
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
+@click.option("-s", "--slow", type=int, default=5)
 @click.option("-i", "--info", is_flag=True)
 @click.option("--test", is_flag=True)
 def run(
@@ -73,6 +74,7 @@ def run(
     year: Tuple[int],
     day: Tuple[int],
     language: Tuple[Language],
+    slow: int,
     info: bool,
     test: bool,
 ) -> None:
@@ -96,10 +98,14 @@ def run(
         raise Exception("Could not find any days to run given input")
 
     languages = LanguageFactory().get_all() if len(language) == 0 else list(language)
-    run_args = ["--test"] if test else []
-    save_slow = template in ["days", "slow"]
 
-    runner = Runner(days, languages, run_args, save_slow)
+    runner = Runner(
+        days=days,
+        languages=languages,
+        slow=slow,
+        run_args=["--test"] if test else [],
+        save_slow=template in ["days", "slow"],
+    )
     click.echo(f"{runner}") if info else runner.run()
 
 
