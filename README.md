@@ -138,7 +138,6 @@ fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
 
 | Year | Day | Dell XPS 15 Time | M2 Mac Time |
 | ---- | --- | ---------------- | ----------- |
-| 2015 | 18  | 0:26.12          | 0:11.59     |
 | 2016 | 5   | 0:25.13          | 0:16.48     |
 
 ## Take Over 10 Seconds On Only Dell XPS 15
@@ -146,6 +145,7 @@ fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
 | Year | Day | Dell XPS 15 Time | M2 Mac Time |
 | ---- | --- | ---------------- | ----------- |
 | 2015 | 10  | 0:15.86          | 0:05.22     |
+| 2015 | 18  | UNKNOWN          | 0:01.47     |
 | 2015 | 20  | 0:14.64          | 0:06.73     |
 | 2015 | 22  | 0:22.70          | 0:07.63     |
 | 2015 | 24  | 0:12.34          | 0:05.08     |
