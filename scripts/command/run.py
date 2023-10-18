@@ -15,6 +15,7 @@ from pojo.runtime_info import RuntimeInfo
 class Runner:
     days: List[Day]
     languages: List[Language]
+    slow: int
     run_args: List[str]
     save_slow: bool
 
@@ -25,7 +26,7 @@ class Runner:
 
         displayer = Displayer()
         displayer.display("ALL", runtimes)
-        slow = list(filter(lambda runtime: runtime.runtime > 10, runtimes))
+        slow = list(filter(lambda runtime: runtime.runtime > self.slow, runtimes))
         displayer.display("SLOW", slow)
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
