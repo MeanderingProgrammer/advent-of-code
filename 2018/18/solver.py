@@ -1,6 +1,7 @@
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
+from typing import List, Optional, Tuple
 
 OPEN = "."
 TREES = "|"
@@ -36,63 +37,32 @@ class Landscape:
         return self.resource_count(TREES) * self.resource_count(YARD)
 
     def resource_count(self, goal):
-        return sum([resource == goal for point, resource in self.grid.items()])
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.grid)
+        return sum([resource == goal for _, resource in self.grid.items()])
 
 
 def main():
     answer.part1(515496, run_for(10))
-
-    goal = 1_000_000_000
-    start, pattern = get_pattern(1_000, 5, 30)
-    index = (goal - start) % len(pattern)
-    answer.part2(233058, pattern[index])
+    answer.part2(233058, run_for(1_000_000_000))
 
 
-def run_for(n):
+def run_for(n: int) -> int:
     landscape = Landscape(get_grid())
-    for i in range(n):
+    scores = [landscape.resource_value()]
+    for _ in range(n):
         landscape.step()
-    return landscape.resource_value()
+        scores.append(landscape.resource_value())
+        start, pattern = find_pattern(scores)
+        if start is not None:
+            index = (n - start) % len(pattern)
+            return pattern[index]
+    return scores[-1]
 
 
-def get_pattern(n, min_len, max_len):
-    scores = []
-    landscape = Landscape(get_grid())
-
-    for i in range(n):
-        current = landscape.resource_value()
-        scores.append(current)
-        landscape.step()
-
-    return find_pattern(scores, min_len, max_len)
-
-
-def find_pattern(values, min_len, max_len):
-    best_pattern = None
-    for i in range(len(values) - min_len):
-        for j in range(i + min_len, min(i + max_len, len(values))):
-            pattern = values[i:j]
-            end = get_end_index(values, i, pattern)
-            length = end - i
-            if best_pattern is None or length > best_pattern[0]:
-                best_pattern = length, i, pattern
-    return best_pattern[1], best_pattern[2]
-
-
-def get_end_index(values, start, pattern):
-    pattern_index = 0
-    for i in range(start, len(values)):
-        if values[i] == pattern[pattern_index % len(pattern)]:
-            pattern_index += 1
-        else:
-            return i
-    return len(values)
+def find_pattern(values: List[int]) -> Tuple[Optional[int], List[int]]:
+    for i in range(1, len(values) - 1):
+        if values[i] == values[-1] and values[i - 1] == values[-2]:
+            return i - 1, values[i - 1 : -2]
+    return None, []
 
 
 def get_grid():
