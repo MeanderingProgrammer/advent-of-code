@@ -1,39 +1,40 @@
 from aoc import answer
 from aoc.computer import Computer
 from aoc.parser import Parser
+from dataclasses import dataclass
 
 
+@dataclass(frozen=True)
 class Setter:
-    def __init__(self, register, value, absolute):
-        self.register = register
-        self.value = value
-        self.absolute = absolute
+    register: str
+    value: str
+    absolute: bool
 
-    def run(self, computer):
+    def run(self, computer: Computer) -> None:
         value = computer.get(self.value)
         value = value if self.absolute else computer.get(self.register) + value
         computer.set(self.register, value)
         computer.move(1)
 
 
+@dataclass(frozen=True)
 class Jump:
-    def __init__(self, register, value):
-        self.register = register
-        self.value = value
+    register: str
+    value: str
 
-    def run(self, computer):
+    def run(self, computer: Computer) -> None:
         if computer.get(self.register) != 0:
             computer.move(computer.get(self.value))
         else:
             computer.move(1)
 
 
-def main():
+def main() -> None:
     answer.part1(318117, run_instructions(False))
     answer.part2(9227771, run_instructions(True))
 
 
-def run_instructions(ignite):
+def run_instructions(ignite: bool) -> int:
     computer = Computer(["a", "b", "c", "d"])
     if ignite:
         computer.set("c", 1)
@@ -41,7 +42,7 @@ def run_instructions(ignite):
     return computer.get("a")
 
 
-def get_instructions():
+def get_instructions() -> list:
     instructions = []
     for line in Parser().lines():
         parts = line.split()
