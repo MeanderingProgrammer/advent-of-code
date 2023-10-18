@@ -3,7 +3,7 @@ package files
 import (
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/utils"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -38,7 +38,7 @@ func SplitContent(splitter string) []string {
 }
 
 func Content() string {
-	content, err := ioutil.ReadFile(fileName())
+	content, err := os.ReadFile(fileName())
 	utils.CheckError(err)
 	return string(content)
 }
