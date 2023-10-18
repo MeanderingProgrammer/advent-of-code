@@ -110,37 +110,7 @@ cargo install aoc-cli
 touch .adventofcode.session
 ```
 
-## In Progress Updates
-
-### Add Threading to 2016/05
-
-```
-fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
-    let (tx, rx) = mpsc::channel();
-
-    for i in 0..1_000_000 {
-        let tx1 = tx.clone();
-        thread::spawn(move || {
-            let hash = get_hash("abc", i);
-            if &hash[0..5] == "00000" {
-                tx1.send(hash).unwrap();
-            }
-        });
-    }
-
-    for received in rx {
-        println!("Got: {}", received);
-    }
-}
-```
-
-## Take Over 10 Seconds On Both Dell XPS 15 & M2 Mac
-
-| Year | Day | Dell XPS 15 Time | M2 Mac Time |
-| ---- | --- | ---------------- | ----------- |
-| 2016 | 5   | 0:25.13          | 0:16.48     |
-
-## Take Over 10 Seconds On Only Dell XPS 15
+## Take Over 10 Seconds On Dell XPS 15
 
 | Year | Day | Dell XPS 15 Time | M2 Mac Time |
 | ---- | --- | ---------------- | ----------- |
@@ -148,6 +118,7 @@ fn get_password_threaded(door_id: &str, populator: impl PasswordPopulator) {
 | 2015 | 20  | 0:14.64          | 0:06.73     |
 | 2015 | 22  | 0:22.70          | 0:07.63     |
 | 2015 | 24  | 0:12.34          | 0:05.08     |
+| 2016 | 5   | UNKNOWN          | 0:04.52     |
 | 2016 | 12  | 0:35.69          | 0:09.74     |
 | 2016 | 18  | 0:26.21          | 0:04.44     |
 | 2017 | 14  | 0:14.21          | 0:04.97     |
