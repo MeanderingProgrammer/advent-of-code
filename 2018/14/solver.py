@@ -1,59 +1,40 @@
 from aoc import answer
-
-
-class Elve:
-    def __init__(self, index):
-        self.index = index
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.index)
+from typing import List
 
 
 class Recipes:
-    def __init__(self):
-        self.score_board = ["3", "7"]
-        self.elves = [Elve(0), Elve(1)]
+    def __init__(self, goal: int):
+        self.scores = [3, 7]
+        self.elf_1 = 0
+        self.elf_2 = 1
+        self.digits = [int(digit) for digit in str(goal)]
 
-    def evolve(self, goal):
-        while goal not in "".join(self.score_board[-200_020:]):
-            for i in range(100_000):
-                combined = self.combine()
-                self.add(combined)
-                for elve in self.elves:
-                    elve.index = (elve.index + self.score(elve.index) + 1) % len(
-                        self.score_board
-                    )
+    def evolve(self) -> str:
+        while not self.found(0) and not self.found(1):
+            self.step()
+        return "".join([str(score) for score in self.scores])
 
-    def combine(self):
-        return sum([self.score(elve.index) for elve in self.elves])
+    def found(self, offset: int) -> bool:
+        return self.scores[-len(self.digits) - offset : -offset] == self.digits
 
-    def add(self, value):
-        for i in str(value):
-            self.score_board.append(i)
+    def step(self) -> None:
+        total = self.scores[self.elf_1] + self.scores[self.elf_2]
+        if total >= 10:
+            self.scores.append(1)
+            total %= 10
+        self.scores.append(total)
+        self.elf_1 = self.update(self.elf_1)
+        self.elf_2 = self.update(self.elf_2)
 
-    def score(self, index):
-        return int(self.score_board[index])
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "".join(self.score_board)
+    def update(self, previous: int) -> int:
+        return (previous + self.scores[previous] + 1) % len(self.scores)
 
 
-def main():
-    goal = str(170_641)
-    recipes = Recipes()
-    recipes.evolve(goal)
-
-    at_goal = "".join(recipes.score_board[int(goal) : int(goal) + 10])
-    answer.part1("2103141159", at_goal)
-
-    goal_at = str(recipes).index(goal)
-    answer.part2(20165733, goal_at)
+def main() -> None:
+    goal = 170_641
+    sequence = Recipes(goal).evolve()
+    answer.part1("2103141159", sequence[goal : goal + 10])
+    answer.part2(20165733, sequence.index(str(goal)))
 
 
 if __name__ == "__main__":
