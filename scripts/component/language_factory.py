@@ -3,6 +3,7 @@ from typing import List
 from language.golang import Go
 from language.java import Java
 from language.language import Language
+from language.ocaml import Ocaml
 from language.python import Python
 from language.rust import Rust
 
@@ -12,6 +13,7 @@ class LanguageFactory:
         self.__languages = [
             Go(),
             Java(),
+            Ocaml(),
             Python(),
             Rust(),
         ]
