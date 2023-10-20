@@ -25,14 +25,14 @@ class Rust(Language):
         # need to be individually compiled
         pass
 
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        args = " ".join(run_args)
-        return f'cargo run -rq --bin "{Rust.__binary_name(day)}" -- {args}'
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        args = [] if len(run_args) == 0 else ["--"] + run_args
+        return ["cargo", "run", "-rq", "--bin", Rust.__binary(day)] + args
 
     def template_processing(self, day: Day) -> None:
         cargo = toml.load(_CARGO_FILE)
         bin_config = {
-            "name": Rust.__binary_name(day),
+            "name": Rust.__binary(day),
             "path": f"{day.year}/{day.day}/{self.solution_file}",
         }
         if bin_config in cargo["bin"]:
@@ -44,7 +44,7 @@ class Rust(Language):
         Rust.__save_cargo_file(cargo)
 
     @staticmethod
-    def __binary_name(day: Day) -> str:
+    def __binary(day: Day) -> str:
         return f"aoc_{day.year}_{day.day}"
 
     @staticmethod

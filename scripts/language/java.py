@@ -20,8 +20,8 @@ class Java(Language):
     def compile(self) -> None:
         os.system("./../../gradlew build -q")
 
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return "./../../gradlew run -q"
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        return ["./../../gradlew", "run", "-q"]
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed

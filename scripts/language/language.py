@@ -1,6 +1,6 @@
 import abc
+import subprocess
 import time
-from subprocess import PIPE, Popen
 from typing import List
 
 from pojo.day import Day
@@ -36,15 +36,13 @@ class Language(abc.ABC):
     def run(self, day: Day, run_args: List[str]) -> float:
         start = time.time()
         command = self._get_run_command(day, run_args)
-
-        _, err = Popen(command, stderr=PIPE, shell=True).communicate()
-        if self.name != "ocaml" and len(err) > 0:
-            raise Exception(f"Failed due to: {err.decode()}")
-
+        result = subprocess.run(command, stderr=subprocess.PIPE)
+        if result.returncode != 0:
+            raise Exception(f"Failed due to: {result.stderr.decode()}")
         return time.time() - start
 
     @abc.abstractmethod
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
         pass
 
     @abc.abstractmethod

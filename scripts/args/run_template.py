@@ -40,7 +40,7 @@ class RunTemplate:
         return [
             Day("2019", "01"),  # Python
             Day("2019", "20"),  # Java
-            Day("2021", "01"),  # Rust & Go
+            Day("2021", "01"),  # Rust, Go, & OCaml
         ]
 
     @staticmethod
