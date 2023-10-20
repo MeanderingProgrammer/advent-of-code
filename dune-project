@@ -6,4 +6,4 @@
 
 (package
  (name advent_of_code)
- (depends ocaml dune))
+ (depends ocaml dune core))
