@@ -21,8 +21,8 @@ class Python(Language):
         # Interpreted languages do not need to be compiled
         pass
 
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return f"python {self.solution_file}"
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        return ["python", self.solution_file]
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed

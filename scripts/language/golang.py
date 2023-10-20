@@ -20,8 +20,8 @@ class Go(Language):
         # For now we use go run, which both compiles and runs our code
         pass
 
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return f"go run {self.solution_file}"
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        return ["go", "run", self.solution_file]
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed

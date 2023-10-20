@@ -22,8 +22,8 @@ class Ocaml(Language):
         # need to be individually compiled
         pass
 
-    def _get_run_command(self, day: Day, run_args: List[str]) -> str:
-        return f"dune exec {day.year}_{day.day}"
+    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        return ["dune", "exec", f"{day.year}_{day.day}"]
 
     def template_processing(self, day: Day) -> None:
         # No additional template processing needed
