@@ -10,8 +10,8 @@ class RuntimeInfo:
 
     def as_dict(self):
         return {
-            "year": self.day.year,
-            "day": self.day.day,
+            "year": int(self.day.year),
+            "day": int(self.day.day),
             "language": self.language,
             "runtime": self.runtime,
         }
