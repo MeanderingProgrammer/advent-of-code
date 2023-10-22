@@ -17,7 +17,7 @@ class Runner:
     languages: List[Language]
     slow: int
     run_args: List[str]
-    save_slow: bool
+    save: bool
 
     def run(self) -> None:
         start = time.time()
@@ -26,15 +26,13 @@ class Runner:
 
         displayer = Displayer()
         displayer.display("ALL", runtimes)
+        self.__save("all", runtimes)
+
         slow = list(filter(lambda runtime: runtime.runtime > self.slow, runtimes))
         displayer.display("SLOW", slow)
+        self.__save("slow", slow)
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
-
-        if self.save_slow:
-            with open("slow.json", "w") as f:
-                save_value = [runtime.as_dict() for runtime in slow]
-                f.write(json.dumps(save_value))
 
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []
@@ -65,3 +63,10 @@ class Runner:
         runtime = language.run(day, self.run_args)
         print(f"Runtime: {runtime:.3f} seconds")
         return RuntimeInfo(day, language.name, runtime)
+
+    def __save(self, name: str, runtimes: List[RuntimeInfo]) -> None:
+        if not self.save:
+            return
+        with open(f"{name}.json", "w") as f:
+            value = [runtime.as_dict() for runtime in runtimes]
+            f.write(json.dumps(value))
