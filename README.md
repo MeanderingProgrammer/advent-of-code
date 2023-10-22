@@ -2,7 +2,7 @@
 
 Public Repo for Advent of Code Solutions
 
-![Years Completed](advent-completed.png)
+![Years Completed](images/advent-completed.png)
 
 ## Install Requirements
 
