@@ -104,7 +104,7 @@ def run(
         languages=languages,
         slow=slow,
         run_args=["--test"] if test else [],
-        save_slow=template in ["days", "slow"],
+        save=template in ["days"] and len(language) == 0,
     )
     click.echo(f"{runner}") if info else runner.run()
 

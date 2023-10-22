@@ -5,6 +5,7 @@ out
 
 # Used by helper scripts
 .adventofcode.session
+all.json
 slow.json
 
 # Python
