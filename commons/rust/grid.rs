@@ -15,10 +15,12 @@ pub struct Grid<T: GridValue> {
 
 impl<T: GridValue> Grid<T> {
     pub fn new() -> Self {
-        Self { grid: HashMap::new() }
+        Self {
+            grid: HashMap::new(),
+        }
     }
 
-    pub fn from_lines(lines: Vec<String>, f : impl Fn(char) -> Option<T>) -> Self {
+    pub fn from_lines(lines: Vec<String>, f: impl Fn(char) -> Option<T>) -> Self {
         let mut grid = Self::new();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
@@ -57,16 +59,15 @@ impl<T: GridValue> Grid<T> {
     }
 
     pub fn points_with_value(&self, target: T) -> Vec<&Point> {
-        self.grid.iter()
+        self.grid
+            .iter()
             .filter(|(_, value)| value == &&target)
             .map(|(point, _)| point)
             .collect()
     }
 
     pub fn height(&self) -> Option<i64> {
-        self.points().iter()
-            .map(|point| point.y())
-            .max()
+        self.points().iter().map(|point| point.y()).max()
     }
 
     pub fn bounds(&self, buffer: i64) -> Bound {
@@ -93,14 +94,15 @@ impl<T: GridValue> Grid<T> {
         let bounds = self.bounds(buffer);
         let (bottom_left, top_right) = (bounds.lower, bounds.upper);
         (bottom_left.y()..=top_right.y())
-            .map(|y| (bottom_left.x()..=top_right.x())
-                .map(|x| Point::new_2d(x, y))
-                .map(|point| match self.get_or(&point) {
-                    Some(value) => value.to_string(),
-                    None => String::from(default),
-                })
-                .join("")
-            )
+            .map(|y| {
+                (bottom_left.x()..=top_right.x())
+                    .map(|x| Point::new_2d(x, y))
+                    .map(|point| match self.get_or(&point) {
+                        Some(value) => value.to_string(),
+                        None => String::from(default),
+                    })
+                    .join("")
+            })
             .join("\n")
     }
 }
@@ -137,10 +139,9 @@ impl Bound {
     }
 
     pub fn contain(&self, point: &Point) -> bool {
-        (0..point.dimensions())
-            .all(|i| {
-                let value = point.get(i);
-                value >= self.lower.get(i) && value <= self.upper.get(i)
-            })
+        (0..point.dimensions()).all(|i| {
+            let value = point.get(i);
+            value >= self.lower.get(i) && value <= self.upper.get(i)
+        })
     }
 }

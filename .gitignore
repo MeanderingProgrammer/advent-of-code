@@ -22,7 +22,6 @@ build
 .factorypath
 
 # Rust
-*.lock
 target
 
 # OCaml

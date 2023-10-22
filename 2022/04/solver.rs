@@ -43,8 +43,20 @@ fn main() {
             second: to_section(section_2.to_string()),
         }
     });
-    answer::part1(532, assignments.iter().filter(|assignment| assignment.full_overlap()).count());
-    answer::part2(854, assignments.iter().filter(|assignment| assignment.any_overlap()).count());
+    answer::part1(
+        532,
+        assignments
+            .iter()
+            .filter(|assignment| assignment.full_overlap())
+            .count(),
+    );
+    answer::part2(
+        854,
+        assignments
+            .iter()
+            .filter(|assignment| assignment.any_overlap())
+            .count(),
+    );
 }
 
 fn to_section(section: String) -> Section {

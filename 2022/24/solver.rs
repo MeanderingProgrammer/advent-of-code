@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::{Bound, Grid};
 use aoc_lib::point::Point;
 use aoc_lib::reader;
-use queues::{Queue, IsQueue};
+use queues::{IsQueue, Queue};
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -26,10 +26,10 @@ impl Direction {
 
     fn next(&self, position: &Point) -> Point {
         match self {
-            Self::Up    => position.add_y(-1),
+            Self::Up => position.add_y(-1),
             Self::Right => position.add_x(1),
-            Self::Down  => position.add_y(1),
-            Self::Left  => position.add_x(-1),
+            Self::Down => position.add_y(1),
+            Self::Left => position.add_x(-1),
         }
     }
 }
@@ -48,10 +48,10 @@ impl Blizzard {
         } else {
             let (x, y) = (self.position.x(), self.position.y());
             match self.direction {
-                Direction::Up    => Point::new_2d(x, valley.end().y() - 1),
+                Direction::Up => Point::new_2d(x, valley.end().y() - 1),
                 Direction::Right => Point::new_2d(valley.start().x(), y),
-                Direction::Down  => Point::new_2d(x, valley.start().y() + 1),
-                Direction::Left  => Point::new_2d(valley.end().x(), y),
+                Direction::Down => Point::new_2d(x, valley.start().y() + 1),
+                Direction::Left => Point::new_2d(valley.end().x(), y),
             }
         };
         Self {
@@ -73,7 +73,8 @@ impl Valley {
         let mut blizzards = HashSet::new();
         let mut blizzard_positions = HashSet::new();
 
-        grid.points().iter()
+        grid.points()
+            .iter()
             .map(|point| (point, grid.get(point)))
             .filter(|(_, &value)| value != '.')
             .for_each(|(&point, value)| {
@@ -85,7 +86,11 @@ impl Valley {
             });
 
         let bounds = grid.bounds(0);
-        Self { bounds, blizzards, blizzard_positions }
+        Self {
+            bounds,
+            blizzards,
+            blizzard_positions,
+        }
     }
 
     fn start(&self) -> &Point {
@@ -100,12 +105,11 @@ impl Valley {
         let mut next_blizzards = HashSet::new();
         let mut next_blizzard_positions = HashSet::new();
 
-        self.blizzards.iter()
-            .for_each(|blizzard| {
-                let next_blizzard = blizzard.next(self);
-                next_blizzard_positions.insert(next_blizzard.position.clone());
-                next_blizzards.insert(next_blizzard);
-            });
+        self.blizzards.iter().for_each(|blizzard| {
+            let next_blizzard = blizzard.next(self);
+            next_blizzard_positions.insert(next_blizzard.position.clone());
+            next_blizzards.insert(next_blizzard);
+        });
 
         self.blizzards = next_blizzards;
         self.blizzard_positions = next_blizzard_positions;
@@ -157,7 +161,9 @@ fn search(valley: &mut Valley, start: &Point, end: &Point) -> i64 {
             }
 
             next_states.insert(current.clone());
-            current.neighbors().into_iter()
+            current
+                .neighbors()
+                .into_iter()
                 .filter(|next_pos| valley.valid_position(next_pos))
                 .for_each(|next_pos| {
                     next_states.insert(next_pos);
@@ -165,7 +171,8 @@ fn search(valley: &mut Valley, start: &Point, end: &Point) -> i64 {
         }
 
         valley.next();
-        next_states.into_iter()
+        next_states
+            .into_iter()
             .filter(|next_state| !valley.hits_blizzard(next_state))
             .for_each(|next_state| {
                 q.add(next_state).unwrap();

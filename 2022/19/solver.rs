@@ -19,15 +19,24 @@ impl Blueprint {
     fn new(id: i64, instructions: Vec<RobotInstruction>) -> Self {
         let mut max_values = [0, 0, 0];
 
-        instructions.iter()
+        instructions
+            .iter()
             .flat_map(|instruction| instruction.requirements.iter().enumerate())
-            .for_each(|(material, &needed)| max_values[material] = max_values[material].max(needed));
+            .for_each(|(material, &needed)| {
+                max_values[material] = max_values[material].max(needed)
+            });
 
-        Self { id, instructions, max_values }
+        Self {
+            id,
+            instructions,
+            max_values,
+        }
     }
 
     fn exceeds_max(&self, state: &State) -> bool {
-        self.max_values.iter().enumerate()
+        self.max_values
+            .iter()
+            .enumerate()
             .any(|(material, &max_value)| state.robots[material] > max_value)
     }
 }
@@ -57,7 +66,10 @@ impl State {
     }
 
     fn can_build(&self, instruction: &RobotInstruction) -> bool {
-        instruction.requirements.iter().enumerate()
+        instruction
+            .requirements
+            .iter()
+            .enumerate()
             .filter(|(_, &needed)| needed > 0)
             .all(|(material, &needed)| self.materials[material] >= needed)
     }
@@ -70,7 +82,8 @@ impl State {
                 // By capping materials to twice the maximum we make a lot of very similar states look
                 // identical and allow them to be pruned.
                 // For example having 100 ore vs 102 ore makes no difference everything else being equal.
-                self.materials[material] = self.materials[material].min(blueprint.max_values[material] * 2);
+                self.materials[material] =
+                    self.materials[material].min(blueprint.max_values[material] * 2);
             }
         }
     }
@@ -84,11 +97,14 @@ impl State {
 
     fn remove_materials(&self, instruction: &RobotInstruction) -> Self {
         let mut updated_materials = self.materials.clone();
-        instruction.requirements.iter().enumerate()
+        instruction
+            .requirements
+            .iter()
+            .enumerate()
             .for_each(|(material, needed)| {
                 updated_materials[material] -= needed;
             });
-        
+
         Self {
             time_left: self.time_left,
             robots: self.robots.clone(),
@@ -99,8 +115,21 @@ impl State {
 
 fn main() {
     let blueprints = get_blueprints();
-    answer::part1(1599, blueprints.iter().map(|blueprint| simulate(blueprint, 24) * blueprint.id).sum());
-    answer::part2(14112, blueprints.iter().take(3).map(|blueprint| simulate(blueprint, 32)).product());
+    answer::part1(
+        1599,
+        blueprints
+            .iter()
+            .map(|blueprint| simulate(blueprint, 24) * blueprint.id)
+            .sum(),
+    );
+    answer::part2(
+        14112,
+        blueprints
+            .iter()
+            .take(3)
+            .map(|blueprint| simulate(blueprint, 32))
+            .product(),
+    );
 }
 
 fn simulate(blueprint: &Blueprint, runtime: i64) -> i64 {
@@ -125,7 +154,8 @@ fn simulate(blueprint: &Blueprint, runtime: i64) -> i64 {
 
         // Prune if there's no way this state can catch up to something we've already seen
         let max_additional_geodes = (time_left * (time_left + 1)) / 2;
-        if num_geods + (state.geode_robots() * time_left) + max_additional_geodes <= max_geodes_seen {
+        if num_geods + (state.geode_robots() * time_left) + max_additional_geodes <= max_geodes_seen
+        {
             continue;
         }
 
@@ -151,8 +181,9 @@ fn get_blueprints() -> Vec<Blueprint> {
         let (blueprint_id_data, robots_data) = line.split_once(": ").unwrap();
         let (_, blueprint_id) = blueprint_id_data.split_once(" ").unwrap();
         Blueprint::new(
-            blueprint_id.parse::<i64>().unwrap(), 
-            robots_data.split(".")
+            blueprint_id.parse::<i64>().unwrap(),
+            robots_data
+                .split(".")
                 .map(|value| value.trim())
                 .filter(|value| value.len() > 0)
                 .map(|value| parse_robot_instruction(value))
@@ -170,13 +201,13 @@ fn parse_robot_instruction(line: &str) -> RobotInstruction {
                 let mut value = [0, 0, 0];
                 value[parse_material(parts[5])] = parts[4].parse::<i64>().unwrap();
                 value
-            },
+            }
             9 => {
                 let mut value = [0, 0, 0];
                 value[parse_material(parts[5])] = parts[4].parse::<i64>().unwrap();
                 value[parse_material(parts[8])] = parts[7].parse::<i64>().unwrap();
                 value
-            },
+            }
             _ => panic!("Unhandled length of requirements"),
         },
     }

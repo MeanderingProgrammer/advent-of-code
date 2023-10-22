@@ -5,7 +5,9 @@ use aoc_lib::reader;
 
 fn main() {
     let grid = reader::read_grid(|ch| Some(ch.to_digit(10).unwrap() as i64));
-    let result: Vec<(i64, bool)> = grid.points().iter()
+    let result: Vec<(i64, bool)> = grid
+        .points()
+        .iter()
         .map(|point| scenic_score(&grid, point))
         .collect();
 
@@ -22,7 +24,12 @@ fn scenic_score(grid: &Grid<i64>, point: &Point) -> (i64, bool) {
     (v1 * v2 * v3 * v4, v1_edge || v2_edge || v3_edge || v4_edge)
 }
 
-fn distance_to_block(grid: &Grid<i64>, point: &Point, value: &i64, f: fn(&Point) -> Point) -> (i64, bool) {
+fn distance_to_block(
+    grid: &Grid<i64>,
+    point: &Point,
+    value: &i64,
+    f: fn(&Point) -> Point,
+) -> (i64, bool) {
     let next_point = &f(point);
     if grid.contains(next_point) {
         if grid.get(next_point) >= value {

@@ -15,12 +15,18 @@ fn main() {
                 cycles.push(x);
                 cycles.push(x);
                 x += parts[1].parse::<i64>().unwrap();
-            },
+            }
             _ => unreachable!(),
         };
     }
 
-    answer::part1(11780, [20, 60, 100, 140, 180, 220].iter().map(|cycle| *cycle as i64 * cycles[cycle - 1]).sum());
+    answer::part1(
+        11780,
+        [20, 60, 100, 140, 180, 220]
+            .iter()
+            .map(|cycle| *cycle as i64 * cycles[cycle - 1])
+            .sum(),
+    );
     answer::part2(
         // PZULBAUA
         [
@@ -31,7 +37,8 @@ fn main() {
             "###...#...#..#.#....#..#.####.#..#.####.",
             "#....#....#..#.#....#..#.#..#.#..#.#..#.",
             "#....####..##..####.###..#..#..##..#..#.",
-        ].join("\n"),
+        ]
+        .join("\n"),
         get_crt_row(&cycles).join("\n"),
     );
 }
@@ -44,7 +51,11 @@ fn get_crt_row(cycles: &[i64]) -> Vec<String> {
         for column in 0..40 {
             let index = row * 40 + column;
             let position = cycles[index];
-            line += if column as i64 <= position + 1 && column as i64 >= position - 1 { "#" } else { "." };
+            line += if column as i64 <= position + 1 && column as i64 >= position - 1 {
+                "#"
+            } else {
+                "."
+            };
         }
         rows.push(line);
     }

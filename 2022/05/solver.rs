@@ -36,12 +36,18 @@ fn main() {
     let arrangement = get_arrangement(arrangement_instructions[0]);
     let instructions = get_instructions(arrangement_instructions[1]);
 
-    answer::part1("RNZLFZSJH", &get_result(arrangement.clone(), &instructions, |instruction, arr| {
-        instruction.apply_single(arr);
-    }));
-    answer::part2("CNSFCGJSM", &get_result(arrangement.clone(), &instructions, |instruction, arr| {
-        instruction.apply_multiple(arr);
-    }));
+    answer::part1(
+        "RNZLFZSJH",
+        &get_result(arrangement.clone(), &instructions, |instruction, arr| {
+            instruction.apply_single(arr);
+        }),
+    );
+    answer::part2(
+        "CNSFCGJSM",
+        &get_result(arrangement.clone(), &instructions, |instruction, arr| {
+            instruction.apply_multiple(arr);
+        }),
+    );
 }
 
 fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {

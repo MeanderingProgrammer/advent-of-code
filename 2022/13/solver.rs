@@ -24,29 +24,36 @@ impl PacketData {
                         return result;
                     }
                 }
-                if data_1.len() < data_2.len() { -1 }
-                    else if data_1.len() > data_2.len() { 1 }
-                    else { 0 }
-            },
+                if data_1.len() < data_2.len() {
+                    -1
+                } else if data_1.len() > data_2.len() {
+                    1
+                } else {
+                    0
+                }
+            }
             (PacketData::Item(value_1), PacketData::Item(value_2)) => {
-                if value_1 < value_2 { -1 }
-                    else if value_1 > value_2 { 1 }
-                    else { 0 }
-            },
+                if value_1 < value_2 {
+                    -1
+                } else if value_1 > value_2 {
+                    1
+                } else {
+                    0
+                }
+            }
             (PacketData::List(data_1), item_2) => {
-                PacketData::List(data_1.clone())
-                    .compare(&PacketData::List(vec![item_2.clone()]))
-            },
+                PacketData::List(data_1.clone()).compare(&PacketData::List(vec![item_2.clone()]))
+            }
             (item_1, PacketData::List(data_2)) => {
-                PacketData::List(vec![item_1.clone()])
-                    .compare(&PacketData::List(data_2.clone()))
-            },
+                PacketData::List(vec![item_1.clone()]).compare(&PacketData::List(data_2.clone()))
+            }
         }
     }
 }
 
 fn main() {
-    let packets: Vec<PacketData> = reader::read_lines().iter()
+    let packets: Vec<PacketData> = reader::read_lines()
+        .iter()
         .filter(|line| !line.is_empty())
         .map(|line| PacketData::from_string(line))
         .collect();
@@ -55,7 +62,9 @@ fn main() {
 }
 
 fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
-    packets.chunks(2).enumerate()
+    packets
+        .chunks(2)
+        .enumerate()
         .filter(|(_, pair)| {
             let packet_1 = &pair[0];
             let packet_2 = &pair[1];
@@ -71,7 +80,8 @@ fn get_decoder_key(packets: &Vec<PacketData>) -> usize {
 
 fn packet_idx(packets: &Vec<PacketData>, value: &str) -> usize {
     let target = PacketData::from_string(value);
-    packets.iter()
+    packets
+        .iter()
         .filter(|packet| match target.compare(packet) {
             -1 => false,
             1 => true,

@@ -9,8 +9,14 @@ fn main() {
     let grid = get_grid();
     let outside_boundary = fill(&grid);
 
-    answer::part1(4288, compute_surface_area(&grid, |point| !grid.contains(point)));
-    answer::part2(2494, compute_surface_area(&grid, |point| outside_boundary.contains(point)));
+    answer::part1(
+        4288,
+        compute_surface_area(&grid, |point| !grid.contains(point)),
+    );
+    answer::part2(
+        2494,
+        compute_surface_area(&grid, |point| outside_boundary.contains(point)),
+    );
 }
 
 fn compute_surface_area(grid: &Grid<char>, f: impl Fn(&Point) -> bool) -> i64 {
@@ -47,7 +53,6 @@ fn fill(grid: &Grid<char>) -> HashSet<Point> {
 fn get_grid() -> Grid<char> {
     let points = reader::read_points();
     let mut grid = Grid::new();
-    points.into_iter()
-        .for_each(|point| grid.add(point, '#'));
+    points.into_iter().for_each(|point| grid.add(point, '#'));
     grid
 }

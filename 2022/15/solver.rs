@@ -37,8 +37,8 @@ impl Range {
         if !self.can_join(other.min) {
             panic!("No overlap, cannot join");
         }
-        Self { 
-            min: self.min.min(other.min), 
+        Self {
+            min: self.min.min(other.min),
             max: self.max.max(other.max),
         }
     }
@@ -60,7 +60,7 @@ impl CoverageZone {
             top_right: Line {
                 slope: -1,
                 y_intercept: center.y() + center.x() + radius,
-            }, 
+            },
             top_left: Line {
                 slope: 1,
                 y_intercept: center.y() - center.x() + radius,
@@ -68,7 +68,7 @@ impl CoverageZone {
             bottom_right: Line {
                 slope: 1,
                 y_intercept: center.y() - center.x() - radius,
-            }, 
+            },
             bottom_left: Line {
                 slope: -1,
                 y_intercept: center.y() + center.x() - radius,
@@ -92,22 +92,21 @@ impl CoverageZone {
             self.top_right.x_value_at(y),
             self.top_left.x_value_at(y),
             self.bottom_right.x_value_at(y),
-            self.bottom_left.x_value_at(y)
+            self.bottom_left.x_value_at(y),
         ];
-        let valid_intercepts: Vec<i64> = intercepts.iter()
+        let valid_intercepts: Vec<i64> = intercepts
+            .iter()
             .map(|&intercept| intercept)
             .filter(|&intercept| self.x_range.contains(intercept))
             .collect();
-                
+
         match valid_intercepts.len() {
             0 => None,
-            2 | 4 => {
-                Some(Range {
-                    min: *valid_intercepts.iter().min().unwrap(),
-                    max: *valid_intercepts.iter().max().unwrap(),
-                })
-            }
-            _ => panic!("Should never be anyting other than 0, 2, or 4 intercepts")
+            2 | 4 => Some(Range {
+                min: *valid_intercepts.iter().min().unwrap(),
+                max: *valid_intercepts.iter().max().unwrap(),
+            }),
+            _ => panic!("Should never be anyting other than 0, 2, or 4 intercepts"),
         }
     }
 }
@@ -115,11 +114,15 @@ impl CoverageZone {
 fn main() {
     let coverage = get_coverage();
     answer::part1(5809294, get_covered_range(&coverage, 2_000_000).len());
-    answer::part2(10693731308112, get_tuning_frequency(&coverage, 4_000_000).unwrap());
+    answer::part2(
+        10693731308112,
+        get_tuning_frequency(&coverage, 4_000_000).unwrap(),
+    );
 }
 
 fn get_covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
-    let mut overlaps: Vec<Range> = coverage.iter()
+    let mut overlaps: Vec<Range> = coverage
+        .iter()
         .map(|zone| zone.overlap_at_y(y))
         .filter(|overlap| overlap.is_some())
         .map(|overlap| overlap.unwrap())
@@ -160,13 +163,9 @@ fn get_coverage() -> Vec<CoverageZone> {
 fn parse_point(component: &str) -> Point {
     let point = component.split_once(" at ").unwrap().1;
     let (x, y) = point.split_once(", ").unwrap();
-    Point::new_2d(
-        parse_coord(x), 
-        parse_coord(y),
-    )
+    Point::new_2d(parse_coord(x), parse_coord(y))
 }
 
 fn parse_coord(coord: &str) -> i64 {
-    coord.split_once("=").unwrap()
-        .1.parse::<i64>().unwrap()
+    coord.split_once("=").unwrap().1.parse::<i64>().unwrap()
 }
