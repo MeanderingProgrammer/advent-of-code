@@ -1,4 +1,5 @@
 import os
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,13 +16,12 @@ class Generator:
 
     def generate(self) -> None:
         date_path = self.__get_date_path()
+        self.__check_solution_path(date_path)
 
-        solution_path = self.__get_solution_path(date_path)
         # At this point we can assume this is the first time we are processing
         # this day for this language, since the solution path does not exist
+        self.__copy_template_to(date_path)
         self.language.template_processing(self.day)
-
-        self.__copy_template_to(solution_path)
         self.__create_sample_if_necessary(date_path)
         self.__create_data_if_necessary(date_path)
 
@@ -31,18 +31,27 @@ class Generator:
         date_path.mkdir(parents=True, exist_ok=True)
         return date_path
 
-    def __get_solution_path(self, date_path: Path) -> Path:
+    def __check_solution_path(self, date_path: Path) -> None:
         solution_path = date_path.joinpath(self.language.solution_file)
         if solution_path.exists():
             raise Exception(f"Solution already exists under: {solution_path}")
-        return solution_path
 
-    def __copy_template_to(self, solution_path: Path) -> None:
-        template_file = f"scripts/templates/{self.language.solution_file}"
-        print(f"Copying {template_file} to {solution_path}")
-        os.system(f"cp {template_file} {solution_path}")
+    def __copy_template_to(self, date_path: Path) -> None:
+        template_directory = Path(f"scripts/templates/{self.language.name}")
+        if not template_directory.is_dir():
+            raise Exception(f"No template defined in {template_directory}")
+        for template_file in template_directory.glob("**/*"):
+            if template_file.is_file():
+                file_path = template_file.relative_to(template_directory)
+                destination = date_path.joinpath(file_path)
+                # Create parent directory if needed for nested solution files
+                if not destination.parent.exists():
+                    destination.parent.mkdir(parents=True)
+                if not destination.exists():
+                    print(f"Copying {template_file} to {destination}")
+                    os.system(f"cp {template_file} {destination}")
 
-    def __create_sample_if_necessary(self, date_path: Path):
+    def __create_sample_if_necessary(self, date_path: Path) -> None:
         sample_path = date_path.joinpath("sample.txt")
         if not sample_path.exists():
             print(f"Creating empty {sample_path}")
@@ -52,7 +61,7 @@ class Generator:
         data_path = date_path.joinpath("data.txt")
         if not data_path.exists():
             print(f"Creating data file under: {data_path}")
-            if Path(ADVENT_COOKIE_FILE).exists():
+            if Path(ADVENT_COOKIE_FILE).exists() and shutil.which("aoc") is not None:
                 print("Downloading input using aoc-cli")
                 self.__download_input(data_path)
             else:
@@ -62,10 +71,12 @@ class Generator:
             print(f"{data_path} already exists, leaving as is")
 
     def __download_input(self, data_path: Path) -> None:
-        os.system(
-            f"""aoc download  \\
-            --year {self.day.year} --day {self.day.day} \\
-            --input-file {data_path} \\
-            --input-only \\
-            --session-file ./{ADVENT_COOKIE_FILE}"""
-        )
+        download_command = [
+            "aoc download",
+            f"--year {self.day.year}",
+            f"--day {self.day.day}",
+            f"--input-file {data_path}",
+            "--input-only",
+            f"--session-file ./{ADVENT_COOKIE_FILE}",
+        ]
+        os.system(" ".join(download_command))

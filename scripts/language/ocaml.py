@@ -23,8 +23,12 @@ class Ocaml(Language):
         pass
 
     def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
-        return ["dune", "exec", f"{day.year}_{day.day}"]
+        return ["dune", "exec", Ocaml.__binary(day)]
 
     def template_processing(self, day: Day) -> None:
-        # No additional template processing needed
-        pass
+        dune_path = f"{day.year}/{day.day}/dune"
+        os.system(f"sed -i '' -e 's/EXEC/{Ocaml.__binary(day)}/g' {dune_path}")
+
+    @staticmethod
+    def __binary(day: Day) -> str:
+        return f"{day.year}_{day.day}"

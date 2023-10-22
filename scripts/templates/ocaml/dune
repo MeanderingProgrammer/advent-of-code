@@ -1,0 +1,4 @@
+(executable
+ (public_name EXEC)
+ (name solver)
+ (libraries aoc))

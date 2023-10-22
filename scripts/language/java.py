@@ -4,6 +4,8 @@ from typing import List
 from language.language import Language
 from pojo.day import Day
 
+_SETTINGS_FILE = "settings.gradle.kts"
+
 
 class Java(Language):
     @property
@@ -24,5 +26,13 @@ class Java(Language):
         return ["./../../gradlew", "run", "-q"]
 
     def template_processing(self, day: Day) -> None:
-        # No additional template processing needed
-        pass
+        bin = f"{day.year}-{day.day}"
+        lines = [
+            "",
+            f'include("{bin}")',
+            f'project(":{bin}").projectDir = file("{day.year}/{day.day}")',
+        ]
+        settings = open(_SETTINGS_FILE, "a")
+        for line in lines:
+            settings.write(f"{line}\n")
+        settings.close()
