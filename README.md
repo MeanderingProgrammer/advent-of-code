@@ -24,8 +24,8 @@ alias a_gen="./scripts/advent.py generate"
 
 Used to run various days rather than running directly.
 
-Does lots of hacky stuff to set environment variables, compile common directories,
-and set arguments to run commands.
+Does some hacky stuff to set arguments and run commands, but for the most part runs
+standard build commands for each language / framework.
 
 None of the parameters are required, the default behavior in this case is to run the
 latest day in all languages it is implemented in.
@@ -40,17 +40,17 @@ a_run \
   --template <template>? \
   (--year <year>)* \
   (--day <day>)* \
-  --language <language>? \
+  (--language <language>)* \
   --test? \
   --info?
 ```
 
 | Variable Name | Alt  | Description                             | Default  | Example           |
 | ------------- | ---- | --------------------------------------- | -------- | ----------------- |
-| template      | `-t` | Name that targets specific years / days | `latest` | `-t all_langs`    |
+| template      | `-t` | Name that targets specific years / days | `latest` | `-t languages`    |
 | year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022` |
 | day           | `-d` | List of days to run                     | None     | `-d 1 -d 3 -d 5`  |
-| language      | `-l` | Limit runs to the specified language    | None     | `-l golang`       |
+| language      | `-l` | Limit runs to the specified languages   | None     | `-l golang`       |
 | test          | N/A  | Passes test flag to each day            | `False`  | `--test`          |
 | info          | `-i` | Outputs which days would run            | `False`  | `-i`              |
 
@@ -97,15 +97,13 @@ a_gen \
 
 Template generation script can use `aoc-cli` to download input: [docs](https://github.com/scarvalhojr/aoc-cli).
 
-- The presense of the `.adventofcode.session` in the repo top level directory enables this logic
-- To set this up create the file and follow the instructions in the `README` of `aoc-cli` to get your session cookie
+Follow the instructions in the `README` of `aoc-cli` to get your session cookie setup.
 
 This library relies on openssl which you will also need to install if you don't already have it.
 
 Commands:
 
 ```
-sudo apt-get install pkg-config libssl-dev
 cargo install aoc-cli
 touch .adventofcode.session
 ```
