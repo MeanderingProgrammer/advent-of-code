@@ -7,6 +7,12 @@ struct Backpack {
 }
 
 impl Backpack {
+    fn new(line: &str) -> Self {
+        Self {
+            content: line.to_string(),
+        }
+    }
+
     fn compartment_1(&self) -> &str {
         &self.content[..self.content.len() / 2]
     }
@@ -22,26 +28,20 @@ impl Backpack {
             .find(|ch| compartment_2.contains(*ch))
             .unwrap()
     }
+
+    fn contains(&self, ch: &char) -> bool {
+        self.content.contains(*ch)
+    }
 }
 
 fn main() {
-    let backpacks = reader::read(|line| Backpack {
-        content: line.to_string(),
-    });
-    answer::part1(
-        8298,
-        backpacks
-            .iter()
-            .map(|backpack| priority(backpack.shared()))
-            .sum(),
-    );
-    answer::part2(
-        2708,
-        backpacks
-            .chunks(3)
-            .map(|group| priority(group_overlap(group)))
-            .sum(),
-    );
+    let backpacks = reader::read(|line| Backpack::new(line));
+
+    let p1_items = backpacks.iter().map(|backpack| backpack.shared());
+    answer::part1(8298, p1_items.map(|item| priority(item)).sum());
+
+    let p2_items = backpacks.chunks(3).map(|group| group_overlap(group));
+    answer::part2(2708, p2_items.map(|item| priority(item)).sum());
 }
 
 fn priority(ch: char) -> u32 {
@@ -54,6 +54,6 @@ fn group_overlap(group: &[Backpack]) -> char {
     group[0]
         .content
         .chars()
-        .find(|ch| group[1].content.contains(*ch) && group[2].content.contains(*ch))
+        .find(|ch| group[1].contains(ch) && group[2].contains(ch))
         .unwrap()
 }

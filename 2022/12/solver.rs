@@ -43,7 +43,7 @@ fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
         }
     }
 
-    return None;
+    None
 }
 
 fn can_go(grid: &Grid<i64>, point: &Point, max_height: &i64) -> bool {

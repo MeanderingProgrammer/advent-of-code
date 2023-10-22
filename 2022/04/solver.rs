@@ -8,6 +8,14 @@ struct Section {
 }
 
 impl Section {
+    fn from_str(section: &str) -> Self {
+        let (start, end) = section.split_once("-").unwrap();
+        Self {
+            start: start.parse::<i64>().unwrap(),
+            end: end.parse::<i64>().unwrap(),
+        }
+    }
+
     fn contains_all(&self, other: &Section) -> bool {
         self.start <= other.start && self.end >= other.end
     }
@@ -26,6 +34,14 @@ struct Assignment {
 }
 
 impl Assignment {
+    fn from_str(line: &str) -> Self {
+        let (section_1, section_2) = line.split_once(",").unwrap();
+        Assignment {
+            first: Section::from_str(section_1),
+            second: Section::from_str(section_2),
+        }
+    }
+
     fn full_overlap(&self) -> bool {
         self.first.contains_all(&self.second) || self.second.contains_all(&self.first)
     }
@@ -36,33 +52,20 @@ impl Assignment {
 }
 
 fn main() {
-    let assignments = reader::read(|line| {
-        let (section_1, section_2) = line.split_once(",").unwrap();
-        Assignment {
-            first: to_section(section_1.to_string()),
-            second: to_section(section_2.to_string()),
-        }
-    });
+    let assignments = reader::read(|line| Assignment::from_str(line));
     answer::part1(
         532,
-        assignments
-            .iter()
-            .filter(|assignment| assignment.full_overlap())
-            .count(),
+        get_count(&assignments, |assignment| assignment.full_overlap()),
     );
     answer::part2(
         854,
-        assignments
-            .iter()
-            .filter(|assignment| assignment.any_overlap())
-            .count(),
+        get_count(&assignments, |assignment| assignment.any_overlap()),
     );
 }
 
-fn to_section(section: String) -> Section {
-    let (start, end) = section.split_once("-").unwrap();
-    Section {
-        start: start.parse::<i64>().unwrap(),
-        end: end.parse::<i64>().unwrap(),
-    }
+fn get_count(assignments: &Vec<Assignment>, f: fn(&Assignment) -> bool) -> usize {
+    assignments
+        .iter()
+        .filter(|assignment| f(assignment))
+        .count()
 }
