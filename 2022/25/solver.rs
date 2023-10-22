@@ -3,7 +3,8 @@ use aoc_lib::reader;
 
 fn main() {
     let snafu_numbers = reader::read_lines();
-    let total_fuel: i64 = snafu_numbers.iter()
+    let total_fuel: i64 = snafu_numbers
+        .iter()
         .map(|snafu_number| to_decimal(snafu_number))
         .sum();
     answer::part1("2011-=2=-1020-1===-1", &to_snafu(total_fuel));
@@ -11,18 +12,17 @@ fn main() {
 
 fn to_decimal(snafu: &str) -> i64 {
     let mut result = 0;
-    snafu.chars()
-        .for_each(|ch| {
-            result *= 5;
-            result += match ch {
-                '2' => 2,
-                '1' => 1,
-                '0' => 0,
-                '-' => -1,
-                '=' => -2,
-                _ => unreachable!(),
-            };
-        });
+    snafu.chars().for_each(|ch| {
+        result *= 5;
+        result += match ch {
+            '2' => 2,
+            '1' => 1,
+            '0' => 0,
+            '-' => -1,
+            '=' => -2,
+            _ => unreachable!(),
+        };
+    });
     result
 }
 

@@ -24,8 +24,8 @@ fn follow_trail(lines: &[String], length: usize) -> usize {
                 "D" => rope[0].add_y(-1),
                 _ => unreachable!(),
             };
-            for i in 0..(rope.len()-1) {
-                rope[i+1] = adjust_trail(&rope[i], &rope[i+1]);
+            for i in 0..(rope.len() - 1) {
+                rope[i + 1] = adjust_trail(&rope[i], &rope[i + 1]);
             }
             tail_locations.insert(rope.last().unwrap().clone());
         }
@@ -38,8 +38,7 @@ fn adjust_trail(front: &Point, back: &Point) -> Point {
     if front.distance(back) < 2.0 {
         back.clone()
     } else {
-        back
-            .add_x(get_adjustment(back.x(), front.x()))
+        back.add_x(get_adjustment(back.x(), front.x()))
             .add_y(get_adjustment(back.y(), front.y()))
     }
 }

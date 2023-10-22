@@ -88,7 +88,10 @@ impl Cube {
             );
             let mut next_direction = current.direction.clone();
 
-            let edge = edges.get(&current.block).unwrap().get_edge(&current.direction);
+            let edge = edges
+                .get(&current.block)
+                .unwrap()
+                .get_edge(&current.direction);
             for _ in 0..edge.rotations {
                 next_relative_position = Point::new_2d(
                     self.size - next_relative_position.y() - 1,
@@ -187,9 +190,7 @@ impl Block {
     }
 
     fn absolute(&self, size: i64, relative: &Point) -> Point {
-        self.top_left(size)
-            .add_x(relative.x())
-            .add_y(relative.y())
+        self.top_left(size).add_x(relative.x()).add_y(relative.y())
     }
 }
 
@@ -237,24 +238,38 @@ impl State {
 
 fn main() {
     let (cube, instructions) = get_input();
-    answer::part1(3590, simulate(&cube, &instructions, parse_mappings(vec![
-        // This will differ for different inputs
-        "A -> E:0 B:0 C:0 B:0",
-        "B -> B:0 A:0 B:0 A:0",
-        "C -> A:0 C:0 E:0 C:0",
-        "D -> F:0 E:0 F:0 E:0",
-        "E -> C:0 D:0 A:0 D:0",
-        "F -> D:0 F:0 D:0 F:0",
-    ])));
-    answer::part2(86382, simulate(&cube, &instructions, parse_mappings(vec![
-        // This will differ for different inputs
-        "A -> F:1 B:0 C:0 D:2",
-        "B -> F:0 E:2 C:1 A:0",
-        "C -> A:0 B:3 E:0 D:3",
-        "D -> C:1 E:0 F:0 A:2",
-        "E -> C:0 B:2 F:1 D:0",
-        "F -> D:0 E:3 B:0 A:3",
-    ])));
+    answer::part1(
+        3590,
+        simulate(
+            &cube,
+            &instructions,
+            parse_mappings(vec![
+                // This will differ for different inputs
+                "A -> E:0 B:0 C:0 B:0",
+                "B -> B:0 A:0 B:0 A:0",
+                "C -> A:0 C:0 E:0 C:0",
+                "D -> F:0 E:0 F:0 E:0",
+                "E -> C:0 D:0 A:0 D:0",
+                "F -> D:0 F:0 D:0 F:0",
+            ]),
+        ),
+    );
+    answer::part2(
+        86382,
+        simulate(
+            &cube,
+            &instructions,
+            parse_mappings(vec![
+                // This will differ for different inputs
+                "A -> F:1 B:0 C:0 D:2",
+                "B -> F:0 E:2 C:1 A:0",
+                "C -> A:0 B:3 E:0 D:3",
+                "D -> C:1 E:0 F:0 A:2",
+                "E -> C:0 B:2 F:1 D:0",
+                "F -> D:0 E:3 B:0 A:3",
+            ]),
+        ),
+    );
 }
 
 fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, Edges>) -> i64 {
@@ -265,10 +280,10 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
                 for _ in 0..*amount {
                     cube.next(&mut state, &edges);
                 }
-            },
+            }
             Instruction::Turn(turn) => {
                 state.direction = state.direction.turn(turn);
-            },
+            }
         }
     }
     state.score()
@@ -292,25 +307,26 @@ fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
     );
 
     let mut result = HashMap::new();
-    edge_mappings.iter()
+    edge_mappings
+        .iter()
         .map(|edge_mapping| parser(edge_mapping).unwrap().1)
         .for_each(|(block, edges)| {
-            result.insert(block, Edges {
-                above: edges[0].clone(),
-                right: edges[1].clone(),
-                below: edges[2].clone(),
-                left: edges[3].clone(),
-            });
+            result.insert(
+                block,
+                Edges {
+                    above: edges[0].clone(),
+                    right: edges[1].clone(),
+                    below: edges[2].clone(),
+                    left: edges[3].clone(),
+                },
+            );
         });
     result
 }
 
 fn get_input() -> (Cube, Vec<Instruction>) {
     let data = reader::read_group_lines();
-    (
-        parse_cube(&data[0]),
-        parse_instructions(&data[1][0]),
-    )
+    (parse_cube(&data[0]), parse_instructions(&data[1][0]))
 }
 
 fn parse_cube(lines: &Vec<String>) -> Cube {

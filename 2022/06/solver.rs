@@ -11,6 +11,7 @@ fn main() {
 
 fn first_unique_sequence(chars: &Vec<char>, length: usize) -> usize {
     (0..chars.len())
-        .position(|i| &chars[i..i+length].iter().unique().count() == &length)
-        .unwrap() + length
+        .position(|i| &chars[i..i + length].iter().unique().count() == &length)
+        .unwrap()
+        + length
 }

@@ -11,9 +11,7 @@ impl Point {
     }
 
     pub fn new_2d(x: i64, y: i64) -> Point {
-        Point {
-            values: vec![x, y],
-        }
+        Point { values: vec![x, y] }
     }
 
     pub fn new_nd(values: Vec<i64>) -> Point {
@@ -45,11 +43,11 @@ impl Point {
         self.add(0, value)
     }
 
-    pub fn add_y(&self, value: i64) -> Self  {
+    pub fn add_y(&self, value: i64) -> Self {
         self.add(1, value)
     }
 
-    pub fn add_z(&self, value: i64) -> Self  {
+    pub fn add_z(&self, value: i64) -> Self {
         self.add(2, value)
     }
 
@@ -62,14 +60,14 @@ impl Point {
 
     pub fn neighbors(&self) -> Vec<Self> {
         match self.dimensions() {
-            2 => vec![
-                self.add_x(1), self.add_x(-1),
-                self.add_y(1), self.add_y(-1),
-            ],
+            2 => vec![self.add_x(1), self.add_x(-1), self.add_y(1), self.add_y(-1)],
             3 => vec![
-                self.add_x(1), self.add_x(-1),
-                self.add_y(1), self.add_y(-1),
-                self.add_z(1), self.add_z(-1),
+                self.add_x(1),
+                self.add_x(-1),
+                self.add_y(1),
+                self.add_y(-1),
+                self.add_z(1),
+                self.add_z(-1),
             ],
             _ => panic!("Unsupported number of dimensions for computing neighbors"),
         }

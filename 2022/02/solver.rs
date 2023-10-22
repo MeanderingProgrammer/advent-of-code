@@ -10,7 +10,7 @@ enum Hand {
 
 impl Hand {
     fn value(&self) -> i64 {
-        return match self {
+        match self {
             Hand::Rock => 1,
             Hand::Paper => 2,
             Hand::Scissors => 3,
@@ -18,7 +18,7 @@ impl Hand {
     }
 
     fn beats(&self) -> Hand {
-        return match self {
+        match self {
             Hand::Rock => Hand::Scissors,
             Hand::Paper => Hand::Rock,
             Hand::Scissors => Hand::Paper,
@@ -26,7 +26,7 @@ impl Hand {
     }
 
     fn loses(&self) -> Hand {
-        return match self {
+        match self {
             Hand::Rock => Hand::Paper,
             Hand::Paper => Hand::Scissors,
             Hand::Scissors => Hand::Rock,
@@ -43,7 +43,7 @@ enum Result {
 
 impl Result {
     fn value(&self) -> i64 {
-        return match self {
+        match self {
             Result::Win => 6,
             Result::Lose => 0,
             Result::Draw => 3,
@@ -66,7 +66,7 @@ impl Round {
         } else {
             Result::Win
         };
-        return result.value() + self.me.0.value();
+        result.value() + self.me.0.value()
     }
 
     fn score_result(&self) -> i64 {
@@ -75,7 +75,7 @@ impl Round {
             Result::Lose => self.oponent.beats().clone(),
             Result::Win => self.oponent.loses().clone(),
         };
-        return hand.value() + self.me.1.value();
+        hand.value() + self.me.1.value()
     }
 }
 
@@ -93,7 +93,7 @@ fn main() {
                 "X" => (Hand::Rock, Result::Lose),
                 "Y" => (Hand::Paper, Result::Draw),
                 "Z" => (Hand::Scissors, Result::Win),
-                _ => panic!("Unknown me value {}", me)
+                _ => panic!("Unknown me value {}", me),
             },
         }
     });

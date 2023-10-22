@@ -30,7 +30,9 @@ impl FallingShape {
     }
 
     fn points(&self) -> Vec<Point> {
-        self.shape.locations.iter()
+        self.shape
+            .locations
+            .iter()
             .map(|point| point.add_x(self.anchor.x()).add_y(self.anchor.y()))
             .collect()
     }
@@ -65,11 +67,11 @@ impl FallingShape {
     }
 
     fn collides(&self, grid: &Grid<char>) -> bool {
-        self.points().iter()
+        self.points()
+            .iter()
             .any(|point| grid.contains(&point) || point.y() < 0 || point.x() < 0 || point.x() > 6)
     }
 }
-
 
 fn main() {
     let jets = reader::read_chars();
@@ -122,13 +124,23 @@ fn main() {
         ]),
     ];
 
-    answer::part1(3209, simulate(2_022, jets.iter().cycle(), shapes.iter().cycle()));
-    answer::part2(1580758017509, simulate(1_000_000_000_000, jets.iter().cycle(), shapes.iter().cycle()));
+    answer::part1(
+        3209,
+        simulate(2_022, jets.iter().cycle(), shapes.iter().cycle()),
+    );
+    answer::part2(
+        1580758017509,
+        simulate(
+            1_000_000_000_000,
+            jets.iter().cycle(),
+            shapes.iter().cycle(),
+        ),
+    );
 }
 
 fn simulate<'a>(
     rocks_to_drop: i64,
-    mut jets: impl Iterator<Item = &'a char>, 
+    mut jets: impl Iterator<Item = &'a char>,
     mut shapes: impl Iterator<Item = &'a Shape>,
 ) -> i64 {
     let mut grid: Grid<char> = Grid::new();
@@ -146,28 +158,35 @@ fn simulate<'a>(
 
         while !crashed {
             let next_position = falling_shape.apply_jet(jets.next().unwrap());
-            falling_shape = if next_position.collides(&grid) { falling_shape } else { next_position };
+            falling_shape = if next_position.collides(&grid) {
+                falling_shape
+            } else {
+                next_position
+            };
 
             let next_position = falling_shape.down();
             falling_shape = if next_position.collides(&grid) {
                 crashed = true;
-                falling_shape 
-            } else { 
-                next_position 
+                falling_shape
+            } else {
+                next_position
             };
         }
 
-        falling_shape.points().iter()
+        falling_shape
+            .points()
+            .iter()
             .for_each(|point| grid.add(point.clone(), '#'));
 
         rocks_dropped += 1;
-        
+
         let height = grid.height().unwrap() + 1;
 
         let value = grid.as_string(".", 0);
         if cache.contains_key(&value) {
             let (cache_rocks, cache_height) = cache.get(&value).unwrap();
-            let (period_length, period_height) = (rocks_dropped - cache_rocks, height - cache_height);
+            let (period_length, period_height) =
+                (rocks_dropped - cache_rocks, height - cache_height);
             let periods_left = (rocks_to_drop - rocks_dropped) / period_length;
 
             // Once we have a cache hit we advance as many full periods as possible
@@ -185,11 +204,13 @@ fn simulate<'a>(
 }
 
 fn remove_points_below(grid: &mut Grid<char>, threshold: i64) {
-    let points_to_remove: Vec<Point> = grid.points().iter()
+    let points_to_remove: Vec<Point> = grid
+        .points()
+        .iter()
         .filter(|point| point.y() < threshold)
         .map(|&point| point.clone())
         .collect();
-    
+
     for point in points_to_remove {
         grid.remove(&point);
     }

@@ -42,17 +42,12 @@ fn drop_grain(grid: &Grid<char>, max_height: i64) -> (Point, bool) {
 
     let mut grain = starting_point();
     while can_fall && !fell_through {
-        let options = vec![
-            (0, 1),
-            (-1, 1),
-            (1, 1),
-        ];
-        
-        let next = options.into_iter()
-            .find(|(x, y)| {
-                let result = grain.add_x(*x).add_y(*y);
-                !grid.contains(&result)
-            });
+        let options = vec![(0, 1), (-1, 1), (1, 1)];
+
+        let next = options.into_iter().find(|(x, y)| {
+            let result = grain.add_x(*x).add_y(*y);
+            !grid.contains(&result)
+        });
 
         match next {
             None => can_fall = false,
@@ -68,12 +63,10 @@ fn drop_grain(grid: &Grid<char>, max_height: i64) -> (Point, bool) {
 
 fn get_grid() -> Grid<char> {
     let rock_formations: Vec<Vec<Point>> = reader::read(|line| {
-        line.to_string().split(" -> ")
+        line.to_string()
+            .split(" -> ")
             .map(|point| match point.split_once(",") {
-                Some((x, y)) => Point::new_2d(
-                    x.parse::<i64>().unwrap(), 
-                    y.parse::<i64>().unwrap(),
-                ),
+                Some((x, y)) => Point::new_2d(x.parse::<i64>().unwrap(), y.parse::<i64>().unwrap()),
                 None => panic!(),
             })
             .collect()
@@ -81,13 +74,12 @@ fn get_grid() -> Grid<char> {
 
     let mut grid: Grid<char> = Grid::new();
     grid.add(starting_point(), '+');
-    rock_formations.iter()
-        .flat_map(|rock_formation| (1..rock_formation.len())
-            .map(|i| Line2d::new(
-                rock_formation[i - 1].clone(), 
-                rock_formation[i].clone(),
-            ))
-        )
+    rock_formations
+        .iter()
+        .flat_map(|rock_formation| {
+            (1..rock_formation.len())
+                .map(|i| Line2d::new(rock_formation[i - 1].clone(), rock_formation[i].clone()))
+        })
         .flat_map(|line| line.as_points().into_iter())
         .for_each(|point| grid.add(point.clone(), '#'));
     grid

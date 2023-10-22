@@ -12,7 +12,8 @@ fn main() {
 }
 
 fn shortest_bfs(grid: &Grid<i64>, end: &Point) -> i64 {
-    grid.points_with_value(get_offset('a')).iter()
+    grid.points_with_value(get_offset('a'))
+        .iter()
         .map(|start| bfs(grid, start, end))
         .filter(|result| result.is_some())
         .map(|result| result.unwrap())
@@ -25,7 +26,7 @@ fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
     queue.push(start.clone(), 0);
 
     let mut seen: HashSet<Point> = HashSet::new();
-    
+
     while !queue.is_empty() {
         let (point, distance) = queue.pop().unwrap();
         if point == end.clone() {
@@ -42,7 +43,7 @@ fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
         }
     }
 
-    return None
+    return None;
 }
 
 fn can_go(grid: &Grid<i64>, point: &Point, max_height: &i64) -> bool {

@@ -61,18 +61,21 @@ fn get_monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
 
                 movements.push(ItemMove {
                     item: item,
-                    to: if item % monkey.divisible_by == 0 { monkey.true_monkey } else { monkey.false_monkey },
+                    to: if item % monkey.divisible_by == 0 {
+                        monkey.true_monkey
+                    } else {
+                        monkey.false_monkey
+                    },
                 });
             }
 
-            movements.iter()
+            movements
+                .iter()
                 .for_each(|movement| monkeys[movement.to].items.push(movement.item));
         }
     }
 
-    let mut inspections: Vec<i64> = monkeys.iter()
-        .map(|monkey| monkey.inspections)
-        .collect();
+    let mut inspections: Vec<i64> = monkeys.iter().map(|monkey| monkey.inspections).collect();
     inspections.sort();
     inspections.reverse();
 
@@ -80,25 +83,30 @@ fn get_monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
 }
 
 fn get_monkeys() -> Vec<Monkey> {
-    reader::read_group_lines().iter()
+    reader::read_group_lines()
+        .iter()
         .map(|group| Monkey {
-            items: group[1].split_once(": ")
-                .unwrap().1
+            items: group[1]
+                .split_once(": ")
+                .unwrap()
+                .1
                 .split(", ")
                 .map(|item| item.parse::<i64>().unwrap())
                 .collect(),
-            expression: group[2].split_once(" = ")
-                    .unwrap().1
-                    .to_string(),
-            divisible_by: group[3].split(" ")
-                .last().unwrap()
-                .parse::<i64>().unwrap(),
-            true_monkey: group[4].split(" ")
-                .last().unwrap()
-                .parse::<usize>().unwrap(),
-            false_monkey: group[5].split(" ")
-                .last().unwrap()
-                .parse::<usize>().unwrap(),
+            expression: group[2].split_once(" = ").unwrap().1.to_string(),
+            divisible_by: group[3].split(" ").last().unwrap().parse::<i64>().unwrap(),
+            true_monkey: group[4]
+                .split(" ")
+                .last()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap(),
+            false_monkey: group[5]
+                .split(" ")
+                .last()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap(),
             inspections: 0,
         })
         .collect()

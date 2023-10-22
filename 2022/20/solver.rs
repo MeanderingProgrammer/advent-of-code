@@ -18,30 +18,35 @@ fn decrypt(multiplier: i64, rounds: usize) -> i64 {
 
     for _ in 0..rounds {
         for i in 0..sequence.len() {
-            let index = sequence.iter()
+            let index = sequence
+                .iter()
                 .position(|sequence_entry| sequence_entry.index == to_int(i))
                 .unwrap();
-            
+
             let entry = sequence.remove(index);
             let new_index = (to_int(index) + entry.value).rem_euclid(full_length - 1);
             sequence.insert(to_index(new_index), entry);
         }
     }
 
-    let start_index = sequence.iter()
+    let start_index = sequence
+        .iter()
         .position(|sequence_entry| sequence_entry.value == 0)
         .unwrap();
-    
-    vec![1_000, 2_000, 3_000].iter()
+
+    vec![1_000, 2_000, 3_000]
+        .iter()
         .map(|offset| (to_int(start_index) + offset) % full_length)
         .map(|index| sequence[to_index(index)].value)
         .sum()
 }
 
 fn get_sequence(multiplier: i64) -> Vec<SequenceEntry> {
-    reader::read_int().iter().enumerate()
-        .map(|(index, &value)| SequenceEntry { 
-            index: to_int(index), 
+    reader::read_int()
+        .iter()
+        .enumerate()
+        .map(|(index, &value)| SequenceEntry {
+            index: to_int(index),
             value: value * multiplier,
         })
         .collect()

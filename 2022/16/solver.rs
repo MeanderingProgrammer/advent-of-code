@@ -9,10 +9,7 @@ use nom::{
     multi::separated_list0,
     sequence::{separated_pair, tuple},
 };
-use petgraph::{
-    algo::floyd_warshall::floyd_warshall,
-    graphmap::DiGraphMap,
-};
+use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
 use std::collections::HashMap;
 
@@ -37,10 +34,15 @@ struct Cave<'a> {
 impl<'a> Cave<'a> {
     fn next_options(&self, state: &FullState, score: i64, i: usize) -> Vec<(FullState, i64)> {
         let individual = &state.individuals[i];
-        self.graph.edges(&individual.location)
+        self.graph
+            .edges(&individual.location)
             .map(|(_, destination, &time)| (destination, time))
             .filter(|(_, time)| individual.minutes_left - time > 0)
-            .filter(|(destination, _)| !state.valves_opened.contains(&(destination.to_owned().to_owned())))
+            .filter(|(destination, _)| {
+                !state
+                    .valves_opened
+                    .contains(&(destination.to_owned().to_owned()))
+            })
             .map(|(destination, time)| {
                 let next_time_left = individual.minutes_left - time - 1;
                 let flow_rate = self.valve_to_flow.get(destination).unwrap();
@@ -67,7 +69,9 @@ impl<'a> Cave<'a> {
     }
 
     fn optimistic_additional_score(&self, state: &FullState) -> i64 {
-        let mut unopened: Vec<i64> = self.valve_to_flow.iter()
+        let mut unopened: Vec<i64> = self
+            .valve_to_flow
+            .iter()
             .filter(|(name, _)| !state.valves_opened.contains(name))
             .map(|(_, &flow_rate)| flow_rate)
             .collect();
@@ -76,13 +80,17 @@ impl<'a> Cave<'a> {
 
         let mut highest_values = unopened.iter().peekable();
 
-        let mut times_left: Vec<i64> = state.individuals.iter()
+        let mut times_left: Vec<i64> = state
+            .individuals
+            .iter()
             .map(|individual| individual.minutes_left)
             .collect();
 
         let mut additional_score = 0;
         while times_left.iter().max().unwrap() > &2 && !highest_values.peek().is_none() {
-            let index_of_max = times_left.iter().enumerate()
+            let index_of_max = times_left
+                .iter()
+                .enumerate()
                 .max_by(|(_, a), (_, b)| a.cmp(b))
                 .map(|(index, _)| index)
                 .unwrap();
@@ -106,9 +114,7 @@ impl Valve {
         Ok(Self {
             name: name.to_string(),
             flow_rate: flow_rate,
-            leads_to: leads_to.iter()
-                .map(|to| to.to_string())
-                .collect(),
+            leads_to: leads_to.iter().map(|to| to.to_string()).collect(),
         })
     }
 }
@@ -132,7 +138,8 @@ fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<
             IndividualState {
                 location: "AA".to_string(),
                 minutes_left: starting_time,
-            }; individuals
+            };
+            individuals
         ],
         valves_opened: vec!["AA".to_string()],
     };
@@ -147,13 +154,13 @@ fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<
         }
 
         // Mechanism to filter out states that cannot possibly reach an already seen value
-        if max_score != None && score + cave.optimistic_additional_score(&state) < max_score.unwrap() {
+        if max_score != None
+            && score + cave.optimistic_additional_score(&state) < max_score.unwrap()
+        {
             continue;
         }
 
-        let mut across_individuals = vec![
-            (state, score),
-        ];
+        let mut across_individuals = vec![(state, score)];
 
         for i in 0..individuals {
             let mut next_options = Vec::new();
@@ -209,7 +216,8 @@ fn create_cave<'a>(valves: &'a Vec<Valve>, valve_to_flow: &'a HashMap<String, i6
 
 fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
     let mut valve_to_flow = HashMap::new();
-    valves.iter()
+    valves
+        .iter()
         // Only some of the valves actually matter, in particular the ones with some flow rate + start
         .filter(|valve| valve.name.clone() == "AA" || valve.flow_rate > 0)
         .for_each(|valve| {
@@ -233,16 +241,14 @@ fn parse(values: &[String]) -> Vec<Valve> {
                     tag("tunnel leads to valve "),
                     tag("tunnels lead to valves "),
                 )),
-                separated_list0(
-                    tag(", "),
-                    alpha0,
-                ),
+                separated_list0(tag(", "), alpha0),
             )),
         ),
         |((_, name, _, flow_rate), (_, leads_to))| Valve::new(name, flow_rate, leads_to),
     );
 
-    values.iter()
+    values
+        .iter()
         .map(|value| parser(value).unwrap().1)
         .collect()
 }
