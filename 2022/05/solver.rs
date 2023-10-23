@@ -1,12 +1,26 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Instruction {
     amount: usize,
     from: usize,
     to: usize,
+}
+
+impl FromStr for Instruction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts: Vec<&str> = s.split(" ").collect();
+        Ok(Self {
+            amount: parts[1].parse().unwrap(),
+            from: parts[3].parse().unwrap(),
+            to: parts[5].parse().unwrap(),
+        })
+    }
 }
 
 impl Instruction {
@@ -30,27 +44,33 @@ impl Instruction {
 }
 
 fn main() {
-    let lines = reader::read_lines();
-    let arrangement_instructions: Vec<&[String]> = lines.split(|line| line.is_empty()).collect();
+    let groups = reader::read_group_lines();
 
-    let arrangement = get_arrangement(arrangement_instructions[0]);
-    let instructions = get_instructions(arrangement_instructions[1]);
+    let arrangement = get_arrangement(&groups[0]);
+    let instructions: Vec<Instruction> = groups[1]
+        .iter()
+        .map(|raw_value| raw_value.parse().unwrap())
+        .collect();
 
     answer::part1(
         "RNZLFZSJH",
-        &get_result(arrangement.clone(), &instructions, |instruction, arr| {
-            instruction.apply_single(arr);
-        }),
+        &get_result(
+            arrangement.clone(),
+            &instructions,
+            Instruction::apply_single,
+        ),
     );
     answer::part2(
         "CNSFCGJSM",
-        &get_result(arrangement.clone(), &instructions, |instruction, arr| {
-            instruction.apply_multiple(arr);
-        }),
+        &get_result(
+            arrangement.clone(),
+            &instructions,
+            Instruction::apply_multiple,
+        ),
     );
 }
 
-fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {
+fn get_arrangement(raw: &Vec<String>) -> HashMap<usize, Vec<char>> {
     let mut arrangement: HashMap<usize, Vec<char>> = HashMap::new();
     for row in raw.iter().rev().skip(1) {
         let row_chars: Vec<char> = row.chars().collect();
@@ -66,19 +86,6 @@ fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {
         }
     }
     arrangement
-}
-
-fn get_instructions(raw: &[String]) -> Vec<Instruction> {
-    raw.iter()
-        .map(|raw_value| {
-            let parts: Vec<&str> = raw_value.split(" ").collect();
-            Instruction {
-                amount: parts[1].parse::<usize>().unwrap(),
-                from: parts[3].parse::<usize>().unwrap(),
-                to: parts[5].parse::<usize>().unwrap(),
-            }
-        })
-        .collect()
 }
 
 fn get_result(
