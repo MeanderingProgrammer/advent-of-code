@@ -60,7 +60,7 @@ fn get_monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
                 monkey.inspections += 1;
 
                 movements.push(ItemMove {
-                    item: item,
+                    item,
                     to: if item % monkey.divisible_by == 0 {
                         monkey.true_monkey
                     } else {
