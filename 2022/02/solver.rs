@@ -1,11 +1,25 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
+use std::str::FromStr;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 enum Hand {
     Rock,
     Paper,
     Scissors,
+}
+
+impl FromStr for Hand {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "A" | "X" => Ok(Self::Rock),
+            "B" | "Y" => Ok(Self::Paper),
+            "C" | "Z" => Ok(Self::Scissors),
+            _ => Err("Unknown hand value".to_string()),
+        }
+    }
 }
 
 impl Hand {
@@ -17,87 +31,97 @@ impl Hand {
         }
     }
 
-    fn beats(&self) -> Hand {
+    fn beats(&self) -> Self {
         match self {
-            Hand::Rock => Hand::Scissors,
-            Hand::Paper => Hand::Rock,
-            Hand::Scissors => Hand::Paper,
+            Self::Rock => Self::Scissors,
+            Self::Paper => Self::Rock,
+            Self::Scissors => Self::Paper,
         }
     }
 
-    fn loses(&self) -> Hand {
+    fn loses(&self) -> Self {
         match self {
-            Hand::Rock => Hand::Paper,
-            Hand::Paper => Hand::Scissors,
-            Hand::Scissors => Hand::Rock,
+            Self::Rock => Self::Paper,
+            Self::Paper => Self::Scissors,
+            Self::Scissors => Self::Rock,
         }
     }
 }
 
 #[derive(Debug)]
-enum Result {
+enum Outcome {
     Win,
     Lose,
     Draw,
 }
 
-impl Result {
+impl FromStr for Outcome {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "X" => Ok(Self::Lose),
+            "Y" => Ok(Self::Draw),
+            "Z" => Ok(Self::Win),
+            _ => Err("Unknown outcome value".to_string()),
+        }
+    }
+}
+
+impl Outcome {
     fn value(&self) -> i64 {
         match self {
-            Result::Win => 6,
-            Result::Lose => 0,
-            Result::Draw => 3,
+            Self::Win => 6,
+            Self::Lose => 0,
+            Self::Draw => 3,
         }
     }
 }
 
 #[derive(Debug)]
 struct Round {
-    oponent: Hand,
-    me: (Hand, Result),
+    opponent_hand: Hand,
+    hand: Hand,
+    desired_outcome: Outcome,
+}
+
+impl FromStr for Round {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (opponent, me) = s.split_once(" ").unwrap();
+        Ok(Self {
+            opponent_hand: opponent.parse::<Hand>()?,
+            hand: me.parse::<Hand>()?,
+            desired_outcome: me.parse::<Outcome>()?,
+        })
+    }
 }
 
 impl Round {
     fn score_play(&self) -> i64 {
-        let result = if self.oponent == self.me.0 {
-            Result::Draw
-        } else if self.oponent.beats() == self.me.0 {
-            Result::Lose
+        let outcome = if self.opponent_hand == self.hand {
+            Outcome::Draw
+        } else if self.opponent_hand.beats() == self.hand {
+            Outcome::Lose
         } else {
-            Result::Win
+            Outcome::Win
         };
-        result.value() + self.me.0.value()
+        outcome.value() + self.hand.value()
     }
 
     fn score_result(&self) -> i64 {
-        let hand = match self.me.1 {
-            Result::Draw => self.oponent.clone(),
-            Result::Lose => self.oponent.beats().clone(),
-            Result::Win => self.oponent.loses().clone(),
+        let hand_value = match self.desired_outcome {
+            Outcome::Draw => self.opponent_hand.value(),
+            Outcome::Lose => self.opponent_hand.beats().value(),
+            Outcome::Win => self.opponent_hand.loses().value(),
         };
-        hand.value() + self.me.1.value()
+        hand_value + self.desired_outcome.value()
     }
 }
 
 fn main() {
-    let rounds = reader::read(|line| {
-        let (oponent, me) = line.split_once(" ").unwrap();
-        Round {
-            oponent: match oponent {
-                "A" => Hand::Rock,
-                "B" => Hand::Paper,
-                "C" => Hand::Scissors,
-                _ => panic!("Unknown oppenent value {}", oponent),
-            },
-            me: match me {
-                "X" => (Hand::Rock, Result::Lose),
-                "Y" => (Hand::Paper, Result::Draw),
-                "Z" => (Hand::Scissors, Result::Win),
-                _ => panic!("Unknown me value {}", me),
-            },
-        }
-    });
-
+    let rounds = reader::read(|line| line.parse::<Round>().unwrap());
     answer::part1(9651, rounds.iter().map(|round| round.score_play()).sum());
     answer::part2(10560, rounds.iter().map(|round| round.score_result()).sum());
 }
