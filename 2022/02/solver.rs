@@ -91,9 +91,9 @@ impl FromStr for Round {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (opponent, me) = s.split_once(" ").unwrap();
         Ok(Self {
-            opponent_hand: opponent.parse::<Hand>()?,
-            hand: me.parse::<Hand>()?,
-            desired_outcome: me.parse::<Outcome>()?,
+            opponent_hand: opponent.parse()?,
+            hand: me.parse()?,
+            desired_outcome: me.parse()?,
         })
     }
 }
