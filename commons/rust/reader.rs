@@ -25,6 +25,13 @@ pub fn read_groups<T>(f: fn(&str) -> T) -> Vec<Vec<T>> {
         .collect()
 }
 
+pub fn read_full_groups() -> Vec<String> {
+    read_lines()
+        .split(|line| line.is_empty())
+        .map(|group| group.join("\n"))
+        .collect()
+}
+
 pub fn read_grid<T: GridValue>(f: fn(char) -> Option<T>) -> Grid<T> {
     Grid::from_lines(read_lines(), |ch| f(ch))
 }

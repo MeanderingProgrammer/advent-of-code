@@ -133,10 +133,7 @@ impl TuringMachine {
 }
 
 fn main() {
-    let groups: Vec<String> = reader::read_group_lines()
-        .iter()
-        .map(|group| group.join("\n"))
-        .collect();
+    let groups = reader::read_full_groups();
 
     let (start_state, steps) = get_state(&groups[0]).unwrap().1;
     let mut rules = HashMap::new();
