@@ -12,6 +12,7 @@ use nom::{
 };
 use std::collections::HashMap;
 use std::fmt;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Space {
@@ -163,9 +164,11 @@ enum Block {
     F,
 }
 
-impl Block {
-    fn from_str(block: &str) -> Result<Self, String> {
-        match block {
+impl FromStr for Block {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
             "A" => Ok(Self::A),
             "B" => Ok(Self::B),
             "C" => Ok(Self::C),
@@ -175,7 +178,9 @@ impl Block {
             _ => Err("Cannot parse block".to_string()),
         }
     }
+}
 
+impl Block {
     fn top_left(&self, size: i64) -> Point {
         // This will differ for different inputs
         let (col, row) = match self {
@@ -291,15 +296,15 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
 
 fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
     let mut parser = separated_pair::<_, _, _, _, Error<_>, _, _, _>(
-        map_res(alpha0, Block::from_str),
+        map_res(alpha0, |s: &str| s.parse()),
         tag(" -> "),
         separated_list0(
             tag(" "),
             map_res(
                 separated_pair(
-                    map_res(alpha0, Block::from_str),
+                    map_res(alpha0, |s: &str| s.parse()),
                     tag(":"),
-                    map_res(digit0, |s: &str| s.parse::<usize>()),
+                    map_res(digit0, |s: &str| s.parse()),
                 ),
                 |(block, rotations)| Edge::new(block, rotations),
             ),
