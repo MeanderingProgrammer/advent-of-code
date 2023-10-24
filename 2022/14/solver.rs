@@ -4,61 +4,65 @@ use aoc_lib::line::Line2d;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
 
-const STARTING_POINT: (i64, i64) = (500, 0);
+#[derive(Debug)]
+struct SandFlow {
+    grid: Grid<char>,
+    with_floor: bool,
+    max_height: i64,
+    start: Point,
+}
+
+impl SandFlow {
+    fn new(grid: Grid<char>, with_floor: bool) -> Self {
+        let bounds = grid.bounds(0);
+        Self {
+            grid,
+            with_floor,
+            max_height: bounds.upper().y() + if with_floor { 1 } else { 0 },
+            start: Point::new_2d(500, 0),
+        }
+    }
+
+    fn drop_grain(&mut self) -> bool {
+        let mut grain = self.start.clone();
+        while grain.y() < self.max_height {
+            let next = vec![(0, 1), (-1, 1), (1, 1)]
+                .into_iter()
+                .map(|(x, y)| grain.add_x(x).add_y(y))
+                .filter(|point| !self.grid.contains(&point))
+                .next();
+            if next.is_none() {
+                break;
+            }
+            grain = next.unwrap();
+        }
+        if self.with_floor || grain.y() < self.max_height {
+            self.grid.add(grain.clone(), 'O');
+        }
+        if self.with_floor {
+            grain == self.start
+        } else {
+            grain.y() >= self.max_height
+        }
+    }
+
+    fn amount_sand(&self) -> usize {
+        self.grid.points_with_value('O').len()
+    }
+}
 
 fn main() {
-    answer::part1(610, fill_with_sand(false));
-    answer::part2(27194, fill_with_sand(true));
+    answer::part1(610, fill(false));
+    answer::part2(27194, fill(true));
 }
 
-fn fill_with_sand(with_floor: bool) -> i64 {
-    let mut grid = get_grid();
-    let bounds = grid.bounds(0);
-    let max_height = bounds.upper().y() + if with_floor { 1 } else { 0 };
-
-    let mut amount_sand = 0;
-    let mut landed = true;
-    let start = starting_point();
-
-    while landed {
-        let (grain_position, fell_through) = drop_grain(&grid, max_height);
-        if !with_floor && fell_through {
-            landed = false;
-        } else {
-            grid.add(grain_position.clone(), 'O');
-            amount_sand += 1;
-        }
-        if with_floor && grain_position == start {
-            landed = false;
-        }
+fn fill(with_floor: bool) -> usize {
+    let mut sand_flow = SandFlow::new(get_grid(), with_floor);
+    let mut full = false;
+    while !full {
+        full |= sand_flow.drop_grain();
     }
-
-    amount_sand
-}
-
-fn drop_grain(grid: &Grid<char>, max_height: i64) -> (Point, bool) {
-    let mut can_fall = true;
-    let mut fell_through = false;
-
-    let mut grain = starting_point();
-    while can_fall && !fell_through {
-        let options = vec![(0, 1), (-1, 1), (1, 1)];
-
-        let next = options.into_iter().find(|(x, y)| {
-            let result = grain.add_x(*x).add_y(*y);
-            !grid.contains(&result)
-        });
-
-        match next {
-            None => can_fall = false,
-            Some((x, y)) => grain = grain.add_x(x).add_y(y),
-        }
-
-        if grain.y() >= max_height {
-            fell_through = true;
-        }
-    }
-    (grain, fell_through)
+    sand_flow.amount_sand()
 }
 
 fn get_grid() -> Grid<char> {
@@ -73,7 +77,6 @@ fn get_grid() -> Grid<char> {
     });
 
     let mut grid: Grid<char> = Grid::new();
-    grid.add(starting_point(), '+');
     rock_formations
         .iter()
         .flat_map(|rock_formation| {
@@ -83,8 +86,4 @@ fn get_grid() -> Grid<char> {
         .flat_map(|line| line.as_points().into_iter())
         .for_each(|point| grid.add(point.clone(), '#'));
     grid
-}
-
-fn starting_point() -> Point {
-    Point::new_2d(STARTING_POINT.0, STARTING_POINT.1)
 }
