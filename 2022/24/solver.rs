@@ -101,6 +101,41 @@ impl Valley {
         self.bounds.upper()
     }
 
+    fn search(&mut self, start: &Point, end: &Point) -> Option<i64> {
+        let mut q: Queue<Point> = Queue::new();
+        q.add(start.clone()).unwrap();
+
+        let mut minutes = 0;
+        while q.size() > 0 {
+            let mut next_states: HashSet<Point> = HashSet::new();
+            while q.size() > 0 {
+                let current = q.remove().unwrap();
+                if &current == end {
+                    return Some(minutes);
+                }
+
+                next_states.insert(current.clone());
+                current
+                    .neighbors()
+                    .into_iter()
+                    .filter(|next_pos| self.valid_position(next_pos))
+                    .for_each(|next_pos| {
+                        next_states.insert(next_pos);
+                    });
+            }
+
+            self.next();
+            next_states
+                .into_iter()
+                .filter(|next_state| !self.hits_blizzard(next_state))
+                .for_each(|next_state| {
+                    q.add(next_state).unwrap();
+                });
+            minutes += 1;
+        }
+        None
+    }
+
     fn next(&mut self) {
         let mut next_blizzards = HashSet::new();
         let mut next_blizzard_positions = HashSet::new();
@@ -138,47 +173,10 @@ fn main() {
     }));
     let (start, end) = (valley.start().clone(), valley.end().clone());
 
-    let to_end = search(&mut valley, &start, &end);
+    let to_end = valley.search(&start, &end).unwrap();
     answer::part1(277, to_end);
 
-    let to_start = search(&mut valley, &end, &start);
-    let and_back = search(&mut valley, &start, &end);
+    let to_start = valley.search(&end, &start).unwrap();
+    let and_back = valley.search(&start, &end).unwrap();
     answer::part2(877, to_end + to_start + and_back);
-}
-
-fn search(valley: &mut Valley, start: &Point, end: &Point) -> i64 {
-    let mut minutes = 0;
-
-    let mut q: Queue<Point> = Queue::new();
-    q.add(start.clone()).unwrap();
-
-    while q.size() > 0 {
-        let mut next_states: HashSet<Point> = HashSet::new();
-        while q.size() > 0 {
-            let current = q.remove().unwrap();
-            if &current == end {
-                return minutes;
-            }
-
-            next_states.insert(current.clone());
-            current
-                .neighbors()
-                .into_iter()
-                .filter(|next_pos| valley.valid_position(next_pos))
-                .for_each(|next_pos| {
-                    next_states.insert(next_pos);
-                });
-        }
-
-        valley.next();
-        next_states
-            .into_iter()
-            .filter(|next_state| !valley.hits_blizzard(next_state))
-            .for_each(|next_state| {
-                q.add(next_state).unwrap();
-            });
-        minutes += 1;
-    }
-
-    panic!("Could not find solution");
 }
