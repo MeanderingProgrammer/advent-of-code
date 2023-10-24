@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::reader;
 use serde::Deserialize;
 use serde_json;
+use std::cmp::Ordering;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Clone, Deserialize)]
@@ -20,34 +21,22 @@ impl FromStr for PacketData {
 }
 
 impl PacketData {
-    fn compare(&self, other: &Self) -> i8 {
+    fn compare(&self, other: &Self) -> Ordering {
         match (self, other) {
             (PacketData::List(data_1), PacketData::List(data_2)) => {
-                for i in 0..data_1.len().min(data_2.len()) {
-                    let result = data_1[i].compare(&data_2[i]);
-                    if result != 0 {
-                        return result;
-                    }
-                }
-                Self::int_compare(data_1.len() as i64, data_2.len() as i64)
+                (0..data_1.len().min(data_2.len()))
+                    .map(|i| data_1[i].compare(&data_2[i]))
+                    .filter(|&result| result != Ordering::Equal)
+                    .next()
+                    .unwrap_or(data_1.len().cmp(&data_2.len()))
             }
-            (PacketData::Item(value_1), PacketData::Item(value_2)) => {
-                Self::int_compare(*value_1, *value_2)
-            }
+            (PacketData::Item(value_1), PacketData::Item(value_2)) => value_1.cmp(value_2),
             (PacketData::List(data_1), item_2) => {
                 PacketData::List(data_1.clone()).compare(&PacketData::List(vec![item_2.clone()]))
             }
             (item_1, PacketData::List(data_2)) => {
                 PacketData::List(vec![item_1.clone()]).compare(&PacketData::List(data_2.clone()))
             }
-        }
-    }
-
-    fn int_compare(v1: i64, v2: i64) -> i8 {
-        match v1.cmp(&v2) {
-            std::cmp::Ordering::Less => -1,
-            std::cmp::Ordering::Equal => 0,
-            std::cmp::Ordering::Greater => 1,
         }
     }
 }
@@ -66,8 +55,10 @@ fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
     packets
         .chunks(2)
         .enumerate()
-        .filter(|(_, pair)| pair[0].compare(&pair[1]) < 0)
-        .map(|(i, _)| i + 1)
+        .map(|(i, pair)| match pair[0].compare(&pair[1]) {
+            Ordering::Less => i + 1,
+            _ => 0,
+        })
         .sum()
 }
 
@@ -80,9 +71,9 @@ fn packet_idx(packets: &Vec<PacketData>, value: &str) -> usize {
     packets
         .iter()
         .filter(|packet| match target.compare(packet) {
-            -1 => false,
-            1 => true,
-            _ => panic!("Should never be tied"),
+            Ordering::Less => false,
+            Ordering::Greater => true,
+            Ordering::Equal => panic!("Should never be tied"),
         })
         .count()
 }
