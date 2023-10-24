@@ -1,6 +1,13 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
+use nom::{
+    bytes::complete::tag,
+    character::complete::digit0,
+    combinator::{map_res, opt},
+    sequence::tuple,
+    IResult,
+};
 
 #[derive(Debug)]
 struct Line {
@@ -9,6 +16,10 @@ struct Line {
 }
 
 impl Line {
+    fn new(slope: i64, y_intercept: i64) -> Self {
+        Self { slope, y_intercept }
+    }
+
     fn x_value_at(&self, y: i64) -> i64 {
         (y - self.y_intercept) / self.slope
     }
@@ -21,6 +32,13 @@ struct Range {
 }
 
 impl Range {
+    fn new(center: i64, offset: i64) -> Self {
+        Self {
+            min: center - offset,
+            max: center + offset,
+        }
+    }
+
     fn contains(&self, value: i64) -> bool {
         value >= self.min && value <= self.max
     }
@@ -55,33 +73,43 @@ struct CoverageZone {
 }
 
 impl CoverageZone {
-    fn new(center: Point, radius: i64) -> Self {
-        CoverageZone {
-            top_right: Line {
-                slope: -1,
-                y_intercept: center.y() + center.x() + radius,
-            },
-            top_left: Line {
-                slope: 1,
-                y_intercept: center.y() - center.x() + radius,
-            },
-            bottom_right: Line {
-                slope: 1,
-                y_intercept: center.y() - center.x() - radius,
-            },
-            bottom_left: Line {
-                slope: -1,
-                y_intercept: center.y() + center.x() - radius,
-            },
-            x_range: Range {
-                min: center.x() - radius,
-                max: center.x() + radius,
-            },
-            y_range: Range {
-                min: center.y() - radius,
-                max: center.y() + radius,
-            },
+    fn from_str(input: &str) -> IResult<&str, Self> {
+        fn parse_number(input: &str) -> IResult<&str, i64> {
+            map_res(
+                tuple((opt(tag("-")), digit0)),
+                |(sign, s): (Option<&str>, &str)| (sign.unwrap_or("").to_string() + s).parse(),
+            )(input)
         }
+
+        fn parse_point(input: &str) -> IResult<&str, Point> {
+            // x=2389280, y=2368338
+            let (input, _) = tag("x=")(input)?;
+            let (input, x) = parse_number(input)?;
+            let (input, _) = tag(", y=")(input)?;
+            let (input, y) = parse_number(input)?;
+            Ok((input, Point::new_2d(x, y)))
+        }
+
+        // Sensor at <point>: closest beacon is at <point>
+        let (input, _) = tag("Sensor at ")(input)?;
+        let (input, center) = parse_point(input)?;
+        let (input, _) = tag(": closest beacon is at ")(input)?;
+        let (input, beacon) = parse_point(input)?;
+
+        let (x, y) = (center.x(), center.y());
+        let radius = center.manhattan_distance(&beacon);
+
+        Ok((
+            input,
+            Self {
+                top_right: Line::new(-1, y + x + radius),
+                top_left: Line::new(1, y - x + radius),
+                bottom_right: Line::new(1, y - x - radius),
+                bottom_left: Line::new(-1, y + x - radius),
+                x_range: Range::new(x, radius),
+                y_range: Range::new(y, radius),
+            },
+        ))
     }
 
     fn overlap_at_y(&self, y: i64) -> Option<Range> {
@@ -112,7 +140,7 @@ impl CoverageZone {
 }
 
 fn main() {
-    let coverage = get_coverage();
+    let coverage = reader::read(|line| CoverageZone::from_str(line).unwrap().1);
     answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }
@@ -146,23 +174,4 @@ fn tuning_frequency(coverage: &Vec<CoverageZone>, max_value: i64) -> i64 {
         }
     }
     unreachable!()
-}
-
-fn get_coverage() -> Vec<CoverageZone> {
-    reader::read(|line| {
-        let (sensor_comp, beacon_comp) = line.split_once(": ").unwrap();
-        let sensor = parse_point(sensor_comp);
-        let radius = sensor.manhattan_distance(&parse_point(beacon_comp));
-        CoverageZone::new(sensor, radius)
-    })
-}
-
-fn parse_point(component: &str) -> Point {
-    let point = component.split_once(" at ").unwrap().1;
-    let (x, y) = point.split_once(", ").unwrap();
-    Point::new_2d(parse_coord(x), parse_coord(y))
-}
-
-fn parse_coord(coord: &str) -> i64 {
-    coord.split_once("=").unwrap().1.parse().unwrap()
 }
