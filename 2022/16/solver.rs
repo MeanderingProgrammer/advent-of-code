@@ -5,9 +5,9 @@ use nom::{
     bytes::complete::tag,
     character::complete::{alpha0, digit0},
     combinator::map_res,
-    error::Error,
     multi::separated_list0,
-    sequence::{separated_pair, tuple},
+    sequence::tuple,
+    IResult,
 };
 use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
@@ -110,18 +110,32 @@ struct Valve {
 }
 
 impl Valve {
-    fn new(name: &str, flow_rate: i64, leads_to: Vec<&str>) -> Result<Self, String> {
-        Ok(Self {
-            name: name.to_string(),
-            flow_rate,
-            leads_to: leads_to.iter().map(|to| to.to_string()).collect(),
-        })
+    fn from_str(input: &str) -> IResult<&str, Self> {
+        // Valve OM has flow rate=0; tunnels lead to valves AA, EZ
+        let (input, name) = tuple((tag("Valve "), alpha0))(input)?;
+        let (input, flow_rate) = tuple((
+            tag(" has flow rate="),
+            map_res(digit0, |s: &str| s.parse()),
+            tag("; "),
+        ))(input)?;
+        let (input, _) = alt((
+            tag("tunnel leads to valve "),
+            tag("tunnels lead to valves "),
+        ))(input)?;
+        let (input, valves) = separated_list0(tag(", "), alpha0)(input)?;
+        Ok((
+            input,
+            Self {
+                name: name.1.to_string(),
+                flow_rate: flow_rate.1,
+                leads_to: valves.iter().map(|valve| valve.to_string()).collect(),
+            },
+        ))
     }
 }
 
 fn main() {
-    let lines = reader::read_lines();
-    let valves = parse(lines.as_slice());
+    let valves = reader::read(|line| Valve::from_str(line).unwrap().1);
     let valve_to_flow = get_valve_to_flow(&valves);
     let cave = create_cave(&valves, &valve_to_flow);
 
@@ -224,31 +238,4 @@ fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
             valve_to_flow.insert(valve.name.clone(), valve.flow_rate);
         });
     valve_to_flow
-}
-
-fn parse(values: &[String]) -> Vec<Valve> {
-    let mut parser = map_res::<_, _, _, Error<_>, _, _, _>(
-        separated_pair(
-            tuple((
-                tag("Valve "),
-                alpha0,
-                tag(" has flow rate="),
-                map_res(digit0, |s: &str| s.parse::<i64>()),
-            )),
-            tag("; "),
-            tuple((
-                alt((
-                    tag("tunnel leads to valve "),
-                    tag("tunnels lead to valves "),
-                )),
-                separated_list0(tag(", "), alpha0),
-            )),
-        ),
-        |((_, name, _, flow_rate), (_, leads_to))| Valve::new(name, flow_rate, leads_to),
-    );
-
-    values
-        .iter()
-        .map(|value| parser(value).unwrap().1)
-        .collect()
 }
