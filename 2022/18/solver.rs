@@ -9,17 +9,14 @@ fn main() {
     let grid = get_grid();
     let outside_boundary = fill(&grid);
 
-    answer::part1(
-        4288,
-        compute_surface_area(&grid, |point| !grid.contains(point)),
-    );
+    answer::part1(4288, surface_area(&grid, |point| !grid.contains(point)));
     answer::part2(
         2494,
-        compute_surface_area(&grid, |point| outside_boundary.contains(point)),
+        surface_area(&grid, |point| outside_boundary.contains(point)),
     );
 }
 
-fn compute_surface_area(grid: &Grid<char>, f: impl Fn(&Point) -> bool) -> i64 {
+fn surface_area(grid: &Grid<char>, f: impl Fn(&Point) -> bool) -> i64 {
     let mut surface_area = 0;
     for point in grid.points() {
         for neighbor in &point.neighbors() {

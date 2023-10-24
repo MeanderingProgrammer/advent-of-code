@@ -1,6 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
 use priority_queue::PriorityQueue;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct RobotInstruction {
@@ -8,11 +9,64 @@ struct RobotInstruction {
     requirements: [i64; 3],
 }
 
+impl FromStr for RobotInstruction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn parse_material(value: &str) -> usize {
+            match value {
+                "ore" => 0,
+                "clay" => 1,
+                "obsidian" => 2,
+                "geode" => 3,
+                _ => panic!("Unhandled material type"),
+            }
+        }
+
+        let parts: Vec<&str> = s.split(" ").collect();
+        Ok(Self {
+            material: parse_material(parts[1]),
+            requirements: match parts.len() {
+                6 => {
+                    let mut value = [0, 0, 0];
+                    value[parse_material(parts[5])] = parts[4].parse().unwrap();
+                    value
+                }
+                9 => {
+                    let mut value = [0, 0, 0];
+                    value[parse_material(parts[5])] = parts[4].parse().unwrap();
+                    value[parse_material(parts[8])] = parts[7].parse().unwrap();
+                    value
+                }
+                _ => panic!("Unhandled length of requirements"),
+            },
+        })
+    }
+}
+
 #[derive(Debug)]
 struct Blueprint {
     id: i64,
     instructions: Vec<RobotInstruction>,
     max_values: [i64; 3],
+}
+
+impl FromStr for Blueprint {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (blueprint_id_data, robots_data) = s.split_once(": ").unwrap();
+        let (_, blueprint_id) = blueprint_id_data.split_once(" ").unwrap();
+        Ok(Self::new(
+            blueprint_id.parse::<i64>().unwrap(),
+            robots_data
+                .split(".")
+                .map(|value| value.trim())
+                .filter(|value| value.len() > 0)
+                .map(|value| value.parse().unwrap())
+                .collect(),
+        ))
+    }
 }
 
 impl Blueprint {
@@ -114,7 +168,7 @@ impl State {
 }
 
 fn main() {
-    let blueprints = get_blueprints();
+    let blueprints = reader::read(|line| line.parse().unwrap());
     answer::part1(
         1599,
         blueprints
@@ -174,51 +228,4 @@ fn simulate(blueprint: &Blueprint, runtime: i64) -> i64 {
     }
 
     max_geodes_seen
-}
-
-fn get_blueprints() -> Vec<Blueprint> {
-    reader::read(|line| {
-        let (blueprint_id_data, robots_data) = line.split_once(": ").unwrap();
-        let (_, blueprint_id) = blueprint_id_data.split_once(" ").unwrap();
-        Blueprint::new(
-            blueprint_id.parse::<i64>().unwrap(),
-            robots_data
-                .split(".")
-                .map(|value| value.trim())
-                .filter(|value| value.len() > 0)
-                .map(|value| parse_robot_instruction(value))
-                .collect(),
-        )
-    })
-}
-
-fn parse_robot_instruction(line: &str) -> RobotInstruction {
-    let parts: Vec<&str> = line.split(" ").collect();
-    RobotInstruction {
-        material: parse_material(parts[1]),
-        requirements: match parts.len() {
-            6 => {
-                let mut value = [0, 0, 0];
-                value[parse_material(parts[5])] = parts[4].parse::<i64>().unwrap();
-                value
-            }
-            9 => {
-                let mut value = [0, 0, 0];
-                value[parse_material(parts[5])] = parts[4].parse::<i64>().unwrap();
-                value[parse_material(parts[8])] = parts[7].parse::<i64>().unwrap();
-                value
-            }
-            _ => panic!("Unhandled length of requirements"),
-        },
-    }
-}
-
-fn parse_material(value: &str) -> usize {
-    match value {
-        "ore" => 0,
-        "clay" => 1,
-        "obsidian" => 2,
-        "geode" => 3,
-        _ => panic!("Unhandled material type"),
-    }
 }

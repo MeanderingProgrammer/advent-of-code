@@ -66,7 +66,7 @@ fn get_grid() -> Grid<char> {
         line.to_string()
             .split(" -> ")
             .map(|point| match point.split_once(",") {
-                Some((x, y)) => Point::new_2d(x.parse::<i64>().unwrap(), y.parse::<i64>().unwrap()),
+                Some((x, y)) => Point::new_2d(x.parse().unwrap(), y.parse().unwrap()),
                 None => panic!(),
             })
             .collect()

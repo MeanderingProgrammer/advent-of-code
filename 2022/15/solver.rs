@@ -113,14 +113,11 @@ impl CoverageZone {
 
 fn main() {
     let coverage = get_coverage();
-    answer::part1(5809294, get_covered_range(&coverage, 2_000_000).len());
-    answer::part2(
-        10693731308112,
-        get_tuning_frequency(&coverage, 4_000_000).unwrap(),
-    );
+    answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
+    answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }
 
-fn get_covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
+fn covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
     let mut overlaps: Vec<Range> = coverage
         .iter()
         .map(|zone| zone.overlap_at_y(y))
@@ -141,14 +138,14 @@ fn get_covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
     joined
 }
 
-fn get_tuning_frequency(coverage: &Vec<CoverageZone>, max_value: i64) -> Option<i64> {
+fn tuning_frequency(coverage: &Vec<CoverageZone>, max_value: i64) -> i64 {
     for y in 0..=max_value {
-        let covered = get_covered_range(coverage, y);
+        let covered = covered_range(coverage, y);
         if covered.max <= max_value {
-            return Some(((covered.max + 1) * 4_000_000) + y);
+            return ((covered.max + 1) * 4_000_000) + y;
         }
     }
-    None
+    unreachable!()
 }
 
 fn get_coverage() -> Vec<CoverageZone> {
@@ -167,5 +164,5 @@ fn parse_point(component: &str) -> Point {
 }
 
 fn parse_coord(coord: &str) -> i64 {
-    coord.split_once("=").unwrap().1.parse::<i64>().unwrap()
+    coord.split_once("=").unwrap().1.parse().unwrap()
 }
