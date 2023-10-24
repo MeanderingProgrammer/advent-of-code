@@ -113,7 +113,7 @@ impl Valve {
     fn new(name: &str, flow_rate: i64, leads_to: Vec<&str>) -> Result<Self, String> {
         Ok(Self {
             name: name.to_string(),
-            flow_rate: flow_rate,
+            flow_rate,
             leads_to: leads_to.iter().map(|to| to.to_string()).collect(),
         })
     }

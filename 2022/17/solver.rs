@@ -23,10 +23,8 @@ struct FallingShape {
 
 impl FallingShape {
     fn new(shape: Shape, height: i64) -> Self {
-        FallingShape {
-            anchor: Point::new_2d(2, height + 4),
-            shape: shape,
-        }
+        let anchor = Point::new_2d(2, height + 4);
+        FallingShape { anchor, shape }
     }
 
     fn points(&self) -> Vec<Point> {

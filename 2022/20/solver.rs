@@ -3,7 +3,7 @@ use aoc_lib::reader;
 
 #[derive(Debug)]
 struct SequenceEntry {
-    index: i64,
+    index: usize,
     value: i64,
 }
 
@@ -14,18 +14,18 @@ fn main() {
 
 fn decrypt(multiplier: i64, rounds: usize) -> i64 {
     let mut sequence = get_sequence(multiplier);
-    let full_length = i64::try_from(sequence.len()).unwrap();
+    let full_length = sequence.len();
 
     for _ in 0..rounds {
         for i in 0..sequence.len() {
             let index = sequence
                 .iter()
-                .position(|sequence_entry| sequence_entry.index == to_int(i))
+                .position(|sequence_entry| sequence_entry.index == i)
                 .unwrap();
 
             let entry = sequence.remove(index);
-            let new_index = (to_int(index) + entry.value).rem_euclid(full_length - 1);
-            sequence.insert(to_index(new_index), entry);
+            let new_index = (index as i64 + entry.value).rem_euclid(full_length as i64 - 1);
+            sequence.insert(new_index as usize, entry);
         }
     }
 
@@ -36,8 +36,8 @@ fn decrypt(multiplier: i64, rounds: usize) -> i64 {
 
     vec![1_000, 2_000, 3_000]
         .iter()
-        .map(|offset| (to_int(start_index) + offset) % full_length)
-        .map(|index| sequence[to_index(index)].value)
+        .map(|offset| (start_index + offset) % full_length)
+        .map(|index| sequence[index].value)
         .sum()
 }
 
@@ -46,16 +46,8 @@ fn get_sequence(multiplier: i64) -> Vec<SequenceEntry> {
         .iter()
         .enumerate()
         .map(|(index, &value)| SequenceEntry {
-            index: to_int(index),
+            index,
             value: value * multiplier,
         })
         .collect()
-}
-
-fn to_int(value: usize) -> i64 {
-    i64::try_from(value).unwrap()
-}
-
-fn to_index(value: i64) -> usize {
-    usize::try_from(value).unwrap()
 }
