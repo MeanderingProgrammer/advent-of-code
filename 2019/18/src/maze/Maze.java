@@ -36,16 +36,10 @@ public class Maze {
   }
 
   private void fillNodes(Grid grid) {
-    grid.getKeyPositions()
-        .forEach(
-            keyPosition ->
-                expandPosition(
-                    grid,
-                    keyPosition,
-                    grid.get(keyPosition).getValue(),
-                    keyPosition,
-                    new HashSet<>(),
-                    0));
+    for (var keyPosition : grid.getKeyPositions()) {
+      var key = grid.get(keyPosition).getValue();
+      expandPosition(grid, keyPosition, key, keyPosition, new HashSet<>(), 0);
+    }
   }
 
   private void expandPosition(

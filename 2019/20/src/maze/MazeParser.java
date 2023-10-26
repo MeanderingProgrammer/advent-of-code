@@ -54,16 +54,13 @@ public class MazeParser {
 
   private Map<Position, Node> getNodes(String rowColumn, Function<Integer, Position> creator) {
     Map<Position, Node> nodes = Maps.newHashMap();
-    getStartIndices(rowColumn)
-        .forEach(
-            startIndex ->
-                startIndex
-                    .getLabel(rowColumn)
-                    .ifPresent(
-                        label ->
-                            nodes.put(
-                                creator.apply(startIndex.getPositionIndex()),
-                                new Node(label, startIndex.isInner()))));
+    for (var startIndex : getStartIndices(rowColumn)) {
+      var label = startIndex.getLabel(rowColumn);
+      if (label.isPresent()) {
+        var position = creator.apply(startIndex.getPositionIndex());
+        nodes.put(position, new Node(label.get(), startIndex.isInner()));
+      }
+    }
     return nodes;
   }
 
