@@ -5,6 +5,6 @@ import lombok.Value;
 @Value
 public class Node {
 
-    String label;
-    boolean inner;
+  String label;
+  boolean inner;
 }
