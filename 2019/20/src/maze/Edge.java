@@ -5,6 +5,6 @@ import lombok.Value;
 @Value
 public class Edge {
 
-    Node destination;
-    int length;
+  Node destination;
+  int length;
 }
