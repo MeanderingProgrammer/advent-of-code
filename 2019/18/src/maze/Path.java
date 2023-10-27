@@ -1,21 +1,9 @@
 package maze;
 
-import java.util.Set;
+import java.util.*;
 import lib.Position;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 
-@Getter
-@AllArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class Path {
-
-  Position keyPosition;
-  char key;
-  Set<Character> keysNeeded;
-  int distance;
+public record Path(Position keyPosition, char key, Set<Character> keysNeeded, int distance) {
 
   public boolean hasPotential(Path other) {
     // If paths are to different keys then it by definition has potential

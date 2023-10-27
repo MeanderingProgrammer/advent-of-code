@@ -1,10 +1,6 @@
 package maze;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 import lib.Position;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,7 +19,7 @@ public class Grid {
     this.grid = initializeGrid(maze);
     this.keyPositions = computeKeyPositions();
     this.startingPosition =
-        Optional.ofNullable(startingPosition).orElseGet(() -> computeStartingPosition());
+        Optional.ofNullable(startingPosition).orElseGet(this::computeStartingPosition);
   }
 
   public Grid(List<String> maze) {
@@ -60,7 +56,7 @@ public class Grid {
     return grid.entrySet().stream()
         .filter(entry -> entry.getValue().isKey())
         .map(Map.Entry::getKey)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private Position computeStartingPosition() {

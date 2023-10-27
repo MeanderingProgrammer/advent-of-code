@@ -1,12 +1,7 @@
 package maze;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import maze.path.NormalPath;
 import maze.path.Path;
 import maze.path.RecursivePath;
@@ -57,21 +52,19 @@ public class Maze {
   }
 
   private Edge getOppositeEdge(Edge edge) {
-    Node node = edge.getDestination();
-    List<Node> options = getNodes(node.getLabel());
+    Node node = edge.destination();
+    List<Node> options = getNodes(node.label());
     if (options.size() == 1) {
       return edge;
     } else if (options.size() == 2) {
       int index = options.get(0).equals(node) ? 1 : 0;
-      return new Edge(options.get(index), edge.getLength() + 1);
+      return new Edge(options.get(index), edge.length() + 1);
     } else {
       throw new RuntimeException("Unexpected number of options");
     }
   }
 
   private List<Node> getNodes(String label) {
-    return graph.keySet().stream()
-        .filter(node -> node.getLabel().equals(label))
-        .collect(Collectors.toList());
+    return graph.keySet().stream().filter(node -> node.label().equals(label)).toList();
   }
 }

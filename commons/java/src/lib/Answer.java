@@ -5,19 +5,19 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Answer {
 
-  public static void part1(int expected, int result) {
+  public <T> void part1(T expected, T result) {
     part(1, expected, result);
   }
 
-  public static void part2(int expected, int result) {
+  public <T> void part2(T expected, T result) {
     part(2, expected, result);
   }
 
-  private static void part(int part, int expected, int result) {
-    if (expected != result) {
-      throw new RuntimeException(
-          String.format("Part %d incorrect, expected %d but got %d", part, expected, result));
+  private <T> void part(int part, T expected, T result) {
+    if (!expected.equals(result)) {
+      var errorFormat = "Part %d incorrect, expected %s but got %s";
+      throw new RuntimeException(String.format(errorFormat, part, expected, result));
     }
-    System.out.printf("Part %d: %d \n", part, result);
+    System.out.printf("Part %d: %s \n", part, result);
   }
 }

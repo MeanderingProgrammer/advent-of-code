@@ -1,15 +1,7 @@
 package maze;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 import lib.Position;
-import lombok.Value;
 
 public class Maze {
 
@@ -21,8 +13,8 @@ public class Maze {
     Grid initialGrid = new Grid(maze);
     if (splitMaze) {
       Position startingPosition = initialGrid.getStartingPosition();
-      int x = startingPosition.getX();
-      int y = startingPosition.getY();
+      int x = startingPosition.x();
+      int y = startingPosition.y();
       MazeSplitter.split(maze, x, y);
       grids.add(new Grid(maze, new Position(x - 1, y - 1)));
       grids.add(new Grid(maze, new Position(x + 1, y - 1)));
@@ -69,13 +61,12 @@ public class Maze {
   }
 
   public int complete() {
-    List<Position> startingPositions =
-        grids.stream().map(Grid::getStartingPosition).collect(Collectors.toList());
+    List<Position> startingPositions = grids.stream().map(Grid::getStartingPosition).toList();
     return solve(new State(startingPositions, new HashSet<>()), new HashMap<>());
   }
 
   private int solve(State state, Map<List<Position>, Map<Set<Character>, Integer>> cache) {
-    if (state.getKeys().size() == totalKeys()) {
+    if (state.keys().size() == totalKeys()) {
       return 0;
     }
 
@@ -84,10 +75,10 @@ public class Maze {
       State nextState = state.move(move);
       int subDistance =
           cache
-              .computeIfAbsent(nextState.getPositions(), k -> new HashMap<>())
-              .computeIfAbsent(nextState.getKeys(), k -> solve(nextState, cache));
+              .computeIfAbsent(nextState.positions(), k -> new HashMap<>())
+              .computeIfAbsent(nextState.keys(), k -> solve(nextState, cache));
 
-      distances.add(move.getPath().getDistance() + subDistance);
+      distances.add(move.path().distance() + subDistance);
     }
     return Collections.min(distances);
   }
@@ -95,12 +86,12 @@ public class Maze {
   private Set<Move> getMoves(State state) {
     Set<Move> moves = new HashSet<>();
     for (int i = 0; i < grids.size(); i++) {
-      Node node = grids.get(i).get(state.getPositions().get(i));
+      Node node = grids.get(i).get(state.positions().get(i));
       for (Path path : node.getPaths()) {
-        if (state.getKeys().contains(path.getKey())) {
+        if (state.keys().contains(path.key())) {
           continue;
         }
-        if (!state.getKeys().containsAll(path.getKeysNeeded())) {
+        if (!state.keys().containsAll(path.keysNeeded())) {
           continue;
         }
         moves.add(new Move(i, path));
@@ -113,26 +104,18 @@ public class Maze {
     return grids.get(0).totalKeys();
   }
 
-  @Value
-  private static class State {
-
-    List<Position> positions;
-    Set<Character> keys;
+  private static record State(List<Position> positions, Set<Character> keys) {
 
     public State move(Move move) {
       List<Position> nextPositions = new ArrayList<>(positions);
-      nextPositions.set(move.getI(), move.getPath().getKeyPosition());
+      nextPositions.set(move.i(), move.path().keyPosition());
 
       Set<Character> nextKeys = new HashSet<>(keys);
-      nextKeys.add(move.getPath().getKey());
+      nextKeys.add(move.path().key());
 
       return new State(nextPositions, nextKeys);
     }
   }
 
-  @Value
-  private static class Move {
-    int i;
-    Path path;
-  }
+  private static record Move(int i, Path path) {}
 }
