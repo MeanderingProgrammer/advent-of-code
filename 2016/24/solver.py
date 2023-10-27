@@ -1,8 +1,8 @@
 import itertools
+
 from aoc import answer, search
 from aoc.board import Grid, Point
 from aoc.parser import Parser
-
 
 WALL = "#"
 OPEN = "."

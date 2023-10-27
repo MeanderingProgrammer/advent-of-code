@@ -1,4 +1,5 @@
 import math
+
 from aoc import answer
 from aoc.computer import Computer
 from aoc.parser import Parser

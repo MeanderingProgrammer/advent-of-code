@@ -1,7 +1,8 @@
 import math
+from collections import defaultdict
+
 from aoc import answer
 from aoc.parser import Parser
-from collections import defaultdict
 
 
 class Reactant:

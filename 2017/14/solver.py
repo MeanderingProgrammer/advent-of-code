@@ -1,7 +1,7 @@
 import collections
+
 from aoc import answer
 from aoc.board import Point
-
 
 SIZE = 256
 INPUT = "ffayrhll"

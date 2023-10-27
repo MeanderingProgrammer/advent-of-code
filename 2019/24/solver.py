@@ -37,7 +37,7 @@ class Layout:
 
     def new_grid(self):
         grid = Grid()
-        for point, value in self.grids[0].items():
+        for point, _ in self.grids[0].items():
             grid[point] = EMPTY
         return grid
 
@@ -126,7 +126,7 @@ class Layout:
     def count_bugs(self):
         total = 0
         for grid in self.grids:
-            total += sum([value == ALIVE for point, value in grid.items()])
+            total += sum([value == ALIVE for _, value in grid.items()])
         return total
 
     def __repr__(self):
@@ -156,7 +156,7 @@ def solve_part_1():
 
 def solve_part_2():
     layout = Layout(get_grid(), True)
-    for i in range(200):
+    for _ in range(200):
         layout.step()
     return layout.count_bugs()
 

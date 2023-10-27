@@ -1,8 +1,9 @@
+from collections import defaultdict
+from typing import Dict, List, Optional
+
 from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
-from collections import defaultdict
-from typing import Dict, List, Optional
 
 
 class PointGrid:

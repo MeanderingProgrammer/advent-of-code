@@ -9,7 +9,7 @@ class Node:
         values = values[2:]
 
         self.children = []
-        for i in range(num_children):
+        for _ in range(num_children):
             child = Node(values)
             self.children.append(child)
             values = values[len(child) :]

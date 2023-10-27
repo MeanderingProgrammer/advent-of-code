@@ -1,6 +1,5 @@
 from aoc import answer
 
-
 START_STATE = "10001110011110000"
 DESIRED_LENGTH = 272
 

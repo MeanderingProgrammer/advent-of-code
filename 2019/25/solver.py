@@ -1,9 +1,10 @@
 import itertools
+from dataclasses import dataclass
+from typing import List
+
 from aoc import answer
 from aoc.int_code import Computer
 from aoc.parser import Parser
-from dataclasses import dataclass
-from typing import List
 
 BAD_ITEMS = [
     "giant electromagnet",

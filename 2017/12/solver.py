@@ -1,6 +1,7 @@
+from collections import defaultdict
+
 from aoc import answer, search
 from aoc.parser import Parser
-from collections import defaultdict
 
 
 def main():
