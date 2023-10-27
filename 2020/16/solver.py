@@ -1,6 +1,7 @@
+from functools import reduce
+
 from aoc import answer
 from aoc.parser import Parser
-from functools import reduce
 
 
 class ValueRange:

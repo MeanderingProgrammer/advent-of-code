@@ -2,7 +2,6 @@ from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
 
-
 DIRECTIONS = {
     "ne": Point(1, 1),
     "nw": Point(-1, 1),

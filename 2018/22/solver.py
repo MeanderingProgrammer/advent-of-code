@@ -1,4 +1,5 @@
 import heapq
+
 from aoc import answer
 from aoc.board import Grid, Point
 

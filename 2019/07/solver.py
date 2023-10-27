@@ -1,7 +1,8 @@
+from itertools import permutations
+
 from aoc import answer
 from aoc.int_code import Computer
 from aoc.parser import Parser
-from itertools import permutations
 
 
 class Amplifier:

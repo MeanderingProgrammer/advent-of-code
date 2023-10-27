@@ -1,8 +1,9 @@
 import heapq
+from collections import defaultdict
+
 from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
-from collections import defaultdict
 
 
 class NanoBot:

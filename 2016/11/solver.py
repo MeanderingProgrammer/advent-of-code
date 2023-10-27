@@ -1,9 +1,10 @@
 import itertools
-from aoc import answer, search
-from aoc.parser import Parser
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional, Set, Tuple
+
+from aoc import answer, search
+from aoc.parser import Parser
 
 
 class ItemType(Enum):

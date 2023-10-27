@@ -1,7 +1,8 @@
+from typing import List, Optional, Tuple
+
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
-from typing import List, Optional, Tuple
 
 OPEN = "."
 TREES = "|"

@@ -1,9 +1,10 @@
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Callable, Dict, List, Optional, Set, Tuple
+
 from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
-from dataclasses import dataclass
-from enum import auto, Enum
-from typing import Callable, Dict, List, Optional, Set, Tuple
 
 
 class Team(Enum):

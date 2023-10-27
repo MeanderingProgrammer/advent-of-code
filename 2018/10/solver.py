@@ -1,4 +1,5 @@
 import re
+
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser

@@ -1,6 +1,6 @@
-from aoc import answer
 from collections import deque
 
+from aoc import answer
 
 NUM_ELVES = 3_014_603
 
