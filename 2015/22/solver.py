@@ -1,6 +1,5 @@
 from aoc import answer, search
 
-
 PLAYER_STATS = (50, 500)
 ENEMY_STATS = (58, 9)
 

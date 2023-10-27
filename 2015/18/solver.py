@@ -1,7 +1,8 @@
+from typing import Generator, Set, Tuple
+
 from aoc import answer
 from aoc.board import Grid
 from aoc.parser import Parser
-from typing import Generator, Set, Tuple
 
 
 class Animator:

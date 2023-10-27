@@ -1,13 +1,12 @@
 from aoc import answer
 from aoc.parser import Parser
 
-
-CHECKS = {
-    "cats": lambda x, y: x > y,
-    "trees": lambda x, y: x > y,
-    "pomeranians": lambda x, y: x < y,
-    "goldfish": lambda x, y: x < y,
-}
+CHECKS = dict(
+    cats=lambda x, y: x > y,
+    trees=lambda x, y: x > y,
+    pomeranians=lambda x, y: x < y,
+    goldfish=lambda x, y: x < y,
+)
 
 
 class Match:

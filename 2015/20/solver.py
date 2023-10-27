@@ -1,6 +1,5 @@
 from aoc import answer
 
-
 GOAL = 29_000_000
 
 

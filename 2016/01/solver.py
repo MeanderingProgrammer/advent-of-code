@@ -2,7 +2,6 @@ from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
 
-
 DIRECTIONS = [Point(0, 1), Point(1, 0), Point(0, -1), Point(-1, 0)]
 
 
@@ -20,7 +19,7 @@ def traverse():
         change = -1 if instruction[0] == "L" else 1
         index = (index + change) % len(DIRECTIONS)
         amount = int(instruction[1:])
-        for i in range(amount):
+        for _ in range(amount):
             position += DIRECTIONS[index]
             visited.append(position)
 
@@ -34,6 +33,7 @@ def repeated(visited):
             return position
         else:
             seen.add(position)
+    raise Exception("Should never get here")
 
 
 if __name__ == "__main__":

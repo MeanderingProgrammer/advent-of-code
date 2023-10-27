@@ -1,25 +1,27 @@
+from collections import defaultdict
+from itertools import product
+from typing import List, Tuple
+
 from aoc import answer
 from aoc.parser import Parser
-from itertools import product
-from collections import defaultdict
 
-SINGLE = {
-    "turn on": lambda current: 1,
-    "turn off": lambda current: 0,
-    "toggle": lambda current: 1 - current,
-}
+SINGLE = dict(
+    on=lambda _: 1,
+    off=lambda _: 0,
+    toggle=lambda current: 1 - current,
+)
 
-DIMABLE = {
-    "turn on": lambda current: current + 1,
-    "turn off": lambda current: max(current - 1, 0),
-    "toggle": lambda current: current + 2,
-}
+DIMABLE = dict(
+    on=lambda current: current + 1,
+    off=lambda current: max(current - 1, 0),
+    toggle=lambda current: current + 2,
+)
 
 
 class PointRange:
-    def __init__(self, value):
-        self.bottom_left = self.to_point(value[0])
-        self.top_right = self.to_point(value[2])
+    def __init__(self, bottom_left: str, top_right: str):
+        self.bottom_left = self.to_point(bottom_left)
+        self.top_right = self.to_point(top_right)
 
     def get_points(self):
         return product(
@@ -28,47 +30,44 @@ class PointRange:
         )
 
     @staticmethod
-    def to_point(coords):
-        return [int(coord) for coord in coords.split(",")]
+    def to_point(coords: str) -> Tuple[int, int]:
+        values = coords.split(",")
+        return (int(values[0]), int(values[1]))
 
 
 class Direction:
-    def __init__(self, value):
-        value = value.split()
-        self.action = " ".join(value[:-3])
-        self.point_range = PointRange(value[-3:])
+    def __init__(self, value: str):
+        values = value.split()
+        self.action = values[-4]
+        self.point_range = PointRange(values[-3], values[-1])
 
-    def apply(self, grid):
+    def apply(self, grid) -> None:
         for point in self.point_range.get_points():
             grid[point].append(self.action)
 
 
-def main():
+def main() -> None:
     grid_values = run_grid()
     answer.part1(400410, state_value(grid_values, SINGLE))
     answer.part2(15343601, state_value(grid_values, DIMABLE))
 
 
-def run_grid():
-    directions = get_directions()
+def run_grid() -> List[List[str]]:
+    directions = [Direction(line) for line in Parser().lines()]
     grid = defaultdict(list)
     for direction in directions:
         direction.apply(grid)
-    return grid.values()
+    return list(grid.values())
 
 
-def state_value(grid_values, state_change_impacts):
+def state_value(grid_values: List[List[str]], impacts) -> int:
     total = 0
     for grid_value in grid_values:
         current = 0
         for state_change in grid_value:
-            current = state_change_impacts[state_change](current)
+            current = impacts[state_change](current)
         total += current
     return total
-
-
-def get_directions():
-    return [Direction(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

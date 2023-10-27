@@ -1,6 +1,5 @@
 from aoc import answer
 
-
 POSITION = (2_947, 3_029)
 
 
@@ -22,7 +21,7 @@ def get_index(position):
 
 def get_password(n):
     password = 20_151_125
-    for i in range(1, n):
+    for _ in range(1, n):
         password *= 252_533
         password %= 33_554_393
     return password

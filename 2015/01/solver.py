@@ -2,13 +2,13 @@ from aoc import answer
 from aoc.parser import Parser
 
 
-def main():
+def main() -> None:
     data = Parser().string()
     answer.part1(232, get_floor(data, False))
     answer.part2(1783, get_floor(data, True))
 
 
-def get_floor(value, stop_at_basement):
+def get_floor(value: str, stop_at_basement: bool) -> int:
     floor = 0
     for i, ch in enumerate(value):
         if ch == "(":

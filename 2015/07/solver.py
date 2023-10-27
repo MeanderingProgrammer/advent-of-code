@@ -1,6 +1,6 @@
+import numpy as np
 from aoc import answer
 from aoc.parser import Parser
-import numpy as np
 
 
 class Value:
