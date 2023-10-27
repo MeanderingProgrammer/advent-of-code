@@ -2,7 +2,6 @@ from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
 
-
 CONTROLS = {"U": Point(0, -1), "D": Point(0, 1), "L": Point(-1, 0), "R": Point(1, 0)}
 
 

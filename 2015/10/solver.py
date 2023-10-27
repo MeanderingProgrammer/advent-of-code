@@ -1,6 +1,5 @@
 from aoc import answer
 
-
 START = "1113122113"
 
 
@@ -31,7 +30,7 @@ def main():
 
 def run(n):
     game = Game(START)
-    for i in range(n):
+    for _ in range(n):
         game.play()
     return len(game.value)
 

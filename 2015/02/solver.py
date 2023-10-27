@@ -1,18 +1,20 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Box:
-    def __init__(self, l, w, h):
-        self.l = int(l)
-        self.w = int(w)
-        self.h = int(h)
+    l: int
+    w: int
+    h: int
 
-    def paper_needed(self):
+    def paper_needed(self) -> int:
         sides = [self.l * self.w, self.w * self.h, self.h * self.l]
         return sum([2 * side for side in sides]) + min(sides)
 
-    def ribbon_needed(self):
+    def ribbon_needed(self) -> int:
         sides = [self.l, self.w, self.h]
         sides.sort()
         perimeter = 2 * sides[0] + 2 * sides[1]
@@ -20,10 +22,10 @@ class Box:
         return perimeter + volume
 
 
-def main():
+def main() -> None:
     paper, ribbon = [], []
     for line in Parser().lines():
-        box = Box(*line.split("x"))
+        box = Box(*list(map(int, line.split("x"))))
         paper.append(box.paper_needed())
         ribbon.append(box.ribbon_needed())
     answer.part1(1606483, sum(paper))

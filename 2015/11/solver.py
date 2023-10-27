@@ -1,6 +1,5 @@
 from aoc import answer
 
-
 STARTING_PASSWORD = "hxbxwxba"
 
 

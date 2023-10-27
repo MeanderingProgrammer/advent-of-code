@@ -1,4 +1,6 @@
 import hashlib
+from typing import List, Tuple
+
 from aoc import answer, search
 from aoc.board import Point
 
@@ -13,13 +15,13 @@ DIRECTIONS = [
 ]
 
 
-def main():
+def main() -> None:
     paths = search.bfs_paths((Point(-3, 3), CODE), Point(0, 0), get_adjacent)
     answer.part1("DDRLRRUDDR", pull_path(paths[0]))
     answer.part2(556, len(pull_path(paths[-1])))
 
 
-def get_adjacent(item):
+def get_adjacent(item: Tuple[Point, str]) -> List[Tuple[Point, str]]:
     point, code = item
     hashed = hash(code)
     result = []
@@ -30,10 +32,8 @@ def get_adjacent(item):
     return result
 
 
-def is_legal(point):
-    x = point.x()
-    y = point.y()
-    return x >= -3 and x <= 0 and y <= 3 and y >= 0
+def is_legal(p: Point) -> bool:
+    return p.x() >= -3 and p.x() <= 0 and p.y() <= 3 and p.y() >= 0
 
 
 def unlocked(value):

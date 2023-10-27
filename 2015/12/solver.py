@@ -1,4 +1,5 @@
 import json
+
 from aoc import answer
 from aoc.parser import Parser
 

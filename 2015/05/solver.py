@@ -1,87 +1,81 @@
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import List
+
 from aoc import answer
 from aoc.parser import Parser
-from collections import defaultdict
 
 
+@dataclass(frozen=True)
 class Word:
-    def __init__(self, value):
-        self.value = value
+    value: str
 
-    def nice(self, new_rules):
-        if not new_rules:
-            return self.old_nice()
-        else:
-            return self.new_nice()
-
-    def old_nice(self):
-        groups = self.group_data()
-
-        num_vowels = self.num_vowels()
-        contains_repeat = self.contains_repeat(groups)
-        contains_illegal = self.contains_illegal(groups)
-
-        return num_vowels >= 3 and contains_repeat and not contains_illegal
-
-    def new_nice(self):
-        groups = self.group_data()
-        repeat_non_overlapping = self.repeat_non_overlapping(groups)
-        creates_tripple = self.creates_tripple(groups)
-        return repeat_non_overlapping and creates_tripple
-
-    def repeat_non_overlapping(self, groups):
-        group_frequencies = defaultdict(int)
-        group_frequencies[groups[0]] += 1
-
-        for i, group in enumerate(groups[1:]):
-            num_needed = 1 if group != groups[i] else 2
-            if group_frequencies[group] >= num_needed:
-                return True
-            group_frequencies[group] += 1
-
-        return False
-
-    def creates_tripple(self, groups):
-        for i, group in enumerate(groups[1:]):
-            if groups[i][0] == group[1]:
-                return True
-        return False
-
-    def num_vowels(self):
-        vowels = ["a", "e", "i", "o", "u"]
-        return sum([letter in vowels for letter in self.value])
-
-    def group_data(self):
+    @property
+    def groups(self) -> List[str]:
         groups = []
         for i in range(len(self.value) - 1):
             groups.append(self.value[i] + self.value[i + 1])
         return groups
 
-    def contains_repeat(self, groups):
-        for group in groups:
+    def nice_1(self) -> bool:
+        return (
+            self.num_vowels() >= 3
+            and self.contains_repeat()
+            and not self.contains_illegal()
+        )
+
+    def num_vowels(self) -> int:
+        vowels = ["a", "e", "i", "o", "u"]
+        return sum([letter in vowels for letter in self.value])
+
+    def contains_repeat(self) -> bool:
+        for group in self.groups:
             if group[0] == group[1]:
                 return True
         return False
 
-    def contains_illegal(self, groups):
+    def contains_illegal(self) -> bool:
+        groups = self.groups
         illegal_groups = ["ab", "cd", "pq", "xy"]
         for illegal_group in illegal_groups:
             if illegal_group in groups:
                 return True
         return False
 
+    def nice_2(self) -> bool:
+        return self.repeat_non_overlapping() and self.creates_tripple()
 
-def main():
-    answer.part1(238, total_nice_words(False))
-    answer.part2(69, total_nice_words(True))
+    def repeat_non_overlapping(self) -> bool:
+        groups = self.groups
+        group_frequencies = defaultdict(int)
+        group_frequencies[groups[0]] += 1
+        for i, group in enumerate(groups[1:]):
+            num_needed = 1 if group != groups[i] else 2
+            if group_frequencies[group] >= num_needed:
+                return True
+            group_frequencies[group] += 1
+        return False
+
+    def creates_tripple(self) -> bool:
+        groups = self.groups
+        for i, group in enumerate(groups[1:]):
+            if groups[i][0] == group[1]:
+                return True
+        return False
 
 
-def total_nice_words(new_rules):
-    nice_words = 0
-    for line in Parser().lines():
-        word = Word(line)
-        if word.nice(new_rules):
-            nice_words += 1
-    return nice_words
+def main() -> None:
+    words = [Word(line) for line in Parser().lines()]
+    answer.part1(238, total_nice_words(words, False))
+    answer.part2(69, total_nice_words(words, True))
+
+
+def total_nice_words(words: List[Word], new_rules: bool) -> int:
+    nice_words = []
+    for word in words:
+        is_nice = word.nice_2() if new_rules else word.nice_1()
+        nice_words.append(is_nice)
+    return sum(nice_words)
 
 
 if __name__ == "__main__":

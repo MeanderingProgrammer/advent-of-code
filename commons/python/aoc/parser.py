@@ -1,43 +1,48 @@
 import sys
 from typing import List
-from .board import Point, Grid
+
+from .board import Grid, Point
 
 
 class Parser:
     def __init__(self, file_name="data"):
         self.file_name = "{}.txt".format(file_name)
 
-    def string(self):
-        return self.__read(split=False)
+    def string(self) -> str:
+        file_path = "{}/{}".format(sys.path[0], self.file_name)
+        with open(file_path, "r") as f:
+            data = f.read()
+        return data
 
-    def ord_string(self):
-        return self.__to_ord(self.string())
+    def ord_string(self) -> List[int]:
+        return list(map(ord, self.string()))
 
-    def entries(self):
-        return self.__read()
+    def entries(self) -> List[str]:
+        return self.string().split()
 
-    def int_entries(self):
-        return self.__to_int(self.entries())
+    def int_entries(self) -> List[int]:
+        return list(map(int, self.entries()))
 
-    def csv(self):
-        return self.__read(sep=",", strip=True)
+    def csv(self) -> List[str]:
+        data = self.string().split(",")
+        return [datum.strip() for datum in data]
 
-    def int_csv(self):
-        return self.__to_int(self.csv())
+    def int_csv(self) -> List[int]:
+        return list(map(int, self.csv()))
 
     def lines(self) -> List[str]:
-        return self.__read(sep="\n")
+        return self.string().split("\n")
 
-    def int_lines(self):
-        return self.__to_int(self.lines())
+    def int_lines(self) -> List[int]:
+        return list(map(int, self.lines()))
 
     def nested_lines(self) -> List[List[str]]:
         return [[value for value in line] for line in self.lines()]
 
-    def line_groups(self):
-        return [group.split("\n") for group in self.__read(sep="\n\n")]
+    def line_groups(self) -> List[List[str]]:
+        return [group.split("\n") for group in self.string().split("\n\n")]
 
-    def as_grid(self):
+    def as_grid(self) -> Grid:
         """
         Grids are often created bottom up, where an increase in y leads a value that is
         up more. However files are read top down where an increased index means the value
@@ -56,23 +61,3 @@ class Parser:
                 point = Point(x, y)
                 grid[point] = value
         return grid
-
-    def __read(self, split=True, sep=None, strip=False):
-        file_path = "{}/{}".format(sys.path[0], self.file_name)
-        with open(file_path, "r") as f:
-            data = f.read()
-        if split:
-            data = data.split(sep)
-            if strip:
-                data = [datum.strip() for datum in data]
-        return data
-
-    def __to_int(self, values):
-        return self.__map(values, int)
-
-    def __to_ord(self, values):
-        return self.__map(values, ord)
-
-    @staticmethod
-    def __map(values, f):
-        return [f(value) for value in values]
