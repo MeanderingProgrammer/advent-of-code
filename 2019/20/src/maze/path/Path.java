@@ -1,8 +1,6 @@
 package maze.path;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -20,12 +18,12 @@ public abstract class Path implements Comparable<Path> {
 
   public Path(List<Edge> path) {
     this.path = path;
-    this.length = path.stream().mapToInt(Edge::getLength).sum();
+    this.length = path.stream().mapToInt(Edge::length).sum();
     this.level = computeLevel();
   }
 
   public Path(Node start) {
-    this(Lists.newArrayList(new Edge(start, 0)));
+    this(List.of(new Edge(start, 0)));
   }
 
   public Path add(Edge e) {
@@ -35,7 +33,7 @@ public abstract class Path implements Comparable<Path> {
   }
 
   public Node getLast() {
-    return path.get(path.size() - 1).getDestination();
+    return path.get(path.size() - 1).destination();
   }
 
   public State getState() {

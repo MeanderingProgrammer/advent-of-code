@@ -1,24 +1,17 @@
 package maze;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lib.Position;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class MazeParser {
 
-  private static final Set<Character> MAZE_CHARACTERS = Sets.newHashSet('#', '.');
-  private static final Set<Character> NON_LABEL_CHARACTERS = Sets.newHashSet('#', '.', ' ');
+  private static final Set<Character> MAZE_CHARACTERS = Set.of('#', '.');
+  private static final Set<Character> NON_LABEL_CHARACTERS = Set.of('#', '.', ' ');
 
   List<String> maze;
   int mazeSize;
@@ -35,12 +28,11 @@ public class MazeParser {
   public Map<Node, Set<Edge>> asGraph() {
     Map<Position, Node> nodes = getNodes();
     return nodes.entrySet().stream()
-        .collect(
-            Collectors.toMap(entry -> entry.getValue(), entry -> getEdges(entry.getKey(), nodes)));
+        .collect(Collectors.toMap(Map.Entry::getValue, entry -> getEdges(entry.getKey(), nodes)));
   }
 
   private Map<Position, Node> getNodes() {
-    Map<Position, Node> nodes = Maps.newHashMap();
+    Map<Position, Node> nodes = new HashMap<>();
     for (int r = 0; r < maze.size(); r++) {
       int row = r;
       nodes.putAll(getNodes(maze.get(r), c -> new Position(c, row)));
@@ -53,19 +45,19 @@ public class MazeParser {
   }
 
   private Map<Position, Node> getNodes(String rowColumn, Function<Integer, Position> creator) {
-    Map<Position, Node> nodes = Maps.newHashMap();
+    Map<Position, Node> nodes = new HashMap<>();
     for (var startIndex : getStartIndices(rowColumn)) {
       var label = startIndex.getLabel(rowColumn);
       if (label.isPresent()) {
         var position = creator.apply(startIndex.getPositionIndex());
-        nodes.put(position, new Node(label.get(), startIndex.isInner()));
+        nodes.put(position, new Node(label.get(), startIndex.inner()));
       }
     }
     return nodes;
   }
 
   private Set<NodeStart> getStartIndices(String rowColumn) {
-    return Sets.newHashSet(
+    return Set.of(
         new NodeStart(0, true, false),
         new NodeStart(mazeSize + 2, false, true),
         new NodeStart(rowColumn.length() - mazeSize - 4, true, true),
@@ -86,13 +78,13 @@ public class MazeParser {
             .filter(this::inMaze)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Couldn't find maze entrance"));
-    return getEdges(mazePosition, nodes, Sets.newHashSet(position, mazePosition), 1);
+    return getEdges(mazePosition, nodes, new HashSet<>(List.of(position, mazePosition)), 1);
   }
 
   private Set<Edge> getEdges(
       Position current, Map<Position, Node> nodes, Set<Position> seen, int length) {
     if (nodes.containsKey(current)) {
-      return Sets.newHashSet(new Edge(nodes.get(current), length));
+      return Set.of(new Edge(nodes.get(current), length));
     } else {
       return current.adjacent().stream()
           .filter(this::inMaze)
@@ -108,17 +100,11 @@ public class MazeParser {
   }
 
   private boolean inMaze(Position position) {
-    String row = maze.get(position.getY());
-    return row.charAt(position.getX()) == '.';
+    String row = maze.get(position.y());
+    return row.charAt(position.x()) == '.';
   }
 
-  @AllArgsConstructor
-  @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-  private static class NodeStart {
-
-    int index;
-    boolean startAfter;
-    @Getter boolean inner;
+  private static record NodeStart(int index, boolean startAfter, boolean inner) {
 
     public Optional<String> getLabel(String s) {
       char first = s.charAt(index);

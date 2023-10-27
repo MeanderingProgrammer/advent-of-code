@@ -1,7 +1,6 @@
 package maze;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

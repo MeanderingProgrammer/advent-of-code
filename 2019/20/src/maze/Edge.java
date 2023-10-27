@@ -1,10 +1,3 @@
 package maze;
 
-import lombok.Value;
-
-@Value
-public class Edge {
-
-  Node destination;
-  int length;
-}
+public record Edge(Node destination, int length) {}

@@ -1,9 +1,6 @@
 package maze.path;
 
-import com.google.common.collect.Sets;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 import maze.Edge;
 import maze.Node;
 
@@ -13,7 +10,7 @@ import maze.Node;
  */
 public class RecursivePath extends Path {
 
-  private static final Set<String> END_POINTS = Sets.newHashSet("AA", "ZZ");
+  private static final Set<String> END_POINTS = Set.of("AA", "ZZ");
 
   public RecursivePath(Node start) {
     super(start);
@@ -42,17 +39,12 @@ public class RecursivePath extends Path {
   @Override
   protected int computeLevel() {
     List<Node> nonTerminal =
-        path.stream()
-            .map(Edge::getDestination)
-            .filter(node -> !isEnd(node))
-            .collect(Collectors.toList());
-
-    int inner = (int) nonTerminal.stream().filter(Node::isInner).count();
-
+        path.stream().map(Edge::destination).filter(node -> !isEnd(node)).toList();
+    int inner = (int) nonTerminal.stream().filter(Node::inner).count();
     return nonTerminal.size() - inner - inner;
   }
 
   private static boolean isEnd(Node node) {
-    return END_POINTS.contains(node.getLabel());
+    return END_POINTS.contains(node.label());
   }
 }

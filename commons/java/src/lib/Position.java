@@ -1,17 +1,11 @@
 package lib;
 
-import com.google.common.collect.Sets;
-import java.util.Set;
-import lombok.Value;
+import java.util.*;
 
-@Value
-public class Position {
-
-  int x;
-  int y;
+public record Position(int x, int y) {
 
   public Set<Position> adjacent() {
-    return Sets.newHashSet(
+    return Set.of(
         new Position(x + 1, y),
         new Position(x - 1, y),
         new Position(x, y + 1),

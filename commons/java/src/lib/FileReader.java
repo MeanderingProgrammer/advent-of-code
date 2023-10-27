@@ -1,10 +1,7 @@
 package lib;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -17,7 +14,7 @@ public class FileReader {
   }
 
   public List<String> read() {
-    return getFile().map(FileReader::readFromScanner).orElse(new ArrayList<>());
+    return getFile().map(FileReader::readFromScanner).orElse(List.of());
   }
 
   private Optional<Scanner> getFile() {
