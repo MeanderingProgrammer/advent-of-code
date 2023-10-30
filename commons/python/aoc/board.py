@@ -12,11 +12,6 @@ class Grid:
     def items(self):
         return self.__grid.items()
 
-    def area(self):
-        width = max(self.xs()) - min(self.xs())
-        height = max(self.ys()) - min(self.ys())
-        return width * height
-
     def reflect(self):
         result = Grid()
         for point, value in self.items():
