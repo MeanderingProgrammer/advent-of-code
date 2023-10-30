@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import click
 from typing import Optional, Tuple
 
+import click
 from args.generate_template import GenerateTemplate
 from args.run_template import RunTemplate
 from command.generate import Generator
@@ -55,7 +55,7 @@ def generate(
     elif year is None or day is None:
         raise Exception('Both "year" and "day" are required if either is provided')
     else:
-        gen_day = Day(year=str(year), day=str(day).zfill(2))
+        gen_day = Day(year=parse_year(year), day=parse_day(day))
 
     generator = Generator(day=gen_day, language=language)
     click.echo(f"{generator}") if info else generator.generate()
@@ -89,8 +89,8 @@ def run(
         raise Exception('If "year" or "day" is provided then "template" should not be')
     else:
         day_factory = DayFactory(
-            years=[str(y) for y in year],
-            days=[str(d).zfill(2) for d in day],
+            years=[parse_year(y) for y in year],
+            days=[parse_day(d) for d in day],
         )
         days = day_factory.get_days()
 
@@ -107,6 +107,14 @@ def run(
         save=template in ["days"] and len(language) == 0,
     )
     click.echo(f"{runner}") if info else runner.run()
+
+
+def parse_year(year: int) -> str:
+    return str(year if year > 2_000 else year + 2_000)
+
+
+def parse_day(day: int) -> str:
+    return str(day).zfill(2)
 
 
 if __name__ == "__main__":
