@@ -18,10 +18,10 @@ struct Character {
 }
 
 #[derive(Debug, PartialEq)]
-enum GameResult {
+enum GameStatus {
     InProgress,
-    Done,
-    Failed,
+    Succcess,
+    Fail,
 }
 
 #[derive(Debug)]
@@ -32,17 +32,6 @@ struct Game {
 }
 
 impl Game {
-    fn new(open_paths: Vec<&Point>, until_elf_death: bool) -> Self {
-        Self {
-            characters: HashMap::new(),
-            open_paths: open_paths
-                .into_iter()
-                .map(|position| position.clone())
-                .collect(),
-            until_elf_death,
-        }
-    }
-
     fn add(&mut self, character: Character, positions: Vec<&Point>) {
         positions.into_iter().for_each(|position| {
             self.characters.insert(position.clone(), character.clone());
@@ -51,51 +40,44 @@ impl Game {
     }
 
     fn play(&mut self) -> Option<i64> {
-        let (mut round, mut status) = (0 as i64, GameResult::InProgress);
-        while status == GameResult::InProgress {
+        let (mut round, mut status) = (0 as i64, GameStatus::InProgress);
+        while status == GameStatus::InProgress {
             status = self.round();
             round += 1;
         }
         match status {
-            GameResult::Failed => None,
-            _ => {
+            GameStatus::Succcess => {
                 let hp_value: i64 = self.characters.values().map(|character| character.hp).sum();
                 Some((round - 1) * hp_value)
             }
+            _ => None,
         }
     }
 
-    fn round(&mut self) -> GameResult {
-        let positions = self.positions();
-        for position in positions.iter() {
-            let game_result = match self.characters.get(position) {
+    fn round(&mut self) -> GameStatus {
+        for position in self.positions().iter() {
+            let status = match self.characters.get(position) {
                 Some(character) => self.single(position, character.clone()),
-                None => GameResult::InProgress,
+                None => GameStatus::InProgress,
             };
-            if game_result != GameResult::InProgress {
-                return game_result;
+            if status != GameStatus::InProgress {
+                return status;
             }
         }
-        GameResult::InProgress
+        GameStatus::InProgress
     }
 
-    fn single(&mut self, position: &Point, character: Character) -> GameResult {
-        let opponent_positions: Vec<&Point> = self
-            .characters
-            .iter()
-            .filter(|(_, opponent)| opponent.team != character.team)
-            .map(|(opponent_position, _)| opponent_position)
-            .collect();
-
-        if opponent_positions.is_empty() {
-            return GameResult::Done;
+    fn single(&mut self, position: &Point, character: Character) -> GameStatus {
+        let opponents = self.opponents(&character);
+        if opponents.is_empty() {
+            return GameStatus::Succcess;
         }
 
-        let found_target_position = match self.target_position(position, &opponent_positions) {
+        let found_target_position = match self.target_position(position, &opponents) {
             Some(target_position) => Some(target_position),
-            None => match self.new_position(position, &opponent_positions) {
+            None => match self.new_position(position, &opponents) {
                 Some(new_position) => {
-                    let target_position = self.target_position(&new_position, &opponent_positions);
+                    let target_position = self.target_position(&new_position, &opponents);
                     let value = self.characters.remove(position).unwrap();
                     self.characters.insert(new_position.clone(), value);
                     target_position
@@ -112,12 +94,12 @@ impl Game {
                 if target.hp <= 0 {
                     self.characters.remove(&target_position).unwrap();
                     if self.until_elf_death && target_team == Team::Elf {
-                        return GameResult::Failed;
+                        return GameStatus::Fail;
                     }
                 }
-                GameResult::InProgress
+                GameStatus::InProgress
             }
-            None => GameResult::InProgress,
+            None => GameStatus::InProgress,
         }
     }
 
@@ -131,27 +113,30 @@ impl Game {
         positions
     }
 
-    fn target_position(&self, position: &Point, opponent_positions: &Vec<&Point>) -> Option<Point> {
+    fn opponents(&self, character: &Character) -> Vec<&Point> {
+        self.characters
+            .iter()
+            .filter(|(_, opponent)| opponent.team != character.team)
+            .map(|(position, _)| position)
+            .collect()
+    }
+
+    fn target_position(&self, position: &Point, opponents: &Vec<&Point>) -> Option<Point> {
         let neighbors = position.neighbors();
-        let mut targets: Vec<(i64, &Point)> = opponent_positions
+        let mut targets: Vec<(i64, &Point)> = opponents
             .into_iter()
-            .filter(|opponent_position| neighbors.contains(opponent_position))
-            .map(|&opponent_position| {
-                (
-                    self.characters.get(opponent_position).unwrap().hp,
-                    opponent_position,
-                )
-            })
+            .filter(|opponent| neighbors.contains(opponent))
+            .map(|&opponent| (self.characters.get(opponent).unwrap().hp, opponent))
             .collect();
         targets.sort();
         targets.into_iter().next().map(|(_, target)| target.clone())
     }
 
-    fn new_position(&self, position: &Point, opponent_positions: &Vec<&Point>) -> Option<Point> {
+    fn new_position(&self, position: &Point, opponents: &Vec<&Point>) -> Option<Point> {
         let distances = self.distances(position);
         let mut targets = vec![];
-        for opponent_position in opponent_positions.iter() {
-            targets.extend(opponent_position.neighbors());
+        for opponent in opponents.iter() {
+            targets.extend(opponent.neighbors());
         }
         let mut target_distances: Vec<(u32, &Point)> = targets
             .iter()
@@ -227,7 +212,15 @@ fn get_game(elf_damage: u32, until_elf_death: bool) -> Game {
         damage: elf_damage,
         hp: 200,
     };
-    let mut game = Game::new(grid.points_with_value('.'), until_elf_death);
+    let mut game = Game {
+        characters: HashMap::new(),
+        open_paths: grid
+            .points_with_value('.')
+            .into_iter()
+            .map(|position| position.clone())
+            .collect(),
+        until_elf_death,
+    };
     game.add(goblin, grid.points_with_value('G'));
     game.add(elf, grid.points_with_value('E'));
     game
