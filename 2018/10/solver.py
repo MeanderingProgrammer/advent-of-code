@@ -57,13 +57,13 @@ def main() -> None:
 
 
 def min_area(particles: Particles) -> int:
-    previous_area, next_time = particles.area_at(0), 1
+    previous_area, time = particles.area_at(0), 0
     while True:
-        area = particles.area_at(next_time)
-        if area > previous_area:
-            return next_time - 1
-        previous_area = area
-        next_time += 1
+        next_area = particles.area_at(time + 1)
+        if next_area > previous_area:
+            return time
+        previous_area = next_area
+        time += 1
 
 
 def get_particles() -> Particles:
