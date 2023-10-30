@@ -1,6 +1,22 @@
+use std::cmp::Ordering;
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Point {
     values: Vec<i64>,
+}
+
+impl Ord for Point {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let self_values: Vec<&i64> = self.values.iter().rev().collect();
+        let other_values: Vec<&i64> = other.values.iter().rev().collect();
+        self_values.cmp(&other_values)
+    }
+}
+
+impl PartialOrd for Point {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Point {
