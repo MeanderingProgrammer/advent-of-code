@@ -6,7 +6,7 @@ from typing import List, Optional
 from pojo.day import Day
 
 
-@dataclass
+@dataclass(frozen=True)
 class DayFactory:
     years: List[str] = field(default_factory=list)
     days: List[str] = field(default_factory=list)
