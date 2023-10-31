@@ -1,7 +1,7 @@
 import os
-import toml
 from typing import List
 
+import toml
 from language.language import Language
 from pojo.day import Day
 
