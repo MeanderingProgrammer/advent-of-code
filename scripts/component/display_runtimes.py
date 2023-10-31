@@ -1,8 +1,8 @@
-import pandas as pd
-from termcolor import colored
 from typing import List
 
+import pandas as pd
 from pojo.runtime_info import RuntimeInfo
+from termcolor import colored
 
 
 class Displayer:

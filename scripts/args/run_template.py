@@ -33,7 +33,7 @@ class RunTemplate:
 
     @staticmethod
     def __days() -> List[Day]:
-        return DayFactory([], []).get_days()
+        return DayFactory().get_days()
 
     @staticmethod
     def __languages() -> List[Day]:
