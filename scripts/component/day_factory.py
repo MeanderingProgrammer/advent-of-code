@@ -1,15 +1,19 @@
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from pojo.day import Day
 
 
+class Everything:
+    def __contains__(self, _) -> bool:
+        return True
+
+
 @dataclass(frozen=True)
 class DayFactory:
-    years: List[str] = field(default_factory=list)
-    days: List[str] = field(default_factory=list)
+    years: List[int] = field(default_factory=list)
+    days: List[int] = field(default_factory=list)
 
     def get_latest(self) -> Day:
         days = self.get_days()
@@ -17,32 +21,20 @@ class DayFactory:
         return days[0]
 
     def get_days(self) -> List[Day]:
+        valid_years = self.__valid_years()
+        valid_days = self.__valid_days()
+
         days = []
-        for year in DayFactory._get_directories(self.years, "20"):
-            os.chdir(year)
-            for day in DayFactory._get_directories(self.days, None):
+        for solution_directory in Path(".").glob("2*/*"):
+            year, day = solution_directory.parts
+            if year in valid_years and day in valid_days:
                 days.append(Day(year, day))
-            os.chdir("..")
         return sorted(days)
 
-    @staticmethod
-    def _get_directories(values: List[str], valid_prefix: Optional[str]) -> List[str]:
-        def path_predicate(file_path: Path) -> bool:
-            # Must be a directory
-            if not file_path.is_dir():
-                return False
-            dir_name = file_path.name
-            # Name must match prefix if provided
-            if valid_prefix is not None and not dir_name.startswith(valid_prefix):
-                return False
-            # Name must be in input values if provided
-            if len(values) > 0 and not dir_name in values:
-                return False
-            # Passes all checks, should be a valid directory
-            return True
+    def __valid_years(self):
+        years = [str(year if year > 2_000 else year + 2_000) for year in self.years]
+        return years if len(years) > 0 else Everything()
 
-        return [
-            file_path.name
-            for file_path in Path(".").iterdir()
-            if path_predicate(file_path)
-        ]
+    def __valid_days(self):
+        days = [str(day).zfill(2) for day in self.days]
+        return days if len(days) > 0 else Everything()
