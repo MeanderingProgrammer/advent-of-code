@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pojo.day import Day
 
 
-@dataclass
+@dataclass(frozen=True)
 class RuntimeInfo:
     day: Day
     language: str
