@@ -10,7 +10,6 @@ from command.run import Runner
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
 from language.language import Language
-from pojo.day import Day
 
 
 class LanguageType(click.ParamType):
@@ -49,15 +48,16 @@ def generate(
 
     if year is None and day is None:
         template = template or "next"
-        gen_day = GenerateTemplate().get(template)
+        days = [GenerateTemplate().get(template)]
     elif template is not None:
         raise Exception('If "year" or "day" is provided then "template" should not be')
     elif year is None or day is None:
         raise Exception('Both "year" and "day" are required if either is provided')
     else:
-        gen_day = Day(year=parse_year(year), day=parse_day(day))
+        days = DayFactory(years=[year], days=[day]).get_days()
 
-    generator = Generator(day=gen_day, language=language)
+    assert len(days) == 1, "Can only generate one day at a time"
+    generator = Generator(day=days[0], language=language)
     click.echo(f"{generator}") if info else generator.generate()
 
 
@@ -88,11 +88,7 @@ def run(
     elif template is not None:
         raise Exception('If "year" or "day" is provided then "template" should not be')
     else:
-        day_factory = DayFactory(
-            years=[parse_year(y) for y in year],
-            days=[parse_day(d) for d in day],
-        )
-        days = day_factory.get_days()
+        days = DayFactory(years=list(year), days=list(day)).get_days()
 
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
@@ -107,14 +103,6 @@ def run(
         save=template in ["days"] and len(language) == 0,
     )
     click.echo(f"{runner}") if info else runner.run()
-
-
-def parse_year(year: int) -> str:
-    return str(year if year > 2_000 else year + 2_000)
-
-
-def parse_day(day: int) -> str:
-    return str(day).zfill(2)
 
 
 if __name__ == "__main__":
