@@ -17,10 +17,6 @@ class Go(Language):
 
     @override
     def _run_setup(self) -> None:
-        pass
-
-    @override
-    def compile(self) -> None:
         # For now we use go run, which both compiles and runs our code
         pass
 

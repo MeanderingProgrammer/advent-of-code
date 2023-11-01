@@ -20,17 +20,13 @@ class Language(abc.ABC):
     def solution_file(self) -> str:
         pass
 
-    def initial_setup(self) -> None:
+    def setup(self) -> None:
         if not self.__setup:
             self._run_setup()
         self.__setup = True
 
     @abc.abstractmethod
     def _run_setup(self) -> None:
-        pass
-
-    @abc.abstractmethod
-    def compile(self) -> None:
         pass
 
     def run(self, day: Day, run_args: List[str]) -> float:

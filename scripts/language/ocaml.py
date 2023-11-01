@@ -21,12 +21,6 @@ class Ocaml(Language):
         os.system("dune build")
 
     @override
-    def compile(self) -> None:
-        # Since our setup command builds all executable, each day does not
-        # need to be individually compiled
-        pass
-
-    @override
     def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["dune", "exec", Ocaml.binary(day)]
 

@@ -22,12 +22,6 @@ class Rust(Language):
         os.system("cargo build -rq --bins")
 
     @override
-    def compile(self) -> None:
-        # Since our setup command builds all binary targets, each day does not
-        # need to be individually compiled
-        pass
-
-    @override
     def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
         args = [] if len(run_args) == 0 else ["--"] + run_args
         return ["cargo", "run", "-rq", "--bin", Rust.binary(day)] + args
