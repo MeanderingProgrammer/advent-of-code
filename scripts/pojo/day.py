@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 _START_YEAR = 2015
 _PER_YEAR = 25
@@ -18,6 +19,9 @@ class Day:
         value = self.__to_day_number()
         value += amount
         return Day.__from_day_number(value)
+
+    def dir(self) -> Path:
+        return Path(self.year).joinpath(self.day)
 
     def __to_day_number(self) -> int:
         year, day = int(self.year), int(self.day)

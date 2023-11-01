@@ -1,8 +1,6 @@
 import json
-import os
 import time
 from dataclasses import dataclass
-from pathlib import Path
 from typing import List
 
 from component.display_runtimes import Displayer
@@ -37,23 +35,21 @@ class Runner:
     def __get_runtimes(self) -> List[RuntimeInfo]:
         runtimes = []
         for day in self.days:
-            os.chdir(f"{day.year}/{day.day}")
             runtimes.extend(self.__run_day(day))
-            os.chdir("../..")
         return runtimes
 
     def __run_day(self, day: Day) -> List[RuntimeInfo]:
         runtimes = []
-        for language in self.__languages():
+        for language in self.__languages(day):
             runtime = self.__run_language(language, day)
             runtimes.append(runtime)
         return runtimes
 
-    def __languages(self) -> List[Language]:
+    def __languages(self, day: Day) -> List[Language]:
         return [
             language
             for language in self.languages
-            if Path(language.solution_file).is_file()
+            if day.dir().joinpath(language.solution_file).is_file()
         ]
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
