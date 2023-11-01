@@ -21,11 +21,6 @@ class Python(Language):
         os.system("pip install -q -e commons/python")
 
     @override
-    def compile(self) -> None:
-        # Interpreted languages do not need to be compiled
-        pass
-
-    @override
     def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["python", str(day.dir().joinpath(self.solution_file))]
 

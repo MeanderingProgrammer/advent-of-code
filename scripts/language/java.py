@@ -18,10 +18,6 @@ class Java(Language):
 
     @override
     def _run_setup(self) -> None:
-        pass
-
-    @override
-    def compile(self) -> None:
         os.system("./gradlew build -q")
 
     @override
