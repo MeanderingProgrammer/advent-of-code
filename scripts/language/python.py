@@ -1,4 +1,3 @@
-import os
 from typing import List, override
 
 from language.language import Language
@@ -17,11 +16,11 @@ class Python(Language):
         return "solver.py"
 
     @override
-    def _run_setup(self) -> None:
-        os.system("pip install -q -e commons/python")
+    def _setup_command(self) -> List[str]:
+        return ["pip", "install", "-q", "-e", "commons/python"]
 
     @override
-    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+    def _run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["python", str(day.dir().joinpath(self.solution_file))]
 
     @override

@@ -22,24 +22,30 @@ class Language(abc.ABC):
 
     def setup(self) -> None:
         if not self.__setup:
-            self._run_setup()
+            command = self._setup_command()
+            self._execute(command)
         self.__setup = True
 
     @abc.abstractmethod
-    def _run_setup(self) -> None:
+    def _setup_command(self) -> List[str]:
         pass
 
     def run(self, day: Day, run_args: List[str]) -> float:
+        command = self._run_command(day, run_args)
         start = time.time()
-        command = self._get_run_command(day, run_args)
-        result = subprocess.run(command, stderr=subprocess.PIPE)
-        if result.returncode != 0:
-            raise Exception(f"Failed due to: {result.stderr.decode()}")
+        self._execute(command)
         return time.time() - start
 
     @abc.abstractmethod
-    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def _run_command(self, day: Day, run_args: List[str]) -> List[str]:
         pass
+
+    def _execute(self, command: List[str]) -> None:
+        if len(command) == 0:
+            return
+        result = subprocess.run(command, stderr=subprocess.PIPE)
+        if result.returncode != 0:
+            raise Exception(f"Failed due to: {result.stderr.decode()}")
 
     @abc.abstractmethod
     def template_processing(self, day: Day) -> None:
