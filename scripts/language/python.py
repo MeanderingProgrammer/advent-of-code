@@ -18,7 +18,7 @@ class Python(Language):
 
     @override
     def _run_setup(self) -> None:
-        os.system("pip install -q -e ../../commons/python")
+        os.system("pip install -q -e commons/python")
 
     @override
     def compile(self) -> None:
@@ -26,10 +26,10 @@ class Python(Language):
         pass
 
     @override
-    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
-        return ["python", self.solution_file]
+    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+        return ["python", str(day.dir().joinpath(self.solution_file))]
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def template_processing(self, _: Day) -> None:
         # No additional template processing needed
         pass

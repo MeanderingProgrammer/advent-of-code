@@ -1,6 +1,7 @@
 use crate::grid::{Grid, GridValue};
 use crate::point::Point;
 use clap::Parser;
+use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -67,10 +68,18 @@ fn to_int(value: &str) -> i64 {
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
+    let (year, day) = get_year_day();
     let args = Cli::parse();
     let file_name = if args.test { "sample.txt" } else { "data.txt" };
-    let reader = File::open(file_name)
+    let reader = File::open(format!("{year}/{day}/{file_name}"))
         .map(|file| BufReader::new(file))
         .expect(&format!("could not open '{}'", file_name));
     reader.lines().map(|line| f(&line.unwrap())).collect()
+}
+
+fn get_year_day() -> (String, String) {
+    let executable_path = env::current_exe().unwrap();
+    let binary_name = executable_path.file_name().unwrap().to_str().unwrap();
+    let binary_parts: Vec<&str> = binary_name.split("_").collect();
+    (binary_parts[1].into(), binary_parts[2].into())
 }

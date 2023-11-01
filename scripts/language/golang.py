@@ -25,10 +25,10 @@ class Go(Language):
         pass
 
     @override
-    def _get_run_command(self, day: Day, run_args: List[str]) -> List[str]:
-        return ["go", "run", self.solution_file]
+    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+        return ["go", "run", str(day.dir().joinpath(self.solution_file))]
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def template_processing(self, _: Day) -> None:
         # No additional template processing needed
         pass
