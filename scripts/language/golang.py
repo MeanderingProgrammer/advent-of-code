@@ -16,12 +16,12 @@ class Go(Language):
         return "solver.go"
 
     @override
-    def _run_setup(self) -> None:
+    def _setup_command(self) -> List[str]:
         # For now we use go run, which both compiles and runs our code
-        pass
+        return []
 
     @override
-    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+    def _run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["go", "run", str(day.dir().joinpath(self.solution_file))]
 
     @override

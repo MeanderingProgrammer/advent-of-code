@@ -1,4 +1,3 @@
-import os
 from typing import List, override
 
 from language.language import Language
@@ -17,11 +16,11 @@ class Java(Language):
         return "src/Solver.java"
 
     @override
-    def _run_setup(self) -> None:
-        os.system("./gradlew build -q")
+    def _setup_command(self) -> List[str]:
+        return ["./gradlew", "build", "-q"]
 
     @override
-    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+    def _run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["./gradlew", f":{Java.task(day)}:run", "-q"]
 
     @override

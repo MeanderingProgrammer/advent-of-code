@@ -17,11 +17,11 @@ class Ocaml(Language):
         return "solver.ml"
 
     @override
-    def _run_setup(self) -> None:
-        os.system("dune build")
+    def _setup_command(self) -> List[str]:
+        return ["dune", "build"]
 
     @override
-    def _get_run_command(self, day: Day, _: List[str]) -> List[str]:
+    def _run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["dune", "exec", Ocaml.binary(day)]
 
     @override
