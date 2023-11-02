@@ -16,7 +16,7 @@ class Go(Language):
         return []
 
     @override
-    def _run_command(self, day: Day, _: List[str]) -> List[str]:
+    def run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["go", "run", str(day.dir().joinpath(self.solution_file))]
 
     @override

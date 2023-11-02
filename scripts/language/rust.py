@@ -16,7 +16,7 @@ class Rust(Language):
         return ["cargo", "build", "-rq", "--bins"]
 
     @override
-    def _run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
         args = [] if len(run_args) == 0 else ["--"] + run_args
         return ["cargo", "run", "-rq", "--bin", Rust.binary(day)] + args
 

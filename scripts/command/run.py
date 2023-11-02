@@ -1,4 +1,5 @@
 import json
+import subprocess
 import time
 from dataclasses import dataclass
 from typing import List
@@ -54,10 +55,20 @@ class Runner:
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")
-        language.setup()
-        runtime = language.run(day, self.run_args)
+        Runner.__execute(language.setup_command())
+        runtime = Runner.__execute(language.run_command(day, self.run_args))
         print(f"Runtime: {runtime:.3f} seconds")
         return RuntimeInfo(day, language.name, runtime)
+
+    @staticmethod
+    def __execute(command: List[str]) -> float:
+        if len(command) == 0:
+            return 0
+        start = time.time()
+        result = subprocess.run(command, stderr=subprocess.PIPE)
+        if result.returncode != 0:
+            raise Exception(f"Failed due to: {result.stderr.decode()}")
+        return time.time() - start
 
     def __save(self, name: str, runtimes: List[RuntimeInfo]) -> None:
         if not self.save:
