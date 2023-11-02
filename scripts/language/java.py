@@ -1,19 +1,14 @@
+from dataclasses import dataclass, field
 from typing import List, override
 
 from language.language import Language
 from pojo.day import Day
 
 
+@dataclass(kw_only=True, init=False)
 class Java(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "java"
-
-    @property
-    @override
-    def solution_file(self) -> str:
-        return "src/Solver.java"
+    name: str = field(default="java", repr=False)
+    solution_file: str = field(default="src/Solver.java", repr=False)
 
     @override
     def _setup_command(self) -> List[str]:

@@ -1,30 +1,23 @@
 import abc
 import subprocess
 import time
+from dataclasses import dataclass, field
 from typing import List
 
 from pojo.day import Day
 
 
+@dataclass(kw_only=True, init=False)
 class Language(abc.ABC):
-    def __init__(self):
-        self.__setup = False
-
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def solution_file(self) -> str:
-        pass
+    _setup: bool = field(default=False, repr=False)
+    name: str
+    solution_file: str
 
     def setup(self) -> None:
-        if not self.__setup:
+        if not self._setup:
             command = self._setup_command()
             self._execute(command)
-        self.__setup = True
+        self._setup = True
 
     @abc.abstractmethod
     def _setup_command(self) -> List[str]:
@@ -50,9 +43,3 @@ class Language(abc.ABC):
     @abc.abstractmethod
     def template_processing(self, day: Day) -> None:
         pass
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    def __str__(self) -> str:
-        return self.name

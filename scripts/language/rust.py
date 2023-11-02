@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import List, override
 
 import toml
@@ -5,16 +6,10 @@ from language.language import Language
 from pojo.day import Day
 
 
+@dataclass(kw_only=True, init=False)
 class Rust(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "rust"
-
-    @property
-    @override
-    def solution_file(self) -> str:
-        return "solver.rs"
+    name: str = field(default="rust", repr=False)
+    solution_file: str = field(default="solver.rs", repr=False)
 
     @override
     def _setup_command(self) -> List[str]:
