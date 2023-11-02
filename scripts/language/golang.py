@@ -1,19 +1,14 @@
+from dataclasses import dataclass, field
 from typing import List, override
 
 from language.language import Language
 from pojo.day import Day
 
 
+@dataclass(kw_only=True, init=False)
 class Go(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "golang"
-
-    @property
-    @override
-    def solution_file(self) -> str:
-        return "solver.go"
+    name: str = field(default="golang", repr=False)
+    solution_file: str = field(default="solver.go", repr=False)
 
     @override
     def _setup_command(self) -> List[str]:

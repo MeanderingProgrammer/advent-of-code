@@ -1,20 +1,15 @@
 import os
+from dataclasses import dataclass, field
 from typing import List, override
 
 from language.language import Language
 from pojo.day import Day
 
 
+@dataclass(kw_only=True, init=False)
 class Ocaml(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "ocaml"
-
-    @property
-    @override
-    def solution_file(self) -> str:
-        return "solver.ml"
+    name: str = field(default="ocaml", repr=False)
+    solution_file: str = field(default="solver.ml", repr=False)
 
     @override
     def _setup_command(self) -> List[str]:
