@@ -16,7 +16,7 @@ class Ocaml(Language):
         return ["dune", "build"]
 
     @override
-    def _run_command(self, day: Day, _: List[str]) -> List[str]:
+    def run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["dune", "exec", Ocaml.binary(day)]
 
     @override

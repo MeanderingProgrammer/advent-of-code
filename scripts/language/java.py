@@ -15,7 +15,7 @@ class Java(Language):
         return ["./gradlew", "build", "-q"]
 
     @override
-    def _run_command(self, day: Day, _: List[str]) -> List[str]:
+    def run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["./gradlew", f":{Java.task(day)}:run", "-q"]
 
     @override

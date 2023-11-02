@@ -15,7 +15,7 @@ class Python(Language):
         return ["pip", "install", "-q", "-e", "commons/python"]
 
     @override
-    def _run_command(self, day: Day, _: List[str]) -> List[str]:
+    def run_command(self, day: Day, _: List[str]) -> List[str]:
         return ["python", str(day.dir().joinpath(self.solution_file))]
 
     @override
