@@ -1,12 +1,14 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Module:
-    def __init__(self, value):
-        self.mass = int(value)
+    mass: int
 
-    def fuel(self, recursive):
+    def fuel(self, recursive: bool) -> int:
         fuel = (self.mass // 3) - 2
         if not recursive:
             return fuel
@@ -14,19 +16,15 @@ class Module:
             return fuel + Module(fuel).fuel(True) if fuel > 0 else 0
 
 
-def main():
+def main() -> None:
     answer.part1(3393938, get_fuel(False))
     answer.part2(5088037, get_fuel(True))
 
 
-def get_fuel(recursive):
-    modules = get_modules()
+def get_fuel(recursive: bool) -> int:
+    modules = [Module(mass) for mass in Parser().int_lines()]
     fuel_needed = [module.fuel(recursive) for module in modules]
     return sum(fuel_needed)
-
-
-def get_modules():
-    return [Module(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

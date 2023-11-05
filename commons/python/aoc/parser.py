@@ -1,3 +1,4 @@
+import argparse
 import sys
 from typing import List
 
@@ -5,8 +6,12 @@ from .board import Grid, Point
 
 
 class Parser:
-    def __init__(self, file_name="data"):
-        self.file_name = "{}.txt".format(file_name)
+    def __init__(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--test", action="store_true")
+        args = parser.parse_args()
+        file_name = "sample" if args.test else "data"
+        self.file_name = f"{file_name}.txt"
 
     def string(self) -> str:
         file_path = "{}/{}".format(sys.path[0], self.file_name)
