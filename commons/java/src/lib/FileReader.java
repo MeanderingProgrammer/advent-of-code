@@ -2,15 +2,19 @@ package lib;
 
 import java.io.File;
 import java.util.*;
-import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.cli.*;
 
-@AllArgsConstructor
 public class FileReader {
 
-  private final boolean testMode;
+  private final String fileName;
 
-  public FileReader() {
-    this(false);
+  @SneakyThrows
+  public FileReader(String[] args) {
+    Options options = new Options();
+    options.addOption(Option.builder().longOpt("test").build());
+    CommandLine cmd = new DefaultParser().parse(options, args);
+    this.fileName = cmd.hasOption("test") ? "sample" : "data";
   }
 
   public List<String> read() {
@@ -18,8 +22,7 @@ public class FileReader {
   }
 
   private Optional<Scanner> getFile() {
-    String fileName = testMode ? "sample" : "data";
-    File file = new File(String.format("%s.txt", fileName));
+    File file = new File(String.format("%s.txt", this.fileName));
     try {
       return Optional.of(new Scanner(file));
     } catch (Exception e) {
