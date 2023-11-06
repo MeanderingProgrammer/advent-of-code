@@ -16,8 +16,8 @@ class Ocaml(Language):
         return ["dune", "build"]
 
     @override
-    def run_command(self, day: Day, _: List[str]) -> List[str]:
-        return ["dune", "exec", Ocaml.binary(day)]
+    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        return ["dune", "exec", "--", Ocaml.binary(day)] + run_args
 
     @override
     def template_processing(self, day: Day) -> None:
