@@ -16,6 +16,7 @@ aoc.egg-info
 # Java / Gradle
 .gradle
 build
+bin
 .settings
 .project
 .classpath
