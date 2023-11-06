@@ -2,6 +2,7 @@ package lib;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.*;
 
@@ -18,7 +19,12 @@ public class FileReader {
   }
 
   public List<String> read() {
-    return getFile().map(FileReader::readFromScanner).orElse(List.of());
+    return read(Function.identity());
+  }
+
+  public <T> List<T> read(Function<String, T> f) {
+    var lines = getFile().map(FileReader::readFromScanner).orElse(List.of());
+    return lines.stream().map(f).toList();
   }
 
   private Optional<Scanner> getFile() {
