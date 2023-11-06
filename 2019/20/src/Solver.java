@@ -5,7 +5,7 @@ import maze.Maze;
 public class Solver {
 
   public static void main(String[] args) {
-    FileReader fileReader = new FileReader();
+    FileReader fileReader = new FileReader(args);
     Maze maze = new Maze(fileReader.read());
 
     Answer.part1(628, solve(maze, false));

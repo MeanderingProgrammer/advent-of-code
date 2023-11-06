@@ -15,8 +15,10 @@ class Java(Language):
         return ["./gradlew", "build", "-q"]
 
     @override
-    def run_command(self, day: Day, _: List[str]) -> List[str]:
-        return ["./gradlew", f":{Java.task(day)}:run", "-q"]
+    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+        args = " ".join(run_args)
+        args = [] if len(args) == 0 else [f'--args="{args}"']
+        return ["./gradlew", f":{Java.task(day)}:run", "-q"] + args
 
     @override
     def template_processing(self, day: Day) -> None:
