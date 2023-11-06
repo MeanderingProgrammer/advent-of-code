@@ -6,16 +6,15 @@ import (
 )
 
 func main() {
-	content := files.ReadInt()
-
-	answers.Part1(1292, windowIncreases(content, 1))
-	answers.Part2(1262, windowIncreases(content, 3))
+	values := files.ReadInt()
+	answers.Part1(1292, windowIncreases(values, 1))
+	answers.Part2(1262, windowIncreases(values, 3))
 }
 
-func windowIncreases(content []int, windowSize int) int {
+func windowIncreases(values []int, windowSize int) int {
 	increases := 0
-	for i := range content[:len(content)-windowSize] {
-		if sum(content, windowSize, i+1) > sum(content, windowSize, i) {
+	for i := range values[:len(values)-windowSize] {
+		if sum(values, windowSize, i+1) > sum(values, windowSize, i) {
 			increases++
 		}
 	}
