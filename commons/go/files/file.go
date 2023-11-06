@@ -3,13 +3,11 @@ package files
 import (
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/utils"
+	"flag"
 	"os"
 	"runtime"
 	"strings"
 )
-
-// Read sample file rather than actual input
-const test_mode = false
 
 func ReadInt() []int {
 	toInt := func(line string) int {
@@ -27,15 +25,16 @@ func Read[T any](f func(string) T) []T {
 }
 
 func ReadGroups() []string {
-	return SplitContent("\r\n\r\n")
+	return SplitContent("\n\n")
 }
 
 func ReadLines() []string {
-	return SplitContent("\r\n")
+	return SplitContent("\n")
 }
 
 func SplitContent(splitter string) []string {
-	return strings.Split(Content(), splitter)
+	content := strings.ReplaceAll(Content(), "\r\n", "\n")
+	return strings.Split(content, splitter)
 }
 
 func Content() string {
@@ -60,7 +59,9 @@ func getYearDay() (string, string) {
 }
 
 func fileName() string {
-	if test_mode {
+	testMode := flag.Bool("test", false, "Test mode")
+	flag.Parse()
+	if *testMode {
 		return "sample.txt"
 	} else {
 		return "data.txt"
