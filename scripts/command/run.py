@@ -50,7 +50,7 @@ class Runner:
         return [
             language
             for language in self.languages
-            if day.dir().joinpath(language.solution_file).is_file()
+            if language.solution_path(day).is_file()
         ]
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:

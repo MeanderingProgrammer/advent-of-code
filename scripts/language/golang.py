@@ -17,7 +17,7 @@ class Go(Language):
 
     @override
     def run_command(self, day: Day, run_args: List[str]) -> List[str]:
-        return ["go", "run", str(day.dir().joinpath(self.solution_file))] + run_args
+        return ["go", "run", str(self.solution_path(day))] + run_args
 
     @override
     def template_processing(self, _: Day) -> None:
