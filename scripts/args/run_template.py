@@ -37,11 +37,8 @@ class RunTemplate:
 
     @staticmethod
     def __languages() -> List[Day]:
-        return [
-            Day("2019", "01"),  # Python
-            Day("2019", "20"),  # Java
-            Day("2021", "01"),  # Rust, Go, & OCaml
-        ]
+        # Single day implemented in all languages
+        return [Day("2021", "01")]
 
     @staticmethod
     def __slow() -> List[Day]:
