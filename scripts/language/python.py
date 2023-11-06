@@ -16,7 +16,7 @@ class Python(Language):
 
     @override
     def run_command(self, day: Day, run_args: List[str]) -> List[str]:
-        return ["python", str(day.dir().joinpath(self.solution_file))] + run_args
+        return ["python", str(self.solution_path(day))] + run_args
 
     @override
     def template_processing(self, _: Day) -> None:

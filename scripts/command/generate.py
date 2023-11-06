@@ -15,7 +15,7 @@ class Generator:
     def generate(self) -> None:
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
-        solution_path = self.day.dir().joinpath(self.language.solution_file)
+        solution_path = self.language.solution_path(self.day)
         if solution_path.exists():
             raise Exception(f"Solution already exists under: {solution_path}")
 
