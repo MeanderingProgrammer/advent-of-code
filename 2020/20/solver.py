@@ -286,7 +286,7 @@ def get_image_tiles():
 
 
 def get_image_search():
-    return SearchImage(Parser("sea-monster").lines())
+    return SearchImage(Parser(file_name="sea-monster").lines())
 
 
 if __name__ == "__main__":
