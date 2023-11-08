@@ -77,7 +77,7 @@ func getData() (Template, Rules) {
 	firstChar := string(templateRules[0][0])
 
 	rules := make(Rules)
-	for _, rule := range strings.Split(templateRules[1], "\r\n") {
+	for _, rule := range strings.Split(templateRules[1], "\n") {
 		parts := strings.Split(rule, " -> ")
 		rules[parts[0]] = parts[1]
 	}

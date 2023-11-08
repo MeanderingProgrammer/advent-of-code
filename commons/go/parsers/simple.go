@@ -22,5 +22,5 @@ func IntCsv(s string) []int {
 }
 
 func Lines(s string) []string {
-	return strings.Split(s, "\r\n")
+	return strings.Split(s, "\n")
 }
