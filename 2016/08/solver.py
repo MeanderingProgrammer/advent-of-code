@@ -1,14 +1,18 @@
+from dataclasses import dataclass
+from typing import List
+
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Operation:
-    def __init__(self, value, size):
-        self.value = value.split()
-        self.w, self.h = size
+    value: List[str]
+    w: int
+    h: int
 
-    def apply(self, display):
+    def apply(self, display: Grid) -> None:
         if self.value[0] == "rect":
             c, r = [int(v) for v in self.value[1].split("x")]
             for x in range(c):
@@ -32,43 +36,38 @@ class Operation:
         else:
             raise Exception("Unknwon operation: {}".format(self.value))
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return str(self.value)
-
-
-def main():
-    size = 50, 6
-    display = create_display(size)
-
-    operations = get_operations(size)
+def main() -> None:
+    w, h = 50, 6
+    display = create_display(w, h)
+    operations = [Operation(line.split(), w, h) for line in Parser().lines()]
     for operation in operations:
         operation.apply(display)
+    display = display.mirror()
 
     answer.part1(106, lit(display))
+    expected = [
+        ".##..####.#....####.#.....##..#...#####..##...###.",
+        "#..#.#....#....#....#....#..#.#...##....#..#.#....",
+        "#....###..#....###..#....#..#..#.#.###..#....#....",
+        "#....#....#....#....#....#..#...#..#....#.....##..",
+        "#..#.#....#....#....#....#..#...#..#....#..#....#.",
+        ".##..#....####.####.####..##....#..#.....##..###..",
+    ]
+    answer.part2("\n" + "\n".join(expected), "\n" + str(display))
 
-    # Part 2: CFLELOYFCS
-    print("Part 2")
-    print(display)
 
-
-def lit(display):
-    return sum([value == "#" for point, value in display.items()])
-
-
-def create_display(size):
+def create_display(w: int, h: int) -> Grid:
     display = Grid()
-    for x in range(size[0]):
-        for y in range(size[1]):
+    for x in range(w):
+        for y in range(h):
             point = Point(x, y)
             display[point] = "."
     return display
 
 
-def get_operations(size):
-    return [Operation(line, size) for line in Parser().lines()]
+def lit(display: Grid) -> int:
+    return sum([value == "#" for _, value in display.items()])
 
 
 if __name__ == "__main__":

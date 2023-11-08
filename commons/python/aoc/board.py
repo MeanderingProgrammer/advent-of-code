@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Optional, Self, Set
 
 
 class Grid:
@@ -12,23 +12,29 @@ class Grid:
     def items(self):
         return self.__grid.items()
 
-    def reflect(self):
+    def reflect(self) -> Self:
         result = Grid()
         for point, value in self.items():
             result[point.reflect()] = value
         return result
 
-    def rotate(self):
+    def rotate(self) -> Self:
         result = Grid()
         for point, value in self.items():
             result[point.rotate()] = value
         return result
 
+    def mirror(self) -> Self:
+        result = Grid()
+        for point, value in self.items():
+            result[point.mirror()] = value
+        return result
+
     def xs(self) -> Set[int]:
         return set([point.x() for point in self.__grid])
 
-    def ys(self) -> Set[int]:
-        if self.__dimensionality < 2:
+    def ys(self) -> Optional[Set[int]]:
+        if self.__dimensionality is None or self.__dimensionality < 2:
             return None
         return set([point.y() for point in self.__grid])
 
@@ -92,15 +98,19 @@ class Point:
 
     # 2D Transformers
 
-    def reflect(self):
+    def reflect(self) -> Self:
         self.__verify_2d()
-        return Point(-self.__get(0), self.__get(1))
+        return Point(-self.x(), self.y())
 
-    def rotate(self):
+    def rotate(self) -> Self:
         self.__verify_2d()
-        return Point(-self.__get(1), self.__get(0))
+        return Point(-self.y(), self.x())
 
-    def __verify_2d(self):
+    def mirror(self) -> Self:
+        self.__verify_2d()
+        return Point(self.x(), -self.y())
+
+    def __verify_2d(self) -> None:
         if self.dimensions() != 2:
             raise Exception("This function only works on 2D points")
 
