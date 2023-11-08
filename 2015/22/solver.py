@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Self, Tuple
+from typing import Dict, FrozenSet, List, Optional, Self, Tuple
 
 from aoc import answer, search
 
 
-@dataclass
+@dataclass(unsafe_hash=True, order=True)
 class Character:
     hp: int
     attack: int
@@ -45,7 +45,7 @@ EFFECTS: Dict[str, SpellEffect] = {
 }
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class Spell:
     name: str
     cost: int
@@ -74,14 +74,14 @@ SPELL_BOOK = [
 ]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class Game:
     player: Character
     enemy: Character
     player_damage: int
-    spells: List[Spell]
+    spells: FrozenSet[Spell]
 
-    def get_moves(self, mana_used: int) -> List[Tuple[int, Self]]:
+    def get_moves(self) -> List[Tuple[int, Self]]:
         if self.player.hp <= 0:
             return []
 
@@ -92,10 +92,7 @@ class Game:
 
         adjacent = []
         for spell in spells:
-            total_used = spell.cost + mana_used
-            game_copy = self.copy()
-            game_copy.move(spell)
-            adjacent.append((total_used, game_copy))
+            adjacent.append((spell.cost, self.move(spell)))
         return adjacent
 
     def can_perform(self, spell: Spell) -> bool:
@@ -107,39 +104,34 @@ class Game:
                     return False
         return True
 
-    def move(self, spell: Spell) -> None:
-        self.player.hp -= self.player_damage
-        self.run_spells()
+    def move(self, spell: Spell) -> Self:
+        player, enemy = self.player.copy(), self.enemy.copy()
+        spells = [spell.copy() for spell in self.spells]
 
-        spell.setup(self.player)
-        self.player.attack -= spell.cost
-        self.spells.append(spell)
+        player.hp -= self.player_damage
+        Game.run_spells(player, enemy, spells)
 
-        self.player.hp -= self.player_damage
-        self.run_spells()
-        self.player.hp -= max(1, self.enemy.attack - self.player.armor)
+        spell.setup(player)
+        player.attack -= spell.cost
+        spells.append(spell)
 
-    def run_spells(self) -> None:
+        player.hp -= self.player_damage
+        Game.run_spells(player, enemy, spells)
+        player.hp -= max(1, enemy.attack - player.armor)
+
+        return Game(player, enemy, self.player_damage, frozenset(spells))
+
+    @staticmethod
+    def run_spells(player: Character, enemy: Character, spells: List[Spell]) -> None:
         inactive: List[Spell] = []
-        for spell in self.spells:
-            spell.apply(self.player, self.enemy)
+        for spell in spells:
+            spell.apply(player, enemy)
             if spell.turns == 0:
                 inactive.append(spell)
 
         for spell in inactive:
-            spell.cleanup(self.player)
-            self.spells.remove(spell)
-
-    def copy(self):
-        return Game(
-            self.player.copy(),
-            self.enemy.copy(),
-            self.player_damage,
-            [spell.copy() for spell in self.spells],
-        )
-
-    def __lt__(self, o):
-        return self.player.hp > o.player.hp
+            spell.cleanup(player)
+            spells.remove(spell)
 
 
 def main() -> None:
@@ -148,11 +140,11 @@ def main() -> None:
 
 
 def play_game(player_damage: int) -> Optional[int]:
-    game = Game(Character(50, 500, 0), Character(58, 9, 0), player_damage, [])
+    game = Game(Character(50, 500, 0), Character(58, 9, 0), player_damage, frozenset())
     return search.bfs_complete(
         (0, game),
         lambda current: current.enemy.hp <= 0,
-        lambda mana_used, current: current.get_moves(mana_used),
+        lambda current: current.get_moves(),
     )
 
 
