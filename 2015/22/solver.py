@@ -1,256 +1,181 @@
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Self, Tuple, override
+
 from aoc import answer, search
 
-PLAYER_STATS = (50, 500)
-ENEMY_STATS = (58, 9)
+
+@dataclass
+class Character:
+    hp: int
+    attack: int
+    armor: int
+
+    def copy(self) -> Self:
+        return Character(self.hp, self.attack, self.armor)
 
 
-class EffectCreator:
-    def __init__(self, name, cost, turns, player_effect, enemy_effect, cleanup):
-        self.name = name
-        self.cost = cost
-        self.turns = turns
-        self.player_effect = player_effect
-        self.enemy_effect = enemy_effect
-        self.cleanup = cleanup
+class SpellEffect:
+    def setup(self, player: Character) -> None:
+        pass
 
-    def create(self):
-        return Effect(
-            self.name,
-            self.cost,
-            self.turns,
-            self.player_effect,
-            self.enemy_effect,
-            self.cleanup,
-        )
+    def turn(self, player: Character, enemy: Character) -> None:
+        pass
+
+    def cleanup(self, player: Character) -> None:
+        pass
 
 
-class Effect:
-    def __init__(self, name, cost, turns, player_effect, enemy_effect, cleanup):
-        self.name = name
-        self.cost = cost
-        self.turns = turns
-        self.player_effect = player_effect
-        self.enemy_effect = enemy_effect
-        self.cleanup = cleanup
+class MagicMissle(SpellEffect):
+    @override
+    def turn(self, _: Character, enemy: Character) -> None:
+        enemy.hp -= 4
 
-    def apply(self, player, enemy):
-        if self.player_effect is not None:
-            self.player_effect(player)
-        if self.enemy_effect is not None:
-            self.enemy_effect(enemy)
+
+class Drain(SpellEffect):
+    @override
+    def turn(self, player: Character, enemy: Character) -> None:
+        player.hp += 2
+        enemy.hp -= 2
+
+
+class Shield(SpellEffect):
+    @override
+    def setup(self, player: Character) -> None:
+        player.armor += 7
+
+    @override
+    def cleanup(self, player: Character) -> None:
+        player.armor -= 7
+
+
+class Poison(SpellEffect):
+    @override
+    def turn(self, _: Character, enemy: Character) -> None:
+        enemy.hp -= 3
+
+
+class Recharge(SpellEffect):
+    @override
+    def turn(self, player: Character, _: Character) -> None:
+        player.attack += 101
+
+
+EFFECTS: Dict[str, SpellEffect] = {
+    "Magic Missile": MagicMissle(),
+    "Drain": Drain(),
+    "Shield": Shield(),
+    "Poison": Poison(),
+    "Recharge": Recharge(),
+}
+
+
+@dataclass
+class Spell:
+    name: str
+    cost: int
+    turns: int
+
+    def setup(self, player: Character) -> None:
+        EFFECTS[self.name].setup(player)
+
+    def apply(self, player: Character, enemy: Character) -> None:
+        EFFECTS[self.name].turn(player, enemy)
         self.turns -= 1
 
-    def clean(self, player):
-        if self.cleanup is not None:
-            self.cleanup(player)
+    def cleanup(self, player: Character) -> None:
+        EFFECTS[self.name].cleanup(player)
 
-    def active(self):
-        return self.turns > 0
-
-    def copy(self):
-        return Effect(
-            self.name,
-            self.cost,
-            self.turns,
-            self.player_effect,
-            self.enemy_effect,
-            self.cleanup,
-        )
-
-    def __eq__(self, o):
-        return str(self) == str(o)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return self.name
+    def copy(self) -> Self:
+        return Spell(self.name, self.cost, self.turns)
 
 
-SPELL_CREATORS = [
-    EffectCreator("Magic Missile", 53, 1, None, lambda enemy: enemy.boost_hp(-4), None),
-    EffectCreator(
-        "Drain",
-        73,
-        1,
-        lambda player: player.boost_hp(2),
-        lambda enemy: enemy.boost_hp(-2),
-        None,
-    ),
-    EffectCreator(
-        "Shield",
-        113,
-        6,
-        lambda player: player.boost_armor(7),
-        None,
-        lambda player: player.boost_armor(-7),
-    ),
-    EffectCreator("Poison", 173, 6, None, lambda enemy: enemy.boost_hp(-3), None),
-    EffectCreator(
-        "Recharge", 229, 5, lambda player: player.boost_mana(101), None, None
-    ),
+SPELL_BOOK = [
+    Spell(name="Magic Missile", cost=53, turns=1),
+    Spell(name="Drain", cost=73, turns=1),
+    Spell(name="Shield", cost=113, turns=6),
+    Spell(name="Poison", cost=173, turns=6),
+    Spell(name="Recharge", cost=229, turns=5),
 ]
 
 
-class Wizard:
-    def __init__(self, hp, mana, armor=0):
-        self.hp = hp
-        self.mana = mana
-        self.armor = armor
-
-    def boost_hp(self, amount):
-        self.hp += amount
-
-    def boost_mana(self, amount):
-        self.mana += amount
-
-    def boost_armor(self, amount):
-        if self.armor == 0 or amount < 0:
-            self.armor += amount
-
-    def cast(self, spell):
-        self.mana -= spell.cost
-
-    def can_perform(self, spell):
-        return spell.cost <= self.mana
-
-    def alive(self):
-        return self.hp > 0
-
-    def copy(self):
-        return Wizard(self.hp, self.mana, self.armor)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {}".format(self.hp, self.mana)
-
-
-class Warlock:
-    def __init__(self, hp, damage):
-        self.hp = hp
-        self.damage = damage
-
-    def boost_hp(self, amount):
-        self.hp += amount
-
-    def attack(self, opponent):
-        damage_dealt = self.damage - opponent.armor
-        damage_dealt = max(1, damage_dealt)
-        opponent.hp -= damage_dealt
-
-    def alive(self):
-        return self.hp > 0
-
-    def copy(self):
-        return Warlock(self.hp, self.damage)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {}".format(self.hp, self.damage)
-
-
+@dataclass(frozen=True)
 class Game:
-    def __init__(self, player, enemy, hard, effects=None):
-        self.player = player
-        self.enemy = enemy
-        self.hard = hard
-        self.effects = set() if effects is None else effects
+    player: Character
+    enemy: Character
+    player_damage: int
+    spells: List[Spell]
 
-    def done(self):
-        return not self.enemy.alive()
-
-    def get_moves(self, mana_used):
-        if not self.player.alive():
+    def get_moves(self, mana_used: int) -> List[Tuple[int, Self]]:
+        if self.player.hp <= 0:
             return []
 
-        can_perform = []
-        for spell_creator in SPELL_CREATORS:
-            if self.can_perform(spell_creator):
-                can_perform.append(spell_creator.create())
+        spells = []
+        for spell in SPELL_BOOK:
+            if self.can_perform(spell):
+                spells.append(spell.copy())
 
         adjacent = []
-        for spell in can_perform:
+        for spell in spells:
             total_used = spell.cost + mana_used
             game_copy = self.copy()
             game_copy.move(spell)
             adjacent.append((total_used, game_copy))
         return adjacent
 
-    def can_perform(self, spell_creator):
-        if not self.player.can_perform(spell_creator):
+    def can_perform(self, spell: Spell) -> bool:
+        if self.player.attack < spell.cost:
             return False
-        spell = spell_creator.create()
-        if spell not in self.effects:
-            return True
-        active_spell = self.get_active_spell(spell.name)
-        return active_spell.turns == 1
+        for active_spell in self.spells:
+            if active_spell.name == spell.name:
+                if active_spell.turns > 1:
+                    return False
+        return True
 
-    def get_active_spell(self, name):
-        for spell in self.effects:
-            if spell.name == name:
-                return spell
+    def move(self, spell: Spell) -> None:
+        self.player.hp -= self.player_damage
+        self.run_spells()
 
-    def move(self, spell):
-        self.run_hard_mode()
-        self.run_effects()
-        self.player.cast(spell)
-        self.effects.add(spell)
+        spell.setup(self.player)
+        self.player.attack -= spell.cost
+        self.spells.append(spell)
 
-        self.run_hard_mode()
-        self.run_effects()
-        self.enemy.attack(self.player)
+        self.player.hp -= self.player_damage
+        self.run_spells()
+        self.player.hp -= max(1, self.enemy.attack - self.player.armor)
 
-    def run_hard_mode(self):
-        if self.hard:
-            self.player.boost_hp(-1)
-        return self.player.alive()
+    def run_spells(self) -> None:
+        inactive: List[Spell] = []
+        for spell in self.spells:
+            spell.apply(self.player, self.enemy)
+            if spell.turns == 0:
+                inactive.append(spell)
 
-    def run_effects(self):
-        to_deactivate = self.apply_effects()
-        self.deactivate(to_deactivate)
-
-    def apply_effects(self):
-        to_deactivate = []
-        for effect in self.effects:
-            effect.apply(self.player, self.enemy)
-            if not effect.active():
-                to_deactivate.append(effect)
-        return to_deactivate
-
-    def deactivate(self, to_deactivate):
-        for effect in to_deactivate:
-            effect.clean(self.player)
-            self.effects.remove(effect)
+        for spell in inactive:
+            spell.cleanup(self.player)
+            self.spells.remove(spell)
 
     def copy(self):
         return Game(
             self.player.copy(),
             self.enemy.copy(),
-            self.hard,
-            set([effect.copy() for effect in self.effects]),
+            self.player_damage,
+            [spell.copy() for spell in self.spells],
         )
 
     def __lt__(self, o):
         return self.player.hp > o.player.hp
 
 
-def main():
-    answer.part1(1269, play_game(False))
-    answer.part2(1309, play_game(True))
+def main() -> None:
+    answer.part1(1269, play_game(0))
+    answer.part2(1309, play_game(1))
 
 
-def play_game(hard):
-    game = Game(Wizard(*PLAYER_STATS), Warlock(*ENEMY_STATS), hard)
+def play_game(player_damage: int) -> Optional[int]:
+    game = Game(Character(50, 500, 0), Character(58, 9, 0), player_damage, [])
     return search.bfs_complete(
         (0, game),
-        lambda current: current.done(),
+        lambda current: current.enemy.hp <= 0,
         lambda mana_used, current: current.get_moves(mana_used),
     )
 
