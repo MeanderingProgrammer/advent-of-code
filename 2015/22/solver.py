@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Self, Tuple, override
+from typing import Dict, List, Optional, Self, Tuple
 
 from aoc import answer, search
 
@@ -10,62 +10,38 @@ class Character:
     attack: int
     armor: int
 
+    def add(self, values: Tuple[int, int, int]) -> None:
+        self.hp += values[0]
+        self.attack += values[1]
+        self.armor += values[2]
+
     def copy(self) -> Self:
         return Character(self.hp, self.attack, self.armor)
 
 
+@dataclass(frozen=True)
 class SpellEffect:
+    boost: Tuple[int, int, int]
+    player: Tuple[int, int, int]
+    enemy: Tuple[int, int, int]
+
     def setup(self, player: Character) -> None:
-        pass
+        player.add(self.boost)
 
     def turn(self, player: Character, enemy: Character) -> None:
-        pass
+        player.add(self.player)
+        enemy.add(self.enemy)
 
     def cleanup(self, player: Character) -> None:
-        pass
-
-
-class MagicMissle(SpellEffect):
-    @override
-    def turn(self, _: Character, enemy: Character) -> None:
-        enemy.hp -= 4
-
-
-class Drain(SpellEffect):
-    @override
-    def turn(self, player: Character, enemy: Character) -> None:
-        player.hp += 2
-        enemy.hp -= 2
-
-
-class Shield(SpellEffect):
-    @override
-    def setup(self, player: Character) -> None:
-        player.armor += 7
-
-    @override
-    def cleanup(self, player: Character) -> None:
-        player.armor -= 7
-
-
-class Poison(SpellEffect):
-    @override
-    def turn(self, _: Character, enemy: Character) -> None:
-        enemy.hp -= 3
-
-
-class Recharge(SpellEffect):
-    @override
-    def turn(self, player: Character, _: Character) -> None:
-        player.attack += 101
+        player.add((-self.boost[0], -self.boost[1], -self.boost[2]))
 
 
 EFFECTS: Dict[str, SpellEffect] = {
-    "Magic Missile": MagicMissle(),
-    "Drain": Drain(),
-    "Shield": Shield(),
-    "Poison": Poison(),
-    "Recharge": Recharge(),
+    "Magic Missile": SpellEffect(boost=(0, 0, 0), player=(0, 0, 0), enemy=(-4, 0, 0)),
+    "Drain": SpellEffect(boost=(0, 0, 0), player=(2, 0, 0), enemy=(-2, 0, 0)),
+    "Shield": SpellEffect(boost=(0, 0, 7), player=(0, 0, 0), enemy=(0, 0, 0)),
+    "Poison": SpellEffect(boost=(0, 0, 0), player=(0, 0, 0), enemy=(-3, 0, 0)),
+    "Recharge": SpellEffect(boost=(0, 0, 0), player=(0, 101, 0), enemy=(0, 0, 0)),
 }
 
 
