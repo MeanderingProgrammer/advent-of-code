@@ -1,20 +1,19 @@
-from typing import List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
 
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
-OPEN = "."
-TREES = "|"
-YARD = "#"
+OPEN, TREES, YARD = ".", "|", "#"
+NEIGHBORS = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
 
 
+@dataclass(frozen=True)
 class Landscape:
-    def __init__(self, grid):
-        self.grid = grid
+    grid: Dict[Tuple[int, int], str]
 
-    def step(self):
-        new_grid = {}
+    def step(self) -> None:
+        new_grid = dict()
         for point, value in self.grid.items():
             if value == OPEN:
                 if self.count(point, TREES) >= 3:
@@ -26,22 +25,24 @@ class Landscape:
                 if self.count(point, YARD) == 0 or self.count(point, TREES) == 0:
                     new_grid[point] = OPEN
             else:
-                raise Exception("Unknown value {}".format(value))
-
+                raise Exception(f"Unknown value {value}")
         for point in new_grid:
             self.grid[point] = new_grid[point]
 
-    def count(self, point, value):
-        return sum([self.grid[adjacent] == value for adjacent in point.adjacent(True)])
+    def count(self, point: Tuple[int, int], value: str) -> int:
+        neighbors = [
+            (point[0] + neighbor[0], point[1] + neighbor[1]) for neighbor in NEIGHBORS
+        ]
+        return sum([self.grid.get(neighbor) == value for neighbor in neighbors])
 
-    def resource_value(self):
+    def resource_value(self) -> int:
         return self.resource_count(TREES) * self.resource_count(YARD)
 
-    def resource_count(self, goal):
+    def resource_count(self, goal: str) -> int:
         return sum([resource == goal for _, resource in self.grid.items()])
 
 
-def main():
+def main() -> None:
     answer.part1(515496, run_for(10))
     answer.part2(233058, run_for(1_000_000_000))
 
@@ -66,12 +67,11 @@ def find_pattern(values: List[int]) -> Tuple[Optional[int], List[int]]:
     return None, []
 
 
-def get_grid():
-    grid = Grid()
+def get_grid() -> Dict[Tuple[int, int], str]:
+    grid = dict()
     for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
-            point = Point(x, y)
-            grid[point] = value
+            grid[(x, y)] = value
     return grid
 
 
