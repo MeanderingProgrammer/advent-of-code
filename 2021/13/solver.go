@@ -5,7 +5,6 @@ import (
 	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
-	"fmt"
 	"strings"
 )
 
@@ -66,12 +65,18 @@ func main() {
 	grid = grid.apply(folds[0])
 	answers.Part1(737, grid.Len())
 
-	// Part 2: ZUJUAFHP
-	fmt.Println("Part 2")
 	for _, fold := range folds[1:] {
 		grid = grid.apply(fold)
 	}
-	grid.Print(".")
+	expected := []string{
+		"####.#..#...##.#..#..##..####.#..#.###..",
+		"...#.#..#....#.#..#.#..#.#....#..#.#..#.",
+		"..#..#..#....#.#..#.#..#.###..####.#..#.",
+		".#...#..#....#.#..#.####.#....#..#.###..",
+		"#....#..#.#..#.#..#.#..#.#....#..#.#....",
+		"####..##...##...##..#..#.#....#..#.#....",
+	}
+	answers.Part2("\n"+strings.Join(expected, "\n"), "\n"+grid.String("."))
 }
 
 func getGridFolds() (PaperGrid, []Fold) {

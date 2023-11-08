@@ -107,19 +107,21 @@ func (grid Grid[T]) GetPoints(target T) []Point {
 	return points
 }
 
-func (grid Grid[T]) Print(defaultValue string) {
+func (grid Grid[T]) String(defaultValue T) string {
+	var rows []string
 	for y := 0; y <= grid.Height; y++ {
+		var row []string
 		for x := 0; x <= grid.Width; x++ {
 			point := Point{X: x, Y: y}
 			value, exists := grid.plane[point]
-			if exists {
-				fmt.Print(value)
-			} else {
-				fmt.Print(defaultValue)
+			if !exists {
+				value = defaultValue
 			}
+			row = append(row, fmt.Sprintf("%v", value))
 		}
-		fmt.Println()
+		rows = append(rows, strings.Join(row, ""))
 	}
+	return strings.Join(rows, "\n")
 }
 
 type RowSplitter int
