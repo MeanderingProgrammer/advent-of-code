@@ -47,6 +47,6 @@ class RunTemplate:
             raise Exception("Looks like slow runtimes were never determined")
         days = set()
         for runtime in json.loads(slow_file.read_text()):
-            day = Day(runtime["year"], runtime["day"])
-            days.add(day)
+            day_factory = DayFactory(years=[runtime["year"]], days=[runtime["day"]])
+            days.update(day_factory.get_days())
         return sorted(list(days))
