@@ -21,7 +21,7 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 	case South:
 		return start.Add(0, 1)
 	default:
-		panic(fmt.Sprintf("Unexpected cucumber: %s", cucumber))
+		panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
 	}
 }
 
