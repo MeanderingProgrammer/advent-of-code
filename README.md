@@ -108,6 +108,12 @@ cargo install aoc-cli
 touch .adventofcode.session
 ```
 
+## Process Runtime Output
+
+```
+jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
+```
+
 ## Take Over 10 Seconds On Dell XPS 15
 
 | Year | Day | Dell XPS 15 | M2 Mac  |
