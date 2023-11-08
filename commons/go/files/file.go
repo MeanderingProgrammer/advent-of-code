@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+var testMode bool
+
+func init() {
+	flag.BoolVar(&testMode, "test", false, "Test mode")
+	flag.Parse()
+}
+
 func ReadInt() []int {
 	toInt := func(line string) int {
 		return conversions.ToInt(line)
@@ -33,8 +40,7 @@ func ReadLines() []string {
 }
 
 func SplitContent(splitter string) []string {
-	content := strings.ReplaceAll(Content(), "\r\n", "\n")
-	return strings.Split(content, splitter)
+	return strings.Split(Content(), splitter)
 }
 
 func Content() string {
@@ -42,7 +48,7 @@ func Content() string {
 	filepath := []string{year, day, fileName()}
 	content, err := os.ReadFile(strings.Join(filepath, "/"))
 	utils.CheckError(err)
-	return string(content)
+	return strings.ReplaceAll(string(content), "\r\n", "\n")
 }
 
 func getYearDay() (string, string) {
@@ -59,9 +65,7 @@ func getYearDay() (string, string) {
 }
 
 func fileName() string {
-	testMode := flag.Bool("test", false, "Test mode")
-	flag.Parse()
-	if *testMode {
+	if testMode {
 		return "sample.txt"
 	} else {
 		return "data.txt"
