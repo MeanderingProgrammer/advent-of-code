@@ -8,6 +8,7 @@ public class Maze {
   private final List<Grid> grids;
 
   public Maze(List<String> maze, boolean splitMaze) {
+    maze = new ArrayList<>(maze);
     grids = new ArrayList<>();
 
     Grid initialGrid = new Grid(maze);
