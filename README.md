@@ -112,6 +112,7 @@ touch .adventofcode.session
 
 ```
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
+jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 ```
 
 ## Take Over 10 Seconds On Dell XPS 15
@@ -121,7 +122,6 @@ jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
 | 2015 | 10  | 0:11.21     | 0:05.22 |
 | 2015 | 20  | 0:12.22     | 0:06.73 |
 | 2015 | 22  | 0:14.09     | 0:07.63 |
-| 2015 | 24  | 0:10.47     | 0:05.08 |
 | 2017 | 14  | 0:11.54     | 0:04.97 |
 | 2017 | 17  | 0:16.39     | 0:04.73 |
 | 2018 | 6   | 0:11.18     | 0:05:02 |
