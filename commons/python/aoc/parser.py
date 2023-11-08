@@ -1,16 +1,19 @@
 import argparse
 import sys
-from typing import List
+from typing import List, Optional
 
 from .board import Grid, Point
 
 
 class Parser:
-    def __init__(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--test", action="store_true")
-        args = parser.parse_args()
-        file_name = "sample" if args.test else "data"
+    def __init__(self, file_name: Optional[str] = None):
+        def get_file_name() -> str:
+            parser = argparse.ArgumentParser()
+            parser.add_argument("--test", action="store_true")
+            args = parser.parse_args()
+            return "sample" if args.test else "data"
+
+        file_name = file_name or get_file_name()
         self.file_name = f"{file_name}.txt"
 
     def string(self) -> str:
