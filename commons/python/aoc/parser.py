@@ -26,6 +26,9 @@ class Parser:
             data = data.strip()
         return data
 
+    def integer(self) -> int:
+        return int(self.string())
+
     def ord_string(self) -> list[int]:
         return list(map(ord, self.string()))
 

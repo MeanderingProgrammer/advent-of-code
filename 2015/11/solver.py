@@ -1,6 +1,5 @@
 from aoc import answer
-
-STARTING_PASSWORD = "hxbxwxba"
+from aoc.parser import Parser
 
 
 class PasswordIncrementer:
@@ -72,7 +71,8 @@ class PasswordIncrementer:
 
 
 def main():
-    generator = PasswordIncrementer(STARTING_PASSWORD)
+    value = Parser(strip=True).string()
+    generator = PasswordIncrementer(value)
     answer.part1("hxbxxyzz", run(generator))
     answer.part2("hxcaabcc", run(generator))
 

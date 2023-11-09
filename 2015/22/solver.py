@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Self
 
 from aoc import answer, search
+from aoc.parser import Parser
 
 
 @dataclass(unsafe_hash=True, order=True)
@@ -78,7 +79,7 @@ SPELL_BOOK = [
 class Game:
     player: Character
     enemy: Character
-    player_damage: int
+    damage: int
     spells: frozenset[Spell]
 
     def get_moves(self) -> list[tuple[int, Self]]:
@@ -108,18 +109,18 @@ class Game:
         player, enemy = self.player.copy(), self.enemy.copy()
         spells = [spell.copy() for spell in self.spells]
 
-        player.hp -= self.player_damage
+        player.hp -= self.damage
         Game.run_spells(player, enemy, spells)
 
         spell.setup(player)
         player.attack -= spell.cost
         spells.append(spell)
 
-        player.hp -= self.player_damage
+        player.hp -= self.damage
         Game.run_spells(player, enemy, spells)
         player.hp -= max(1, enemy.attack - player.armor)
 
-        return Game(player, enemy, self.player_damage, frozenset(spells))
+        return Game(player, enemy, self.damage, frozenset(spells))
 
     @staticmethod
     def run_spells(player: Character, enemy: Character, spells: list[Spell]) -> None:
@@ -135,12 +136,14 @@ class Game:
 
 
 def main() -> None:
-    answer.part1(1269, play_game(0))
-    answer.part2(1309, play_game(1))
+    lines = Parser().lines()
+    hp, attack = int(lines[0].split()[-1]), int(lines[1].split()[-1])
+    answer.part1(1269, play_game(hp, attack, 0))
+    answer.part2(1309, play_game(hp, attack, 1))
 
 
-def play_game(player_damage: int) -> Optional[int]:
-    game = Game(Character(50, 500, 0), Character(58, 9, 0), player_damage, frozenset())
+def play_game(hp: int, attack: int, damage: int) -> Optional[int]:
+    game = Game(Character(50, 500, 0), Character(hp, attack, 0), damage, frozenset())
     return search.bfs_complete(
         (0, game),
         lambda current: current.enemy.hp <= 0,
