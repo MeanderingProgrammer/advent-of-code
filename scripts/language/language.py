@@ -1,7 +1,6 @@
 import abc
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
 
 from pojo.day import Day
 
@@ -15,18 +14,18 @@ class Language(abc.ABC):
     def solution_path(self, day: Day) -> Path:
         return day.dir().joinpath(self.solution_file)
 
-    def setup_command(self) -> List[str]:
+    def setup_command(self) -> list[str]:
         if self._setup:
             return []
         self._setup = True
         return self._setup_command()
 
     @abc.abstractmethod
-    def _setup_command(self) -> List[str]:
+    def _setup_command(self) -> list[str]:
         pass
 
     @abc.abstractmethod
-    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         pass
 
     @abc.abstractmethod

@@ -1,6 +1,5 @@
 from collections import defaultdict
 from itertools import product
-from typing import List, Tuple
 
 from aoc import answer
 from aoc.parser import Parser
@@ -30,7 +29,7 @@ class PointRange:
         )
 
     @staticmethod
-    def to_point(coords: str) -> Tuple[int, int]:
+    def to_point(coords: str) -> tuple[int, int]:
         values = coords.split(",")
         return (int(values[0]), int(values[1]))
 
@@ -52,7 +51,7 @@ def main() -> None:
     answer.part2(15343601, state_value(grid_values, DIMABLE))
 
 
-def run_grid() -> List[List[str]]:
+def run_grid() -> list[list[str]]:
     directions = [Direction(line) for line in Parser().lines()]
     grid = defaultdict(list)
     for direction in directions:
@@ -60,7 +59,7 @@ def run_grid() -> List[List[str]]:
     return list(grid.values())
 
 
-def state_value(grid_values: List[List[str]], impacts) -> int:
+def state_value(grid_values: list[list[str]], impacts) -> int:
     total = 0
     for grid_value in grid_values:
         current = 0

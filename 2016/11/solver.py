@@ -1,7 +1,7 @@
 import itertools
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Optional
 
 from aoc import answer, search
 from aoc.parser import Parser
@@ -26,20 +26,20 @@ class Item:
 class State:
     def __init__(self):
         # 4 floors with nothing on at first
-        self.state: Dict[int, Set[Item]] = {i: set() for i in range(4)}
+        self.state: dict[int, set[Item]] = {i: set() for i in range(4)}
         self.hashed = None
         self.equalized = None
 
     def add(self, floor: int, item: Item) -> None:
         self.state[floor].add(item)
 
-    def get(self, floor: int) -> Set[Item]:
+    def get(self, floor: int) -> set[Item]:
         return self.state[floor]
 
     def total_below(self, floor: int) -> int:
         return sum([len(self.state[level]) for level in range(floor)])
 
-    def move(self, new_level: int, items_to_move: List[Item]) -> "State":
+    def move(self, new_level: int, items_to_move: list[Item]) -> "State":
         new_state = State()
         for floor, items in self.state.items():
             for item in items:
@@ -49,7 +49,7 @@ class State:
             new_state.add(new_level, item)
         return new_state
 
-    def is_legal(self, floors: List[int]) -> bool:
+    def is_legal(self, floors: list[int]) -> bool:
         for floor in floors:
             if self.contains_unpaired_chip(floor):
                 return False
@@ -73,10 +73,10 @@ class State:
                     return i
         raise Exception(f"Could not find item: {target}")
 
-    def _equalize(self) -> Dict[int, Set[str]]:
+    def _equalize(self) -> dict[int, set[str]]:
         if self.equalized is not None:
             return self.equalized
-        result: Dict[int, Set[str]] = {i: set() for i in range(4)}
+        result: dict[int, set[str]] = {i: set() for i in range(4)}
         item_index = 0
         for i, items in self.state.items():
             for item in items:
@@ -124,13 +124,13 @@ def main():
     answer.part2(61, count_steps(additional_items))
 
 
-def count_steps(additional_items: List[str]) -> int:
+def count_steps(additional_items: list[str]) -> Optional[int]:
     start_state = get_start_state(additional_items)
     end_state = get_end_state(start_state)
     return search.bfs((0, start_state), (3, end_state), get_adjacent)
 
 
-def get_start_state(additional_items: List[str]) -> State:
+def get_start_state(additional_items: list[str]) -> State:
     state = State()
     for i, line in enumerate(Parser().lines()):
         # Remove period, pull the component string and split them
@@ -162,7 +162,7 @@ def get_end_state(start: State) -> State:
     return state
 
 
-def get_adjacent(item: Tuple[int, State]) -> Set[Tuple[int, State]]:
+def get_adjacent(item: tuple[int, State]) -> set[tuple[int, State]]:
     level, state = item
     options = pair(state.get(level))
 
@@ -174,7 +174,7 @@ def get_adjacent(item: Tuple[int, State]) -> Set[Tuple[int, State]]:
     return adjacent
 
 
-def pair(items: Set[Item]) -> List[List[Item]]:
+def pair(items: set[Item]) -> list[list[Item]]:
     result = []
 
     # Any singular item
@@ -200,8 +200,8 @@ def pair(items: Set[Item]) -> List[List[Item]]:
 
 
 def get_matching_pair(
-    chips: List[Item], generators: List[Item]
-) -> Optional[List[Item]]:
+    chips: list[Item], generators: list[Item]
+) -> Optional[list[Item]]:
     for chip in chips:
         for generator in generators:
             if chip.element == generator.element:
@@ -210,8 +210,8 @@ def get_matching_pair(
 
 
 def get_legal(
-    start_level: int, state: State, options: List[List[Item]], up: bool
-) -> Set[State]:
+    start_level: int, state: State, options: list[list[Item]], up: bool
+) -> set[State]:
     legal = set()
 
     new_level = start_level + 1 if up else start_level - 1

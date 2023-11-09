@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from aoc import answer, search
 from aoc.board import Grid, Point
@@ -10,7 +9,7 @@ class Maze:
     grid: Grid
     favorite_number: int
 
-    def get_adjacent(self, point: Point) -> List[Point]:
+    def get_adjacent(self, point: Point) -> list[Point]:
         result = set()
         for adjacent in point.adjacent():
             if adjacent.x() >= 0 and adjacent.y() >= 0:

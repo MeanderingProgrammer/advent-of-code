@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Dict, List
 
 from aoc import answer
 from aoc.int_code import Computer
@@ -9,13 +8,13 @@ TILE_MAPPING = {0: "empty", 1: "wall", 2: "block", 3: "horizontal paddle", 4: "b
 
 
 class Game:
-    def __init__(self, memory: List[int]):
+    def __init__(self, memory: list[int]):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
 
-        self.tile_buffer: List[int] = []
-        self.tile_freq: Dict[str, int] = defaultdict(int)
-        self.tile_x: Dict[str, int] = dict()
+        self.tile_buffer: list[int] = []
+        self.tile_freq: dict[str, int] = defaultdict(int)
+        self.tile_x: dict[str, int] = dict()
         self.score = 0
 
     def play(self) -> None:

@@ -1,4 +1,4 @@
-from typing import Optional, Self, Set
+from typing import Optional, Self
 
 
 class Grid:
@@ -30,10 +30,10 @@ class Grid:
             result[point.mirror()] = value
         return result
 
-    def xs(self) -> Set[int]:
+    def xs(self) -> set[int]:
         return set([point.x() for point in self.__grid])
 
-    def ys(self) -> Optional[Set[int]]:
+    def ys(self) -> Optional[set[int]]:
         if self.__dimensionality is None or self.__dimensionality < 2:
             return None
         return set([point.y() for point in self.__grid])

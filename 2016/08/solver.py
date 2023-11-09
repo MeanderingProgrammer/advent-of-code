@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from aoc import answer
 from aoc.board import Grid, Point
@@ -8,7 +7,7 @@ from aoc.parser import Parser
 
 @dataclass(frozen=True)
 class Operation:
-    value: List[str]
+    value: list[str]
     w: int
     h: int
 

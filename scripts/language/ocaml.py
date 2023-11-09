@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass, field
-from typing import List, override
+from typing import override
 
 from language.language import Language
 from pojo.day import Day
@@ -12,11 +12,11 @@ class Ocaml(Language):
     solution_file: str = field(default="solver.ml", repr=False)
 
     @override
-    def _setup_command(self) -> List[str]:
+    def _setup_command(self) -> list[str]:
         return ["dune", "build"]
 
     @override
-    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         return ["dune", "exec", "--", Ocaml.binary(day)] + run_args
 
     @override

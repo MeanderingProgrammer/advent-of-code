@@ -1,6 +1,5 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import List
 
 from aoc import answer
 from aoc.parser import Parser
@@ -11,7 +10,7 @@ class Word:
     value: str
 
     @property
-    def groups(self) -> List[str]:
+    def groups(self) -> list[str]:
         groups = []
         for i in range(len(self.value) - 1):
             groups.append(self.value[i] + self.value[i + 1])
@@ -70,7 +69,7 @@ def main() -> None:
     answer.part2(69, total_nice_words(words, True))
 
 
-def total_nice_words(words: List[Word], new_rules: bool) -> int:
+def total_nice_words(words: list[Word], new_rules: bool) -> int:
     nice_words = []
     for word in words:
         is_nice = word.nice_2() if new_rules else word.nice_1()

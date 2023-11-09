@@ -1,50 +1,49 @@
 import hashlib
-from typing import List, Tuple
 
 from aoc import answer, search
-from aoc.board import Point
 
 CODE = "udskfozm"
 
+Point = tuple[int, int]
 
-DIRECTIONS = [
-    (Point(0, 1), "U"),
-    (Point(0, -1), "D"),
-    (Point(-1, 0), "L"),
-    (Point(1, 0), "R"),
+DIRECTIONS: list[tuple[Point, str]] = [
+    ((0, 1), "U"),
+    ((0, -1), "D"),
+    ((-1, 0), "L"),
+    ((1, 0), "R"),
 ]
 
 
 def main() -> None:
-    paths = search.bfs_paths((Point(-3, 3), CODE), Point(0, 0), get_adjacent)
+    paths = search.bfs_paths(((-3, 3), CODE), (0, 0), get_adjacent)
     answer.part1("DDRLRRUDDR", pull_path(paths[0]))
     answer.part2(556, len(pull_path(paths[-1])))
 
 
-def get_adjacent(item: Tuple[Point, str]) -> List[Tuple[Point, str]]:
+def get_adjacent(item: tuple[Point, str]) -> list[tuple[Point, str]]:
     point, code = item
     hashed = hash(code)
     result = []
-    for i, direction in enumerate(DIRECTIONS):
-        new_point = point + direction[0]
-        if is_legal(new_point) and unlocked(hashed[i]):
-            result.append((new_point, code + direction[1]))
+    for i, (direction, name) in enumerate(DIRECTIONS):
+        x, y = point[0] + direction[0], point[1] + direction[1]
+        if is_legal(x, y) and unlocked(hashed[i]):
+            result.append(((x, y), code + name))
     return result
 
 
-def is_legal(p: Point) -> bool:
-    return p.x() >= -3 and p.x() <= 0 and p.y() <= 3 and p.y() >= 0
+def is_legal(x: int, y: int) -> bool:
+    return x >= -3 and x <= 0 and y <= 3 and y >= 0
 
 
-def unlocked(value):
+def unlocked(value: str) -> bool:
     return value in ["b", "c", "d", "e", "f"]
 
 
-def hash(value):
+def hash(value: str) -> str:
     return hashlib.md5(str.encode(value)).hexdigest()[:4]
 
 
-def pull_path(value):
+def pull_path(value: str) -> str:
     return value[len(CODE) :]
 
 

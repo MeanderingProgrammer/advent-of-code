@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import List
 
 from component.day_factory import DayFactory
 from pojo.day import Day
@@ -16,32 +15,32 @@ class RunTemplate:
             "slow": RunTemplate.__slow,
         }
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> list[str]:
         return list(self.__templates.keys())
 
-    def get(self, name) -> List[Day]:
+    def get(self, name) -> list[Day]:
         return self.__templates[name]()
 
     @staticmethod
-    def __latest() -> List[Day]:
+    def __latest() -> list[Day]:
         return [DayFactory().get_latest()]
 
     @staticmethod
-    def __previous() -> List[Day]:
+    def __previous() -> list[Day]:
         latest_day = DayFactory().get_latest()
         return [latest_day.add(-1)]
 
     @staticmethod
-    def __days() -> List[Day]:
+    def __days() -> list[Day]:
         return DayFactory().get_days()
 
     @staticmethod
-    def __languages() -> List[Day]:
+    def __languages() -> list[Day]:
         # Single day implemented in all languages
         return [Day("2021", "01")]
 
     @staticmethod
-    def __slow() -> List[Day]:
+    def __slow() -> list[Day]:
         slow_file = Path("slow.json")
         if not slow_file.is_file():
             raise Exception("Looks like slow runtimes were never determined")

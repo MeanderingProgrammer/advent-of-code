@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,7 +10,7 @@ NEIGHBORS = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1
 
 @dataclass(frozen=True)
 class Landscape:
-    grid: Dict[Tuple[int, int], str]
+    grid: dict[tuple[int, int], str]
 
     def step(self) -> None:
         new_grid = dict()
@@ -29,7 +29,7 @@ class Landscape:
         for point in new_grid:
             self.grid[point] = new_grid[point]
 
-    def count(self, point: Tuple[int, int], value: str) -> int:
+    def count(self, point: tuple[int, int], value: str) -> int:
         neighbors = [
             (point[0] + neighbor[0], point[1] + neighbor[1]) for neighbor in NEIGHBORS
         ]
@@ -60,14 +60,14 @@ def run_for(n: int) -> int:
     return scores[-1]
 
 
-def find_pattern(values: List[int]) -> Tuple[Optional[int], List[int]]:
+def find_pattern(values: list[int]) -> tuple[Optional[int], list[int]]:
     for i in range(1, len(values) - 1):
         if values[i] == values[-1] and values[i - 1] == values[-2]:
             return i - 1, values[i - 1 : -2]
     return None, []
 
 
-def get_grid() -> Dict[Tuple[int, int], str]:
+def get_grid() -> dict[tuple[int, int], str]:
     grid = dict()
     for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):

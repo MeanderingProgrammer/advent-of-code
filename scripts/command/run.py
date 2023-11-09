@@ -2,7 +2,6 @@ import json
 import subprocess
 import time
 from dataclasses import dataclass
-from typing import List
 
 from component.display_runtimes import Displayer
 from language.language import Language
@@ -12,10 +11,10 @@ from pojo.runtime_info import RuntimeInfo
 
 @dataclass(frozen=True)
 class Runner:
-    days: List[Day]
-    languages: List[Language]
+    days: list[Day]
+    languages: list[Language]
     slow: int
-    run_args: List[str]
+    run_args: list[str]
     save: bool
 
     def run(self) -> None:
@@ -33,20 +32,20 @@ class Runner:
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
-    def __get_runtimes(self) -> List[RuntimeInfo]:
+    def __get_runtimes(self) -> list[RuntimeInfo]:
         runtimes = []
         for day in self.days:
             runtimes.extend(self.__run_day(day))
         return runtimes
 
-    def __run_day(self, day: Day) -> List[RuntimeInfo]:
+    def __run_day(self, day: Day) -> list[RuntimeInfo]:
         runtimes = []
         for language in self.__languages(day):
             runtime = self.__run_language(language, day)
             runtimes.append(runtime)
         return runtimes
 
-    def __languages(self, day: Day) -> List[Language]:
+    def __languages(self, day: Day) -> list[Language]:
         return [
             language
             for language in self.languages
@@ -61,7 +60,7 @@ class Runner:
         return RuntimeInfo(day, language.name, runtime)
 
     @staticmethod
-    def __execute(command: List[str]) -> float:
+    def __execute(command: list[str]) -> float:
         if len(command) == 0:
             return 0
         start = time.time()
@@ -70,7 +69,7 @@ class Runner:
             raise Exception(f"Failed due to: {result.stderr.decode()}")
         return time.time() - start
 
-    def __save(self, name: str, runtimes: List[RuntimeInfo]) -> None:
+    def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
         if not self.save:
             return
         with open(f"{name}.json", "w") as f:
