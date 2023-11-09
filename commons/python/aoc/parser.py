@@ -1,25 +1,29 @@
 import argparse
 import sys
+from dataclasses import dataclass
 from typing import Optional
 
 from .board import Grid, Point
 
 
+@dataclass(frozen=True)
 class Parser:
-    def __init__(self, file_name: Optional[str] = None):
+    file_name: Optional[str] = None
+    strip: bool = False
+
+    def string(self) -> str:
         def get_file_name() -> str:
             parser = argparse.ArgumentParser()
             parser.add_argument("--test", action="store_true")
             args = parser.parse_args()
             return "sample" if args.test else "data"
 
-        file_name = file_name or get_file_name()
-        self.file_name = f"{file_name}.txt"
-
-    def string(self) -> str:
-        file_path = "{}/{}".format(sys.path[0], self.file_name)
+        file_name = self.file_name or get_file_name()
+        file_path = "{}/{}.txt".format(sys.path[0], file_name)
         with open(file_path, "r") as f:
             data = f.read()
+        if self.strip:
+            data = data.strip()
         return data
 
     def ord_string(self) -> list[int]:
