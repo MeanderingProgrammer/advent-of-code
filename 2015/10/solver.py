@@ -1,13 +1,12 @@
 from aoc import answer
-
-START = "1113122113"
+from aoc.parser import Parser
 
 
 class Game:
     def __init__(self, value):
         self.value = value
 
-    def play(self):
+    def play(self) -> None:
         result = [[1, self.value[0]]]
         for n in range(1, len(self.value)):
             previous = self.value[n - 1]
@@ -23,14 +22,15 @@ class Game:
             self.value.append(part[1])
 
 
-def main():
-    answer.part1(360154, run(40))
-    answer.part2(5103798, run(50))
+def main() -> None:
+    value = Parser(strip=True).string()
+    game = Game(value)
+    answer.part1(360154, run(game, 40))
+    answer.part2(5103798, run(game, 10))
 
 
-def run(n):
-    game = Game(START)
-    for _ in range(n):
+def run(game: Game, rounds: int) -> int:
+    for _ in range(rounds):
         game.play()
     return len(game.value)
 
