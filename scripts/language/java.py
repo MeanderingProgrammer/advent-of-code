@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, override
+from typing import override
 
 from language.language import Language
 from pojo.day import Day
@@ -11,11 +11,11 @@ class Java(Language):
     solution_file: str = field(default="src/Solver.java", repr=False)
 
     @override
-    def _setup_command(self) -> List[str]:
+    def _setup_command(self) -> list[str]:
         return ["./gradlew", "build", "-q"]
 
     @override
-    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         args = " ".join(run_args)
         args = [] if len(args) == 0 else [f'--args="{args}"']
         return ["./gradlew", f":{Java.task(day)}:run", "-q"] + args

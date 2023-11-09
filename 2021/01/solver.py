@@ -1,5 +1,3 @@
-from typing import List
-
 from aoc import answer
 from aoc.parser import Parser
 
@@ -10,7 +8,7 @@ def main() -> None:
     answer.part2(1262, window_increases(values, 3))
 
 
-def window_increases(values: List[int], window_size: int) -> int:
+def window_increases(values: list[int], window_size: int) -> int:
     increases = 0
     for i in range(len(values) - window_size):
         if sum(values[i + 1 : i + 1 + window_size]) > sum(values[i : i + window_size]):

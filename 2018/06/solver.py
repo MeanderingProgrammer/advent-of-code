@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Optional
 
 from aoc import answer
 from aoc.board import Point
@@ -7,7 +7,7 @@ from aoc.parser import Parser
 
 
 class PointGrid:
-    def __init__(self, points: List[Point]):
+    def __init__(self, points: list[Point]):
         self.points = points
 
         xs = [point.x() for point in points]
@@ -18,7 +18,7 @@ class PointGrid:
         self.min_y: int = min(ys)
         self.max_y: int = max(ys)
 
-        self.distances: Dict[Point, Dict[Point, int]] = {}
+        self.distances: dict[Point, dict[Point, int]] = {}
         for x in range(self.min_x, self.max_x + 1):
             for y in range(self.min_y, self.max_y + 1):
                 start = Point(x, y)
@@ -37,7 +37,7 @@ class PointGrid:
                 finite_sizes.append(len(closest))
         return max(finite_sizes)
 
-    def get_closest(self, distances: Dict[Point, int]) -> Optional[Point]:
+    def get_closest(self, distances: dict[Point, int]) -> Optional[Point]:
         min_distance = min(distances.values())
         closest_points = []
         for option, distance in distances.items():
@@ -45,7 +45,7 @@ class PointGrid:
                 closest_points.append(option)
         return closest_points[0] if len(closest_points) == 1 else None
 
-    def is_finite(self, closest: List[Point]) -> bool:
+    def is_finite(self, closest: list[Point]) -> bool:
         x_boundary = [self.min_x, self.min_y]
         y_boundary = [self.min_y, self.max_y]
         for point in closest:
@@ -63,7 +63,7 @@ class PointGrid:
         return sum(contained)
 
 
-def main():
+def main() -> None:
     point_grid = get_point_grid()
     answer.part1(3251, point_grid.largest_finite())
     answer.part2(47841, point_grid.within_max_distance(10_000))

@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from typing import List, Tuple
 
 from aoc import answer
 from aoc.board import Grid, Point
@@ -9,10 +8,10 @@ from aoc.parser import Parser
 
 @dataclass(frozen=True)
 class Particle:
-    position: Tuple[int, int]
-    velocity: Tuple[int, int]
+    position: tuple[int, int]
+    velocity: tuple[int, int]
 
-    def at(self, time: int) -> Tuple[int, int]:
+    def at(self, time: int) -> tuple[int, int]:
         return (
             self.position[0] + (time * self.velocity[0]),
             self.position[1] + (time * self.velocity[1]),
@@ -21,7 +20,7 @@ class Particle:
 
 @dataclass(frozen=True)
 class Particles:
-    particles: List[Particle]
+    particles: list[Particle]
 
     def area_at(self, time: int) -> int:
         positions = [particle.at(time) for particle in self.particles]

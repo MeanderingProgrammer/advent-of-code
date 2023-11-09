@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from typing import Optional, Tuple, override
+from typing import Optional, override
 
 import click
 from args.generate_template import GenerateTemplate
@@ -76,9 +76,9 @@ def generate(
 @click.option("--test", is_flag=True)
 def run(
     template: Optional[str],
-    year: Tuple[int],
-    day: Tuple[int],
-    language: Tuple[Language],
+    year: tuple[int],
+    day: tuple[int],
+    language: tuple[Language],
     slow: int,
     info: bool,
     test: bool,

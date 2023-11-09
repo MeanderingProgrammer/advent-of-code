@@ -1,4 +1,4 @@
-from typing import Generator, Set, Tuple
+from typing import Generator
 
 from aoc import answer
 from aoc.board import Grid
@@ -9,7 +9,7 @@ class Animator:
     def __init__(
         self,
         force_corners: bool,
-        on: Set[Tuple[int, int]],
+        on: set[tuple[int, int]],
         min_x: int,
         max_x: int,
         min_y: int,
@@ -41,12 +41,12 @@ class Animator:
         self.on = next_on
         self.add_corners()
 
-    def get_points(self) -> Generator[Tuple[int, int], None, None]:
+    def get_points(self) -> Generator[tuple[int, int], None, None]:
         for x in range(self.min_x, self.max_x + 1):
             for y in range(self.min_y, self.max_y + 1):
                 yield (x, y)
 
-    def neighbors_on(self, point: Tuple[int, int]) -> int:
+    def neighbors_on(self, point: tuple[int, int]) -> int:
         adjacents = [
             (point[0] - 1, point[1]),
             (point[0] + 1, point[1]),
@@ -72,6 +72,7 @@ def main() -> None:
 def run(grid: Grid, force_corners: bool) -> int:
     on = points_on(grid)
     xs, ys = grid.xs(), grid.ys()
+    assert ys is not None
     animator = Animator(
         force_corners=force_corners,
         on=on,
@@ -85,7 +86,7 @@ def run(grid: Grid, force_corners: bool) -> int:
     return animator.lights_on()
 
 
-def points_on(grid: Grid) -> Set[Tuple[int, int]]:
+def points_on(grid: Grid) -> set[tuple[int, int]]:
     on = set()
     for point, value in grid.items():
         if value == "#":

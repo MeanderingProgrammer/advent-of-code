@@ -1,9 +1,9 @@
 import heapq
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Optional
 
 
-def bfs[T](start: T, end: T, get_adjacent: Callable[[T], List[T]]) -> Optional[int]:
-    queue: List[Tuple[int, T]] = [(0, start)]
+def bfs[T](start: T, end: T, get_adjacent: Callable[[T], list[T]]) -> Optional[int]:
+    queue: list[tuple[int, T]] = [(0, start)]
     seen = set()
     while len(queue) > 0:
         length, item = heapq.heappop(queue)
@@ -21,11 +21,11 @@ def bfs[T](start: T, end: T, get_adjacent: Callable[[T], List[T]]) -> Optional[i
 def bfs_paths[
     T
 ](
-    start: Tuple[T, str],
+    start: tuple[T, str],
     end: T,
-    get_adjacent: Callable[[Tuple[T, str]], List[Tuple[T, str]]],
-) -> List[str]:
-    queue: List[Tuple[int, Tuple[T, str]]] = [(0, start)]
+    get_adjacent: Callable[[tuple[T, str]], list[tuple[T, str]]],
+) -> list[str]:
+    queue: list[tuple[int, tuple[T, str]]] = [(0, start)]
     seen = set()
     paths = []
     while len(queue) > 0:
@@ -46,12 +46,12 @@ def bfs_paths[
 def bfs_complete[
     T
 ](
-    start: Tuple[int, T],
+    start: tuple[int, T],
     is_done: Callable[[T], bool],
-    get_adjacent: Callable[[T], List[Tuple[int, T]]],
+    get_adjacent: Callable[[T], list[tuple[int, T]]],
 ) -> Optional[int]:
     queue = [start]
-    seen: Dict[T, int] = dict()
+    seen: dict[T, int] = dict()
     while len(queue) > 0:
         priority, item = heapq.heappop(queue)
         if is_done(item):

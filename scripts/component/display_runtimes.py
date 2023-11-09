@@ -1,12 +1,10 @@
-from typing import List
-
 import pandas as pd
 from pojo.runtime_info import RuntimeInfo
 from termcolor import colored
 
 
 class Displayer:
-    def display(self, label: str, runtimes: List[RuntimeInfo]) -> None:
+    def display(self, label: str, runtimes: list[RuntimeInfo]) -> None:
         if len(runtimes) == 0:
             print("{}: NONE".format(label))
             return

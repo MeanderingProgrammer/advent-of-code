@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, List, Optional, Self, Tuple
+from typing import Optional, Self
 
 from aoc import answer, search
 
@@ -10,7 +10,7 @@ class Character:
     attack: int
     armor: int
 
-    def add(self, values: Tuple[int, int, int]) -> None:
+    def add(self, values: tuple[int, int, int]) -> None:
         self.hp += values[0]
         self.attack += values[1]
         self.armor += values[2]
@@ -21,9 +21,9 @@ class Character:
 
 @dataclass(frozen=True)
 class SpellEffect:
-    boost: Tuple[int, int, int]
-    player: Tuple[int, int, int]
-    enemy: Tuple[int, int, int]
+    boost: tuple[int, int, int]
+    player: tuple[int, int, int]
+    enemy: tuple[int, int, int]
 
     def setup(self, player: Character) -> None:
         player.add(self.boost)
@@ -36,7 +36,7 @@ class SpellEffect:
         player.add((-self.boost[0], -self.boost[1], -self.boost[2]))
 
 
-EFFECTS: Dict[str, SpellEffect] = {
+EFFECTS: dict[str, SpellEffect] = {
     "Magic Missile": SpellEffect(boost=(0, 0, 0), player=(0, 0, 0), enemy=(-4, 0, 0)),
     "Drain": SpellEffect(boost=(0, 0, 0), player=(2, 0, 0), enemy=(-2, 0, 0)),
     "Shield": SpellEffect(boost=(0, 0, 7), player=(0, 0, 0), enemy=(0, 0, 0)),
@@ -79,9 +79,9 @@ class Game:
     player: Character
     enemy: Character
     player_damage: int
-    spells: FrozenSet[Spell]
+    spells: frozenset[Spell]
 
-    def get_moves(self) -> List[Tuple[int, Self]]:
+    def get_moves(self) -> list[tuple[int, Self]]:
         if self.player.hp <= 0:
             return []
 
@@ -122,8 +122,8 @@ class Game:
         return Game(player, enemy, self.player_damage, frozenset(spells))
 
     @staticmethod
-    def run_spells(player: Character, enemy: Character, spells: List[Spell]) -> None:
-        inactive: List[Spell] = []
+    def run_spells(player: Character, enemy: Character, spells: list[Spell]) -> None:
+        inactive: list[Spell] = []
         for spell in spells:
             spell.apply(player, enemy)
             if spell.turns == 0:

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from aoc import answer
 from aoc.parser import Parser
@@ -7,7 +6,7 @@ from aoc.parser import Parser
 
 @dataclass(frozen=True)
 class Layer:
-    data: List[List[int]]
+    data: list[list[int]]
 
     def get_count(self, value: int) -> int:
         return sum([pixel == value for row in self.data for pixel in row])
@@ -18,7 +17,7 @@ class Layer:
 
 @dataclass(frozen=True)
 class LayeredImage:
-    layers: List[Layer]
+    layers: list[Layer]
     width: int
     height: int
 

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Tuple
 
 from aoc import answer
 from aoc.board import Grid, Point
@@ -16,13 +15,13 @@ class Direction:
     def rotate(self, value: int) -> None:
         self.index += value if value == 1 else -1
 
-    def step(self, position: Tuple[int, int]) -> Tuple[int, int]:
+    def step(self, position: tuple[int, int]) -> tuple[int, int]:
         to_go = DIRECTIONS[self.index % len(DIRECTIONS)]
         return position[0] + to_go[0], position[1] + to_go[1]
 
 
 class PaintBot:
-    def __init__(self, memory: List[int], starting_color: int):
+    def __init__(self, memory: list[int], starting_color: int):
         self.computer = Computer(self)
         self.computer.set_memory(memory)
 

@@ -1,6 +1,5 @@
 import itertools
 from dataclasses import dataclass
-from typing import List
 
 from aoc import answer
 from aoc.int_code import Computer
@@ -53,7 +52,7 @@ class Game:
         likely_location = components[0][0]
         return likely_location[3:-3]
 
-    def directions(self) -> List[Direction]:
+    def directions(self) -> list[Direction]:
         components = self.get_componenets()
         likely_directions = components[1][1:]
         # Remove direction which takes us to analyzer, for initial traversal

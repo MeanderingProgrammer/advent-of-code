@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, override
+from typing import override
 
 from language.language import Language
 from pojo.day import Day
@@ -11,12 +11,12 @@ class Go(Language):
     solution_file: str = field(default="solver.go", repr=False)
 
     @override
-    def _setup_command(self) -> List[str]:
+    def _setup_command(self) -> list[str]:
         # For now we use go run, which both compiles and runs our code
         return []
 
     @override
-    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         return ["go", "run", str(self.solution_path(day))] + run_args
 
     @override

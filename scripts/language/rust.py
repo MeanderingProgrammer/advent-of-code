@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, override
+from typing import override
 
 import toml
 from language.language import Language
@@ -12,11 +12,11 @@ class Rust(Language):
     solution_file: str = field(default="solver.rs", repr=False)
 
     @override
-    def _setup_command(self) -> List[str]:
+    def _setup_command(self) -> list[str]:
         return ["cargo", "build", "-rq", "--bins"]
 
     @override
-    def run_command(self, day: Day, run_args: List[str]) -> List[str]:
+    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         args = [] if len(run_args) == 0 else ["--"] + run_args
         return ["cargo", "run", "-rq", "--bin", Rust.binary(day)] + args
 

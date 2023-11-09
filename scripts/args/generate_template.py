@@ -1,5 +1,3 @@
-from typing import List
-
 from component.day_factory import DayFactory
 from pojo.day import Day
 
@@ -11,7 +9,7 @@ class GenerateTemplate:
             "current": GenerateTemplate.__current,
         }
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> list[str]:
         return list(self.__templates.keys())
 
     def get(self, name) -> Day:

@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import List, Optional
+from typing import Optional
 
 from .board import Grid, Point
 
@@ -22,32 +22,32 @@ class Parser:
             data = f.read()
         return data
 
-    def ord_string(self) -> List[int]:
+    def ord_string(self) -> list[int]:
         return list(map(ord, self.string()))
 
-    def entries(self) -> List[str]:
+    def entries(self) -> list[str]:
         return self.string().split()
 
-    def int_entries(self) -> List[int]:
+    def int_entries(self) -> list[int]:
         return list(map(int, self.entries()))
 
-    def csv(self) -> List[str]:
+    def csv(self) -> list[str]:
         data = self.string().split(",")
         return [datum.strip() for datum in data]
 
-    def int_csv(self) -> List[int]:
+    def int_csv(self) -> list[int]:
         return list(map(int, self.csv()))
 
-    def lines(self) -> List[str]:
+    def lines(self) -> list[str]:
         return self.string().split("\n")
 
-    def int_lines(self) -> List[int]:
+    def int_lines(self) -> list[int]:
         return list(map(int, self.lines()))
 
-    def nested_lines(self) -> List[List[str]]:
+    def nested_lines(self) -> list[list[str]]:
         return [[value for value in line] for line in self.lines()]
 
-    def line_groups(self) -> List[List[str]]:
+    def line_groups(self) -> list[list[str]]:
         return [group.split("\n") for group in self.string().split("\n\n")]
 
     def as_grid(self) -> Grid:

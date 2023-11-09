@@ -1,5 +1,3 @@
-from typing import List
-
 from language.golang import Go
 from language.java import Java
 from language.language import Language
@@ -18,10 +16,10 @@ class LanguageFactory:
             Rust(),
         ]
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> list[str]:
         return [language.name for language in self.__languages]
 
-    def get_all(self) -> List[Language]:
+    def get_all(self) -> list[Language]:
         return self.__languages
 
     def get_by_name(self, name: str) -> Language:
