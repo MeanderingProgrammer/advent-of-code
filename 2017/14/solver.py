@@ -2,9 +2,7 @@ import collections
 
 from aoc import answer
 from aoc.board import Point
-
-SIZE = 256
-INPUT = "ffayrhll"
+from aoc.parser import Parser
 
 
 class Knot:
@@ -16,12 +14,12 @@ class Knot:
         self.skipped = []
 
     def run_hash(self):
-        for time in range(64):
+        for _ in range(64):
             self.run_once()
 
     def run_once(self):
         for length in self.lengths:
-            temp = [self.q.popleft() for i in range(length)]
+            temp = [self.q.popleft() for _ in range(length)]
             temp.reverse()
 
             self.q.extend(temp)
@@ -77,7 +75,7 @@ class Knot:
         return "".join(["0"] * to_add) + binary
 
 
-def main():
+def main() -> None:
     points = get_enabled_points()
     answer.part1(8190, len(points))
     answer.part2(1134, len(group_points(points)))
@@ -117,10 +115,11 @@ def matches_group(possiblities, group):
     return False
 
 
-def get_enabled_points(limit=128):
-    points = []
+def get_enabled_points(limit=128) -> list[Point]:
+    prefix = Parser(strip=True).string()
+    points: list[Point] = []
     for y in range(limit):
-        knot = Knot(SIZE, get_lengths(y))
+        knot = Knot(256, get_lengths(prefix, y))
         knot.run_hash()
         hashed = knot.binary_hash()
         for x, value in enumerate(hashed[:limit]):
@@ -129,9 +128,9 @@ def get_enabled_points(limit=128):
     return points
 
 
-def get_lengths(row):
+def get_lengths(prefix, row):
     suffix = [17, 31, 73, 47, 23]
-    values = INPUT + "-" + str(row)
+    values = prefix + "-" + str(row)
     lengths = [ord(value) for value in values]
     return lengths + suffix
 

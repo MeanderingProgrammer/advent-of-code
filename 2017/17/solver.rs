@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::reader;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -8,9 +9,9 @@ struct Lock {
 }
 
 impl Lock {
-    fn new(steps: usize) -> Self {
+    fn new(steps: i64) -> Self {
         Self {
-            steps,
+            steps: steps as usize,
             queue: [0].into(),
         }
     }
@@ -33,7 +34,8 @@ fn main() {
 }
 
 fn run_lock(steps: usize, after: usize) -> usize {
-    let mut lock = Lock::new(344);
+    let values = reader::read_int();
+    let mut lock = Lock::new(values[0]);
     for i in 1..=steps {
         lock.insert(i);
     }

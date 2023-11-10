@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::reader;
 
 #[derive(Debug)]
 struct Generator {
@@ -36,8 +37,9 @@ fn main() {
 }
 
 fn matches(n: i64, wait_mult: bool) -> u64 {
-    let mut gen_a = Generator::new(277, 16_807, 4);
-    let mut gen_b = Generator::new(349, 48_271, 8);
+    let generators: Vec<u64> = reader::read(|line| line.rsplit(" ").next().unwrap().parse().unwrap());
+    let mut gen_a = Generator::new(generators[0], 16_807, 4);
+    let mut gen_b = Generator::new(generators[1], 48_271, 8);
     let mut count = 0;
     for _ in 0..n {
         if equal(gen_a.next(wait_mult), gen_b.next(wait_mult)) {

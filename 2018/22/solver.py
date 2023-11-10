@@ -2,6 +2,7 @@ import heapq
 
 from aoc import answer
 from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
 class Region:
@@ -60,25 +61,22 @@ class Region:
             raise Exception("Unknown type {}".format(region_type))
 
 
-GEAR = "g"
-TORCH = "t"
-NEITHER = "n"
-
+GEAR, TORCH, NEITHER = "g", "t", "n"
 VALID_TOOL = {0: set([GEAR, TORCH]), 1: set([GEAR, NEITHER]), 2: set([TORCH, NEITHER])}
 
 
-def main():
-    start = Point(0, 0)
-    target = Point(14, 778)
-    cave = build_out_cave(11_541, target)
+def main() -> None:
+    lines = Parser().lines()
+    parts = lines[1].split()[-1].split(",")
+    target = Point(int(parts[0]), int(parts[1]))
+    cave = build_out_cave(int(lines[0].split()[-1]), target)
 
     answer.part1(11575, risk_within(cave, target))
-    answer.part2(1068, traverse(cave, start, target, TORCH))
+    answer.part2(1068, traverse(cave, Point(0, 0), target, TORCH))
 
 
-def build_out_cave(depth, target):
-    buff = 30
-    grid = Grid()
+def build_out_cave(depth: int, target: Point) -> Grid:
+    grid, buff = Grid(), 30
     for x in range(target.x() + 1 + buff):
         for y in range(target.y() + 1 + buff):
             location = Point(x, y)

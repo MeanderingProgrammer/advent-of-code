@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::reader;
 use std::collections::HashMap;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
@@ -85,7 +86,8 @@ impl PowerGrid {
 }
 
 fn main() {
-    let power_grid = PowerGrid::new(4172, 300);
+    let values = reader::read_int();
+    let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);
     answer::part1((243, 43), (largest_3.0, largest_3.1));
     answer::part2((236, 151, 15), power_grid.get_largest_size());
