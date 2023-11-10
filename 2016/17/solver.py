@@ -1,8 +1,7 @@
 import hashlib
 
 from aoc import answer, search
-
-CODE = "udskfozm"
+from aoc.parser import Parser
 
 Point = tuple[int, int]
 
@@ -15,9 +14,10 @@ DIRECTIONS: list[tuple[Point, str]] = [
 
 
 def main() -> None:
-    paths = search.bfs_paths(((-3, 3), CODE), (0, 0), get_adjacent)
-    answer.part1("DDRLRRUDDR", pull_path(paths[0]))
-    answer.part2(556, len(pull_path(paths[-1])))
+    code = Parser(strip=True).string()
+    paths = search.bfs_paths(((-3, 3), code), (0, 0), get_adjacent)
+    answer.part1("DDRLRRUDDR", pull_path(code, paths[0]))
+    answer.part2(556, len(pull_path(code, paths[-1])))
 
 
 def get_adjacent(item: tuple[Point, str]) -> list[tuple[Point, str]]:
@@ -43,8 +43,8 @@ def hash(value: str) -> str:
     return hashlib.md5(str.encode(value)).hexdigest()[:4]
 
 
-def pull_path(value: str) -> str:
-    return value[len(CODE) :]
+def pull_path(code: str, value: str) -> str:
+    return value[len(code) :]
 
 
 if __name__ == "__main__":

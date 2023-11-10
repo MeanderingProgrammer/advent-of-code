@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from aoc import answer, search
 from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
 @dataclass(frozen=True)
@@ -29,7 +30,7 @@ class Maze:
 
 
 def main() -> None:
-    maze = Maze(grid=Grid(), favorite_number=1_350)
+    maze = Maze(grid=Grid(), favorite_number=Parser().integer())
     start, goal = Point(1, 1), Point(31, 39)
     answer.part1(92, search.bfs(start, goal, maze.get_adjacent))
     answer.part2(124, len(search.reachable(start, 50, maze.get_adjacent)))

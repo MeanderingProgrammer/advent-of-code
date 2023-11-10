@@ -2,10 +2,12 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/files"
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/gammazero/deque"
 	"strconv"
+	"strings"
 )
 
 type hashInfo struct {
@@ -14,22 +16,23 @@ type hashInfo struct {
 }
 
 func main() {
-	answers.Part1(15168, generate(64, 1))
-	answers.Part2(20864, generate(64, 2_017))
+	prefix := strings.TrimSpace(files.Content())
+	answers.Part1(15168, generate(prefix, 64, 1))
+	answers.Part2(20864, generate(prefix, 64, 2_017))
 }
 
-func generate(n int, hashes int) int {
+func generate(prefix string, n int, hashes int) int {
 	index := 0
 	infos := deque.New[hashInfo]()
 	for index < 1_000 {
-		infos.PushBack(getHash(index, hashes))
+		infos.PushBack(getHash(prefix, index, hashes))
 		index++
 	}
 
 	keys := []int{}
 	for len(keys) < n {
 		info := infos.PopFront()
-		infos.PushBack(getHash(index, hashes))
+		infos.PushBack(getHash(prefix, index, hashes))
 		triples := getRepeats(info.value, 3)
 		if len(triples) > 0 {
 			if contains(infos, triples[0]) {
@@ -41,8 +44,8 @@ func generate(n int, hashes int) int {
 	return keys[len(keys)-1]
 }
 
-func getHash(index int, hashes int) hashInfo {
-	value := "qzyelonm" + strconv.Itoa(index)
+func getHash(prefix string, index int, hashes int) hashInfo {
+	value := prefix + strconv.Itoa(index)
 	for i := 0; i < hashes; i++ {
 		hasher := md5.New()
 		hasher.Write([]byte(value))

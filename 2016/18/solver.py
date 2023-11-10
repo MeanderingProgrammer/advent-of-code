@@ -1,18 +1,17 @@
 from aoc import answer
+from aoc.parser import Parser
 
-STARTING_ROW = ".^^^.^.^^^.^.......^^.^^^^.^^^^..^^^^^.^.^^^..^^.^.^^..^.^..^^...^.^^.^^^...^^.^.^^^..^^^^.....^...."
-
-TRAP = "^"
-SAFE = "."
+TRAP, SAFE = "^", "."
 
 
-def main():
-    answer.part1(2013, total_safe(40))
-    answer.part2(20006289, total_safe(400_000))
+def main() -> None:
+    starting_row = Parser(strip=True).string()
+    answer.part1(2013, total_safe(starting_row, 40))
+    answer.part2(20006289, total_safe(starting_row, 400_000))
 
 
-def total_safe(n):
-    previous_row = STARTING_ROW
+def total_safe(starting_row: str, n: int) -> int:
+    previous_row = starting_row
     safe = count_safe(previous_row)
     for _ in range(n - 1):
         next_row = get_next_row(previous_row)
@@ -21,7 +20,11 @@ def total_safe(n):
     return safe
 
 
-def get_next_row(previous_row):
+def count_safe(row: str) -> int:
+    return sum([element == SAFE for element in row])
+
+
+def get_next_row(previous_row: str) -> str:
     next_row = []
     for i in range(len(previous_row)):
         element = get_element(
@@ -32,7 +35,7 @@ def get_next_row(previous_row):
     return "".join(next_row)
 
 
-def get_element(left, right):
+def get_element(left: str, right: str) -> str:
     """
     Raw conditions for a TRAP can be summed up as an or of:
     1)  L &  C & ~R
@@ -48,14 +51,6 @@ def get_element(left, right):
     (L & ~R) | (~L & R) -> L ^ R
     """
     return TRAP if left != right else SAFE
-
-
-def count_safe(row):
-    count = 0
-    for element in row:
-        if element == SAFE:
-            count += 1
-    return count
 
 
 if __name__ == "__main__":
