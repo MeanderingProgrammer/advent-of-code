@@ -1,21 +1,17 @@
 from aoc import answer
 from aoc.board import Grid, Point
+from aoc.parser import Parser
 
 
-def main():
-    goal = 289_326
-
-    point, value = build_grid(goal, value_updater_v1)
-    answer.part1(419, len(point))
-
-    point, value = build_grid(goal, value_updater_v2)
-    answer.part2(295229, value)
+def main() -> None:
+    goal = Parser().integer()
+    answer.part1(419, len(build_grid(goal, updater_v1)[0]))
+    answer.part2(295229, build_grid(goal, updater_v2)[1])
 
 
-def build_grid(goal, value_updater):
+def build_grid(goal: int, updater) -> tuple[Point, int]:
+    point, value = Point(0, 0), 1
     grid = Grid()
-    point = Point(0, 0)
-    value = 1
     grid[point] = value
 
     while value < goal:
@@ -47,29 +43,18 @@ def build_grid(goal, value_updater):
             else:
                 point = point.up()
 
-        value = value_updater(value, grid, point)
+        value = updater(value, grid, point)
         grid[point] = value
 
     return point, value
 
 
-def value_updater_v1(previous, grid, point):
+def updater_v1(previous: int, grid: Grid, point: Point) -> int:
     return previous + 1
 
 
-def value_updater_v2(previous, grid, point):
-    return sum(
-        [
-            grid.get(point.right(), 0),
-            grid.get(point.right().up(), 0),
-            grid.get(point.up(), 0),
-            grid.get(point.up().left(), 0),
-            grid.get(point.left(), 0),
-            grid.get(point.left().down(), 0),
-            grid.get(point.down(), 0),
-            grid.get(point.down().right(), 0),
-        ]
-    )
+def updater_v2(_: int, grid: Grid, point: Point) -> int:
+    return sum([grid.get(neighbor, 0) for neighbor in point.adjacent(True)])
 
 
 if __name__ == "__main__":
