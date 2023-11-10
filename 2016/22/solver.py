@@ -1,103 +1,82 @@
+from dataclasses import dataclass
+
 from aoc import answer, search
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Node:
-    def __init__(self, total, used, available):
-        self.total = self.parse_size(total)
-        self.used = self.parse_size(used)
-        self.available = self.parse_size(available)
+    total: int
+    used: int
+    available: int
 
-    def empty(self):
+    def empty(self) -> bool:
         return self.used == 0
 
-    def can_store(self, o):
+    def can_store(self, o) -> bool:
         return self.available >= o.used
 
-    def coult_store(self, o):
+    def could_store(self, o) -> bool:
         return self.total >= o.used
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return "({0: <3}/{1: <3})".format(self.used, self.total)
-
-    @staticmethod
-    def parse_size(size):
-        return int(size[:-1])
+Point = tuple[int, int]
+Nodes = dict[Point, Node]
 
 
-def main():
+def main() -> None:
     nodes = get_nodes()
-    answer.part1(910, get_viable_connections(nodes))
+    answer.part1(910, viable_connections(nodes))
     answer.part2(222, calculate_transfers(nodes))
 
 
-def calculate_transfers(nodes):
-    xs = nodes.xs()
+def get_nodes() -> Nodes:
+    def parse_point(s: str) -> Point:
+        point = s.split("/")[-1].split("-")
+        return (int(point[1][1:]), int(point[2][1:]))
 
-    goal_node = Point(max(xs) - 1, 1)
-    free_node = get_free_node(nodes)
-    moves_needed_to_free = search.bfs(free_node, goal_node, get_adjacent(nodes))
+    def parse_size(s: str) -> int:
+        return int(s[:-1])
 
-    horizontal_transfers = max(xs) - 1
-    # Amount of movements needed to get free space above node to the left of goal
-    # 2 movements to move freed space and transfer goal
-    # Each horizontal transfer requires 5 movements
-    return moves_needed_to_free + 2 + horizontal_transfers * 5
-
-
-def get_free_node(nodes):
-    for position, node in nodes.items():
-        if node.empty():
-            return position
-
-
-def get_adjacent(nodes):
-    def actual(position):
-        result, value = [], nodes[position]
-        for adj in position.adjacent():
-            if adj in nodes:
-                adj_value = nodes[adj]
-                if value.coult_store(adj_value):
-                    result.append(adj)
-        return result
-
-    return actual
-
-
-def get_viable_connections(nodes):
-    viable = []
-    for p1, n1 in nodes.items():
-        for p2, n2 in nodes.items():
-            if are_viable(n1, n2):
-                viable.append((n1, n2))
-    return len(viable)
-
-
-def are_viable(n1, n2):
-    if n1.empty():
-        return False
-    if n1 == n2:
-        return False
-    return n2.can_store(n1)
-
-
-def get_nodes():
-    nodes = Grid()
+    nodes = Nodes()
     for line in Parser().lines()[2:]:
-        node, total, used, available, use = line.split()
-        nodes[parse_node(node)] = Node(total, used, available)
+        point, total, used, available, _ = line.split()
+        nodes[parse_point(point)] = Node(
+            total=parse_size(total),
+            used=parse_size(used),
+            available=parse_size(available),
+        )
     return nodes
 
 
-def parse_node(node):
-    node = node.split("/")[3].split("-")
-    x = int(node[1][1:])
-    y = int(node[2][1:])
-    return Point(x, y)
+def viable_connections(nodes: Nodes) -> int:
+    viable = 0
+    for p1, n1 in nodes.items():
+        for p2, n2 in nodes.items():
+            if p1 != p2 and not n1.empty() and n2.can_store(n1):
+                viable += 1
+    return viable
+
+
+def calculate_transfers(nodes: Nodes) -> int:
+    start = [point for point, node in nodes.items() if node.empty()][0]
+    end = (max([point[0] for point in nodes]) - 1, 1)
+    to_free = search.bfs(start, end, lambda point: get_adjacent(nodes, point))
+    assert to_free is not None
+
+    # Amount of movements needed to get free space above node to the left of goal
+    # 2 movements to move freed space and transfer goal
+    # Each horizontal transfer requires 5 movements
+    return to_free + 2 + end[0] * 5
+
+
+def get_adjacent(nodes: Nodes, point: Point) -> list[Point]:
+    result = []
+    for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        adjacent = (point[0] + dx, point[1] + dy)
+        if adjacent in nodes and nodes[point].could_store(nodes[adjacent]):
+            result.append(adjacent)
+    return result
 
 
 if __name__ == "__main__":
