@@ -1,80 +1,6 @@
 from typing import Optional, Self
 
 
-class Grid:
-    def __init__(self):
-        self.__grid = {}
-        self.__dimensionality = None
-
-    def get(self, point, default_value):
-        return self[point] if point in self else default_value
-
-    def items(self):
-        return self.__grid.items()
-
-    def reflect(self) -> Self:
-        result = Grid()
-        for point, value in self.items():
-            result[point.reflect()] = value
-        return result
-
-    def rotate(self) -> Self:
-        result = Grid()
-        for point, value in self.items():
-            result[point.rotate()] = value
-        return result
-
-    def mirror(self) -> Self:
-        result = Grid()
-        for point, value in self.items():
-            result[point.mirror()] = value
-        return result
-
-    def xs(self) -> set[int]:
-        return set([point.x() for point in self.__grid])
-
-    def ys(self) -> Optional[set[int]]:
-        if self.__dimensionality is None or self.__dimensionality < 2:
-            return None
-        return set([point.y() for point in self.__grid])
-
-    def __setitem__(self, point, value):
-        if self.__dimensionality is None:
-            self.__dimensionality = point.dimensions()
-        elif self.__dimensionality != point.dimensions():
-            raise Exception("Cannot create grid with mismatching dimensions")
-        self.__grid[point] = value
-
-    def __getitem__(self, point):
-        return self.__grid.get(point, None)
-
-    def __contains__(self, point):
-        return point in self.__grid
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        ys = self.ys()
-        if ys is None:
-            return self.__make_row()
-        if len(ys) == 0:
-            return ""
-
-        rows = []
-        for y in range(max(ys), min(ys) - 1, -1):
-            rows.append(self.__make_row(y))
-        return "\n".join(rows)
-
-    def __make_row(self, y=None):
-        row, xs = [], self.xs()
-        for x in range(min(xs), max(xs) + 1):
-            point = Point(x) if y is None else Point(x, y)
-            value = str(self[point]) if point in self else "."
-            row.append(value)
-        return "".join(row)
-
-
 class Point:
     def __init__(self, *coords: int):
         self.__coords = coords
@@ -214,3 +140,77 @@ class Point:
 
     def __str__(self):
         return str(self.__coords)
+
+
+class Grid:
+    def __init__(self):
+        self.__grid = {}
+        self.__dimensionality = None
+
+    def get(self, point, default_value):
+        return self[point] if point in self else default_value
+
+    def items(self):
+        return self.__grid.items()
+
+    def reflect(self) -> Self:
+        result = Grid()
+        for point, value in self.items():
+            result[point.reflect()] = value
+        return result
+
+    def rotate(self) -> Self:
+        result = Grid()
+        for point, value in self.items():
+            result[point.rotate()] = value
+        return result
+
+    def mirror(self) -> Self:
+        result = Grid()
+        for point, value in self.items():
+            result[point.mirror()] = value
+        return result
+
+    def xs(self) -> set[int]:
+        return set([point.x() for point in self.__grid])
+
+    def ys(self) -> Optional[set[int]]:
+        if self.__dimensionality is None or self.__dimensionality < 2:
+            return None
+        return set([point.y() for point in self.__grid])
+
+    def __setitem__(self, point, value):
+        if self.__dimensionality is None:
+            self.__dimensionality = point.dimensions()
+        elif self.__dimensionality != point.dimensions():
+            raise Exception("Cannot create grid with mismatching dimensions")
+        self.__grid[point] = value
+
+    def __getitem__(self, point):
+        return self.__grid.get(point, None)
+
+    def __contains__(self, point):
+        return point in self.__grid
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        ys = self.ys()
+        if ys is None:
+            return self.__make_row()
+        if len(ys) == 0:
+            return ""
+
+        rows = []
+        for y in range(max(ys), min(ys) - 1, -1):
+            rows.append(self.__make_row(y))
+        return "\n".join(rows)
+
+    def __make_row(self, y=None):
+        row, xs = [], self.xs()
+        for x in range(min(xs), max(xs) + 1):
+            point = Point(x) if y is None else Point(x, y)
+            value = str(self[point]) if point in self else "."
+            row.append(value)
+        return "".join(row)
