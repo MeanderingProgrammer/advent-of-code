@@ -1,168 +1,128 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
-ALIVE = "#"
-EMPTY = "."
+Point = tuple[int, int]
+Grid = dict[Point, str]
 
-MIDDLE = Point(2, 2)
+ALIVE, EMPTY, MIDDLE = "#", ".", (2, 2)
 
 
+def up(p: Point) -> tuple[str, Point]:
+    return ("u", (p[0], p[1] + 1))
+
+
+def down(p: Point) -> tuple[str, Point]:
+    return ("d", (p[0], p[1] - 1))
+
+
+def left(p: Point) -> tuple[str, Point]:
+    return ("l", (p[0] - 1, p[1]))
+
+
+def right(p: Point) -> tuple[str, Point]:
+    return ("r", (p[0] + 1, p[1]))
+
+
+INNER: dict[str, list[Point]] = dict(
+    u=[(x, 0) for x in range(5)],  # bottom row of points
+    d=[(x, 4) for x in range(5)],  # top row of points
+    l=[(4, y) for y in range(5)],  # right most points
+    r=[(0, y) for y in range(5)],  # left most points
+)
+
+OUTER: dict[str, Point] = dict(
+    u=up(MIDDLE)[1],
+    d=down(MIDDLE)[1],
+    l=left(MIDDLE)[1],
+    r=right(MIDDLE)[1],
+)
+
+
+@dataclass(frozen=True)
 class Layout:
-    def __init__(self, grid, recursive):
-        self.grids = [grid]
-        self.recursive = recursive
+    grids: list[Grid]
+    recursive: bool
 
-    def step(self):
+    def step(self) -> Self:
+        grids = self.grids
         if self.recursive:
-            self.grids = [self.new_grid()] + self.grids + [self.new_grid()]
+            grids = [self.new_grid()] + grids + [self.new_grid()]
 
         next_grids = []
-
-        for level, grid in enumerate(self.grids):
-            next_grid = Grid()
-
+        for level, grid in enumerate(grids):
+            next_grid = dict()
             for point, value in grid.items():
-                if not self.recursive or point != MIDDLE:
-                    bugs_adjacent = self.get_bugs_adjacent(level, point)
-                    if value == ALIVE:
-                        next_value = ALIVE if bugs_adjacent == 1 else EMPTY
-                    else:
-                        next_value = ALIVE if bugs_adjacent in [1, 2] else EMPTY
-                    next_grid[point] = next_value
-
+                if self.recursive and point == MIDDLE:
+                    continue
+                bugs = self.bugs_adjacent(grids, level, point)
+                bug_values = [1] if value == ALIVE else [1, 2]
+                next_grid[point] = ALIVE if bugs in bug_values else EMPTY
             next_grids.append(next_grid)
+        return Layout(next_grids, self.recursive)
 
-        self.grids = next_grids
+    def new_grid(self) -> Grid:
+        return {point: EMPTY for point in self.grids[0]}
 
-    def new_grid(self):
-        grid = Grid()
-        for point, _ in self.grids[0].items():
-            grid[point] = EMPTY
-        return grid
-
-    def get_bugs_adjacent(self, level, point):
+    def bugs_adjacent(self, grids: list[Grid], level: int, point: Point) -> int:
         bugs = 0
-        current_grid = self.grids[level]
-        for adjacent in point.adjacent():
+        for direction, adjacent in [up(point), down(point), left(point), right(point)]:
             if self.recursive and adjacent == MIDDLE:
-                # Count the correct inside edge down one level
-                inner_level = level - 1
-                if inner_level >= 0:
-                    inner_grid = self.grids[inner_level]
-                    bugs += self.count_inner(point, inner_grid)
-            elif self.recursive and adjacent not in current_grid:
-                # Get the correct value up one level
-                outer_level = level + 1
-                if outer_level < len(self.grids):
-                    outer_grid = self.grids[outer_level]
-                    bugs += self.count_outer(point, adjacent, outer_grid)
+                if level - 1 >= 0:
+                    bugs += Layout.bugs(grids[level - 1], INNER[direction])
+            elif self.recursive and adjacent not in grids[level]:
+                if level + 1 < len(grids):
+                    bugs += Layout.bugs(grids[level + 1], [OUTER[direction]])
             else:
-                # A standard point that we can check at the current level
-                if current_grid[adjacent] == ALIVE:
-                    bugs += 1
+                bugs += Layout.bugs(grids[level], [adjacent])
         return bugs
 
-    def count_inner(self, original, grid):
-        if original.up() == MIDDLE:
-            # If going up from original led to the inner grid then we are
-            # interested in the bottom row of points
-            point_of_interest = lambda point: point.y() == 0
-        elif original.down() == MIDDLE:
-            # If going down original led to the inner grid then we are
-            # interested in the top row of points
-            point_of_interest = lambda point: point.y() == 4
-        elif original.left() == MIDDLE:
-            # If going left from original led to the inner grid then we are
-            # interested in the right most points
-            point_of_interest = lambda point: point.x() == 4
-        elif original.right() == MIDDLE:
-            # If going right from original led to the inner grid then we are
-            # interested in the left most points
-            point_of_interest = lambda point: point.x() == 0
-        else:
-            raise Exception("Unhandled original point")
-        return sum(
-            [
-                value == ALIVE
-                for point, value in grid.items()
-                if point_of_interest(point)
-            ]
-        )
-
-    def count_outer(self, original, adjacent, grid):
-        if original.up() == adjacent:
-            # If going up from original led to the outer grid then we are
-            # interested in the point just above the middle
-            point_of_interest = MIDDLE.up()
-        elif original.down() == adjacent:
-            # If going down from original led to the outer grid then we are
-            # interested in the point just below the middle
-            point_of_interest = MIDDLE.down()
-        elif original.left() == adjacent:
-            # If going left from original led to the outer grid then we are
-            # interested in the point just to the left of the middle
-            point_of_interest = MIDDLE.left()
-        elif original.right() == adjacent:
-            # If going right from original led to the outer grid then we are
-            # interested in the point just to the right of the middle
-            point_of_interest = MIDDLE.right()
-        else:
-            raise Exception("Unhandled adjacent point")
-        return 1 if grid[point_of_interest] == ALIVE else 0
-
-    def diversity(self):
-        total = 0
-        for grid in self.grids:
-            total += sum(
-                [
-                    pow(2, self.to_index(point))
-                    for point, value in grid.items()
-                    if value == ALIVE
-                ]
-            )
-        return total
-
-    def count_bugs(self):
-        total = 0
-        for grid in self.grids:
-            total += sum([value == ALIVE for _, value in grid.items()])
-        return total
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "\n\n".join([str(grid) for grid in self.grids])
-
     @staticmethod
-    def to_index(point):
-        return (point.y() * 5) + point.x()
+    def bugs(grid: Grid, points: list[Point]) -> int:
+        return sum([grid.get(point) == ALIVE for point in points])
+
+    def diversity(self) -> int:
+        return sum([pow(2, (point[1] * 5) + point[0]) for point in self.bug_points()])
+
+    def count_bugs(self) -> int:
+        return len(self.bug_points())
+
+    def bug_points(self) -> list[Point]:
+        points = []
+        for grid in self.grids:
+            bugs = [point for point, value in grid.items() if value == ALIVE]
+            points.extend(bugs)
+        return points
 
 
 def main():
-    answer.part1(32776479, solve_part_1())
-    answer.part2(2017, solve_part_2())
+    answer.part1(32776479, part_1().diversity())
+    answer.part2(2017, part_2().count_bugs())
 
 
-def solve_part_1():
-    seen = set()
-    layout = Layout(get_grid(), False)
-    while str(layout) not in seen:
-        seen.add(str(layout))
-        layout.step()
-    return layout.diversity()
+def part_1() -> Layout:
+    seen = []
+    layout = Layout([get_grid()], False)
+    while layout not in seen:
+        seen.append(layout)
+        layout = layout.step()
+    return layout
 
 
-def solve_part_2():
-    layout = Layout(get_grid(), True)
+def part_2() -> Layout:
+    layout = Layout([get_grid()], True)
     for _ in range(200):
-        layout.step()
-    return layout.count_bugs()
+        layout = layout.step()
+    return layout
 
 
-def get_grid():
-    return Parser().as_grid()
+def get_grid() -> Grid:
+    grid = dict()
+    for point, value in Parser().as_grid().items():
+        grid[(point.x(), point.y())] = value
+    return grid
 
 
 if __name__ == "__main__":
