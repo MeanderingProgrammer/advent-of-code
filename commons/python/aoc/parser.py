@@ -29,6 +29,9 @@ class Parser:
     def integer(self) -> int:
         return int(self.string())
 
+    def int_string(self) -> list[int]:
+        return list(map(int, self.string()))
+
     def ord_string(self) -> list[int]:
         return list(map(ord, self.string()))
 
