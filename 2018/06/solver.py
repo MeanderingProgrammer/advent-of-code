@@ -2,63 +2,54 @@ from collections import defaultdict
 from typing import Optional
 
 from aoc import answer
-from aoc.board import Point
 from aoc.parser import Parser
+
+Point = tuple[int, int]
+
+
+def distance(p1: Point, p2: Point) -> int:
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 
 class PointGrid:
     def __init__(self, points: list[Point]):
-        self.points = points
+        xs = [point[0] for point in points]
+        self.x_bounds: tuple[int, int] = min(xs), max(xs)
 
-        xs = [point.x() for point in points]
-        self.min_x: int = min(xs)
-        self.max_x: int = max(xs)
+        ys = [point[1] for point in points]
+        self.y_bounds: tuple[int, int] = min(ys), max(ys)
 
-        ys = [point.y() for point in points]
-        self.min_y: int = min(ys)
-        self.max_y: int = max(ys)
-
-        self.distances: dict[Point, dict[Point, int]] = {}
-        for x in range(self.min_x, self.max_x + 1):
-            for y in range(self.min_y, self.max_y + 1):
-                start = Point(x, y)
-                self.distances[start] = {end: len(start - end) for end in self.points}
+        self.distances: dict[Point, dict[Point, int]] = dict()
+        for x in range(self.x_bounds[0], self.x_bounds[1] + 1):
+            for y in range(self.y_bounds[0], self.y_bounds[1] + 1):
+                start = (x, y)
+                self.distances[start] = {end: distance(start, end) for end in points}
 
     def largest_finite(self) -> int:
-        point_to_closest = defaultdict(list)
-        for point, distances in self.distances.items():
-            closest = self.get_closest(distances)
+        regions = defaultdict(list)
+        for point in self.distances:
+            closest = self.get_closest(point)
             if closest is not None:
-                point_to_closest[closest].append(point)
+                regions[closest].append(point)
+        finite = [cluster for cluster in regions.values() if self.finite(cluster)]
+        return max([len(cluster) for cluster in finite])
 
-        finite_sizes = []
-        for closest in point_to_closest.values():
-            if self.is_finite(closest):
-                finite_sizes.append(len(closest))
-        return max(finite_sizes)
-
-    def get_closest(self, distances: dict[Point, int]) -> Optional[Point]:
+    def get_closest(self, point: Point) -> Optional[Point]:
+        distances = self.distances[point]
         min_distance = min(distances.values())
-        closest_points = []
-        for option, distance in distances.items():
-            if distance == min_distance:
-                closest_points.append(option)
-        return closest_points[0] if len(closest_points) == 1 else None
+        points = list(filter(lambda p: distances[p] == min_distance, distances))
+        return points[0] if len(points) == 1 else None
 
-    def is_finite(self, closest: list[Point]) -> bool:
-        x_boundary = [self.min_x, self.min_y]
-        y_boundary = [self.min_y, self.max_y]
-        for point in closest:
-            if point.x() in x_boundary or point.y() in y_boundary:
-                return False
-        return True
+    def finite(self, cluster: list[Point]) -> bool:
+        return all(
+            [x not in self.x_bounds and y not in self.y_bounds for x, y in cluster]
+        )
 
-    def within_max_distance(self, max_distance: int) -> int:
+    def within_distance(self, distance: int) -> int:
         # Assumes no points outside of min / max boundaries fall within the
         # max allowable distance, this assumption could be checked
         contained = [
-            sum(distances.values()) < max_distance
-            for distances in self.distances.values()
+            sum(distances.values()) < distance for distances in self.distances.values()
         ]
         return sum(contained)
 
@@ -66,15 +57,14 @@ class PointGrid:
 def main() -> None:
     point_grid = get_point_grid()
     answer.part1(3251, point_grid.largest_finite())
-    answer.part2(47841, point_grid.within_max_distance(10_000))
+    answer.part2(47841, point_grid.within_distance(10_000))
 
 
 def get_point_grid() -> PointGrid:
-    points = []
+    points: list[Point] = []
     for line in Parser().lines():
-        parts = line.split(", ")
-        point = Point(int(parts[0]), int(parts[1]))
-        points.append(point)
+        x, y = line.split(", ")
+        points.append((int(x), int(y)))
     return PointGrid(points)
 
 
