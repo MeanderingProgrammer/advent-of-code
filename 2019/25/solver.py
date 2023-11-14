@@ -1,8 +1,9 @@
 import itertools
 from dataclasses import dataclass
+from typing import override
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 BAD_ITEMS = [
@@ -127,7 +128,7 @@ class ItemBag:
         return str(self.items)
 
 
-class DroidBus:
+class DroidBus(Bus):
     def __init__(self):
         # Storing output of game and move to make
         self.game = Game()
@@ -145,7 +146,12 @@ class DroidBus:
         self.items = ItemBag()
         self.item_generator = self.items.next()
 
-    def get_input(self):
+    @override
+    def active(self) -> bool:
+        return True
+
+    @override
+    def get_input(self) -> int:
         if len(self.move) == 0:
             if self.exploring:
                 self.exploring &= self.continue_exploring()
@@ -161,6 +167,7 @@ class DroidBus:
 
         return ord(self.move.pop(0))
 
+    @override
     def add_output(self, value: int) -> None:
         self.game.add(chr(value))
 
@@ -216,9 +223,8 @@ class DroidBus:
 
 
 def main():
-    memory, droid = Parser().int_csv(), DroidBus()
-    computer = Computer(droid)
-    computer.set_memory(memory)
+    droid = DroidBus()
+    computer = Computer(bus=droid, memory=Parser().int_csv())
     computer.run()
     answer.part1(2622472, droid.game.get_key())
 
