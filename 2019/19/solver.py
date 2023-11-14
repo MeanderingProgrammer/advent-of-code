@@ -1,83 +1,74 @@
+from dataclasses import dataclass
+
 from aoc import answer
-from aoc.board import Point
 from aoc.int_code import Computer
 from aoc.parser import Parser
 
+Point = tuple[int, int]
+
 
 class Beam:
-    def __init__(self):
-        self.__computer = Computer(self)
-
-        self.__point = None
-        self.__called = False
-
+    def __init__(self, memory: list[int], point: Point):
+        self.computer = Computer(self)
+        self.computer.set_memory(memory)
+        self.point = point
+        self.called = False
         self.value = None
 
-    def set_memory(self, memory, point):
-        self.__computer.set_memory(memory)
-        self.__point = point
+    def run(self) -> int:
+        self.computer.run()
+        assert self.value is not None
+        return self.value
 
-    def run(self):
-        self.__computer.run()
-
-    def get_input(self):
-        value = self.__point.x() if not self.__called else self.__point.y()
-        self.__called = not self.__called
+    def get_input(self) -> int:
+        value = self.point[0] if not self.called else self.point[1]
+        self.called = not self.called
         return value
 
-    def add_output(self, value):
+    def add_output(self, value: int) -> None:
         self.value = value
 
 
+@dataclass(frozen=True)
 class Tester:
-    def __init__(self, memory):
-        self.__beam = Beam()
-        self.__memory = memory
-        self.__beam_starts = {}
+    memory: list[int]
+    beam_starts: dict[int, int]
 
-    def get_left_most_point(self, y):
-        x = self.__beam_starts.get(y - 1, 0)
-        while self.test(Point(x, y)) != 1:
+    def test(self, point: Point) -> int:
+        return Beam(memory=list(self.memory), point=point).run()
+
+    def left_most(self, y: int) -> int:
+        x = self.beam_starts.get(y - 1, 0)
+        while self.test((x, y)) != 1:
             x += 1
-        self.__beam_starts[y] = x
-        return Point(x, y)
+        self.beam_starts[y] = x
+        return x
 
-    def can_bound(self, point, size):
-        size -= 1
-        edge = Point(point.x() + size, point.y() - size)
+    def can_bound(self, point: Point, offset: int) -> bool:
+        edge = (point[0] + offset, point[1] - offset)
         return self.test(edge) == 1
 
-    def test(self, point):
-        self.__beam.set_memory(list(self.__memory), point)
-        self.__beam.run()
-        return self.__beam.value
 
-
-def main():
-    tester = Tester(get_memory())
-    answer.part1(160, affected_points(tester, 0, 0, 50))
+def main() -> None:
+    tester = Tester(memory=Parser().int_csv(), beam_starts=dict())
+    answer.part1(160, affected_points(tester, 50))
     answer.part2(9441282, bounding_point(tester, 100))
 
 
-def affected_points(tester, x_start, y_start, amount):
+def affected_points(tester: Tester, size: int) -> int:
     affected = []
-    for y in range(y_start, y_start + amount):
-        for x in range(x_start, x_start + amount):
-            result = tester.test(Point(x, y))
-            affected.append(result)
+    for y in range(size):
+        for x in range(size):
+            affected.append(tester.test((x, y)))
     return sum(affected)
 
 
-def bounding_point(tester, size):
-    row = 1_000
-    while not tester.can_bound(tester.get_left_most_point(row), size):
+def bounding_point(tester: Tester, size: int) -> int:
+    row, offset = 1_000, size - 1
+    while not tester.can_bound((tester.left_most(row), row), offset):
         row += 1
-    x, y = tester.get_left_most_point(row).x(), row - 99
+    x, y = tester.left_most(row), row - offset
     return (10_000 * x) + y
-
-
-def get_memory():
-    return Parser().int_csv()
 
 
 if __name__ == "__main__":
