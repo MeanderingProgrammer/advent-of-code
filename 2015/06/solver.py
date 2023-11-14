@@ -1,6 +1,3 @@
-from collections import defaultdict
-from itertools import product
-
 from aoc import answer
 from aoc.parser import Parser
 
@@ -17,16 +14,18 @@ DIMABLE = dict(
 )
 
 
-class PointRange:
-    def __init__(self, bottom_left: str, top_right: str):
-        self.bottom_left = self.to_point(bottom_left)
-        self.top_right = self.to_point(top_right)
+class Direction:
+    def __init__(self, value: str):
+        values = value.split()
+        self.action = values[-4]
+        self.start = Direction.to_point(values[-3])
+        self.end = Direction.to_point(values[-1])
 
-    def get_points(self):
-        return product(
-            range(self.bottom_left[0], self.top_right[0] + 1),
-            range(self.bottom_left[1], self.top_right[1] + 1),
-        )
+    def apply(self, grid: list[list[tuple[int, int]]]) -> None:
+        for x in range(self.start[0], self.end[0] + 1):
+            for y in range(self.start[1], self.end[1] + 1):
+                lit, bright = grid[x][y]
+                grid[x][y] = (SINGLE[self.action](lit), DIMABLE[self.action](bright))
 
     @staticmethod
     def to_point(coords: str) -> tuple[int, int]:
@@ -34,38 +33,25 @@ class PointRange:
         return (int(values[0]), int(values[1]))
 
 
-class Direction:
-    def __init__(self, value: str):
-        values = value.split()
-        self.action = values[-4]
-        self.point_range = PointRange(values[-3], values[-1])
-
-    def apply(self, grid) -> None:
-        for point in self.point_range.get_points():
-            grid[point].append(self.action)
-
-
 def main() -> None:
-    grid_values = run_grid()
-    answer.part1(400410, state_value(grid_values, SINGLE))
-    answer.part2(15343601, state_value(grid_values, DIMABLE))
+    grid = run_grid()
+    answer.part1(400410, sum_grid(grid, 0))
+    answer.part2(15343601, sum_grid(grid, 1))
 
 
-def run_grid() -> list[list[str]]:
+def run_grid() -> list[list[tuple[int, int]]]:
     directions = [Direction(line) for line in Parser().lines()]
-    grid = defaultdict(list)
+    grid: list[list[tuple[int, int]]] = [[(0, 0)] * 1_000 for _ in range(1_000)]
     for direction in directions:
         direction.apply(grid)
-    return list(grid.values())
+    return grid
 
 
-def state_value(grid_values: list[list[str]], impacts) -> int:
+def sum_grid(grid: list[list[tuple[int, int]]], index: int) -> int:
     total = 0
-    for grid_value in grid_values:
-        current = 0
-        for state_change in grid_value:
-            current = impacts[state_change](current)
-        total += current
+    for column in grid:
+        for value in column:
+            total += value[index]
     return total
 
 
