@@ -2,123 +2,59 @@ from aoc import answer
 from aoc.parser import Parser
 
 
-class Cup:
-    def __init__(self, value):
-        self.value = value
-        self.next_cup = None
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        next_cup = "X" if self.next_cup is None else "->"
-        return "{}: {}".format(self.value, next_cup)
-
-
 class Cups:
-    def __init__(self):
-        self.root = None
-        self.end = None
-        self.references = [None] * 1_000_000
+    def __init__(self, values: list[int]):
+        self.current: int = values[0]
+        self.low: int = min(values)
+        self.high: int = max(values)
+        # Mapping from current cup to one immediately following it
+        self.cups: dict[int, int] = dict(zip(values, values[1:] + [values[0]]))
 
-        self.low = None
-        self.high = None
+    def move(self) -> None:
+        aside = [self.cups[self.current]]
+        aside.append(self.cups[aside[-1]])
+        aside.append(self.cups[aside[-1]])
+        destination = self.get_destination(aside)
+        self.cups[self.current] = self.cups[aside[-1]]
+        self.cups[aside[-1]] = self.cups[destination]
+        self.cups[destination] = aside[0]
+        self.current = self.cups[self.current]
 
-    def add(self, value):
-        if self.low is None or value < self.low:
-            self.low = value
-
-        if self.high is None or value > self.high:
-            self.high = value
-
-        new_cup = Cup(value)
-        if self.root is None:
-            self.root = new_cup
-            self.end = self.root
-        else:
-            self.end.next_cup = new_cup
-            self.end = self.end.next_cup
-
-        self.references[value - 1] = new_cup
-
-    def wrap(self):
-        self.end.next_cup = self.root
-
-    def move(self):
-        in_aside, aside = self.set_aside()
-        destination_value = self.get_next_destination(in_aside)
-        self.add_aside(destination_value, aside)
-        self.root = self.root.next_cup
-
-    def set_aside(self):
-        aside = self.root.next_cup
-
-        self.root.next_cup = self.root.next_cup.next_cup.next_cup.next_cup
-
-        in_aside = [aside.value, aside.next_cup.value, aside.next_cup.next_cup.value]
-
-        aside.next_cup.next_cup.next_cup = None
-
-        return in_aside, aside
-
-    def get_next_destination(self, in_aside):
-        destination = self.root.value - 1
-        if destination < self.low:
-            destination = self.high
-        while destination in in_aside:
-            destination -= 1
-            if destination < self.low:
-                destination = self.high
+    def get_destination(self, aside: list[int]) -> int:
+        destination = self.previous(self.current)
+        while destination in aside:
+            destination = self.previous(destination)
         return destination
 
-    def add_aside(self, destination_value, aside):
-        destination = self.get_value_cup(destination_value)
-        aside.next_cup.next_cup.next_cup = destination.next_cup
-        destination.next_cup = aside
+    def previous(self, value: int) -> int:
+        value = value - 1
+        if value < self.low:
+            value = self.high
+        return value
 
-    def get_value_cup(self, value):
-        return self.references[value - 1]
+    def part_1(self) -> str:
+        result = ""
+        value = self.cups[1]
+        while value != 1:
+            result += str(value)
+            value = self.cups[value]
+        return result
 
-    def __str__(self):
-        result = []
-        current = self.get_value_cup(1).next_cup
-
-        while current.value != 1:
-            result.append(str(current.value))
-            current = current.next_cup
-
-        return "".join(result)
-
-
-def main():
-    answer.part1("45798623", run(None, 100))
-    answer.part2(235551949822, run(1_000_000, 10_000_000))
+    def part_2(self) -> int:
+        return self.cups[1] * self.cups[self.cups[1]]
 
 
-def run(num_cups, loops):
-    cups = get_cups(num_cups)
-    for i in range(loops):
+def main() -> None:
+    answer.part1("45798623", run(0, 100).part_1())
+    answer.part2(235551949822, run(1_000_000, 10_000_000).part_2())
+
+
+def run(num_cups: int, loops: int) -> Cups:
+    values: list[int] = Parser().int_string()
+    values.extend(range(max(values) + 1, num_cups + 1))
+    cups = Cups(values)
+    for _ in range(loops):
         cups.move()
-
-    if num_cups is None:
-        return str(cups)
-    else:
-        cup_value_1 = cups.get_value_cup(1)
-        next_to_1 = cup_value_1.next_cup.value
-        next_to_next_to_1 = cup_value_1.next_cup.next_cup.value
-        return next_to_1 * next_to_next_to_1
-
-
-def get_cups(num_cups):
-    cups = Cups()
-    for value in Parser().string():
-        cups.add(int(value))
-
-    if num_cups is not None:
-        for i in range(cups.high + 1, num_cups + 1):
-            cups.add(i)
-
-    cups.wrap()
     return cups
 
 
