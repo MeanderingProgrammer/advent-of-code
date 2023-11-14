@@ -13,6 +13,7 @@ class RunTemplate:
             "days": RunTemplate.__days,
             "languages": RunTemplate.__languages,
             "slow": RunTemplate.__slow,
+            "int-code": RunTemplate.__int_code,
         }
 
     def get_names(self) -> list[str]:
@@ -49,3 +50,19 @@ class RunTemplate:
             day_factory = DayFactory(years=[runtime["year"]], days=[runtime["day"]])
             days.update(day_factory.get_days())
         return sorted(list(days))
+
+    @staticmethod
+    def __int_code() -> list[Day]:
+        return [
+            Day("2019", "05"),
+            Day("2019", "07"),
+            Day("2019", "09"),
+            Day("2019", "11"),
+            Day("2019", "13"),
+            Day("2019", "15"),
+            Day("2019", "17"),
+            Day("2019", "19"),
+            Day("2019", "21"),
+            Day("2019", "23"),
+            Day("2019", "25"),
+        ]
