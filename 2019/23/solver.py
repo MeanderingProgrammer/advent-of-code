@@ -1,78 +1,80 @@
+from typing import override
+
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 
 class Network:
-    def __init__(self, memory):
-        self.__nat = None
-        self.__nat_history = []
+    def __init__(self, memory: list[int]):
+        self.nat = None
+        self.nat_history = []
 
-        self.__network = {}
-
+        self.network = {}
         for i in range(50):
-            node = Node([value for value in memory], i, self)
-            self.__network[i] = node
+            node = Node(list(memory), i, self)
+            self.network[i] = node
             node.run()
 
     def run_until_nat_repeat(self):
         while True:
             running = True
             for i in range(50):
-                self.__network[i].run()
-                running = running and self.__network[i].running
+                self.network[i].run()
+                running = running and self.network[i].running
             if not running:
-                destination = self.__nat.y
-
-                if destination in self.__nat_history:
-                    self.__nat_history.append(destination)
-                    return self.__nat_history
-
-                self.__nat_history.append(destination)
-                self.__send_to_node(self.__network[0], self.__nat)
+                destination = self.nat.y
+                if destination in self.nat_history:
+                    self.nat_history.append(destination)
+                    return self.nat_history
+                self.nat_history.append(destination)
+                Network.send_to_node(self.network[0], self.nat)
 
     def send_packet(self, packet):
         if packet.dest == 255:
-            self.__nat = packet
+            self.nat = packet
         else:
-            destination = self.__network[packet.dest]
-            self.__send_to_node(destination, packet)
+            destination = self.network[packet.dest]
+            Network.send_to_node(destination, packet)
 
     @staticmethod
-    def __send_to_node(node, packet):
+    def send_to_node(node, packet):
         node.packets.append(packet.x)
         node.packets.append(packet.y)
         node.run()
 
 
-class Node:
-    def __init__(self, memory, address, network):
-        self.__computer = Computer(self)
-        self.__computer.set_memory(memory)
-        self.__network = network
-        self.__address = address
+class Node(Bus):
+    def __init__(self, memory: list[int], address, network):
+        self.computer = Computer(bus=self, memory=memory)
+        self.network = network
 
         self.packets = [address]
         self.running = True
-        self.__send = []
+        self.send = []
 
-    def run(self):
+    def run(self) -> None:
         self.running = True
-        while self.__computer.has_next() and self.running:
-            self.__computer.next()
+        self.computer.run()
 
-    def get_input(self):
+    @override
+    def active(self) -> bool:
+        return self.running
+
+    @override
+    def get_input(self) -> int:
         if len(self.packets) == 0:
             self.running = False
             return -1
         else:
             return self.packets.pop(0)
 
-    def add_output(self, value):
-        self.__send.append(value)
-        if len(self.__send) == 3:
-            self.__network.send_packet(Packet(*self.__send))
-            self.__send = []
+    @override
+    def add_output(self, value: int) -> None:
+        self.send.append(value)
+        if len(self.send) == 3:
+            self.network.send_packet(Packet(*self.send))
+            self.send = []
 
 
 class Packet:
@@ -83,15 +85,11 @@ class Packet:
         return "To: {}, X={}, Y={}".format(self.dest, self.x, self.y)
 
 
-def main():
-    network = Network(get_memory())
+def main() -> None:
+    network = Network(Parser().int_csv())
     nat_history = network.run_until_nat_repeat()
     answer.part1(16549, nat_history[0])
     answer.part2(11462, nat_history[-1])
-
-
-def get_memory():
-    return Parser().int_csv()
 
 
 if __name__ == "__main__":

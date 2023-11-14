@@ -1,29 +1,31 @@
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import override
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 TILE_MAPPING = {0: "empty", 1: "wall", 2: "block", 3: "horizontal paddle", 4: "ball"}
 
 
-class Game:
-    def __init__(self, memory: list[int]):
-        self.computer = Computer(self)
-        self.computer.set_memory(memory)
+@dataclass
+class Game(Bus):
+    tile_buffer: list[int]
+    tile_freq: dict[str, int]
+    tile_x: dict[str, int]
+    score: int = 0
 
-        self.tile_buffer: list[int] = []
-        self.tile_freq: dict[str, int] = defaultdict(int)
-        self.tile_x: dict[str, int] = dict()
-        self.score = 0
+    @override
+    def active(self) -> bool:
+        return True
 
-    def play(self) -> None:
-        self.computer.run()
-
+    @override
     def get_input(self) -> int:
         diff = self.tile_x["ball"] - self.tile_x["horizontal paddle"]
         return min(1, max(-1, diff))
 
+    @override
     def add_output(self, value: int) -> None:
         self.tile_buffer.append(value)
         if len(self.tile_buffer) == 3:
@@ -46,8 +48,8 @@ def play_game(play_for_free: bool) -> int:
     memory = Parser().int_csv()
     if play_for_free:
         memory[0] = 2
-    game = Game(memory)
-    game.play()
+    game = Game([], defaultdict(int), dict())
+    Computer(bus=game, memory=memory).run()
     return game.score if play_for_free else game.tile_freq["block"]
 
 

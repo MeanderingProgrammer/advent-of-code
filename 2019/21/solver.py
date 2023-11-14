@@ -1,27 +1,28 @@
+from typing import override
+
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 
-class JumpDroid:
-    def __init__(self, actual_program):
-        self.__computer = Computer(self)
-        self.__program = self.__transform(actual_program)
+class JumpDroid(Bus):
+    def __init__(self, actual_program: list[str]):
+        self.program = self.__transform(actual_program)
         self.buffer = ""
         self.value = None
 
-    def set_memory(self, memory):
-        self.__computer.set_memory(memory)
+    @override
+    def active(self) -> bool:
+        return True
 
-    def run(self):
-        self.__computer.run()
-
-    def get_input(self):
+    @override
+    def get_input(self) -> int:
         self.buffer = ""
-        value = self.__program.pop(0)
+        value = self.program.pop(0)
         return ord(value)
 
-    def add_output(self, value):
+    @override
+    def add_output(self, value: int) -> None:
         if value < 256:
             self.buffer += chr(value)
         else:
@@ -37,7 +38,7 @@ class JumpDroid:
         return program
 
 
-def main():
+def main() -> None:
     answer.part1(
         19357761,
         run_droid(
@@ -91,13 +92,8 @@ def main():
 
 def run_droid(actual_program):
     droid = JumpDroid(actual_program)
-    droid.set_memory(get_memory())
-    droid.run()
+    Computer(bus=droid, memory=Parser().int_csv()).run()
     return droid.value
-
-
-def get_memory():
-    return Parser().int_csv()
 
 
 if __name__ == "__main__":

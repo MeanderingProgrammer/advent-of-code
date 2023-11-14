@@ -1,10 +1,11 @@
+from typing import override
+
 from aoc import answer
 from aoc.board import Point
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 STATE_MAPPING = {"^": 0, ">": 1, "v": 2, "<": 3}
-
 DIRECTIONS = [Point(0, -1), Point(1, 0), Point(0, 1), Point(-1, 0)]
 
 
@@ -45,10 +46,8 @@ class DroidState:
         return "Location = {}\nPosition = {}".format(self.location, self.direction)
 
 
-class VacuumDroid:
+class VacuumDroid(Bus):
     def __init__(self):
-        self.__computer = Computer(self)
-
         self.__current = Point(0, 0)
         self.__state = None
         self.__scafolding = set()
@@ -58,31 +57,31 @@ class VacuumDroid:
         self.running = False
         self.value = None
 
-    def set_memory(self, memory):
-        self.__computer.set_memory(memory)
+    @override
+    def active(self) -> bool:
+        return True
 
-    def run(self):
-        self.__computer.run()
-
-    def get_input(self):
+    @override
+    def get_input(self) -> int:
         if self.__index >= len(self.__instructions):
             raise Exception("PASSED END")
         value = self.__instructions[self.__index]
         self.__index += 1
         return value
 
-    def add_output(self, value):
+    @override
+    def add_output(self, value: int) -> None:
         if self.running:
             self.value = value
             return
-        value = chr(value)
-        if value == "\n":
+        val = chr(value)
+        if val == "\n":
             self.__current = Point(0, self.__current.y() + 1)
         else:
-            if value != ".":
+            if val != ".":
                 self.__scafolding.add(self.__current)
-                if value != "#":
-                    self.__state = DroidState(self.__current, self.__scafolding, value)
+                if val != "#":
+                    self.__state = DroidState(self.__current, self.__scafolding, val)
             self.__current = self.__current.right()
 
     def get_intersections(self):
@@ -167,7 +166,6 @@ class VacuumDroid:
                     c_bounds = self.get_bounds(c, instructions)
 
                     all_bounds = [a_bounds, b_bounds, c_bounds]
-                    total_bounds = sum([len(bound) for bound in all_bounds])
                     if self.contains_all(all_bounds, total_instructions):
                         return (a, a_bounds, b, b_bounds, c, c_bounds)
 
@@ -213,31 +211,30 @@ def main():
     answer.part2(1234055, dust_collected(droid))
 
 
-def total_alignment(droid):
+def total_alignment(droid: VacuumDroid):
     run_droid(droid, False)
     intersections = droid.get_intersections()
     alignments = [get_alignment(intersection) for intersection in intersections]
     return sum(alignments)
 
 
-def get_alignment(point):
+def get_alignment(point: Point) -> int:
     return point.x() * point.y()
 
 
-def dust_collected(droid):
+def dust_collected(droid: VacuumDroid):
     droid.create_path()
     droid.running = True
     run_droid(droid, True)
     return droid.value
 
 
-def run_droid(droid, prompt):
+def run_droid(droid: VacuumDroid, prompt: bool):
     memory = get_memory()
     if prompt:
         # Set memory at address 0 to 2 to be prompted for input
         memory[0] = 2
-    droid.set_memory(memory)
-    droid.run()
+    Computer(bus=droid, memory=memory).run()
 
 
 def get_memory():

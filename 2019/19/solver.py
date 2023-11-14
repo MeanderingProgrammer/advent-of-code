@@ -1,30 +1,30 @@
 from dataclasses import dataclass
+from typing import Optional, override
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 Point = tuple[int, int]
 
 
-class Beam:
-    def __init__(self, memory: list[int], point: Point):
-        self.computer = Computer(self)
-        self.computer.set_memory(memory)
-        self.point = point
-        self.called = False
-        self.value = None
+@dataclass
+class Beam(Bus):
+    point: Point
+    called: bool = False
+    value: Optional[int] = None
 
-    def run(self) -> int:
-        self.computer.run()
-        assert self.value is not None
-        return self.value
+    @override
+    def active(self) -> bool:
+        return True
 
+    @override
     def get_input(self) -> int:
         value = self.point[0] if not self.called else self.point[1]
         self.called = not self.called
         return value
 
+    @override
     def add_output(self, value: int) -> None:
         self.value = value
 
@@ -35,7 +35,11 @@ class Tester:
     beam_starts: dict[int, int]
 
     def test(self, point: Point) -> int:
-        return Beam(memory=list(self.memory), point=point).run()
+        beam = Beam(point)
+        Computer(bus=beam, memory=list(self.memory)).run()
+        result = beam.value
+        assert result is not None
+        return result
 
     def left_most(self, y: int) -> int:
         x = self.beam_starts.get(y - 1, 0)

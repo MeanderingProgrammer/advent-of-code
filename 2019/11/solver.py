@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+from typing import override
 
 from aoc import answer
 from aoc.board import Grid, Point
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -20,24 +21,22 @@ class Direction:
         return position[0] + to_go[0], position[1] + to_go[1]
 
 
-class PaintBot:
-    def __init__(self, memory: list[int], starting_color: int):
-        self.computer = Computer(self)
-        self.computer.set_memory(memory)
+@dataclass
+class PaintBot(Bus):
+    direction: Direction
+    position: tuple[int, int]
+    grid: dict[tuple[int, int], int]
+    color: bool = True
 
-        self.color = True
+    @override
+    def active(self) -> bool:
+        return True
 
-        self.direction = Direction()
-        self.grid = {}
-        self.position = (0, 0)
-        self.grid[self.position] = starting_color
-
-    def run(self) -> None:
-        self.computer.run()
-
+    @override
     def get_input(self) -> int:
         return self.grid[self.position] if self.position in self.grid else 0
 
+    @override
     def add_output(self, value: int) -> None:
         if self.color:
             self.grid[self.position] = value
@@ -68,8 +67,12 @@ def main():
 
 
 def run(setting: int) -> PaintBot:
-    bot = PaintBot(Parser().int_csv(), setting)
-    bot.run()
+    bot = PaintBot(
+        direction=Direction(),
+        position=(0, 0),
+        grid={(0, 0): setting},
+    )
+    Computer(bus=bot, memory=Parser().int_csv()).run()
     return bot
 
 
