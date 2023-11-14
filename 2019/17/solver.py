@@ -42,18 +42,15 @@ class DroidState:
             amount += 1
         return amount
 
-    def __str__(self):
-        return "Location = {}\nPosition = {}".format(self.location, self.direction)
-
 
 class VacuumDroid(Bus):
     def __init__(self):
-        self.__current = Point(0, 0)
-        self.__state = None
-        self.__scafolding = set()
+        self.current = Point(0, 0)
+        self.state = None
+        self.scafolding = set()
 
-        self.__instructions = []
-        self.__index = 0
+        self.instructions = []
+        self.index = 0
         self.running = False
         self.value = None
 
@@ -63,10 +60,10 @@ class VacuumDroid(Bus):
 
     @override
     def get_input(self) -> int:
-        if self.__index >= len(self.__instructions):
+        if self.index >= len(self.instructions):
             raise Exception("PASSED END")
-        value = self.__instructions[self.__index]
-        self.__index += 1
+        value = self.instructions[self.index]
+        self.index += 1
         return value
 
     @override
@@ -76,26 +73,27 @@ class VacuumDroid(Bus):
             return
         val = chr(value)
         if val == "\n":
-            self.__current = Point(0, self.__current.y() + 1)
+            self.current = Point(0, self.current.y() + 1)
         else:
             if val != ".":
-                self.__scafolding.add(self.__current)
+                self.scafolding.add(self.current)
                 if val != "#":
-                    self.__state = DroidState(self.__current, self.__scafolding, val)
-            self.__current = self.__current.right()
+                    self.state = DroidState(self.current, self.scafolding, val)
+            self.current = self.current.right()
 
     def get_intersections(self):
         intersections = set()
-        for point in self.__scafolding:
-            contains = [adjacent in self.__scafolding for adjacent in point.adjacent()]
+        for point in self.scafolding:
+            contains = [adjacent in self.scafolding for adjacent in point.adjacent()]
             if all(contains):
                 intersections.add(point)
         return intersections
 
     def create_path(self):
+        assert self.state is not None
         instructions = []
-        while self.__state.has_next():
-            instructions.append(self.__state.get_instruction())
+        while self.state.has_next():
+            instructions.append(self.state.get_instruction())
         a, a_bounds, b, b_bounds, c, c_bounds = self.compress_instructions(
             instructions, 5
         )
@@ -104,8 +102,8 @@ class VacuumDroid(Bus):
         self.add_instruction(a)
         self.add_instruction(b)
         self.add_instruction(c)
-        self.__instructions.append(ord("n"))
-        self.__instructions.append(10)
+        self.instructions.append(ord("n"))
+        self.instructions.append(10)
 
     def add_instruction(self, instructions):
         if type(instructions[0]) is str:
@@ -115,8 +113,8 @@ class VacuumDroid(Bus):
                 ["{},{}".format(*instruction) for instruction in instructions]
             )
         for ch in instructions:
-            self.__instructions.append(ord(ch))
-        self.__instructions.append(10)
+            self.instructions.append(ord(ch))
+        self.instructions.append(10)
 
     def create_routine(self, a_bounds, b_bounds, c_bounds, end):
         i = 0
@@ -168,6 +166,7 @@ class VacuumDroid(Bus):
                     all_bounds = [a_bounds, b_bounds, c_bounds]
                     if self.contains_all(all_bounds, total_instructions):
                         return (a, a_bounds, b, b_bounds, c, c_bounds)
+        raise Exception("Should never get here")
 
     def get_bounds(self, sublist, main):
         bounds = []
@@ -201,9 +200,6 @@ class VacuumDroid(Bus):
                 return bound[1]
         return None
 
-    def __str__(self):
-        return "Scafolding = {}\nLocation = {}".format(self.__scafolding, self.__state)
-
 
 def main():
     droid = VacuumDroid()
@@ -230,15 +226,11 @@ def dust_collected(droid: VacuumDroid):
 
 
 def run_droid(droid: VacuumDroid, prompt: bool):
-    memory = get_memory()
+    memory = Parser().int_csv()
     if prompt:
         # Set memory at address 0 to 2 to be prompted for input
         memory[0] = 2
     Computer(bus=droid, memory=memory).run()
-
-
-def get_memory():
-    return Parser().int_csv()
 
 
 if __name__ == "__main__":
