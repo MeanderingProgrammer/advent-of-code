@@ -1,30 +1,25 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass
 class Game:
-    def __init__(self, value):
-        self.value = value
+    value: list[int]
 
     def play(self) -> None:
-        result = [[1, self.value[0]]]
-        for n in range(1, len(self.value)):
-            previous = self.value[n - 1]
-            current = self.value[n]
-            if previous == current:
-                result[-1][0] += 1
+        next_value: list[int] = []
+        for i, current in enumerate(self.value):
+            if i > 0 and current == self.value[i - 1]:
+                next_value[-2] += 1
             else:
-                result.append([1, current])
-
-        self.value = []
-        for part in result:
-            self.value.append(str(part[0]))
-            self.value.append(part[1])
+                next_value.extend([1, current])
+        self.value = next_value
 
 
 def main() -> None:
-    value = Parser(strip=True).string()
-    game = Game(value)
+    game = Game(list(map(int, Parser(strip=True).string())))
     answer.part1(360154, run(game, 40))
     answer.part2(5103798, run(game, 10))
 
