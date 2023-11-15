@@ -76,9 +76,9 @@ def generate(
 @click.option("--test", is_flag=True)
 def run(
     template: Optional[str],
-    year: tuple[int],
-    day: tuple[int],
-    language: tuple[Language],
+    year: tuple[int, ...],
+    day: tuple[int, ...],
+    language: tuple[Language, ...],
     slow: int,
     info: bool,
     test: bool,

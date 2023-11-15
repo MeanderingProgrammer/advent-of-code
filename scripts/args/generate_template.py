@@ -12,7 +12,7 @@ class GenerateTemplate:
     def get_names(self) -> list[str]:
         return list(self.__templates.keys())
 
-    def get(self, name) -> Day:
+    def get(self, name: str) -> Day:
         return self.__templates[name]()
 
     @staticmethod

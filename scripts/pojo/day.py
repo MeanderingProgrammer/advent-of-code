@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Self
 
-_START_YEAR = 2015
-_PER_YEAR = 25
+START_YEAR: int = 2015
+PER_YEAR: int = 25
 
 
 @dataclass(frozen=True, order=True)
@@ -11,36 +12,25 @@ class Day:
     day: str
 
     def __post_init__(self):
-        year, day = int(self.year), int(self.day)
-        assert _START_YEAR <= year <= 2100, "year must between 2015 & 2100"
-        assert 1 <= day <= _PER_YEAR, "day must be between 1 & 25"
+        assert START_YEAR <= int(self.year) <= 2100, "year must between 2015 & 2100"
+        assert 1 <= int(self.day) <= PER_YEAR, "day must be between 1 & 25"
 
-    def add(self, amount: int) -> "Day":
-        value = self.__to_day_number()
-        value += amount
-        return Day.__from_day_number(value)
+    def add(self, amount: int) -> Self:
+        value = self.__to_index() + amount
+        assert value > 0, "Day number must be > 0"
+        year, day = divmod(value, PER_YEAR)
+        # Handle last day of year as special case
+        if day == 0:
+            year -= 1
+            day = PER_YEAR
+        return Day(
+            year=str(START_YEAR + year),
+            day=str(day).zfill(2),
+        )
 
     def dir(self) -> Path:
         return Path(self.year).joinpath(self.day)
 
-    def __to_day_number(self) -> int:
-        year, day = int(self.year), int(self.day)
-        year_number = year - _START_YEAR
-        return year_number * _PER_YEAR + day
-
-    @staticmethod
-    def __from_day_number(value: int) -> "Day":
-        assert value > 0, "Day number must be > 0"
-
-        year_number = value // _PER_YEAR
-        day_number = value % _PER_YEAR
-
-        # Handle last day of year as special case
-        if day_number == 0:
-            year_number -= 1
-            day_number = _PER_YEAR
-
-        return Day(
-            year=str(_START_YEAR + year_number),
-            day=str(day_number).zfill(2),
-        )
+    def __to_index(self) -> int:
+        year = int(self.year) - START_YEAR
+        return year * PER_YEAR + int(self.day)
