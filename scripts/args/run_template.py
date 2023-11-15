@@ -19,7 +19,7 @@ class RunTemplate:
     def get_names(self) -> list[str]:
         return list(self.__templates.keys())
 
-    def get(self, name) -> list[Day]:
+    def get(self, name: str) -> list[Day]:
         return self.__templates[name]()
 
     @staticmethod
@@ -53,16 +53,4 @@ class RunTemplate:
 
     @staticmethod
     def __int_code() -> list[Day]:
-        return [
-            Day("2019", "05"),
-            Day("2019", "07"),
-            Day("2019", "09"),
-            Day("2019", "11"),
-            Day("2019", "13"),
-            Day("2019", "15"),
-            Day("2019", "17"),
-            Day("2019", "19"),
-            Day("2019", "21"),
-            Day("2019", "23"),
-            Day("2019", "25"),
-        ]
+        return DayFactory(years=[2019], days=list(range(5, 26, 2))).get_days()
