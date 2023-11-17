@@ -1,43 +1,45 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
-use std::collections::VecDeque;
 
 #[derive(Debug)]
-struct Lock {
-    steps: usize,
-    queue: VecDeque<usize>,
+struct LockIndex {
+    step_size: usize,
+    current: usize,
 }
 
-impl Lock {
-    fn new(steps: i64) -> Self {
-        Self {
-            steps: steps as usize,
-            queue: [0].into(),
-        }
+impl LockIndex {
+    fn new(step_size: usize, current: usize) -> Self {
+        Self { step_size, current }
     }
 
-    fn insert(&mut self, value: usize) {
-        let rotations = (self.steps + 1) % self.queue.len();
-        self.queue.rotate_left(rotations);
-        self.queue.push_front(value);
-    }
-
-    fn after(&self, target: usize) -> usize {
-        let index = self.queue.iter().position(|&value| value == target);
-        self.queue.get(index.unwrap() + 1).unwrap().clone()
+    fn next(&mut self, length: usize) -> usize {
+        self.current = ((self.current + self.step_size) % length) + 1;
+        self.current
     }
 }
 
 fn main() {
-    answer::part1(996, run_lock(2_017, 2_017));
-    answer::part2(1898341, run_lock(50_000_000, 0));
+    let step_size = reader::read_int()[0] as usize;
+    answer::part1(996, after_last(step_size, 2_017));
+    answer::part2(1898341, after_zero(step_size, 50_000_000));
 }
 
-fn run_lock(steps: usize, after: usize) -> usize {
-    let values = reader::read_int();
-    let mut lock = Lock::new(values[0]);
+fn after_last(step_size: usize, steps: usize) -> usize {
+    let mut values = vec![0];
+    let mut index = LockIndex::new(step_size, 0);
     for i in 1..=steps {
-        lock.insert(i);
+        values.insert(index.next(i), i);
     }
-    lock.after(after)
+    values[index.current + 1]
+}
+
+fn after_zero(step_size: usize, steps: usize) -> usize {
+    let mut result = 0;
+    let mut index = LockIndex::new(step_size, 0);
+    for i in 1..=steps {
+        if index.next(i) == 1 {
+            result = i;
+        }
+    }
+    result
 }
