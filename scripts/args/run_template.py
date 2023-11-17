@@ -53,4 +53,4 @@ class RunTemplate:
 
     @staticmethod
     def __int_code() -> list[Day]:
-        return DayFactory(years=[2019], days=list(range(5, 26, 2))).get_days()
+        return DayFactory(years=[2019], days=[2] + list(range(5, 26, 2))).get_days()
