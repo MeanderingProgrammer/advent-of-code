@@ -243,13 +243,13 @@ class Bus(abc.ABC):
 
 @dataclass
 class Computer:
-    bus: Bus
+    bus: Optional[Bus]
     memory: list[int]
     pointer: int = 0
     base: int = 0
 
     def run(self) -> None:
-        while self.has_next() and self.bus.active():
+        while self.has_next() and (self.bus is None or self.bus.active()):
             self.next()
 
     def has_next(self) -> bool:

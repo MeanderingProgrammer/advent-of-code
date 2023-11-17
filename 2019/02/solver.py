@@ -1,87 +1,30 @@
+from typing import Optional
+
 from aoc import answer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
-class Instruction:
-    def __init__(self, parts):
-        self.opcode = parts[0]
-        self.first = parts[1]
-        self.second = parts[2]
-        self.target = parts[3]
-
-    def halt(self):
-        return self.opcode == 99
-
-    def process(self, memory):
-        first = memory.get(self.first)
-        second = memory.get(self.second)
-        if self.opcode == 1:
-            result = first + second
-        else:
-            result = first * second
-        memory.set(self.target, result)
+def main() -> None:
+    answer.part1(6627023, run(12, 2))
+    answer.part2(4019, get_goal())
 
 
-class Memory:
-    def __init__(self, commands):
-        self.commands = commands
-        self.index = 0
-
-    def get(self, i):
-        return self.commands[i]
-
-    def set(self, i, value):
-        self.commands[i] = value
-
-    def has_next(self):
-        return self.index < len(self.commands)
-
-    def next(self):
-        portion = self.commands[self.index : self.index + 4]
-        self.index += 4
-        return Instruction(portion)
+def run(v1: int, v2: int) -> int:
+    memory = Parser().int_csv()
+    memory[1] = v1
+    memory[2] = v2
+    computer = Computer(None, memory)
+    computer.run()
+    return memory[0]
 
 
-class Computer:
-    def __init__(self, memory):
-        self.memory = memory
-
-    def set_state(self, v1, v2):
-        self.memory.set(1, v1)
-        self.memory.set(2, v2)
-
-    def run(self):
-        while self.memory.has_next():
-            instruction = self.memory.next()
-            if instruction.halt():
-                break
-            instruction.process(self.memory)
-
-
-def main():
-    answer.part1(6627023, set_memory_and_run(12, 2))
-    noun, verb = get_goal_pair()
-    answer.part2(4019, (100 * noun) + verb)
-
-
-def get_goal_pair():
+def get_goal() -> Optional[int]:
     for noun in range(100):
         for verb in range(100):
-            result = set_memory_and_run(noun, verb)
-            if result == 19_690_720:
-                return noun, verb
-
-
-def set_memory_and_run(v1, v2):
-    memory = get_memory()
-    computer = Computer(memory)
-    computer.set_state(v1, v2)
-    computer.run()
-    return memory.get(0)
-
-
-def get_memory():
-    return Memory(Parser().int_csv())
+            if run(noun, verb) == 19_690_720:
+                return 100 * noun + verb
+    return None
 
 
 if __name__ == "__main__":
