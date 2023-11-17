@@ -23,7 +23,7 @@ class Day:
         if day == 0:
             year -= 1
             day = PER_YEAR
-        return Day(
+        return type(self)(
             year=str(START_YEAR + year),
             day=str(day).zfill(2),
         )
