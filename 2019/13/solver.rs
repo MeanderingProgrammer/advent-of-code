@@ -27,7 +27,7 @@ impl Bus for Game {
         true
     }
 
-    fn get_input(&self) -> i64 {
+    fn get_input(&mut self) -> i64 {
         let diff = self.tile_x["ball"] - self.tile_x["horizontal paddle"];
         1.min(diff.max(-1))
     }
