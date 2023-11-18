@@ -207,7 +207,7 @@ impl<T: Bus + Debug> Instruction<T> for BaseAdjuster {
 
 pub trait Bus {
     fn active(&self) -> bool;
-    fn get_input(&self) -> i64;
+    fn get_input(&mut self) -> i64;
     fn add_output(&mut self, value: i64);
 }
 
@@ -225,7 +225,7 @@ impl Bus for NoopBus {
         true
     }
 
-    fn get_input(&self) -> i64 {
+    fn get_input(&mut self) -> i64 {
         0
     }
 
@@ -273,7 +273,8 @@ impl<T: Bus + Debug> Computer<T> {
             }
             Response::Halt => false,
             Response::Store(index) => {
-                self.set(index, self.bus.get_input());
+                let value = self.bus.get_input();
+                self.set(index, value);
                 self.pointer += 1 + instruction.len();
                 true
             }
