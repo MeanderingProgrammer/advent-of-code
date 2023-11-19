@@ -4,6 +4,8 @@ Public Repo for Advent of Code Solutions
 
 ![Years Completed](images/advent-completed.png)
 
+# Setup
+
 ## Install Requirements
 
 ```
@@ -20,9 +22,9 @@ alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
 ```
 
-## Running a Day
+# Run
 
-Used to run various days rather than running directly.
+The `run` target is used to run various days rather than running directly.
 
 Does some hacky stuff to set arguments and run commands, but for the most part runs
 standard build commands for each language / framework.
@@ -33,7 +35,7 @@ latest day in all languages it is implemented in.
 - Alias Command: `a_run`
 - Direct Command: `./scripts/advent.py run`
 
-### Usage
+## Usage
 
 ```
 a_run \
@@ -57,9 +59,17 @@ a_run \
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
 
-## Generate Template
+## Process Runtime Output
 
-Generates initial files and empty data file for the specified language.
+```
+jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
+jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json | sort -nk4
+jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
+```
+
+# Generate
+
+The `generate` target creates initial files and empty data file for the specified language.
 
 Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
@@ -71,7 +81,7 @@ next day using the rust template.
 - Alias Command: `a_gen`
 - Direct Command: `./scripts/advent.py generate`
 
-### Usage
+## Usage
 
 ```
 a_gen \
@@ -93,7 +103,7 @@ a_gen \
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
 
-### Install aoc-cli
+## Install aoc-cli
 
 Template generation script can use `aoc-cli` to download input: [docs](https://github.com/scarvalhojr/aoc-cli).
 
@@ -101,16 +111,7 @@ Follow the instructions in the `README` of `aoc-cli` to get your session cookie 
 
 This library relies on openssl which you will also need to install if you don't already have it.
 
-Commands:
-
 ```
 cargo install aoc-cli
 touch .adventofcode.session
-```
-
-## Process Runtime Output
-
-```
-jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
-jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 ```
