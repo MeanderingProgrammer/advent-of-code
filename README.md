@@ -113,3 +113,48 @@ This library relies on openssl which you will also need to install if you don't 
 cargo install aoc-cli
 touch .adventofcode.session
 ```
+
+# Take over 1 second on M2 Mac
+
+| Year | Day | Runtime | Notes                                                   |
+| ---- | --- | ------- | ------------------------------------------------------- |
+| 2018 | 15  | 5.042   | Complex game state with path finding between characters |
+| 2018 | 19  | 4.878   | Kinda like int-code but running it seems not feesible   |
+| 2022 | 16  | 4.603   | Path finding with multiple agents is fairly optimized   |
+| 2016 | 5   | 4.576   | Final md5 hash that hasn't been optimized with batches  |
+| 2020 | 11  | 3.939   | N/A                                                     |
+| 2018 | 5   | 3.921   | N/A                                                     |
+| 2016 | 16  | 3.651   | N/A                                                     |
+| 2019 | 15  | 3.407   | Normal int-code that hasn't been moved to Rust          |
+| 2021 | 23  | 3.247   | Looks like a complex path finding problem               |
+| 2022 | 19  | 3.115   | That robot material with blueprints problem             |
+| 2015 | 6   | 3.058   | Fairly large state, port it to Rust                     |
+| 2019 | 12  | 2.585   | Math heavy, port it to Rust                             |
+| 2017 | 5   | 2.267   | N/A                                                     |
+| 2019 | 18  | 2.235   | Mostly the Java runtime for such a small execution      |
+| 2017 | 24  | 2.222   | N/A                                                     |
+| 2016 | 25  | 2.018   | Kinda like int-code, can probably make it faster        |
+| 2016 | 11  | 2.009   | That chips and generator problem, not fun               |
+| 2019 | 17  | 1.993   | Normal int-code that hasn't been moved to Rust          |
+| 2019 | 9   | 1.850   | Normal int-code that hasn't been moved to Rust          |
+| 2016 | 14  | 1.664   | Already batched implementation of md5                   |
+| 2019 | 23  | 1.621   | Normal int-code that hasn't been moved to Rust          |
+| 2019 | 24  | 1.607   | Game of life problem, optimized by using tuples         |
+| 2020 | 15  | 1.552   | Even in Rust iterating to 30,000,000 takes a bit        |
+| 2015 | 18  | 1.495   | Optimized with tuples, probably need to move to Rust    |
+| 2021 | 12  | 1.490   | Path finding problem, might be some room to improve     |
+| 2022 | 15  | 1.483   | Dealing with large space, already in Rust               |
+| 2019 | 25  | 1.419   | Mostly spends time permuting through the items          |
+| 2018 | 22  | 1.396   | N/A                                                     |
+| 2018 | 3   | 1.392   | N/A                                                     |
+| 2015 | 10  | 1.356   | Growing list, Rust can probably fix it                  |
+| 2018 | 18  | 1.350   | Game of life problem, optimized by using tuples         |
+| 2018 | 14  | 1.304   | Would need to be a lot more clever to get better        |
+| 2017 | 22  | 1.288   | Game of life problem already in Rust                    |
+| 2017 | 21  | 1.273   | N/A                                                     |
+| 2018 | 24  | 1.229   | Complex game, fairly optimized in Python                |
+| 2016 | 24  | 1.199   | N/A                                                     |
+| 2019 | 20  | 1.132   | Mostly the Java runtime for such a small execution      |
+| 2017 | 3   | 1.109   | Can probably improve by using a dict / tuple            |
+| 2015 | 13  | 1.048   | Mostly likely slowed by the permutation computation     |
+| 2018 | 6   | 1.002   | Most of the computation is in the distance logic        |
