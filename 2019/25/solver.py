@@ -1,6 +1,7 @@
 import itertools
 from dataclasses import dataclass
-from typing import Optional, Self, override
+from enum import StrEnum, auto
+from typing import Optional, override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -13,15 +14,21 @@ BAD_ITEMS = [
     "escape pod",
     "infinite loop",
 ]
-OPPOSITES = {"north": "south", "south": "north", "east": "west", "west": "east"}
 
 
-@dataclass(frozen=True)
-class Direction:
-    value: str
+class Direction(StrEnum):
+    NORTH = auto()
+    SOUTH = auto()
+    EAST = auto()
+    WEST = auto()
 
-    def opposite(self) -> Self:
-        return type(self)(OPPOSITES[self.value])
+
+OPPOSITES: dict[Direction, Direction] = {
+    Direction.NORTH: Direction.SOUTH,
+    Direction.SOUTH: Direction.NORTH,
+    Direction.EAST: Direction.WEST,
+    Direction.WEST: Direction.EAST,
+}
 
 
 @dataclass(frozen=True)
@@ -39,20 +46,16 @@ class Game:
     def add(self, ch: str) -> None:
         self.instruction += ch
 
-    def clear(self) -> None:
-        self.instruction = ""
-        self.view = None
-
     def location(self):
         return self.get_view().name
+
+    def is_checkpoint(self) -> bool:
+        return self.location() == "Security Checkpoint"
 
     def directions(self) -> list[Direction]:
         directions = self.get_view().directions
         # Remove direction which takes us to analyzer, for initial traversal
         return directions[1:] if self.is_checkpoint() else directions
-
-    def is_checkpoint(self) -> bool:
-        return self.location() == "Security Checkpoint"
 
     def items(self) -> list[str]:
         return [item for item in self.get_view().items if item not in BAD_ITEMS]
@@ -90,11 +93,16 @@ class Graph:
 
     def add_edge(self, start: str, direction: Direction, end: str) -> None:
         self.graph[start].add((direction, end))
-        self.graph[end].add((direction.opposite(), start))
+        self.graph[end].add((OPPOSITES[direction], start))
 
     def get_unexplored(self, name: str, directions: list[Direction]) -> list[Direction]:
         explored: list[Direction] = [edge[0] for edge in self.graph[name]]
         return [direction for direction in directions if direction not in explored]
+
+
+class State(StrEnum):
+    EXPLORING = auto()
+    SOLVING = auto()
 
 
 @dataclass(frozen=True)
@@ -115,16 +123,15 @@ class DroidBus(Bus):
         # Storing output of game and move to make
         self.game: Game = Game()
         self.move: list[str] = []
+        self.state: State = State.EXPLORING
 
         # State information to be able to traverse ship
         self.grid: Graph = Graph(graph=dict())
         self.previous: Optional[tuple[str, Direction]] = None
         self.history: list[Direction] = []
-        self.exploring: bool = True
+        self.path_to_checkpoint: list[Direction] = []
 
         # For solving final puzzle where all items are needed
-        self.solving: bool = False
-        self.path_to_checkpoint: list[Direction] = []
         self.items: ItemBag = ItemBag(items=[])
         self.item_generator = self.items.next()
 
@@ -139,14 +146,15 @@ class DroidBus(Bus):
     @override
     def get_input(self) -> int:
         if len(self.move) == 0:
-            if self.exploring:
-                self.exploring &= self.continue_exploring()
-            if self.solving:
+            if self.state == State.EXPLORING:
+                if not self.continue_exploring():
+                    [self.add_command(move.value) for move in self.path_to_checkpoint]
+                    self.add_command("south")
+                    self.state = State.SOLVING
+            elif self.state == State.SOLVING:
                 self.attempt_solve(True)
-            if not self.exploring and not self.solving:
-                [self.add_command(move.value) for move in self.path_to_checkpoint]
-                self.add_command("south")
-                self.solving = True
+            else:
+                raise Exception(f"Unknown state {self.state}")
         return ord(self.move.pop(0))
 
     def continue_exploring(self) -> bool:
@@ -163,22 +171,22 @@ class DroidBus(Bus):
             self.grid.add_edge(self.previous[0], self.previous[1], location)
 
         unexplored = self.grid.get_unexplored(location, self.game.directions())
-        if len(unexplored) == 0 and len(self.history) == 0:
-            return False
 
-        self.game.clear()
+        self.game = Game()
         if len(unexplored) > 0:
             move: Direction = unexplored[0]
             self.history.append(move)
-        else:
-            move: Direction = self.history[-1].opposite()
+        elif len(self.history) > 0:
+            move: Direction = OPPOSITES[self.history[-1]]
             self.history = self.history[:-1]
+        else:
+            return False
         self.previous = (location, move)
         self.add_command(move.value)
         return True
 
     def attempt_solve(self, use_known: bool) -> None:
-        self.game.clear()
+        self.game = Game()
         for to_drop in self.items.items:
             self.add_command(f"drop {to_drop}")
         # Rather than using the item generate pass the known list of items
