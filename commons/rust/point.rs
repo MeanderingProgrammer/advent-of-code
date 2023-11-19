@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::cmp::Ordering;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -19,6 +20,12 @@ impl PartialOrd for Point {
     }
 }
 
+impl ToString for Point {
+    fn to_string(&self) -> String {
+        self.values.iter().join(",")
+    }
+}
+
 impl Point {
     pub fn new(dimensions: usize) -> Point {
         Point {
@@ -28,6 +35,12 @@ impl Point {
 
     pub fn new_2d(x: i64, y: i64) -> Point {
         Point { values: vec![x, y] }
+    }
+
+    pub fn new_3d(x: i64, y: i64, z: i64) -> Point {
+        Point {
+            values: vec![x, y, z],
+        }
     }
 
     pub fn new_nd(values: Vec<i64>) -> Point {
