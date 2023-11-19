@@ -14,10 +14,7 @@ pip install -r scripts/requirements.txt
 
 ## Set Aliases
 
-Add to your `~/.bashrc` or `~/.zshrc`:
-
 ```
-# Advent Aliases
 alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
 ```
