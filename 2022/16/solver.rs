@@ -11,7 +11,7 @@ use nom::{
 };
 use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct IndividualState {
@@ -22,34 +22,28 @@ struct IndividualState {
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct FullState {
     individuals: Vec<IndividualState>,
-    valves_opened: Vec<String>,
+    valves_opened: BTreeSet<String>,
 }
 
 #[derive(Debug)]
-struct Cave<'a> {
-    graph: DiGraphMap<&'a str, i64>,
-    valve_to_flow: &'a HashMap<String, i64>,
+struct Cave {
+    graph: HashMap<String, Vec<(String, i64)>>,
+    valve_to_flow: HashMap<String, i64>,
 }
 
-impl<'a> Cave<'a> {
+impl Cave {
     fn next_options(&self, state: &FullState, score: i64, i: usize) -> Vec<(FullState, i64)> {
         let individual = &state.individuals[i];
-        self.graph
-            .edges(&individual.location)
-            .map(|(_, destination, &time)| (destination, time))
+        self.graph[&individual.location]
+            .iter()
             .filter(|(_, time)| individual.minutes_left - time > 0)
-            .filter(|(destination, _)| {
-                !state
-                    .valves_opened
-                    .contains(&(destination.to_owned().to_owned()))
-            })
+            .filter(|(destination, _)| !state.valves_opened.contains(destination))
             .map(|(destination, time)| {
                 let next_time_left = individual.minutes_left - time - 1;
                 let flow_rate = self.valve_to_flow.get(destination).unwrap();
 
                 let mut next_valves_opened = state.valves_opened.clone();
-                next_valves_opened.push(destination.to_string());
-                next_valves_opened.sort();
+                next_valves_opened.insert(destination.to_string());
 
                 let mut next_individuals = state.individuals.clone();
                 next_individuals[i] = IndividualState {
@@ -72,7 +66,7 @@ impl<'a> Cave<'a> {
         let mut unopened: Vec<i64> = self
             .valve_to_flow
             .iter()
-            .filter(|(name, _)| !state.valves_opened.contains(name))
+            .filter(|(&ref name, _)| !state.valves_opened.contains(name))
             .map(|(_, &flow_rate)| flow_rate)
             .collect();
         unopened.sort();
@@ -136,16 +130,58 @@ impl Valve {
 
 fn main() {
     let valves = reader::read(|line| Valve::from_str(line).unwrap().1);
-    let valve_to_flow = get_valve_to_flow(&valves);
-    let cave = create_cave(&valves, &valve_to_flow);
-
+    let cave = create_cave(&valves);
     answer::part1(1873, traverse_cave(&cave, 30, 1).unwrap());
     answer::part2(2425, traverse_cave(&cave, 26, 2).unwrap());
 }
 
+fn create_cave(valves: &Vec<Valve>) -> Cave {
+    let valve_to_flow = get_valve_to_flow(valves);
+
+    // First create a graph where all edges are weighted at 1
+    let mut base_graph: DiGraphMap<&str, ()> = DiGraphMap::new();
+    valves.iter().for_each(|valve| {
+        valve.leads_to.iter().for_each(|destination| {
+            base_graph.add_edge(&valve.name, destination, ());
+        });
+    });
+    // Use a fast algorithm to get distances between all pairs
+    let all_distances = floyd_warshall(&base_graph, |_| 1).unwrap();
+
+    // Create a graph weighted by distance for all important valves
+    let mut graph: HashMap<String, Vec<(String, i64)>> = HashMap::new();
+    for v1 in valve_to_flow.keys() {
+        for v2 in valve_to_flow.keys() {
+            if v1 != v2 {
+                if !graph.contains_key(v1) {
+                    graph.insert(v1.to_string(), Vec::new());
+                }
+                let weight = all_distances.get(&(v1, v2)).unwrap();
+                graph.get_mut(v1).unwrap().push((v2.to_string(), *weight));
+            }
+        }
+    }
+    Cave {
+        graph,
+        valve_to_flow,
+    }
+}
+
+fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
+    let mut valve_to_flow = HashMap::new();
+    valves
+        .iter()
+        // Only some of the valves actually matter, in particular the ones with some flow rate + start
+        .filter(|valve| valve.name == "AA" || valve.flow_rate > 0)
+        .for_each(|valve| {
+            valve_to_flow.insert(valve.name.clone(), valve.flow_rate);
+        });
+    valve_to_flow
+}
+
 fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<i64> {
     let mut queue = PriorityQueue::new();
-    let mut max_score = None;
+    let mut max_score: Option<i64> = None;
 
     let starting_state = FullState {
         individuals: vec![
@@ -155,7 +191,7 @@ fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<
             };
             individuals
         ],
-        valves_opened: vec!["AA".to_string()],
+        valves_opened: ["AA".to_string()].into(),
     };
 
     queue.push(starting_state, 0);
@@ -163,14 +199,13 @@ fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<
     while !queue.is_empty() {
         let (state, score) = queue.pop().unwrap();
 
-        if max_score == None || max_score.unwrap() < score {
-            max_score = Some(score);
-        }
-
+        let current_max = match max_score {
+            Some(s) => s.max(score),
+            None => score,
+        };
+        max_score = Some(current_max);
         // Mechanism to filter out states that cannot possibly reach an already seen value
-        if max_score != None
-            && score + cave.optimistic_additional_score(&state) < max_score.unwrap()
-        {
+        if score + cave.optimistic_additional_score(&state) < current_max {
             continue;
         }
 
@@ -197,45 +232,4 @@ fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<
     }
 
     max_score
-}
-
-fn create_cave<'a>(valves: &'a Vec<Valve>, valve_to_flow: &'a HashMap<String, i64>) -> Cave<'a> {
-    // First create a graph where all edges are weighted at 1
-    let mut base_graph: DiGraphMap<&str, ()> = DiGraphMap::new();
-    valves.iter().for_each(|valve| {
-        valve.leads_to.iter().for_each(|destination| {
-            base_graph.add_edge(&valve.name, destination, ());
-        });
-    });
-
-    // Use a fast algorithm to get distances between all pairs
-    let all_distances = floyd_warshall(&base_graph, |_| 1).unwrap();
-
-    // Create a graph weighted by distance for all important valves
-    let mut graph: DiGraphMap<&str, i64> = DiGraphMap::new();
-    for v1 in valve_to_flow.keys() {
-        for v2 in valve_to_flow.keys() {
-            if v1 != v2 {
-                let weight = all_distances.get(&(v1, v2)).unwrap();
-                graph.add_edge(v1, v2, *weight);
-            }
-        }
-    }
-
-    Cave {
-        graph,
-        valve_to_flow,
-    }
-}
-
-fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
-    let mut valve_to_flow = HashMap::new();
-    valves
-        .iter()
-        // Only some of the valves actually matter, in particular the ones with some flow rate + start
-        .filter(|valve| valve.name.clone() == "AA" || valve.flow_rate > 0)
-        .for_each(|valve| {
-            valve_to_flow.insert(valve.name.clone(), valve.flow_rate);
-        });
-    valve_to_flow
 }
