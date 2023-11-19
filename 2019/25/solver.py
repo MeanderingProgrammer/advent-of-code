@@ -122,7 +122,7 @@ class DroidBus(Bus):
     def __init__(self):
         # Storing output of game and move to make
         self.game: Game = Game()
-        self.move: list[str] = []
+        self.commands: list[str] = []
         self.state: State = State.EXPLORING
 
         # State information to be able to traverse ship
@@ -145,17 +145,17 @@ class DroidBus(Bus):
 
     @override
     def get_input(self) -> int:
-        if len(self.move) == 0:
+        if len(self.commands) == 0:
             if self.state == State.EXPLORING:
                 if not self.continue_exploring():
-                    [self.add_command(move.value) for move in self.path_to_checkpoint]
-                    self.add_command("south")
+                    [self.add_command(command) for command in self.path_to_checkpoint]
+                    self.add_command(Direction.SOUTH)
                     self.state = State.SOLVING
             elif self.state == State.SOLVING:
                 self.attempt_solve(True)
             else:
                 raise Exception(f"Unknown state {self.state}")
-        return ord(self.move.pop(0))
+        return ord(self.commands.pop(0))
 
     def continue_exploring(self) -> bool:
         for item in self.game.items():
@@ -174,15 +174,15 @@ class DroidBus(Bus):
 
         self.game = Game()
         if len(unexplored) > 0:
-            move: Direction = unexplored[0]
-            self.history.append(move)
+            command: Direction = unexplored[0]
+            self.history.append(command)
         elif len(self.history) > 0:
-            move: Direction = OPPOSITES[self.history[-1]]
+            command: Direction = OPPOSITES[self.history[-1]]
             self.history = self.history[:-1]
         else:
             return False
-        self.previous = (location, move)
-        self.add_command(move.value)
+        self.previous = (location, command)
+        self.add_command(command)
         return True
 
     def attempt_solve(self, use_known: bool) -> None:
@@ -194,12 +194,12 @@ class DroidBus(Bus):
         items = known_solution if use_known else next(self.item_generator)
         for to_pickup in items:
             self.add_command(f"take {to_pickup}")
-        self.add_command("south")
+        self.add_command(Direction.SOUTH)
 
     def add_command(self, command: str) -> None:
         program = [ch for ch in command]
         program.append("\n")
-        self.move.extend(program)
+        self.commands.extend(program)
 
 
 def main() -> None:
