@@ -71,7 +71,7 @@ The `generate` target creates initial files and empty data file for the specifie
 
 Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
-Will pull down your puzzle input if [instructions](##install-aoc-cli) are followed.
+Will pull down your puzzle input if [instructions](#install-aoc-cli) are followed.
 
 None of the parameters are required, the default behavior in this case is to generate the
 next day using the rust template.
