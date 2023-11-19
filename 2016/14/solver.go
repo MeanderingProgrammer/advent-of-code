@@ -31,10 +31,7 @@ type hashSearch struct {
 func (h hashSearch) runBatch(start int) []hashInfo {
 	result := []hashInfo{}
 	for i := start; i < start+batchSize; i++ {
-		value := h.getHash(i)
-		if len(value.triples) > 0 {
-			result = append(result, value)
-		}
+		result = append(result, h.getHash(i))
 	}
 	return result
 }
@@ -77,38 +74,13 @@ func main() {
 
 func generate(search hashSearch) int {
 	infos := make(map[int]hashInfo)
-	for i := 0; i < offset; i++ {
-		value := search.getHash(i)
-		if len(value.triples) > 0 {
-			infos[i] = value
-		}
-	}
-
-	index := 0
-	keys := []int{}
-	var mu sync.Mutex
+	index, keys := 0, []int{}
 	for len(keys) < 64 {
-		var wg sync.WaitGroup
-		for i := 0; i < batches; i++ {
-			wg.Add(1)
-			go func(start int) {
-				defer wg.Done()
-				for _, value := range search.runBatch(start) {
-					mu.Lock()
-					infos[value.index] = value
-					mu.Unlock()
-				}
-			}(offset + index + (i * batchSize))
-		}
-		wg.Wait()
-
-		end := index + (batches * batchSize)
-		for index < end {
-			info, ok := infos[index]
-			if ok {
-				if contains(infos, index+1, info.triples[0]) {
-					keys = append(keys, index)
-				}
+		addBatch(search, infos)
+		for index < len(infos)-offset {
+			info := infos[index]
+			if len(info.triples) > 0 && contains(infos, index+1, info.triples[0]) {
+				keys = append(keys, index)
 			}
 			index++
 		}
@@ -116,14 +88,30 @@ func generate(search hashSearch) int {
 	return keys[63]
 }
 
+func addBatch(search hashSearch, infos map[int]hashInfo) {
+	results := make(chan hashInfo, batches*batchSize)
+	var wg sync.WaitGroup
+	for i := 0; i < batches; i++ {
+		wg.Add(1)
+		go func(start int) {
+			defer wg.Done()
+			for _, value := range search.runBatch(start) {
+				results <- value
+			}
+		}(len(infos) + (i * batchSize))
+	}
+	wg.Wait()
+	close(results)
+	for result := range results {
+		infos[result.index] = result
+	}
+}
+
 func contains(infos map[int]hashInfo, index int, target rune) bool {
 	for i := index; i < index+offset; i++ {
-		info, ok := infos[i]
-		if ok {
-			for _, value := range info.cinqs {
-				if value == target {
-					return true
-				}
+		for _, value := range infos[i].cinqs {
+			if value == target {
+				return true
 			}
 		}
 	}
