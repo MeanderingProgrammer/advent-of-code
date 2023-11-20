@@ -62,6 +62,7 @@ a_run \
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json | sort -nk4
 jq -r '.[]|.runtime' all.json | awk '{ sum+=$1 } END { print "Seconds:", sum; print "Minutes:", sum / 60 }'
+jq -r '.[]|[.year, .day, .runtime]|@tsv' all.json | sort -rnk3 | awk '{ if ($3 > 1) { print $0 } }'
 jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 ```
 
