@@ -122,7 +122,6 @@ touch .adventofcode.session
 | 2018 | 19  | 4.878   | Kinda like int-code but running it seems not feesible   |
 | 2022 | 16  | 4.603   | Path finding with multiple agents is fairly optimized   |
 | 2016 | 5   | 4.576   | Final md5 hash that hasn't been optimized with batches  |
-| 2018 | 5   | 3.921   | N/A                                                     |
 | 2016 | 16  | 3.651   | N/A                                                     |
 | 2019 | 15  | 3.407   | Normal int-code that hasn't been moved to Rust          |
 | 2021 | 23  | 3.247   | Looks like a complex path finding problem               |
