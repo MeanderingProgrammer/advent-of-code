@@ -122,7 +122,6 @@ touch .adventofcode.session
 | 2018 | 19  | 4.878   | Kinda like int-code but running it seems not feesible   |
 | 2022 | 16  | 4.603   | Path finding with multiple agents is fairly optimized   |
 | 2016 | 5   | 4.576   | Final md5 hash that hasn't been optimized with batches  |
-| 2020 | 11  | 3.939   | N/A                                                     |
 | 2018 | 5   | 3.921   | N/A                                                     |
 | 2016 | 16  | 3.651   | N/A                                                     |
 | 2019 | 15  | 3.407   | Normal int-code that hasn't been moved to Rust          |
@@ -136,6 +135,7 @@ touch .adventofcode.session
 | 2016 | 25  | 2.018   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | Normal int-code that hasn't been moved to Rust          |
+| 2020 | 11  | 1.989   | N/A                                                     |
 | 2019 | 9   | 1.850   | Normal int-code that hasn't been moved to Rust          |
 | 2016 | 14  | 1.664   | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | Normal int-code that hasn't been moved to Rust          |
