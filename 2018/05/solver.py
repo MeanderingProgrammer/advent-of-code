@@ -18,11 +18,10 @@ class Polymer:
         return len(self.units)
 
     def get_reaction_index(self, previous: Optional[int]) -> Optional[int]:
-        start = 0 if previous is None else previous
-        for i, u1 in enumerate(self.units[start:-1]):
-            u2 = self.units[start + i + 1]
+        for i in range(previous or 0, len(self.units) - 1):
+            u1, u2 = self.units[i], self.units[i + 1]
             if u1.islower() != u2.islower() and u1.lower() == u2.lower():
-                return start + i
+                return i
         return None if previous is None else self.get_reaction_index(None)
 
     def get_unit_types(self) -> set[str]:
