@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from aoc import answer
+from aoc.parser import Parser
 
 
 @dataclass
@@ -26,8 +27,9 @@ def main() -> None:
 
 
 def matches(n: int, wait_mult: bool) -> int:
-    gen_a = Generator(value=277, factor=16_807, mult=4)
-    gen_b = Generator(value=349, factor=48_271, mult=8)
+    lines = Parser().lines()
+    gen_a = Generator(value=int(lines[0].split()[-1]), factor=16_807, mult=4)
+    gen_b = Generator(value=int(lines[1].split()[-1]), factor=48_271, mult=8)
     count = 0
     for _ in range(n):
         if equal(gen_a.next(wait_mult), gen_b.next(wait_mult)):

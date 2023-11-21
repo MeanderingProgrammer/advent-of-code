@@ -1,6 +1,7 @@
 from collections import deque
 
 from aoc import answer
+from aoc.parser import Parser
 
 
 class Lock:
@@ -23,7 +24,7 @@ def main() -> None:
 
 
 def run_lock_after(steps: int, after: int) -> int:
-    lock = Lock(344)
+    lock = Lock(Parser().integer())
     for i in range(steps + 1):
         lock.insert(i)
     return lock.after(after)

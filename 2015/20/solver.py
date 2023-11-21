@@ -9,21 +9,12 @@ def main() -> None:
 
 
 def find_first(goal: int, lazy: bool) -> int:
-    max_value = goal // 10
-    houses = [0] * max_value
-    for i in range(1, max_value):
-        elve_end = min((i * 50) + 1, max_value) if lazy else max_value
-        multiplier = 11 if lazy else 10
-        for house in range(i, elve_end, i):
-            houses[house] += i * multiplier
-    return first(goal, houses)
-
-
-def first(goal: int, houses: list[int]) -> int:
-    for i, house in enumerate(houses):
-        if house >= goal:
-            return i
-    raise Exception("Should never get here")
+    houses: list[int] = [0] * (goal // 10)
+    for i in range(1, len(houses)):
+        last_house = (i * 50) + 1 if lazy else len(houses)
+        for house in range(i, min(last_house, len(houses)), i):
+            houses[house] += i * (11 if lazy else 10)
+    return next(filter(lambda ih: ih[1] >= goal, enumerate(houses)))[0]
 
 
 if __name__ == "__main__":
