@@ -4,6 +4,7 @@ import time
 from dataclasses import dataclass
 
 from component.display_runtimes import Displayer
+from component.language_strategy import LanguageStrategy
 from language.language import Language
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
@@ -12,7 +13,7 @@ from pojo.runtime_info import RuntimeInfo
 @dataclass(frozen=True)
 class Runner:
     days: list[Day]
-    languages: list[Language]
+    language_strategy: LanguageStrategy
     slow: int
     run_args: list[str]
     save: bool
@@ -40,17 +41,10 @@ class Runner:
 
     def __run_day(self, day: Day) -> list[RuntimeInfo]:
         runtimes = []
-        for language in self.__languages(day):
+        for language in self.language_strategy.get(day):
             runtime = self.__run_language(language, day)
             runtimes.append(runtime)
         return runtimes
-
-    def __languages(self, day: Day) -> list[Language]:
-        return [
-            language
-            for language in self.languages
-            if language.solution_path(day).is_file()
-        ]
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")

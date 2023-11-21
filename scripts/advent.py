@@ -9,6 +9,7 @@ from command.generate import Generator
 from command.run import Runner
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
+from component.language_strategy import LanguageStrategy
 from language.language import Language
 
 
@@ -55,9 +56,9 @@ def generate(
         template = template or "next"
         days = [GenerateTemplate().get(template)]
     elif template is not None:
-        raise Exception('If "year" or "day" is provided then "template" should not be')
+        raise Exception("If 'year' or 'day' is provided then 'template' should not be")
     elif year is None or day is None:
-        raise Exception('Both "year" and "day" are required if either is provided')
+        raise Exception("Both 'year' and 'day' are required if either is provided")
     else:
         days = DayFactory(years=[year], days=[day]).get_days()
 
@@ -91,18 +92,21 @@ def run(
         template = template or "latest"
         days = RunTemplate().get(template)
     elif template is not None:
-        raise Exception('If "year" or "day" is provided then "template" should not be')
+        raise Exception("If 'year' or 'day' is provided then 'template' should not be")
     else:
         days = DayFactory(years=list(year), days=list(day)).get_days()
 
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
-    languages = LanguageFactory().get_all() if len(language) == 0 else list(language)
+    language_strategy = LanguageStrategy(
+        name="fastest" if template in ["latest", "days"] else "all",
+        languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
+    )
 
     runner = Runner(
         days=days,
-        languages=languages,
+        language_strategy=language_strategy,
         slow=slow,
         run_args=["--test"] if test else [],
         save=template in ["days"] and len(language) == 0,

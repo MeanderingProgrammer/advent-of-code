@@ -1,10 +1,12 @@
+from typing import Callable
+
 from component.day_factory import DayFactory
 from pojo.day import Day
 
 
 class GenerateTemplate:
     def __init__(self):
-        self.__templates = {
+        self.__templates: dict[str, Callable[[], Day]] = {
             "next": GenerateTemplate.__next,
             "current": GenerateTemplate.__current,
         }
