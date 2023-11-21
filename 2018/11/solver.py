@@ -1,5 +1,6 @@
 from aoc import answer
 from aoc.board import Point
+from aoc.parser import Parser
 
 
 class PowerGrid:
@@ -61,7 +62,7 @@ class PowerGrid:
 
 
 def main() -> None:
-    power_grid = PowerGrid(4172, 300)
+    power_grid = PowerGrid(Parser().integer(), 300)
     power_grid.initialize()
     answer.part1(Point(243, 43), power_grid.get_largest(3)[0])
     answer.part2(Point(236, 151, 15), power_grid.get_largest_any())

@@ -1,4 +1,5 @@
 from aoc import answer
+from aoc.parser import Parser
 
 
 class Recipes:
@@ -30,7 +31,7 @@ class Recipes:
 
 
 def main() -> None:
-    goal = 170_641
+    goal = Parser().integer()
     sequence = Recipes(goal).evolve()
     answer.part1("2103141159", sequence[goal : goal + 10])
     answer.part2(20165733, sequence.index(str(goal)))

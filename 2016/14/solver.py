@@ -3,6 +3,7 @@ from collections import deque
 from dataclasses import dataclass
 
 from aoc import answer
+from aoc.parser import Parser
 
 
 @dataclass(frozen=True)
@@ -12,21 +13,21 @@ class HashInfo:
 
 
 def main() -> None:
-    answer.part1(15168, generate(64, 1))
-    answer.part2(20864, generate(64, 2_017))
+    prefix = Parser(strip=True).string()
+    answer.part1(15168, generate(prefix, 1))
+    answer.part2(20864, generate(prefix, 2_017))
 
 
-def generate(n: int, num_hashes: int) -> int:
+def generate(prefix: str, num_hashes: int) -> int:
     i = 0
     hash_infos = deque()
     while i < 1_000:
-        hash_infos.append(get_hash(i, num_hashes))
+        hash_infos.append(get_hash(prefix, i, num_hashes))
         i += 1
-
     keys = []
-    while len(keys) < n:
+    while len(keys) < 64:
         hash_info = hash_infos.popleft()
-        hash_infos.append(get_hash(i, num_hashes))
+        hash_infos.append(get_hash(prefix, i, num_hashes))
         triples = get_repeats(hash_info.value, 3)
         if len(triples) > 0:
             if contains(hash_infos, triples[0]):
@@ -35,8 +36,8 @@ def generate(n: int, num_hashes: int) -> int:
     return keys[-1]
 
 
-def get_hash(index: int, n: int) -> HashInfo:
-    value = "qzyelonm" + str(index)
+def get_hash(prefix: str, index: int, n: int) -> HashInfo:
+    value = prefix + str(index)
     for _ in range(n):
         value = hashlib.md5(str.encode(value)).hexdigest()
     return HashInfo(value=value, cinqs=get_repeats(value, 5))
