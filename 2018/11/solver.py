@@ -1,6 +1,5 @@
 from aoc import answer
 from aoc.board import Point
-from typing import Tuple
 
 
 class PowerGrid:
@@ -32,7 +31,7 @@ class PowerGrid:
         point = largest_any[0][0]
         return Point(point.x(), point.y(), largest_any[1])
 
-    def get_largest(self, size: int) -> Tuple[Point, int]:
+    def get_largest(self, size: int) -> tuple[Point, int]:
         largest = None
         for x in range(1, self.grid_size - size + 1):
             for y in range(1, self.grid_size - size + 1):

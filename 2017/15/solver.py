@@ -1,5 +1,6 @@
-from aoc import answer
 from dataclasses import dataclass
+
+from aoc import answer
 
 
 @dataclass

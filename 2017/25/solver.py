@@ -1,13 +1,12 @@
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
-from typing import Dict, List, Tuple
 
 MOVEMENTS = {"left": Point(-1), "right": Point(1)}
 
 
 class Rule:
-    def __init__(self, raw: List[str]):
+    def __init__(self, raw: list[str]):
         self.write = int(self.get_last(raw[0]))
         self.move = MOVEMENTS[self.get_last(raw[1])]
         self.next_state = self.get_last(raw[2])
@@ -18,7 +17,7 @@ class Rule:
 
 
 class ConditionalRule:
-    def __init__(self, raw: List[str]):
+    def __init__(self, raw: list[str]):
         self.conditions = {}
         for i in range(0, len(raw), 4):
             self.conditions[self.get_value(raw[i])] = Rule(raw[i + 1 : i + 4])
@@ -32,7 +31,7 @@ class ConditionalRule:
 
 
 class TuringMachine:
-    def __init__(self, state: str, rules: Dict[str, ConditionalRule]):
+    def __init__(self, state: str, rules: dict[str, ConditionalRule]):
         self.state = state
         self.rules = rules
 
@@ -59,7 +58,7 @@ def main() -> None:
     answer.part1(3099, machine.checksum())
 
 
-def get_state_rules() -> Tuple[Tuple[str, int], Dict[str, ConditionalRule]]:
+def get_state_rules() -> tuple[tuple[str, int], dict[str, ConditionalRule]]:
     groups = Parser().line_groups()
     state = get_state(groups[0])
     rules = {}
@@ -68,7 +67,7 @@ def get_state_rules() -> Tuple[Tuple[str, int], Dict[str, ConditionalRule]]:
     return state, rules
 
 
-def get_state(raw) -> Tuple[str, int]:
+def get_state(raw) -> tuple[str, int]:
     start = get_name(raw[0])
     steps = int(raw[1].split()[-2])
     return start, steps

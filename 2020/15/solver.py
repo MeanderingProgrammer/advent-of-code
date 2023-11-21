@@ -1,7 +1,8 @@
-from aoc import answer
-from aoc.parser import Parser
 from dataclasses import dataclass
 from typing import Optional
+
+from aoc import answer
+from aoc.parser import Parser
 
 
 @dataclass

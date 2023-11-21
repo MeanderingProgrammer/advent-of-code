@@ -1,14 +1,14 @@
 import hashlib
-from aoc import answer
 from collections import deque
 from dataclasses import dataclass
-from typing import Deque, List
+
+from aoc import answer
 
 
 @dataclass(frozen=True)
 class HashInfo:
     value: str
-    cinqs: List[str]
+    cinqs: list[str]
 
 
 def main() -> None:
@@ -42,7 +42,7 @@ def get_hash(index: int, n: int) -> HashInfo:
     return HashInfo(value=value, cinqs=get_repeats(value, 5))
 
 
-def get_repeats(hashed: str, length: int) -> List[str]:
+def get_repeats(hashed: str, length: int) -> list[str]:
     repeats = []
     for i in range(len(hashed) - length + 1):
         value = hashed[i : i + length]
@@ -51,7 +51,7 @@ def get_repeats(hashed: str, length: int) -> List[str]:
     return repeats
 
 
-def contains(hash_infos: Deque[HashInfo], value: str) -> bool:
+def contains(hash_infos: deque[HashInfo], value: str) -> bool:
     for hash_info in hash_infos:
         if value in hash_info.cinqs:
             return True
