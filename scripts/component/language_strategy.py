@@ -1,39 +1,31 @@
 from dataclasses import dataclass
-from typing import Callable
+from enum import StrEnum, auto
 
 from language.language import Language
 from pojo.day import Day
 
 
+class StrategyName(StrEnum):
+    ALL = auto()
+    FASTEST = auto()
+
+
 @dataclass(frozen=True)
 class LanguageStrategy:
-    name: str
+    name: StrategyName
     languages: list[Language]
 
     def get(self, day: Day) -> list[Language]:
-        templates: dict[str, Callable[[list[Language]], list[Language]]] = {
-            "all": LanguageStrategy.__all,
-            "fastest": LanguageStrategy.__fastest,
-        }
-        assert self.name in templates, f"{self.name} not in: {list(templates.keys())}"
         options = [
             language
             for language in self.languages
             if language.solution_path(day).is_file()
         ]
-        return templates[self.name](options)
-
-    @staticmethod
-    def __all(options: list[Language]) -> list[Language]:
-        return options
-
-    @staticmethod
-    def __fastest(options: list[Language]) -> list[Language]:
-        speed_ranking: dict[str, int] = {
-            "golang": 1,
-            "rust": 2,
-            "java": 3,
-            "ocaml": 4,
-            "python": 5,
-        }
-        return [sorted(options, key=lambda language: speed_ranking[language.name])[0]]
+        if self.name == StrategyName.ALL:
+            return options
+        elif self.name == StrategyName.FASTEST:
+            speed: dict[str, int] = dict(golang=1, rust=2, java=3, ocaml=4, python=5)
+            ordered = sorted(options, key=lambda language: speed[language.name])
+            return [ordered[0]]
+        else:
+            raise Exception(f"Unhandled name: {self.name}")
