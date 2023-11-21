@@ -9,7 +9,7 @@ from command.generate import Generator
 from command.run import Runner
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
-from component.language_strategy import LanguageStrategy
+from component.language_strategy import LanguageStrategy, StrategyName
 from language.language import Language
 
 
@@ -99,8 +99,9 @@ def run(
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
+    fast = ["latest", "days"]
     language_strategy = LanguageStrategy(
-        name="fastest" if template in ["latest", "days"] else "all",
+        name=StrategyName.FASTEST if template in fast else StrategyName.ALL,
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
     )
 
