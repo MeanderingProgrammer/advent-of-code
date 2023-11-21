@@ -30,8 +30,8 @@ class LanguageStrategy:
     @staticmethod
     def __fastest(options: list[Language]) -> list[Language]:
         speed_ranking: dict[str, int] = {
-            "rust": 1,
-            "golang": 2,
+            "golang": 1,
+            "rust": 2,
             "java": 3,
             "ocaml": 4,
             "python": 5,
