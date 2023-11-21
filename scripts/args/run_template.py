@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Callable
 
 from component.day_factory import DayFactory
 from pojo.day import Day
@@ -7,7 +8,7 @@ from pojo.day import Day
 
 class RunTemplate:
     def __init__(self):
-        self.__templates = {
+        self.__templates: dict[str, Callable[[], list[Day]]] = {
             "latest": RunTemplate.__latest,
             "previous": RunTemplate.__previous,
             "days": RunTemplate.__days,
@@ -53,4 +54,5 @@ class RunTemplate:
 
     @staticmethod
     def __int_code() -> list[Day]:
-        return DayFactory(years=[2019], days=[2] + list(range(5, 26, 2))).get_days()
+        days = [2] + list(range(5, 26, 2))
+        return DayFactory(years=[2019], days=days).get_days()

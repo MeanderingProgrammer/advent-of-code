@@ -27,7 +27,7 @@ Does some hacky stuff to set arguments and run commands, but for the most part r
 standard build commands for each language / framework.
 
 None of the parameters are required, the default behavior in this case is to run the
-latest day in all languages it is implemented in.
+latest day in the fastest language it is implemented in.
 
 - Alias Command: `a_run`
 - Direct Command: `./scripts/advent.py run`
