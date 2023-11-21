@@ -15,15 +15,13 @@ class LanguageStrategy:
             "all": LanguageStrategy.__all,
             "fastest": LanguageStrategy.__fastest,
         }
-        options = self.__with_solutions(day)
-        return templates[self.name](options)
-
-    def __with_solutions(self, day: Day) -> list[Language]:
-        return [
+        assert self.name in templates, f"{self.name} not in: {list(templates.keys())}"
+        options = [
             language
             for language in self.languages
             if language.solution_path(day).is_file()
         ]
+        return templates[self.name](options)
 
     @staticmethod
     def __all(options: list[Language]) -> list[Language]:
