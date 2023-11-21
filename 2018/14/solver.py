@@ -1,5 +1,4 @@
 from aoc import answer
-from typing import List
 
 
 class Recipes:

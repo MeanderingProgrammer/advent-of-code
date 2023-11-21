@@ -1,7 +1,8 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.computer import Computer
 from aoc.parser import Parser
-from dataclasses import dataclass
 
 
 @dataclass(frozen=True)

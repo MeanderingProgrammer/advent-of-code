@@ -1,5 +1,6 @@
-from aoc import answer
 from collections import deque
+
+from aoc import answer
 
 
 class Lock:

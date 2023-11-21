@@ -1,13 +1,14 @@
 import itertools
+from dataclasses import dataclass
+from typing import Generator
+
 from aoc import answer
 from aoc.parser import Parser
-from dataclasses import dataclass
-from typing import Generator, List, Tuple
 
 
 @dataclass
 class Organizer:
-    weights: List[int]
+    weights: list[int]
 
     def run(self, sections: int) -> int:
         target = sum(self.weights) // sections
@@ -21,8 +22,8 @@ class Organizer:
 
     @staticmethod
     def group(
-        weights: List[int], target: int, section: int
-    ) -> Generator[List[Tuple[int]], None, None]:
+        weights: list[int], target: int, section: int
+    ) -> Generator[list[tuple[int]], None, None]:
         for packages in range(1, len(weights) + 1):
             for sub_weights in itertools.combinations(weights, packages):
                 if sum(sub_weights) != target:
@@ -37,7 +38,7 @@ class Organizer:
                     break
 
     @staticmethod
-    def entaglement(values: Tuple[int]) -> int:
+    def entaglement(values: tuple[int]) -> int:
         result = 1
         for value in values:
             result *= value

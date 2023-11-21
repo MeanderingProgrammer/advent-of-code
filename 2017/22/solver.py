@@ -1,8 +1,8 @@
+from collections import deque
+
 from aoc import answer
 from aoc.board import Grid, Point
 from aoc.parser import Parser
-from collections import deque
-from typing import Dict
 
 CLEAN = "."
 WEAKENED = "W"
@@ -13,7 +13,7 @@ STATE_DIRECTION_CHANGE = {WEAKENED: 0, CLEAN: 1, FLAGGED: 2, INFECTED: -1}
 
 
 class Virus:
-    def __init__(self, grid: Grid, state_chage: Dict[str, str]):
+    def __init__(self, grid: Grid, state_chage: dict[str, str]):
         self.grid = grid
         self.state_chage = state_chage
         self.position = Point(Virus.mid(grid.xs()), Virus.mid(grid.ys()))
@@ -52,7 +52,7 @@ def main() -> None:
     answer.part2(2511991, run(10_000_000, expanded_state_change))
 
 
-def run(n: int, state_change: Dict[str, str]) -> int:
+def run(n: int, state_change: dict[str, str]) -> int:
     virus = Virus(Parser().as_grid(), state_change)
     for _ in range(n):
         virus.burst()
