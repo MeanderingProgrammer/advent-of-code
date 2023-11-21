@@ -4,12 +4,12 @@ use priority_queue::PriorityQueue;
 use std::str::FromStr;
 
 #[derive(Debug)]
-struct RobotInstruction {
+struct Instruction {
     material: usize,
     requirements: [i64; 3],
 }
 
-impl FromStr for RobotInstruction {
+impl FromStr for Instruction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -47,7 +47,7 @@ impl FromStr for RobotInstruction {
 #[derive(Debug)]
 struct Blueprint {
     id: i64,
-    instructions: Vec<RobotInstruction>,
+    instructions: Vec<Instruction>,
     max_values: [i64; 3],
 }
 
@@ -55,24 +55,18 @@ impl FromStr for Blueprint {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (blueprint_id_data, robots_data) = s.split_once(": ").unwrap();
-        let (_, blueprint_id) = blueprint_id_data.split_once(" ").unwrap();
-        Ok(Self::new(
-            blueprint_id.parse::<i64>().unwrap(),
-            robots_data
-                .split(".")
-                .map(|value| value.trim())
-                .filter(|value| value.len() > 0)
-                .map(|value| value.parse().unwrap())
-                .collect(),
-        ))
-    }
-}
+        let (id_data, instruction_data) = s.split_once(": ").unwrap();
 
-impl Blueprint {
-    fn new(id: i64, instructions: Vec<RobotInstruction>) -> Self {
+        let id: i64 = id_data.split_once(" ").unwrap().1.parse().unwrap();
+
+        let instructions: Vec<Instruction> = instruction_data
+            .split(".")
+            .map(|value| value.trim())
+            .filter(|value| value.len() > 0)
+            .map(|value| value.parse().unwrap())
+            .collect();
+
         let mut max_values = [0, 0, 0];
-
         instructions
             .iter()
             .flat_map(|instruction| instruction.requirements.iter().enumerate())
@@ -80,11 +74,59 @@ impl Blueprint {
                 max_values[material] = max_values[material].max(needed)
             });
 
-        Self {
+        Ok(Self {
             id,
             instructions,
             max_values,
+        })
+    }
+}
+
+impl Blueprint {
+    fn simulate(&self, runtime: i64) -> i64 {
+        let mut q = PriorityQueue::new();
+        q.push(State::new(), (0, runtime));
+        let mut max_geodes_seen = 0;
+        while !q.is_empty() {
+            let (state, (num_geods, time_left)) = q.pop().unwrap();
+            max_geodes_seen = max_geodes_seen.max(num_geods);
+            if time_left == 0 {
+                continue;
+            }
+            let mut valid_instructions: Vec<Option<&Instruction>> = self
+                .instructions
+                .iter()
+                .filter(|instruction| state.can_build(instruction))
+                .map(|instruction| Some(instruction))
+                .collect();
+            valid_instructions.push(None);
+            let next_time_left = time_left - 1;
+            for instruction in valid_instructions {
+                let mut next_state = state.clone();
+                next_state.collect();
+                if instruction.is_some() {
+                    next_state.build_robot(instruction.unwrap());
+                }
+                for material in 0..3 {
+                    // By capping materials to twice maximum we make similar states look identical allowing them to be pruned.
+                    let material_cap = self.max_values[material] * 2;
+                    let capped = next_state.materials[material].min(material_cap);
+                    next_state.materials[material] = capped;
+                }
+                // If we build more of a specific type of robot then we could ever use
+                // If clay robots cost 10 ore, then having > 10 ore robots adds no value
+                if self.exceeds_max(&next_state) {
+                    continue;
+                }
+                // Prune if there's no way this state can catch up to something we've already seen
+                if Self::max_geodes(&next_state, next_time_left) <= max_geodes_seen {
+                    continue;
+                }
+                let next_num_geods = next_state.geodes();
+                q.push_increase(next_state, (next_num_geods, next_time_left));
+            }
         }
+        max_geodes_seen
     }
 
     fn exceeds_max(&self, state: &State) -> bool {
@@ -93,19 +135,22 @@ impl Blueprint {
             .enumerate()
             .any(|(material, &max_value)| state.robots[material] > max_value)
     }
+
+    fn max_geodes(state: &State, time_left: i64) -> i64 {
+        let max_additional = (time_left * (time_left + 1)) / 2;
+        state.geodes() + (state.geode_robots() * time_left) + max_additional
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
-    time_left: i64,
     robots: [i64; 4],
     materials: [i64; 4],
 }
 
 impl State {
-    fn new(runtime: i64) -> Self {
-        State {
-            time_left: runtime,
+    fn new() -> Self {
+        Self {
             robots: [1, 0, 0, 0],
             materials: [0, 0, 0, 0],
         }
@@ -119,7 +164,7 @@ impl State {
         self.robots[3]
     }
 
-    fn can_build(&self, instruction: &RobotInstruction) -> bool {
+    fn can_build(&self, instruction: &Instruction) -> bool {
         instruction
             .requirements
             .iter()
@@ -128,104 +173,27 @@ impl State {
             .all(|(material, &needed)| self.materials[material] >= needed)
     }
 
-    fn collect(&mut self, blueprint: &Blueprint) {
-        self.time_left -= 1;
+    fn collect(&mut self) {
         for (material, quantity) in self.robots.iter().enumerate() {
             self.materials[material] += quantity;
-            if material < 3 {
-                // By capping materials to twice the maximum we make a lot of very similar states look
-                // identical and allow them to be pruned.
-                // For example having 100 ore vs 102 ore makes no difference everything else being equal.
-                self.materials[material] =
-                    self.materials[material].min(blueprint.max_values[material] * 2);
-            }
         }
     }
 
-    fn build_robot(&self, instruction: &RobotInstruction, blueprint: &Blueprint) -> Self {
-        let mut next_state = self.remove_materials(instruction);
-        next_state.collect(blueprint);
-        next_state.robots[instruction.material] += 1;
-        next_state
-    }
-
-    fn remove_materials(&self, instruction: &RobotInstruction) -> Self {
-        let mut updated_materials = self.materials.clone();
+    fn build_robot(&mut self, instruction: &Instruction) {
         instruction
             .requirements
             .iter()
             .enumerate()
-            .for_each(|(material, needed)| {
-                updated_materials[material] -= needed;
-            });
-
-        Self {
-            time_left: self.time_left,
-            robots: self.robots.clone(),
-            materials: updated_materials,
-        }
+            .for_each(|(material, needed)| self.materials[material] -= needed);
+        self.robots[instruction.material] += 1;
     }
 }
 
 fn main() {
-    let blueprints = reader::read(|line| line.parse().unwrap());
-    answer::part1(
-        1599,
-        blueprints
-            .iter()
-            .map(|blueprint| simulate(blueprint, 24) * blueprint.id)
-            .sum(),
-    );
+    let bps: Vec<Blueprint> = reader::read(|line| line.parse().unwrap());
+    answer::part1(1599, bps.iter().map(|bp| bp.simulate(24) * bp.id).sum());
     answer::part2(
         14112,
-        blueprints
-            .iter()
-            .take(3)
-            .map(|blueprint| simulate(blueprint, 32))
-            .product(),
+        bps.iter().take(3).map(|bp| bp.simulate(32)).product(),
     );
-}
-
-fn simulate(blueprint: &Blueprint, runtime: i64) -> i64 {
-    let mut q = PriorityQueue::new();
-    q.push(State::new(runtime), (runtime, 0));
-
-    let mut max_geodes_seen = 0;
-
-    while !q.is_empty() {
-        let (state, (time_left, num_geods)) = q.pop().unwrap();
-        max_geodes_seen = max_geodes_seen.max(num_geods);
-
-        if time_left == 0 {
-            break;
-        }
-
-        // If we build more of a specific type of robot then we could ever use
-        // If clay robots cost 10 ore, then having more than 10 ore robots will create wasted resources
-        if blueprint.exceeds_max(&state) {
-            continue;
-        }
-
-        // Prune if there's no way this state can catch up to something we've already seen
-        let max_additional_geodes = (time_left * (time_left + 1)) / 2;
-        if num_geods + (state.geode_robots() * time_left) + max_additional_geodes <= max_geodes_seen
-        {
-            continue;
-        }
-
-        for instruction in &blueprint.instructions {
-            if state.can_build(instruction) {
-                let next_state = state.build_robot(instruction, blueprint);
-                let num_geods = next_state.geodes();
-                q.push_increase(next_state, (time_left - 1, num_geods));
-            }
-        }
-
-        let mut next_state = state.clone();
-        next_state.collect(blueprint);
-        let num_geods = next_state.geodes();
-        q.push_increase(next_state, (time_left - 1, num_geods));
-    }
-
-    max_geodes_seen
 }
