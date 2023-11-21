@@ -125,7 +125,6 @@ touch .adventofcode.session
 | 2016 | 5   | 4.576   | MAYBE  | Final md5 hash that hasn't been optimized with batches  |
 | 2021 | 23  | 3.247   | UNSURE | Looks like a complex path finding problem               |
 | 2022 | 19  | 3.115   | LEAVE  | That robot material with blueprints problem             |
-| 2015 | 6   | 3.058   | TODO   | Fairly large state, port it to Rust                     |
 | 2019 | 12  | 2.585   | TODO   | Math heavy, port it to Rust                             |
 | 2017 | 5   | 2.267   | TODO   | N/A                                                     |
 | 2019 | 18  | 2.235   | LEAVE  | Mostly the Java runtime for such a small execution      |

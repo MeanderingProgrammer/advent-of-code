@@ -21,11 +21,12 @@ class Direction:
         self.start = Direction.to_point(values[-3])
         self.end = Direction.to_point(values[-1])
 
-    def apply(self, grid: list[list[tuple[int, int]]]) -> None:
+    def apply(self, grid: list[tuple[int, int]]) -> None:
         for x in range(self.start[0], self.end[0] + 1):
             for y in range(self.start[1], self.end[1] + 1):
-                lit, bright = grid[x][y]
-                grid[x][y] = (SINGLE[self.action](lit), DIMABLE[self.action](bright))
+                index = (x * 1_000) + y
+                lit, bright = grid[index]
+                grid[index] = (SINGLE[self.action](lit), DIMABLE[self.action](bright))
 
     @staticmethod
     def to_point(coords: str) -> tuple[int, int]:
@@ -39,20 +40,16 @@ def main() -> None:
     answer.part2(15343601, sum_grid(grid, 1))
 
 
-def run_grid() -> list[list[tuple[int, int]]]:
+def run_grid() -> list[tuple[int, int]]:
     directions = [Direction(line) for line in Parser().lines()]
-    grid: list[list[tuple[int, int]]] = [[(0, 0)] * 1_000 for _ in range(1_000)]
+    grid: list[tuple[int, int]] = [(0, 0)] * 1_000_000
     for direction in directions:
         direction.apply(grid)
     return grid
 
 
-def sum_grid(grid: list[list[tuple[int, int]]], index: int) -> int:
-    total = 0
-    for column in grid:
-        for value in column:
-            total += value[index]
-    return total
+def sum_grid(grid: list[tuple[int, int]], index: int) -> int:
+    return sum([value[index] for value in grid])
 
 
 if __name__ == "__main__":
