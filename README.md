@@ -124,7 +124,6 @@ touch .adventofcode.session
 | 2022 | 16  | 4.603   | LEAVE  | Path finding with multiple agents is fairly optimized   |
 | 2016 | 5   | 4.576   | MAYBE  | Final md5 hash that hasn't been optimized with batches  |
 | 2021 | 23  | 3.247   | UNSURE | Looks like a complex path finding problem               |
-| 2017 | 5   | 2.267   | TODO   | N/A                                                     |
 | 2019 | 18  | 2.235   | LEAVE  | Mostly the Java runtime for such a small execution      |
 | 2017 | 24  | 2.222   | TODO   | N/A                                                     |
 | 2016 | 25  | 2.018   | TODO   | Kinda like int-code, can probably make it faster        |
