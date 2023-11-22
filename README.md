@@ -138,7 +138,6 @@ touch .adventofcode.session
 | 2022 | 15  | 1.483   | LEAVE  | Dealing with large space, already in Rust               |
 | 2019 | 25  | 1.419   | LEAVE  | Mostly spends time permuting through the items          |
 | 2018 | 22  | 1.396   | TODO   | N/A                                                     |
-| 2018 | 3   | 1.392   | TODO   | N/A                                                     |
 | 2015 | 10  | 1.356   | TODO   | Growing list, Rust can probably fix it                  |
 | 2018 | 18  | 1.350   | TODO   | Game of life problem, optimized by using tuples         |
 | 2018 | 14  | 1.304   | MAYBE  | Would need to be a lot more clever to get better        |
