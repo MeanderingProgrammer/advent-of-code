@@ -3,25 +3,28 @@ use aoc_lib::reader;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-struct Bridge(Vec<(usize, usize)>);
+struct Bridge(Vec<(u8, u8)>);
 
 impl Bridge {
-    fn last(&self) -> usize {
+    fn last(&self) -> u8 {
         self.0.last().unwrap_or(&(0, 0)).1
     }
 
-    fn contains(&self, start: usize, end: usize) -> bool {
+    fn contains(&self, start: u8, end: u8) -> bool {
         self.0.contains(&(start, end)) || self.0.contains(&(end, start))
     }
 
-    fn add(&self, start: usize, end: usize) -> Self {
+    fn add(&self, start: u8, end: u8) -> Self {
         let mut copied_bridge = self.0.clone();
         copied_bridge.push((start, end));
         Self(copied_bridge)
     }
 
     fn strength(&self) -> usize {
-        self.0.iter().map(|(start, end)| start + end).sum()
+        self.0
+            .iter()
+            .map(|(start, end)| (*start as usize) + (*end as usize))
+            .sum()
     }
 
     fn len(&self) -> usize {
@@ -31,7 +34,7 @@ impl Bridge {
 
 #[derive(Debug)]
 struct BridgeBuilder {
-    components: HashMap<usize, Vec<usize>>,
+    components: HashMap<u8, Vec<u8>>,
 }
 
 impl BridgeBuilder {
@@ -55,11 +58,11 @@ impl BridgeBuilder {
 }
 
 fn main() {
-    let mut components: HashMap<usize, Vec<usize>> = HashMap::new();
+    let mut components: HashMap<u8, Vec<u8>> = HashMap::new();
     reader::read_lines().iter().for_each(|line| {
         let (p1, p2) = line.split_once("/").unwrap();
-        let v1: usize = p1.parse().unwrap();
-        let v2: usize = p2.parse().unwrap();
+        let v1: u8 = p1.parse().unwrap();
+        let v2: u8 = p2.parse().unwrap();
         if !components.contains_key(&v1) {
             components.insert(v1, Vec::new());
         }
