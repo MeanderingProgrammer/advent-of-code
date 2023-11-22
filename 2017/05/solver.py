@@ -1,13 +1,15 @@
+from typing import Callable
+
 from aoc import answer
 from aoc.parser import Parser
 
 
-def main():
-    answer.part1(373160, run(increment_v1))
-    answer.part2(26395586, run(increment_v2))
+def main() -> None:
+    answer.part1(373160, run(lambda v: v + 1))
+    answer.part2(26395586, run(lambda v: v - 1 if v >= 3 else v + 1))
 
 
-def run(f):
+def run(f: Callable[[int], int]) -> int:
     jumps = Parser().int_lines()
     steps, ip = 0, 0
     while ip >= 0 and ip < len(jumps):
@@ -16,17 +18,6 @@ def run(f):
         ip += jump
         steps += 1
     return steps
-
-
-def increment_v1(current):
-    return current + 1
-
-
-def increment_v2(current):
-    if current >= 3:
-        return current - 1
-    else:
-        return current + 1
 
 
 if __name__ == "__main__":
