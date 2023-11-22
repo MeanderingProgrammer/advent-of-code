@@ -143,7 +143,6 @@ touch .adventofcode.session
 | 2015 | 10  | 1.356   | TODO   | Growing list, Rust can probably fix it                  |
 | 2018 | 18  | 1.350   | TODO   | Game of life problem, optimized by using tuples         |
 | 2018 | 14  | 1.304   | MAYBE  | Would need to be a lot more clever to get better        |
-| 2017 | 24  | 1.294   | TODO   | N/A                                                     |
 | 2017 | 22  | 1.288   | MAYBE  | Game of life problem already in Rust                    |
 | 2017 | 21  | 1.273   | TODO   | N/A                                                     |
 | 2018 | 24  | 1.229   | TODO   | Complex game, fairly optimized in Python                |
