@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, override
 
 from aoc import answer
@@ -6,38 +6,43 @@ from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 
 Point = tuple[int, int]
+STATE_MAPPING: dict[str, int] = {"^": 0, ">": 1, "v": 2, "<": 3}
+DIRECTIONS: list[Point] = [(0, -1), (1, 0), (0, 1), (-1, 0)]
 
 
 def add(p1: Point, p2: Point) -> Point:
     return (p1[0] + p2[0], p1[1] + p2[1])
 
 
-STATE_MAPPING: dict[str, int] = {"^": 0, ">": 1, "v": 2, "<": 3}
-DIRECTIONS: list[Point] = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+def adjacent(p: Point) -> list[Point]:
+    return [add(p, direction) for direction in DIRECTIONS]
 
 
+@dataclass
 class DroidState:
-    def __init__(self, location: Point, scafolding: set[Point], direction: str):
-        self.location: Point = location
-        self.scafolding: set[Point] = scafolding
-        self.direction: Point = DIRECTIONS[STATE_MAPPING[direction]]
+    location: Point
+    scafolding: list[Point]
+    direction: Point
 
-    def has_next(self):
-        return self.get_direction() is not None
+    def get_instructions(self) -> list[str]:
+        instructions: list[str] = []
+        code = self.set_direction()
+        while code is not None:
+            until_end = self.move_until_end()
+            instructions.append(f"{code},{until_end}")
+            code = self.set_direction()
+        return instructions
 
-    def get_instruction(self) -> str:
-        code, self.direction = self.get_direction()
-        until_end = self.move_until_end()
-        return f"{code},{until_end}"
-
-    def get_direction(self) -> Optional[tuple[str, Point]]:
-        direction_index = DIRECTIONS.index(self.direction)
-        left = DIRECTIONS[direction_index - 1]
-        if add(self.location, left) in self.scafolding:
-            return "L", left
-        right = DIRECTIONS[(direction_index + 1) % len(DIRECTIONS)]
-        if add(self.location, right) in self.scafolding:
-            return "R", right
+    def set_direction(self) -> Optional[str]:
+        index = DIRECTIONS.index(self.direction)
+        directions = dict(
+            L=DIRECTIONS[index - 1],
+            R=DIRECTIONS[(index + 1) % len(DIRECTIONS)],
+        )
+        for code, direction in directions.items():
+            if add(self.location, direction) in self.scafolding:
+                self.direction = direction
+                return code
         return None
 
     def move_until_end(self) -> int:
@@ -57,13 +62,13 @@ class Compressed:
 
 
 @dataclass
-class InstructionCompression:
+class Compression:
     instructions: list[str]
 
     def compress(self) -> Compressed:
         a_s, b_s, c_s = self.compress_instructions(5)
         return Compressed(
-            routine=self.create_routine(a_s, b_s, c_s),
+            routine=self.create_routine(dict(A=a_s, B=b_s, C=c_s)),
             a_function=a_s[0],
             b_function=b_s[0],
             c_function=c_s[0],
@@ -74,26 +79,21 @@ class InstructionCompression:
             a = self.instructions[:i]
             a_s = a, self.get_starts(a)
 
-            start_j = i
-            while self.in_bounds(start_j, a_s):
-                start_j += len(a)
+            start_j = self.first_out([a_s])
+            assert start_j is not None
 
             for j in range(1 + start_j, 1 + start_j + max_length):
                 b = self.instructions[start_j:j]
                 b_s = b, self.get_starts(b)
 
-                start_k = j
-                while self.in_bounds(start_k, a_s) or self.in_bounds(start_k, b_s):
-                    if self.in_bounds(start_k, a_s):
-                        start_k += len(a)
-                    else:
-                        start_k += len(b)
+                start_k = self.first_out([a_s, b_s])
+                assert start_k is not None
 
                 for k in range(1 + start_k, 1 + start_k + max_length):
                     c = self.instructions[start_k:k]
                     c_s = c, self.get_starts(c)
 
-                    if self.contains_all([a_s, b_s, c_s]):
+                    if self.first_out([a_s, b_s, c_s]) is None:
                         return (a_s, b_s, c_s)
         raise Exception("FAILED")
 
@@ -108,49 +108,42 @@ class InstructionCompression:
                 i += 1
         return bounds
 
-    def in_bounds(self, i: int, function_starts: tuple[list[str], list[int]]) -> bool:
+    def first_out(
+        self, function_starts: list[tuple[list[str], list[int]]]
+    ) -> Optional[int]:
+        for i in range(len(self.instructions)):
+            if not any(
+                [
+                    Compression.contains(i, function_start)
+                    for function_start in function_starts
+                ]
+            ):
+                return i
+        return None
+
+    @staticmethod
+    def contains(i: int, function_starts: tuple[list[str], list[int]]) -> bool:
         for start in function_starts[1]:
             if i >= start and i < start + len(function_starts[0]):
                 return True
         return False
 
-    def contains_all(self, function_starts: list[tuple[list[str], list[int]]]) -> bool:
-        for i in range(len(self.instructions)):
-            if not any(
-                [
-                    self.in_bounds(i, function_start)
-                    for function_start in function_starts
-                ]
-            ):
-                return False
-        return True
-
     def create_routine(
-        self,
-        a_s: tuple[list[str], list[int]],
-        b_s: tuple[list[str], list[int]],
-        c_s: tuple[list[str], list[int]],
-    ):
+        self, name_function_start: dict[str, tuple[list[str], list[int]]]
+    ) -> list[str]:
         i = 0
         routine = []
         while i < len(self.instructions):
-            a_end = self.get_end_bound(i, a_s)
-            b_end = self.get_end_bound(i, b_s)
-            c_end = self.get_end_bound(i, c_s)
-            if a_end is not None:
-                routine.append("A")
-                i = a_end
-            elif b_end is not None:
-                routine.append("B")
-                i = b_end
-            elif c_end is not None:
-                routine.append("C")
-                i = c_end
-            else:
-                raise Exception("FAILED")
+            for name, function_start in name_function_start.items():
+                end = Compression.get_end(i, function_start)
+                if end is not None:
+                    routine.append(name)
+                    i = end
+                    break
         return routine
 
-    def get_end_bound(self, i: int, function_start: tuple[list[str], list[int]]):
+    @staticmethod
+    def get_end(i: int, function_start: tuple[list[str], list[int]]) -> Optional[int]:
         for start in function_start[1]:
             if i == start:
                 return start + len(function_start[0])
@@ -160,8 +153,8 @@ class InstructionCompression:
 @dataclass
 class VacuumDroid(Bus):
     current: Point
-    scafolding: set[Point]
-    instructions: list[int]
+    scafolding: list[Point] = field(default_factory=list)
+    instructions: list[int] = field(default_factory=list)
     state: Optional[DroidState] = None
     running: bool = False
     value: Optional[int] = None
@@ -178,32 +171,37 @@ class VacuumDroid(Bus):
     def add_output(self, value: int) -> None:
         if self.running:
             self.value = value
-            return
-        val = chr(value)
-        if val == "\n":
-            self.current = (0, self.current[1] + 1)
         else:
-            if val != ".":
-                self.scafolding.add(self.current)
-                if val != "#":
-                    self.state = DroidState(self.current, self.scafolding, val)
-            self.current = add(self.current, (1, 0))
+            self.current = self.update_scafolding(chr(value))
 
-    def get_intersection(self) -> set[Point]:
-        intersection = set()
-        for point in self.scafolding:
-            if all(
-                [add(point, direction) in self.scafolding for direction in DIRECTIONS]
-            ):
-                intersection.add(point)
-        return intersection
+    def update_scafolding(self, value: str) -> Point:
+        if value == "\n":
+            return (0, self.current[1] + 1)
+        elif value == ".":
+            return add(self.current, (1, 0))
+        elif value == "#":
+            self.scafolding.append(self.current)
+            return add(self.current, (1, 0))
+        elif value in STATE_MAPPING:
+            self.state = DroidState(
+                self.current, self.scafolding, DIRECTIONS[STATE_MAPPING[value]]
+            )
+            self.scafolding.append(self.current)
+            return add(self.current, (1, 0))
+        else:
+            raise Exception("FAILED")
+
+    def get_intersections(self) -> list[Point]:
+        return [
+            point
+            for point in self.scafolding
+            if all([p in self.scafolding for p in adjacent(point)])
+        ]
 
     def create_path(self) -> None:
         assert self.state is not None
-        instructions: list[str] = []
-        while self.state.has_next():
-            instructions.append(self.state.get_instruction())
-        compressed = InstructionCompression(instructions).compress()
+        instructions = self.state.get_instructions()
+        compressed = Compression(instructions).compress()
         self.add_instruction(compressed.routine)
         self.add_instruction(compressed.a_function)
         self.add_instruction(compressed.b_function)
@@ -217,20 +215,15 @@ class VacuumDroid(Bus):
 
 
 def main() -> None:
-    droid = VacuumDroid(
-        current=(0, 0),
-        scafolding=set(),
-        instructions=[],
-    )
+    droid = VacuumDroid(current=(0, 0))
     answer.part1(9876, total_alignment(droid))
     answer.part2(1234055, dust_collected(droid))
 
 
 def total_alignment(droid: VacuumDroid) -> int:
     run_droid(droid, False)
-    intersection = droid.get_intersection()
-    alignments = [point[0] * point[1] for point in intersection]
-    return sum(alignments)
+    intersections = droid.get_intersections()
+    return sum([point[0] * point[1] for point in intersections])
 
 
 def dust_collected(droid: VacuumDroid) -> Optional[int]:
