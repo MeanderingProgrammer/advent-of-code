@@ -12,21 +12,25 @@ def add(v1: Vector, v2: Vector) -> Vector:
     return (v1[0] + v2[0], v1[1] + v2[1], v1[2] + v2[2])
 
 
-def negative(v: Vector) -> Vector:
-    return (-v[0], -v[1], -v[2])
+def substract(v1: Vector, v2: Vector) -> Vector:
+    return (v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2])
 
 
-def energy(v: Vector) -> int:
-    return abs(v[0]) + abs(v[1]) + abs(v[2])
+def clamp(v: Vector) -> Vector:
+    return (simple(v[0]), simple(v[1]), simple(v[2]))
 
 
 def simple(value: int) -> int:
     if value < 0:
-        return 1
-    elif value > 0:
         return -1
+    elif value > 0:
+        return 1
     else:
         return 0
+
+
+def energy(v: Vector) -> int:
+    return abs(v[0]) + abs(v[1]) + abs(v[2])
 
 
 @dataclass
@@ -35,9 +39,8 @@ class Body:
     velocity: Vector
 
     def add_gravity(self, other: Self) -> None:
-        difference = add(self.position, negative(other.position))
-        gx, gy, gz = [simple(value) for value in difference]
-        self.velocity = add(self.velocity, (gx, gy, gz))
+        difference = substract(self.position, other.position)
+        self.velocity = substract(self.velocity, clamp(difference))
 
     def apply_velocity(self) -> None:
         self.position = add(self.position, self.velocity)
