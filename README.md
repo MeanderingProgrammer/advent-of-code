@@ -129,7 +129,6 @@ touch .adventofcode.session
 | 2016 | 11  | 2.009   | LEAVE  | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | TODO   | Normal int-code that hasn't been moved to Rust          |
 | 2020 | 11  | 1.989   | TODO   | N/A                                                     |
-| 2019 | 9   | 1.850   | TODO   | Normal int-code that hasn't been moved to Rust          |
 | 2016 | 14  | 1.664   | LEAVE  | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | TODO   | Normal int-code that hasn't been moved to Rust          |
 | 2019 | 24  | 1.607   | TODO   | Game of life problem, optimized by using tuples         |
