@@ -125,7 +125,7 @@ touch .adventofcode.session
 | 2016 | 5   | 4.576   | MAYBE  | Final md5 hash that hasn't been optimized with batches  |
 | 2021 | 23  | 3.247   | UNSURE | Looks like a complex path finding problem               |
 | 2019 | 18  | 2.235   | LEAVE  | Mostly the Java runtime for such a small execution      |
-| 2016 | 25  | 2.018   | TODO   | Kinda like int-code, can probably make it faster        |
+| 2016 | 25  | 2.018   | LEAVE  | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | LEAVE  | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | TODO   | Normal int-code that hasn't been moved to Rust          |
 | 2020 | 11  | 1.989   | TODO   | N/A                                                     |
