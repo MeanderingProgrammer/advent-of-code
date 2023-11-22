@@ -125,7 +125,6 @@ touch .adventofcode.session
 | 2016 | 5   | 4.576   | MAYBE  | Final md5 hash that hasn't been optimized with batches  |
 | 2021 | 23  | 3.247   | UNSURE | Looks like a complex path finding problem               |
 | 2019 | 18  | 2.235   | LEAVE  | Mostly the Java runtime for such a small execution      |
-| 2017 | 24  | 2.222   | TODO   | N/A                                                     |
 | 2016 | 25  | 2.018   | TODO   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | LEAVE  | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | TODO   | Normal int-code that hasn't been moved to Rust          |
@@ -144,6 +143,7 @@ touch .adventofcode.session
 | 2015 | 10  | 1.356   | TODO   | Growing list, Rust can probably fix it                  |
 | 2018 | 18  | 1.350   | TODO   | Game of life problem, optimized by using tuples         |
 | 2018 | 14  | 1.304   | MAYBE  | Would need to be a lot more clever to get better        |
+| 2017 | 24  | 1.294   | TODO   | N/A                                                     |
 | 2017 | 22  | 1.288   | MAYBE  | Game of life problem already in Rust                    |
 | 2017 | 21  | 1.273   | TODO   | N/A                                                     |
 | 2018 | 24  | 1.229   | TODO   | Complex game, fairly optimized in Python                |

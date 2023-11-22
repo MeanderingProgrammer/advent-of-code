@@ -1,68 +1,57 @@
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Generator, Optional
 
 from aoc import answer
 from aoc.parser import Parser
 
+Bridge = list[tuple[int, int]]
 
-class Bridge:
-    def __init__(self, components):
-        self.components = components
 
-    def build(self):
-        statistics = []
-        for bridge in self.generate():
-            statistics.append((len(bridge), self.strength(bridge)))
-        return statistics
+def strength(bridge: Bridge) -> int:
+    return sum([start + end for start, end in bridge])
 
-    def generate(self, bridge=None):
+
+@dataclass(frozen=True)
+class BridgeBuilder:
+    components: dict[int, set[int]]
+
+    def build(self) -> list[Bridge]:
+        return list(self.generate(None))
+
+    def generate(self, bridge: Optional[Bridge]) -> Generator[Bridge, None, None]:
         bridge = bridge or []
-        current_end = bridge[-1][1] if len(bridge) > 0 else 0
-        for new_end in self.components[current_end]:
-            if not self.contains(current_end, new_end, bridge):
-                new_bridge = bridge + [(current_end, new_end)]
-                yield new_bridge
-                yield from self.generate(new_bridge)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {}".format(self.components, self.needed)
-
-    @staticmethod
-    def contains(start, end, bridge):
-        return (start, end) in bridge or (end, start) in bridge
-
-    @staticmethod
-    def strength(bridge):
-        return sum([component[0] + component[1] for component in bridge])
+        start = bridge[-1][1] if len(bridge) > 0 else 0
+        for end in self.components[start]:
+            if (start, end) in bridge or (end, start) in bridge:
+                continue
+            new_bridge = bridge + [(start, end)]
+            yield new_bridge
+            yield from self.generate(new_bridge)
 
 
-def main():
-    components = get_components()
-    bridge = Bridge(components)
-    statistics = bridge.build()
-    answer.part1(1656, get_strongest(statistics))
-    answer.part2(1642, get_longest_strongest(statistics))
+def main() -> None:
+    bridges = get_bridge_builder().build()
+    answer.part1(1656, strongest(bridges))
+    answer.part2(1642, longest_strongest(bridges))
 
 
-def get_strongest(statistics):
-    return max([stat[1] for stat in statistics])
-
-
-def get_longest_strongest(statistics):
-    longest = max([stat[0] for stat in statistics])
-    all_longest = [stat for stat in statistics if stat[0] == longest]
-    return get_strongest(all_longest)
-
-
-def get_components():
+def get_bridge_builder() -> BridgeBuilder:
     components = defaultdict(set)
     for line in Parser().lines():
         p1, p2 = [int(x) for x in line.split("/")]
         components[p1].add(p2)
         components[p2].add(p1)
-    return components
+    return BridgeBuilder(components)
+
+
+def strongest(bridges: list[Bridge]) -> int:
+    return max(map(strength, bridges))
+
+
+def longest_strongest(bridges: list[Bridge]) -> int:
+    longest = max(map(len, bridges))
+    return strongest(list(filter(lambda bridge: len(bridge) == longest, bridges)))
 
 
 if __name__ == "__main__":
