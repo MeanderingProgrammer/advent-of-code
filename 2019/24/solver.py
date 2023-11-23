@@ -61,7 +61,7 @@ class Layout:
                 bug_values = [1] if value == ALIVE else [1, 2]
                 next_grid[point] = ALIVE if bugs in bug_values else EMPTY
             next_grids.append(next_grid)
-        return Layout(next_grids, self.recursive)
+        return type(self)(next_grids, self.recursive)
 
     def new_grid(self) -> Grid:
         return {point: EMPTY for point in self.grids[0]}
