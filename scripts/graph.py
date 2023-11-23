@@ -1,6 +1,7 @@
 import json
 from argparse import ArgumentParser
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
@@ -10,21 +11,30 @@ import pandas as pd
 
 @dataclass(frozen=True)
 class FigureSaver:
-    overwrite: bool
+    archive: bool
+    archive_directory: Optional[Path]
 
     def save(self, name: str, ax: Any, legend: Optional[dict] = None) -> None:
         fig_path = Path(f"images/{name}.png")
-        if not self.overwrite and fig_path.exists():
+        self.archive_figure(fig_path)
+        if fig_path.exists():
             print(f"Skipping {fig_path} as it already exists")
-        else:
-            if legend is not None:
-                ax.get_figure().legend(**legend)
-            plt.tight_layout()
-            ax.get_figure().savefig(str(fig_path))
+            return
+        if legend is not None:
+            ax.get_figure().legend(**legend)
+        plt.tight_layout()
+        ax.get_figure().savefig(str(fig_path))
         ax.get_figure().clear()
 
+    def archive_figure(self, fig_path: Path) -> None:
+        if not fig_path.exists() or not self.archive:
+            return
+        assert self.archive_directory is not None
+        assert self.archive_directory.exists()
+        fig_path.rename(self.archive_directory.joinpath(fig_path.name))
 
-def main(overwrite: bool) -> None:
+
+def main(archive: bool) -> None:
     plt.style.use("ggplot")
 
     runtimes_file = Path("all.json")
@@ -32,8 +42,17 @@ def main(overwrite: bool) -> None:
         raise Exception(f"Looks like runtimes were never determined: {runtimes_file}")
     runtimes = pd.DataFrame(json.loads(runtimes_file.read_text()))
 
-    saver = FigureSaver(overwrite=overwrite)
+    archive_directory = None
+    if archive:
+        date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
+        archive_directory = Path("images/archive").joinpath(date_directory)
+        archive_directory.mkdir(parents=True, exist_ok=False)
+    saver = FigureSaver(archive=archive, archive_directory=archive_directory)
 
+    create_graphs(runtimes, saver)
+
+
+def create_graphs(runtimes: pd.DataFrame, saver: FigureSaver) -> None:
     saver.save(
         name="runtime_language",
         ax=runtimes.boxplot(column="runtime", by="language", figsize=(8, 8)),
@@ -78,9 +97,9 @@ def main(overwrite: bool) -> None:
 if __name__ == "__main__":
     parser = ArgumentParser(description="Creates some fun graphs based on runtimes")
     parser.add_argument(
-        "--overwrite",
+        "--archive",
         action="store_true",
-        help="Overwrite existing graphs with the same name",
+        help="Archive existing graphs with the same name",
     )
     args = parser.parse_args()
-    main(args.overwrite)
+    main(args.archive)
