@@ -12,14 +12,14 @@ class Stats:
     armor: int = 0
 
     def add(self, other: Self) -> Self:
-        return Stats(
+        return type(self)(
             hp=self.hp + other.hp,
             attack=self.attack + other.attack,
             armor=self.armor + other.armor,
         )
 
     def subtract(self, other: Self) -> Self:
-        return Stats(
+        return type(self)(
             hp=self.hp - other.hp,
             attack=self.attack - other.attack,
             armor=self.armor - other.armor,
@@ -61,7 +61,7 @@ class Spell:
         return EFFECTS[self.name]
 
     def move(self) -> Self:
-        return Spell(self.name, self.turns - 1)
+        return type(self)(self.name, self.turns - 1)
 
 
 SPELLS = [
@@ -112,7 +112,7 @@ class Game:
         player, enemy, spells = Game.run_spells(player, enemy, spells)
         player = player.subtract(Stats(hp=max(1, enemy.attack - player.armor)))
 
-        return Game(player, enemy, self.damage, frozenset(spells))
+        return type(self)(player, enemy, self.damage, frozenset(spells))
 
     @staticmethod
     def run_spells(
