@@ -132,7 +132,6 @@ touch .adventofcode.session
 | 2016 | 14  | 1.664   | LEAVE  | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | LEAVE  | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | LEAVE  | Game of life problem, optimized by using tuples         |
-| 2020 | 15  | 1.552   | MAYBE  | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2015 | 18  | 1.495   | TODO   | Optimized with tuples, probably need to move to Rust    |
 | 2021 | 12  | 1.490   | TODO   | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | LEAVE  | Dealing with large space, already in Rust               |
@@ -143,6 +142,7 @@ touch .adventofcode.session
 | 2018 | 14  | 1.304   | MAYBE  | Would need to be a lot more clever to get better        |
 | 2017 | 22  | 1.288   | MAYBE  | Game of life problem already in Rust                    |
 | 2017 | 21  | 1.273   | TODO   | N/A                                                     |
+| 2020 | 15  | 1.249   | LEAVE  | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2018 | 24  | 1.229   | TODO   | Complex game, fairly optimized in Python                |
 | 2016 | 24  | 1.199   | TODO   | N/A                                                     |
 | 2019 | 20  | 1.132   | LEAVE  | Mostly the Java runtime for such a small execution      |
