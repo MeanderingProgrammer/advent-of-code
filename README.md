@@ -131,7 +131,7 @@ touch .adventofcode.session
 | 2020 | 11  | 1.989   | LEAVE  | Fairly optimized game of life seats                     |
 | 2016 | 14  | 1.664   | LEAVE  | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | LEAVE  | Kinda annoying int-code that hasn't been moved to Rust  |
-| 2019 | 24  | 1.607   | TODO   | Game of life problem, optimized by using tuples         |
+| 2019 | 24  | 1.607   | LEAVE  | Game of life problem, optimized by using tuples         |
 | 2020 | 15  | 1.552   | MAYBE  | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2015 | 18  | 1.495   | TODO   | Optimized with tuples, probably need to move to Rust    |
 | 2021 | 12  | 1.490   | TODO   | Path finding problem, might be some room to improve     |
