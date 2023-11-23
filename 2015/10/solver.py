@@ -10,11 +10,11 @@ class Game:
 
     def play(self) -> None:
         next_value: list[int] = []
-        for i, current in enumerate(self.value):
-            if i > 0 and current == self.value[i - 1]:
+        for i in range(len(self.value)):
+            if i > 0 and self.value[i] == self.value[i - 1]:
                 next_value[-2] += 1
             else:
-                next_value.extend([1, current])
+                next_value.extend([1, self.value[i]])
         self.value = next_value
 
 
