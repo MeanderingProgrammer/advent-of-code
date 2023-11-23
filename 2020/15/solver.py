@@ -18,25 +18,24 @@ class Stats:
         self.new = turn
 
 
-def main():
-    answer.part1(240, run(2_020))
-    answer.part2(505, run(30_000_000))
+def main() -> None:
+    values = Parser().int_csv()
+    answer.part1(240, run(values, 2_020))
+    answer.part2(505, run(values, 30_000_000))
 
 
-def run(n) -> int:
-    numbers = {}
-    starter_numbers = Parser().int_csv()
-    for i, value in enumerate(starter_numbers):
-        numbers[value] = Stats(i)
-
-    number = starter_numbers[-1]
-    for i in range(len(numbers), n):
-        number = numbers[number].next()
-        stats = numbers.get(number)
-        if stats is None:
-            numbers[number] = Stats(i)
-        else:
+def run(values: list[int], n: int) -> int:
+    number_stats: list[Optional[Stats]] = [None] * n
+    for i, value in enumerate(values):
+        number_stats[value] = Stats(i)
+    number = values[-1]
+    for i in range(len(values), n):
+        number = number_stats[number].next()
+        stats = number_stats[number]
+        if stats is not None:
             stats.said(i)
+        else:
+            number_stats[number] = Stats(i)
     return number
 
 
