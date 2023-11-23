@@ -132,7 +132,7 @@ touch .adventofcode.session
 | 2016 | 14  | 1.664   | LEAVE  | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | LEAVE  | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | LEAVE  | Game of life problem, optimized by using tuples         |
-| 2021 | 12  | 1.490   | TODO   | Path finding problem, might be some room to improve     |
+| 2021 | 12  | 1.490   | LEAVE  | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | LEAVE  | Dealing with large space, already in Rust               |
 | 2019 | 25  | 1.419   | LEAVE  | Mostly spends time permuting through the items          |
 | 2018 | 22  | 1.396   | TODO   | N/A                                                     |
