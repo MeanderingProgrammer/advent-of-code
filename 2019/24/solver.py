@@ -97,7 +97,7 @@ class Layout:
         return points
 
 
-def main():
+def main() -> None:
     answer.part1(32776479, part_1().diversity())
     answer.part2(2017, part_2().count_bugs())
 
