@@ -56,42 +56,42 @@ func (path Path) containsLower() bool {
 
 func main() {
 	graph := getGraph()
-
 	answers.Part1(3497, paths(graph, part1))
 	answers.Part2(93686, paths(graph, part2))
 }
 
+func getGraph() graphs.Graph[Cave, string] {
+	var pairs [][2]Cave
+	for _, creationRule := range files.ReadLines() {
+		startEnd := strings.Split(creationRule, "-")
+		pair := [2]Cave{Cave(startEnd[0]), Cave(startEnd[1])}
+		pairs = append(pairs, pair)
+	}
+	return graphs.ConstructDirectly(pairs)
+}
+
 func paths(graph graphs.Graph[Cave, string], canGo func(Path, Cave) bool) int {
-	initial := Path([]Cave{"start"})
-
-	done := func(state graphs.State) bool {
-		return state.(Path).last() == "end"
-	}
-
-	nextStates := func(state graphs.State) <-chan graphs.State {
-		var neighbors []Cave
-		for _, neighbor := range graph.Neighbors(state.(Path).last()) {
-			if canGo(state.(Path), neighbor) {
-				neighbors = append(neighbors, neighbor)
-			}
-		}
-
-		nextStates := make(chan graphs.State, len(neighbors))
-		for _, neighbor := range neighbors {
-			nextStates <- state.(Path).add(neighbor)
-		}
-		close(nextStates)
-
-		return nextStates
-	}
-
 	result := graph.Bfs(graphs.Search{
-		Initial:    initial,
-		Done:       done,
-		NextStates: nextStates,
-		FirstOnly:  false,
+		Initial: Path([]Cave{"start"}),
+		Done: func(state graphs.State) bool {
+			return state.(Path).last() == "end"
+		},
+		NextStates: func(state graphs.State) <-chan graphs.State {
+			var neighbors []Cave
+			for _, neighbor := range graph.Neighbors(state.(Path).last()) {
+				if canGo(state.(Path), neighbor) {
+					neighbors = append(neighbors, neighbor)
+				}
+			}
+			nextStates := make(chan graphs.State, len(neighbors))
+			for _, neighbor := range neighbors {
+				nextStates <- state.(Path).add(neighbor)
+			}
+			close(nextStates)
+			return nextStates
+		},
+		FirstOnly: false,
 	})
-
 	return len(result.Completed)
 }
 
@@ -113,14 +113,4 @@ func part2(path Path, destination Cave) bool {
 	} else {
 		return !path.contains(destination)
 	}
-}
-
-func getGraph() graphs.Graph[Cave, string] {
-	var pairs [][2]Cave
-	for _, creationRule := range files.ReadLines() {
-		startEnd := strings.Split(creationRule, "-")
-		pair := [2]Cave{Cave(startEnd[0]), Cave(startEnd[1])}
-		pairs = append(pairs, pair)
-	}
-	return graphs.ConstructDirectly(pairs)
 }
