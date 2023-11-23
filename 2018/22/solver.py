@@ -1,132 +1,120 @@
 import heapq
+from dataclasses import dataclass
+from typing import Optional, Self
 
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
+Point = tuple[int, int]
 
-class Region:
-    def __init__(self, depth, target, location, left, below):
-        self.depth = depth
-        self.target = target
-        self.location = location
-        self.left = left
-        self.below = below
 
-        self.geo = None
-        self.ero = None
-        self.typ = None
-
-    def geologic_index(self):
-        if self.geo is not None:
-            return self.geo
-
-        if self.location in [Point(0, 0), self.target]:
-            self.geo = 0
-        elif self.location.y() == 0:
-            self.geo = self.location.x() * 16_807
-        elif self.location.x() == 0:
-            self.geo = self.location.y() * 48_271
-        else:
-            self.geo = self.left.erosion_level() * self.below.erosion_level()
-
-        return self.geo
-
-    def erosion_level(self):
-        if self.ero is not None:
-            return self.ero
-
-        self.ero = (self.geologic_index() + self.depth) % 20_183
-        return self.ero
-
-    def type(self):
-        if self.typ is not None:
-            return self.typ
-
-        self.typ = self.erosion_level() % 3
-        return self.typ
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        region_type = self.type()
-        if region_type == 0:
-            return "."
-        elif region_type == 1:
-            return "="
-        elif region_type == 2:
-            return "|"
-        else:
-            raise Exception("Unknown type {}".format(region_type))
+def neighbors(p: Point) -> list[Point]:
+    return [(p[0] + dx, p[1] + dy) for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]]
 
 
 GEAR, TORCH, NEITHER = "g", "t", "n"
-VALID_TOOL = {0: set([GEAR, TORCH]), 1: set([GEAR, NEITHER]), 2: set([TORCH, NEITHER])}
+VALID_TOOL: dict[int, set[str]] = {
+    0: set([GEAR, TORCH]),
+    1: set([GEAR, NEITHER]),
+    2: set([TORCH, NEITHER]),
+}
+
+
+@dataclass
+class Region:
+    depth: int
+    target: Point
+    location: Point
+    left: Optional[Self]
+    below: Optional[Self]
+    cached_index: Optional[int] = None
+    cached_erosion: Optional[int] = None
+
+    def tools(self) -> set[str]:
+        return VALID_TOOL[self.kind()]
+
+    def kind(self) -> int:
+        return self.erosion() % 3
+
+    def erosion(self) -> int:
+        if self.cached_erosion is None:
+            self.cached_erosion = (self.index() + self.depth) % 20_183
+        return self.cached_erosion
+
+    def index(self) -> int:
+        if self.cached_index is None:
+            if self.location in [(0, 0), self.target]:
+                self.cached_index = 0
+            elif self.location[1] == 0:
+                self.cached_index = self.location[0] * 16_807
+            elif self.location[0] == 0:
+                self.cached_index = self.location[1] * 48_271
+            else:
+                assert self.left is not None and self.below is not None
+                self.cached_index = self.left.erosion() * self.below.erosion()
+        return self.cached_index
+
+
+Grid = dict[Point, Region]
 
 
 def main() -> None:
     lines = Parser().lines()
     parts = lines[1].split()[-1].split(",")
-    target = Point(int(parts[0]), int(parts[1]))
+    target = (int(parts[0]), int(parts[1]))
     cave = build_out_cave(int(lines[0].split()[-1]), target)
 
     answer.part1(11575, risk_within(cave, target))
-    answer.part2(1068, traverse(cave, Point(0, 0), target, TORCH))
+    answer.part2(1068, traverse(cave, (0, 0), target, TORCH))
 
 
 def build_out_cave(depth: int, target: Point) -> Grid:
-    grid, buff = Grid(), 30
-    for x in range(target.x() + 1 + buff):
-        for y in range(target.y() + 1 + buff):
-            location = Point(x, y)
+    grid, buff = dict(), 30
+    for x in range(target[0] + 1 + buff):
+        for y in range(target[1] + 1 + buff):
+            location = (x, y)
             grid[location] = Region(
-                depth, target, location, grid[location.left()], grid[location.down()]
+                depth, target, location, grid.get((x - 1, y)), grid.get((x, y - 1))
             )
     return grid
 
 
-def risk_within(cave, target):
+def risk_within(cave: Grid, target: Point) -> int:
     risk_levels = []
-    for point, value in cave.items():
-        if point.x() <= target.x() and point.y() <= target.y():
-            risk_levels.append(value.type())
+    for point, region in cave.items():
+        if point[0] <= target[0] and point[1] <= target[1]:
+            risk_levels.append(region.kind())
     return sum(risk_levels)
 
 
-def traverse(cave, start, end, equipped):
-    queue, seen = [], set()
-    heapq.heappush(queue, (0, (start, equipped)))
+def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> int:
+    queue: list[tuple[int, tuple[Point, str]]] = []
+    seen: set[tuple[Point, str]] = set()
 
+    def add_item(time: int, location: Point, item: str) -> None:
+        if (location, item) not in seen:
+            heapq.heappush(queue, (time, (location, item)))
+
+    add_item(0, start, equipped)
     while len(queue) > 0:
         time, (location, item) = heapq.heappop(queue)
         if (location, item) in seen:
             continue
-
         seen.add((location, item))
-
         if location == end and item == TORCH:
             return time
         elif location == end:
-            heapq.heappush(queue, (time + 7, (location, TORCH)))
+            add_item(time + 7, location, TORCH)
         else:
-            valid_items_in_current_location = VALID_TOOL[cave[location].type()]
-            for adjacent in [
-                adjacent for adjacent in location.adjacent() if adjacent in cave
-            ]:
-                valid_items_in_adjacent = VALID_TOOL[cave[adjacent].type()]
-                if item in valid_items_in_adjacent:
-                    combination = adjacent, item
-                    if combination not in seen:
-                        heapq.heappush(queue, (time + 1, combination))
+            for neighbor in neighbors(location):
+                if neighbor not in cave:
+                    continue
+                if item in cave[neighbor].tools():
+                    add_item(time + 1, neighbor, item)
                 else:
-                    valid_items = (
-                        valid_items_in_adjacent & valid_items_in_current_location
-                    )
-                    for other_item in valid_items:
-                        combination = location, other_item
-                        if combination not in seen:
-                            heapq.heappush(queue, (time + 7, combination))
+                    for next_item in cave[neighbor].tools() & cave[location].tools():
+                        add_item(time + 8, neighbor, next_item)
+    raise Exception("Failed")
 
 
 if __name__ == "__main__":

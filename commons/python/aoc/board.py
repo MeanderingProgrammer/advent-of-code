@@ -26,15 +26,15 @@ class Point:
 
     def reflect(self) -> Self:
         self.__verify_2d()
-        return Point(-self.x(), self.y())
+        return type(self)(-self.x(), self.y())
 
     def rotate(self) -> Self:
         self.__verify_2d()
-        return Point(-self.y(), self.x())
+        return type(self)(-self.y(), self.x())
 
     def mirror(self) -> Self:
         self.__verify_2d()
-        return Point(self.x(), -self.y())
+        return type(self)(self.x(), -self.y())
 
     def __verify_2d(self) -> None:
         if self.dimensions() != 2:
@@ -154,19 +154,19 @@ class Grid:
         return self.__grid.items()
 
     def reflect(self) -> Self:
-        result = Grid()
+        result = type(self)()
         for point, value in self.items():
             result[point.reflect()] = value
         return result
 
     def rotate(self) -> Self:
-        result = Grid()
+        result = type(self)()
         for point, value in self.items():
             result[point.rotate()] = value
         return result
 
     def mirror(self) -> Self:
-        result = Grid()
+        result = type(self)()
         for point, value in self.items():
             result[point.mirror()] = value
         return result
