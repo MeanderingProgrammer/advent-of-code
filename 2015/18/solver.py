@@ -1,30 +1,26 @@
-from typing import Generator
+from dataclasses import dataclass
 
 from aoc import answer
 from aoc.board import Grid
 from aoc.parser import Parser
 
+Point = tuple[int, int]
 
+
+def add(p1: Point, p2: Point) -> Point:
+    return (p1[0] + p2[0], p1[1] + p2[1])
+
+
+@dataclass
 class Animator:
-    def __init__(
-        self,
-        force_corners: bool,
-        on: set[tuple[int, int]],
-        min_x: int,
-        max_x: int,
-        min_y: int,
-        max_y: int,
-    ):
-        self.force_corners = force_corners
-        self.on = on
-        self.min_x = min_x
-        self.max_x = max_x
-        self.min_y = min_y
-        self.max_y = max_y
+    force_corners: bool
+    on: set[Point]
+    min_x: int
+    max_x: int
+    min_y: int
+    max_y: int
 
-        self.add_corners()
-
-    def add_corners(self):
+    def add_corners(self) -> None:
         if self.force_corners:
             self.on.add((self.min_x, self.min_y))
             self.on.add((self.min_x, self.max_y))
@@ -33,29 +29,29 @@ class Animator:
 
     def step(self) -> None:
         next_on = set()
-        for point in self.get_points():
-            neighbors_on = self.neighbors_on(point)
-            neighbors_needed = [2, 3] if point in self.on else [3]
-            if neighbors_on in neighbors_needed:
-                next_on.add(point)
+        for x in range(self.min_x, self.max_x + 1):
+            for y in range(self.min_y, self.max_y + 1):
+                point = (x, y)
+                neighbors_on = self.neighbors_on(point)
+                neighbors_needed = [2, 3] if point in self.on else [3]
+                if neighbors_on in neighbors_needed:
+                    next_on.add(point)
         self.on = next_on
         self.add_corners()
 
-    def get_points(self) -> Generator[tuple[int, int], None, None]:
-        for x in range(self.min_x, self.max_x + 1):
-            for y in range(self.min_y, self.max_y + 1):
-                yield (x, y)
-
-    def neighbors_on(self, point: tuple[int, int]) -> int:
+    def neighbors_on(self, point: Point) -> int:
         adjacents = [
-            (point[0] - 1, point[1]),
-            (point[0] + 1, point[1]),
-            (point[0], point[1] - 1),
-            (point[0], point[1] + 1),
-            (point[0] - 1, point[1] - 1),
-            (point[0] - 1, point[1] + 1),
-            (point[0] + 1, point[1] - 1),
-            (point[0] + 1, point[1] + 1),
+            add(point, direction)
+            for direction in [
+                (-1, 0),
+                (1, 0),
+                (0, -1),
+                (0, 1),
+                (-1, -1),
+                (-1, 1),
+                (1, -1),
+                (1, 1),
+            ]
         ]
         return sum([adjacent in self.on for adjacent in adjacents])
 
@@ -81,12 +77,13 @@ def run(grid: Grid, force_corners: bool) -> int:
         min_y=min(ys),
         max_y=max(ys),
     )
+    animator.add_corners()
     for _ in range(100):
         animator.step()
     return animator.lights_on()
 
 
-def points_on(grid: Grid) -> set[tuple[int, int]]:
+def points_on(grid: Grid) -> set[Point]:
     on = set()
     for point, value in grid.items():
         if value == "#":
