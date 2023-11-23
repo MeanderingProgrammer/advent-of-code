@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, override
+from typing import Generator, Optional, override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -54,6 +54,24 @@ class DroidState:
 
 
 @dataclass(frozen=True)
+class Instruction:
+    function: list[str]
+    starts: list[int]
+
+    def contains(self, i: int) -> bool:
+        for start in self.starts:
+            if i >= start and i < start + len(self.function):
+                return True
+        return False
+
+    def get_end(self, i: int) -> Optional[int]:
+        for start in self.starts:
+            if i == start:
+                return start + len(self.function)
+        return None
+
+
+@dataclass(frozen=True)
 class Compressed:
     routine: list[str]
     a_function: list[str]
@@ -64,38 +82,33 @@ class Compressed:
 @dataclass
 class Compression:
     instructions: list[str]
+    max_length: int
 
     def compress(self) -> Compressed:
-        a_s, b_s, c_s = self.compress_instructions(5)
+        a, b, c = self.compress_instructions()
         return Compressed(
-            routine=self.create_routine(dict(A=a_s, B=b_s, C=c_s)),
-            a_function=a_s[0],
-            b_function=b_s[0],
-            c_function=c_s[0],
+            routine=self.create_routine(dict(A=a, B=b, C=c)),
+            a_function=a.function,
+            b_function=b.function,
+            c_function=c.function,
         )
 
-    def compress_instructions(self, max_length: int):
-        for i in range(1, 1 + max_length):
-            a = self.instructions[:i]
-            a_s = a, self.get_starts(a)
-
-            start_j = self.first_out([a_s])
-            assert start_j is not None
-
-            for j in range(1 + start_j, 1 + start_j + max_length):
-                b = self.instructions[start_j:j]
-                b_s = b, self.get_starts(b)
-
-                start_k = self.first_out([a_s, b_s])
-                assert start_k is not None
-
-                for k in range(1 + start_k, 1 + start_k + max_length):
-                    c = self.instructions[start_k:k]
-                    c_s = c, self.get_starts(c)
-
-                    if self.first_out([a_s, b_s, c_s]) is None:
-                        return (a_s, b_s, c_s)
+    def compress_instructions(self) -> list[Instruction]:
+        for a in self.generate_instruction([]):
+            for b in self.generate_instruction([a]):
+                for c in self.generate_instruction([a, b]):
+                    if self.first_out([a, b, c]) is None:
+                        return [a, b, c]
         raise Exception("FAILED")
+
+    def generate_instruction(
+        self, previous: list[Instruction]
+    ) -> Generator[Instruction, None, None]:
+        start = self.first_out(previous)
+        assert start is not None
+        for i in range(1, 1 + self.max_length):
+            function = self.instructions[start : start + i]
+            yield Instruction(function=function, starts=self.get_starts(function))
 
     def get_starts(self, function: list[str]) -> list[int]:
         bounds: list[int] = []
@@ -108,46 +121,23 @@ class Compression:
                 i += 1
         return bounds
 
-    def first_out(
-        self, function_starts: list[tuple[list[str], list[int]]]
-    ) -> Optional[int]:
+    def first_out(self, instructions: list[Instruction]) -> Optional[int]:
         for i in range(len(self.instructions)):
-            if not any(
-                [
-                    Compression.contains(i, function_start)
-                    for function_start in function_starts
-                ]
-            ):
+            if not any([instruction.contains(i) for instruction in instructions]):
                 return i
         return None
 
-    @staticmethod
-    def contains(i: int, function_starts: tuple[list[str], list[int]]) -> bool:
-        for start in function_starts[1]:
-            if i >= start and i < start + len(function_starts[0]):
-                return True
-        return False
-
-    def create_routine(
-        self, name_function_start: dict[str, tuple[list[str], list[int]]]
-    ) -> list[str]:
+    def create_routine(self, name_instruction: dict[str, Instruction]) -> list[str]:
         i = 0
         routine = []
         while i < len(self.instructions):
-            for name, function_start in name_function_start.items():
-                end = Compression.get_end(i, function_start)
+            for name, instruction in name_instruction.items():
+                end = instruction.get_end(i)
                 if end is not None:
                     routine.append(name)
                     i = end
                     break
         return routine
-
-    @staticmethod
-    def get_end(i: int, function_start: tuple[list[str], list[int]]) -> Optional[int]:
-        for start in function_start[1]:
-            if i == start:
-                return start + len(function_start[0])
-        return None
 
 
 @dataclass
@@ -201,7 +191,7 @@ class VacuumDroid(Bus):
     def create_path(self) -> None:
         assert self.state is not None
         instructions = self.state.get_instructions()
-        compressed = Compression(instructions).compress()
+        compressed = Compression(instructions, 5).compress()
         self.add_instruction(compressed.routine)
         self.add_instruction(compressed.a_function)
         self.add_instruction(compressed.b_function)
