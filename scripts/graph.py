@@ -19,11 +19,11 @@ class FigureSaver:
         self.archive_figure(fig_path)
         if fig_path.exists():
             print(f"Skipping {fig_path} as it already exists")
-            return
-        if legend is not None:
-            ax.get_figure().legend(**legend)
-        plt.tight_layout()
-        ax.get_figure().savefig(str(fig_path))
+        else:
+            if legend is not None:
+                ax.get_figure().legend(**legend)
+            plt.tight_layout()
+            ax.get_figure().savefig(str(fig_path))
         ax.get_figure().clear()
 
     def archive_figure(self, fig_path: Path) -> None:
