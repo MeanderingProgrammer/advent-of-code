@@ -138,6 +138,5 @@ touch .adventofcode.session
 | 2020 | 15  | 1.249   | LEAVE  | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2018 | 24  | 1.153   | LEAVE  | Complex game, fairly optimized in Python                |
 | 2019 | 20  | 1.132   | LEAVE  | Mostly the Java runtime for such a small execution      |
-| 2017 | 3   | 1.109   | TODO   | Can probably improve by using a dict / tuple            |
 | 2015 | 13  | 1.048   | TODO   | Mostly likely slowed by the permutation computation     |
 | 2018 | 6   | 1.002   | TODO   | Most of the computation is in the distance logic        |
