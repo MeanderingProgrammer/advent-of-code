@@ -18,13 +18,13 @@ class Generator:
         solution_path = self.language.solution_path(self.day)
         if solution_path.exists():
             raise Exception(f"Solution already exists under: {solution_path}")
-
         # At this point we can assume this is the first time we are processing
         # this day for this language, since the solution path does not exist
         self.__copy_template_files()
         self.language.template_processing(self.day)
-        self.__create_sample()
-        self.__create_data()
+        data_created = self.__create_data_file()
+        if data_created:
+            self.__create_sample_file()
 
     def __copy_template_files(self) -> None:
         template_directory = Path(f"scripts/templates/{self.language.name}")
@@ -39,20 +39,13 @@ class Generator:
                     destination.parent.mkdir(parents=True)
                 if not destination.exists():
                     print(f"Copying {template_file} to {destination}")
-                    os.system(f"cp {template_file} {destination}")
+                    shutil.copy(template_file, destination)
 
-    def __create_sample(self) -> None:
-        sample_path = self.day.dir().joinpath("sample.txt")
-        if not sample_path.exists():
-            print(f"Creating empty {sample_path}")
-            sample_path.touch()
-
-    def __create_data(self) -> None:
+    def __create_data_file(self) -> bool:
         data_path = self.day.dir().joinpath("data.txt")
         if data_path.exists():
             print(f"{data_path} already exists, leaving as is")
-            return
-
+            return False
         print(f"Creating data file at: {data_path}")
         advent_cookie_file = ".adventofcode.session"
         if Path(advent_cookie_file).exists() and shutil.which("aoc") is not None:
@@ -69,3 +62,10 @@ class Generator:
         else:
             print(f"Creating empty {data_path} since aoc-cli is not setup")
             data_path.touch()
+        return True
+
+    def __create_sample_file(self) -> None:
+        sample_path = self.day.dir().joinpath("sample.txt")
+        if not sample_path.exists():
+            print(f"Creating empty {sample_path}")
+            sample_path.touch()

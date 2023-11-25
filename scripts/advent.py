@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from typing import Optional, override
+from typing import Optional
 
 import click
 from args.generate_template import GenerateTemplate
+from args.language_type import LanguageType
 from args.run_template import RunTemplate
 from command.generate import Generator
 from command.run import Runner
@@ -11,23 +12,6 @@ from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
 from component.language_strategy import LanguageStrategy, StrategyName
 from language.language import Language
-
-
-class LanguageType(click.ParamType):
-    name = "language"
-    factory = LanguageFactory()
-
-    @override
-    def get_metavar(self, param) -> str:
-        return click.Choice(self.factory.get_names()).get_metavar(param)
-
-    @override
-    def convert(self, value: str, param, ctx) -> Language:
-        if value in self.factory.get_names():
-            return self.factory.get_by_name(value)
-        else:
-            error = f"{value} is not a valid language: {self.factory.get_names()}"
-            self.fail(error, param, ctx)
 
 
 @click.group()
