@@ -64,7 +64,7 @@ pub fn read_chars() -> Vec<char> {
 }
 
 fn to_int(value: &str) -> i64 {
-    value.parse::<i64>().unwrap()
+    value.trim().parse().unwrap()
 }
 
 pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
