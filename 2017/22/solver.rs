@@ -1,8 +1,8 @@
 use aoc_lib::answer;
-use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
 use aoc_lib::reader;
 use std::collections::{HashMap, VecDeque};
+
+type Point = (i16, i16);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum State {
@@ -10,12 +10,6 @@ enum State {
     WEAKENED,
     FLAGGED,
     INFECTED,
-}
-
-impl std::fmt::Display for State {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
 }
 
 impl State {
@@ -27,54 +21,51 @@ impl State {
         }
     }
 
-    fn rotate(&self, directions: &mut VecDeque<(i64, i64)>) -> (i64, i64) {
+    fn rotations(&self) -> usize {
         match self {
-            Self::CLEAN => directions.rotate_left(1),
-            Self::WEAKENED => (),
-            Self::FLAGGED => directions.rotate_left(2),
-            Self::INFECTED => directions.rotate_right(1),
-        };
-        *directions.front().unwrap()
+            Self::WEAKENED => 0,
+            Self::CLEAN => 1,
+            Self::FLAGGED => 2,
+            Self::INFECTED => 3,
+        }
     }
 }
 
 #[derive(Debug)]
 struct Virus {
-    grid: Grid<State>,
+    grid: HashMap<Point, State>,
     state_change: HashMap<State, State>,
     position: Point,
-    directions: VecDeque<(i64, i64)>,
+    directions: VecDeque<Point>,
     infections: usize,
 }
 
 impl Virus {
-    fn new(grid: Grid<State>, state_change: HashMap<State, State>) -> Self {
-        let bounds = grid.bounds(0);
-        let upper = bounds.upper();
+    fn new(grid: HashMap<Point, State>, state_change: HashMap<State, State>) -> Self {
+        let (mut x, mut y) = (0, 0);
+        for point in grid.keys() {
+            (x, y) = (x.max(point.0), y.max(point.1));
+        }
         Self {
             grid,
             state_change,
-            position: Point::new_2d(upper.x() / 2, upper.y() / 2),
+            position: (x / 2, y / 2),
             directions: [(0, -1), (-1, 0), (0, 1), (1, 0)].into(),
             infections: 0,
         }
     }
 
     fn burst(&mut self) {
-        let state = if self.grid.contains(&self.position) {
-            self.grid.get(&self.position).clone()
-        } else {
-            State::CLEAN
+        let state = self.grid.get(&self.position).unwrap_or(&State::CLEAN);
+        self.directions.rotate_left(state.rotations());
+        let (dx, dy) = self.directions.front().unwrap();
+        let new_state = self.state_change.get(state).unwrap();
+        self.grid.insert(self.position.clone(), new_state.clone());
+        self.infections += match new_state {
+            State::INFECTED => 1,
+            _ => 0,
         };
-
-        let new_state = self.state_change.get(&state).unwrap();
-        self.grid.add(self.position.clone(), new_state.clone());
-        if new_state == &State::INFECTED {
-            self.infections += 1;
-        }
-
-        let (dx, dy) = state.rotate(&mut self.directions);
-        self.position = Point::new_2d(self.position.x() + dx, self.position.y() + dy);
+        self.position = (self.position.0 + dx, self.position.1 + dy);
     }
 }
 
@@ -94,7 +85,12 @@ fn main() {
 }
 
 fn run(n: usize, state_change: HashMap<State, State>) -> usize {
-    let grid = reader::read_grid(|ch| State::from_char(ch));
+    let mut grid: HashMap<Point, State> = HashMap::new();
+    for (y, line) in reader::read_lines().iter().enumerate() {
+        for (x, ch) in line.char_indices() {
+            grid.insert((x as i16, y as i16), State::from_char(ch).unwrap());
+        }
+    }
     let mut virus = Virus::new(grid, state_change);
     for _ in 0..n {
         virus.burst();
