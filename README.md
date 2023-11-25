@@ -119,7 +119,6 @@ touch .adventofcode.session
 
 | Year | Day | Runtime | Notes                                                   |
 | ---- | --- | ------- | ------------------------------------------------------- |
-| 2018 | 15  | 5.042   | Complex game state with path finding between characters |
 | 2018 | 19  | 4.878   | Kinda like int-code but running it seems not feesible   |
 | 2022 | 16  | 4.603   | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 3.247   | Looks like a complex path finding problem               |
@@ -131,6 +130,7 @@ touch .adventofcode.session
 | 2016 | 14  | 1.664   | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | Game of life problem, optimized by using tuples         |
+| 2018 | 15  | 1.509   | Complex game state with path finding between characters |
 | 2021 | 12  | 1.490   | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | Dealing with large space, already in Rust               |
 | 2016 | 5   | 1.471   | Final md5 hash that isn't running under 1 second        |
