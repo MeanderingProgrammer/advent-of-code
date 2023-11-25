@@ -32,16 +32,13 @@ impl Recipes {
     }
 
     fn found(&self, offset: usize) -> bool {
-        let to_compare: Vec<u8> = self
-            .scores
-            .iter()
-            .rev()
-            .skip(offset)
-            .take(self.digits.len())
-            .rev()
-            .map(|value| *value)
-            .collect();
-        to_compare == self.digits
+        let num_scores = self.scores.len();
+        let num_digits = self.digits.len();
+        if num_scores < num_digits + offset {
+            false
+        } else {
+            self.digits == &self.scores[num_scores - num_digits - offset..num_scores - offset]
+        }
     }
 
     fn step(&mut self) {
@@ -61,8 +58,7 @@ impl Recipes {
 }
 
 fn main() {
-    let values = reader::read_int();
-    let goal = values[0] as usize;
+    let goal = reader::read_int()[0] as usize;
     let mut recipes = Recipes::new(goal);
     let sequence = recipes.evolve();
     answer::part1("2103141159", &sequence[goal..goal + 10]);
