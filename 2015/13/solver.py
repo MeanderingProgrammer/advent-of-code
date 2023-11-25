@@ -23,8 +23,8 @@ class People:
 
 def main() -> None:
     graph = get_graph()
-    answer.part1(709, get_max_score(graph, False))
-    answer.part2(668, get_max_score(graph, True))
+    answer.part1(709, max_score(graph, False))
+    answer.part2(668, max_score(graph, True))
 
 
 def get_graph() -> dict[tuple[str, str], int]:
@@ -36,7 +36,7 @@ def get_graph() -> dict[tuple[str, str], int]:
     return graph
 
 
-def get_max_score(graph: dict[tuple[str, str], int], include_self: bool) -> int:
+def max_score(graph: dict[tuple[str, str], int], include_self: bool) -> int:
     all_people = set([pair[0] for pair in graph.keys()])
     if include_self:
         all_people.add("Myself")
