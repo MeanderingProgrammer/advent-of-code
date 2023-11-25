@@ -11,15 +11,12 @@ type Graph[K comparable, V comparable] struct {
 	grid     parsers.Grid[V]
 }
 
-type Complete func(State) bool
-type NextStates func(State) <-chan State
-
 type Seen map[string]int
 
 func (seen Seen) updateIfBest(state State) bool {
-	encodedState, cost := *state.String(), state.Cost()
-	lowestCost, exists := seen[encodedState]
-	if !exists || cost < lowestCost {
+	encodedState, cost := state.ToString(), state.Cost()
+	lowestCost, ok := seen[encodedState]
+	if !ok || cost < lowestCost {
 		seen[encodedState] = cost
 		return true
 	} else {
@@ -29,8 +26,8 @@ func (seen Seen) updateIfBest(state State) bool {
 
 type Search struct {
 	Initial    State
-	Done       Complete
-	NextStates NextStates
+	Done       func(State) bool
+	NextStates func(State) []State
 	FirstOnly  bool
 }
 
@@ -40,9 +37,10 @@ type SearchResult struct {
 }
 
 func (graph Graph[K, V]) Bfs(search Search) SearchResult {
-	var completed []State
-	queue, seen, explored := &Queue{search.Initial}, make(Seen), 0
-
+	completed := []State{}
+	queue := &Queue{search.Initial}
+	explored := 0
+	seen := make(Seen)
 	for !queue.Empty() {
 		explored++
 		current := queue.Next()
@@ -52,7 +50,7 @@ func (graph Graph[K, V]) Bfs(search Search) SearchResult {
 				break
 			}
 		} else {
-			for state := range search.NextStates(current) {
+			for _, state := range search.NextStates(current) {
 				if seen.updateIfBest(state) {
 					queue.Add(state)
 				}

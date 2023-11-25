@@ -22,9 +22,8 @@ func (path Path) Cost() int {
 	return len(path)
 }
 
-func (path Path) String() *string {
-	result := fmt.Sprintf("%v", path)
-	return &result
+func (path Path) ToString() string {
+	return fmt.Sprintf("%v", path)
 }
 
 func (path Path) last() Cave {
@@ -76,18 +75,13 @@ func paths(graph graphs.Graph[Cave, string], canGo func(Path, Cave) bool) int {
 		Done: func(state graphs.State) bool {
 			return state.(Path).last() == "end"
 		},
-		NextStates: func(state graphs.State) <-chan graphs.State {
-			var neighbors []Cave
+		NextStates: func(state graphs.State) []graphs.State {
+			nextStates := []graphs.State{}
 			for _, neighbor := range graph.Neighbors(state.(Path).last()) {
 				if canGo(state.(Path), neighbor) {
-					neighbors = append(neighbors, neighbor)
+					nextStates = append(nextStates, state.(Path).add(neighbor))
 				}
 			}
-			nextStates := make(chan graphs.State, len(neighbors))
-			for _, neighbor := range neighbors {
-				nextStates <- state.(Path).add(neighbor)
-			}
-			close(nextStates)
 			return nextStates
 		},
 		FirstOnly: false,
