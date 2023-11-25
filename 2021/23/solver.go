@@ -10,8 +10,6 @@ import (
 	"math"
 )
 
-const PrintStates = false
-
 type Type string
 
 const (
@@ -55,9 +53,8 @@ func (state BoardState) Cost() int {
 	return state.cost
 }
 
-func (state BoardState) String() *string {
-	result := fmt.Sprintf("%v", state.characters)
-	return &result
+func (state BoardState) ToString() string {
+	return fmt.Sprintf("%v", state.characters)
 }
 
 func (state BoardState) complete() bool {
@@ -123,44 +120,33 @@ type Board struct {
 }
 
 func (board Board) solve(characters Characters) graphs.State {
-	initial := BoardState{
-		characters: characters,
-		cost:       0,
-	}
-	done := func(state graphs.State) bool {
-		if PrintStates {
-			board.graph.Print(state.(BoardState).positions())
-		}
-		return state.(BoardState).complete()
-	}
-	nextStates := func(state graphs.State) <-chan graphs.State {
-		return board.nextStates(state.(BoardState))
-	}
 	result := board.graph.Bfs(graphs.Search{
-		Initial:    initial,
-		Done:       done,
-		NextStates: nextStates,
-		FirstOnly:  true,
+		Initial: BoardState{
+			characters: characters,
+			cost:       0,
+		},
+		Done: func(state graphs.State) bool {
+			return state.(BoardState).complete()
+		},
+		NextStates: func(state graphs.State) []graphs.State {
+			return board.nextStates(state.(BoardState))
+		},
+		FirstOnly: true,
 	})
+	fmt.Println(result.Completed[0])
 	return result.Completed[0]
 }
 
-func (board Board) nextStates(state BoardState) <-chan graphs.State {
-	var allNextStates []graphs.State
+func (board Board) nextStates(state BoardState) []graphs.State {
+	nextStates := []graphs.State{}
 	for start, character := range state.characters {
 		// Check that the character hasn't already been moved to their goal
 		if !character.atGoal(start) || !character.moved {
 			for _, move := range board.characterMoves(state, start) {
-				allNextStates = append(allNextStates, state.move(move))
+				nextStates = append(nextStates, state.move(move))
 			}
 		}
 	}
-
-	nextStates := make(chan graphs.State, len(allNextStates))
-	for _, nextState := range allNextStates {
-		nextStates <- nextState
-	}
-	close(nextStates)
 	return nextStates
 }
 
@@ -168,11 +154,9 @@ func (board Board) characterMoves(state BoardState, start parsers.Point) []Move 
 	var moves []Move
 	explored := map[parsers.Point]bool{start: true}
 	toExplore := []parsers.Point{start}
-
 	for len(toExplore) > 0 {
 		current := toExplore[0]
 		toExplore = toExplore[1:]
-
 		for _, destination := range board.graph.Neighbors(current) {
 			_, occupied := state.characters[destination]
 			if explored[destination] || occupied {
@@ -188,14 +172,12 @@ func (board Board) characterMoves(state BoardState, start parsers.Point) []Move 
 			toExplore = append(toExplore, destination)
 		}
 	}
-
 	return moves
 }
 
 func (board Board) shouldGo(state BoardState, move Move) bool {
 	value := state.characters[move.start].value
 	startValue, endValue := board.graph.Value(move.start), board.graph.Value(move.end)
-
 	if endValue == Doorway {
 		// Can never stop outside of a room
 		return false
@@ -253,12 +235,14 @@ func main() {
 }
 
 func solve(extend bool) int {
-	board, characters := getData(extend)
+	rows := getRows(extend)
+	board := getBoard(rows)
+	characters := getCharacters(rows)
 	endState := board.solve(characters)
 	return endState.(BoardState).cost
 }
 
-func getData(extend bool) (Board, Characters) {
+func getRows(extend bool) []string {
 	rows := files.ReadLines()
 	if extend {
 		lastRows := make([]string, 2)
@@ -267,35 +251,32 @@ func getData(extend bool) (Board, Characters) {
 		rows[len(rows)-1] = "  #D#B#A#C#"
 		rows = append(rows, lastRows...)
 	}
-	return getBoard(rows), getCharacters(rows)
+	return rows
 }
 
 func getBoard(rows []string) Board {
-	getType := func(position parsers.Point, value string) Type {
-		result := Hallway
-		switch position.X {
-		case A.x():
-			result = A
-		case B.x():
-			result = B
-		case C.x():
-			result = C
-		case D.x():
-			result = D
-		}
-		if position.Y == 1 && result != Hallway {
-			result = Doorway
-		}
-		return result
-	}
-
 	grid := parsers.GridMaker[Type]{
-		Rows:        rows,
-		Splitter:    parsers.Character,
-		Ignore:      "# ",
-		Transformer: getType,
+		Rows:     rows,
+		Splitter: parsers.Character,
+		Ignore:   "# ",
+		Transformer: func(position parsers.Point, value string) Type {
+			result := Hallway
+			switch position.X {
+			case A.x():
+				result = A
+			case B.x():
+				result = B
+			case C.x():
+				result = C
+			case D.x():
+				result = D
+			}
+			if position.Y == 1 && result != Hallway {
+				result = Doorway
+			}
+			return result
+		},
 	}.Construct()
-
 	return Board{
 		graph:    graphs.ConstructGraph(grid),
 		roomSize: grid.Height - 2,
@@ -303,17 +284,14 @@ func getBoard(rows []string) Board {
 }
 
 func getCharacters(rows []string) Characters {
-	getType := func(position parsers.Point, value string) Type {
-		return Type(value)
-	}
-
 	grid := parsers.GridMaker[Type]{
-		Rows:        rows,
-		Splitter:    parsers.Character,
-		Ignore:      ".# ",
-		Transformer: getType,
+		Rows:     rows,
+		Splitter: parsers.Character,
+		Ignore:   ".# ",
+		Transformer: func(position parsers.Point, value string) Type {
+			return Type(value)
+		},
 	}.Construct()
-
 	characters := make(Characters)
 	for _, point := range grid.Points() {
 		characters[point] = Character{

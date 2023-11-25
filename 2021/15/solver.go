@@ -18,9 +18,8 @@ func (path Path) Cost() int {
 	return path.value
 }
 
-func (path Path) String() *string {
-	result := fmt.Sprintf("%v", path.point)
-	return &result
+func (path Path) ToString() string {
+	return fmt.Sprintf("%v", path.point)
 }
 
 func (path Path) add(graph graphs.Graph[parsers.Point, int], point parsers.Point) Path {
@@ -37,39 +36,36 @@ func main() {
 
 func solve(wrap bool) int {
 	grid := getGrid(wrap)
-
-	initial := Path{
-		point: parsers.Point{X: 0, Y: 0},
-		value: 0,
-	}
-
-	end := parsers.Point{X: grid.Width, Y: grid.Height}
-	done := func(state graphs.State) bool {
-		return state.(Path).point == end
-	}
-
 	graph := graphs.ConstructGraph(grid)
-	nextStates := func(state graphs.State) <-chan graphs.State {
-		neighbors := graph.Neighbors(state.(Path).point)
-		nextStates := make(chan graphs.State, len(neighbors))
-		for _, neighbor := range neighbors {
-			nextStates <- state.(Path).add(graph, neighbor)
-		}
-		close(nextStates)
-		return nextStates
-	}
-
 	result := graph.Bfs(graphs.Search{
-		Initial:    initial,
-		Done:       done,
-		NextStates: nextStates,
-		FirstOnly:  true,
+		Initial: Path{
+			point: parsers.Point{X: 0, Y: 0},
+			value: 0,
+		},
+		Done: func(state graphs.State) bool {
+			return state.(Path).point == parsers.Point{X: grid.Width, Y: grid.Height}
+		},
+		NextStates: func(state graphs.State) []graphs.State {
+			nextStates := []graphs.State{}
+			for _, neighbor := range graph.Neighbors(state.(Path).point) {
+				nextStates = append(nextStates, state.(Path).add(graph, neighbor))
+			}
+			return nextStates
+		},
+		FirstOnly: true,
 	})
 	return result.Completed[0].(Path).value
 }
 
 func getGrid(wrap bool) parsers.Grid[int] {
-	grid := baseGrid()
+	grid := parsers.GridMaker[int]{
+		Rows:     files.ReadLines(),
+		Splitter: parsers.Character,
+		Ignore:   "",
+		Transformer: func(point parsers.Point, value string) int {
+			return conversions.ToInt(value)
+		},
+	}.Construct()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1
 		for i := 0; i < 5; i++ {
@@ -93,16 +89,4 @@ func getGrid(wrap bool) parsers.Grid[int] {
 		}
 	}
 	return grid
-}
-
-func baseGrid() parsers.Grid[int] {
-	toInt := func(point parsers.Point, value string) int {
-		return conversions.ToInt(value)
-	}
-	return parsers.GridMaker[int]{
-		Rows:        files.ReadLines(),
-		Splitter:    parsers.Character,
-		Ignore:      "",
-		Transformer: toInt,
-	}.Construct()
 }
