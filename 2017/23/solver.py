@@ -5,75 +5,63 @@ from aoc.parser import Parser
 
 
 class Computer:
-    def __init__(self, instructions, debug):
+    def __init__(self, instructions):
         self.regs = defaultdict(int)
-
-        if debug:
-            self.regs["a"] = 1
-
         self.instructions = instructions
         self.ip = 0
-
         self.multiplies = 0
 
-    def run(self):
+    def run(self) -> None:
         while self.ip >= 0 and self.ip < len(self.instructions):
             instruction = self.instructions[self.ip]
             instruction.run(self)
 
+    def value(self, arg: str) -> int:
+        try:
+            return int(arg)
+        except ValueError:
+            return self.regs[arg]
+
 
 class Intstruction:
-    def __init__(self, value):
+    def __init__(self, value: str):
         parts = value.split()
         self.op = parts[0]
         self.args = parts[1:]
 
-    def run(self, comp):
+    def run(self, computer: Computer) -> None:
         if self.op == "set":
-            comp.regs[self.args[0]] = self.to_value(comp, self.args[1])
-            comp.ip += 1
+            computer.regs[self.args[0]] = computer.value(self.args[1])
+            computer.ip += 1
         elif self.op == "sub":
-            comp.regs[self.args[0]] -= self.to_value(comp, self.args[1])
-            comp.ip += 1
+            computer.regs[self.args[0]] -= computer.value(self.args[1])
+            computer.ip += 1
         elif self.op == "mul":
-            comp.regs[self.args[0]] *= self.to_value(comp, self.args[1])
-            comp.ip += 1
-            comp.multiplies += 1
+            computer.regs[self.args[0]] *= computer.value(self.args[1])
+            computer.ip += 1
+            computer.multiplies += 1
         elif self.op == "jnz":
-            if self.to_value(comp, self.args[0]) != 0:
-                comp.ip += self.to_value(comp, self.args[1])
+            if computer.value(self.args[0]) != 0:
+                computer.ip += computer.value(self.args[1])
             else:
-                comp.ip += 1
+                computer.ip += 1
         else:
-            raise Exception("Unknown operation: {}".format(self.op))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {}".format(self.op, self.args)
-
-    @staticmethod
-    def to_value(comp, arg):
-        try:
-            return int(arg)
-        except ValueError:
-            return comp.regs[arg]
+            raise Exception(f"Unknown operation: {self.op}")
 
 
-def main():
-    answer.part1(9409, run_computer(False))
-    # run_computer(True) would take too long to run
+def main() -> None:
+    answer.part1(9409, run_computer())
     answer.part2(913, count_non_primes(109_900, 126_900, 17))
 
 
-def run_computer(debug):
-    comp = Computer(get_instructions(), debug)
-    comp.run()
-    return comp.multiplies
+def run_computer() -> int:
+    instructions = [Intstruction(line) for line in Parser().lines()]
+    computer = Computer(instructions)
+    computer.run()
+    return computer.multiplies
 
 
-def count_non_primes(start, end, step):
+def count_non_primes(start: int, end: int, step: int) -> int:
     non_primes = 0
     for value in range(start, end + 1, step):
         if not is_prime(value):
@@ -81,15 +69,11 @@ def count_non_primes(start, end, step):
     return non_primes
 
 
-def is_prime(value):
+def is_prime(value: int) -> bool:
     for i in range(2, value):
         if value % i == 0:
             return False
     return True
-
-
-def get_instructions():
-    return [Intstruction(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":
