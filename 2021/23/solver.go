@@ -10,31 +10,40 @@ import (
 	"math"
 )
 
-type Type string
+type Value string
 
 const (
-	Hallway Type = "."
-	Doorway Type = "x"
-	A       Type = "A"
-	B       Type = "B"
-	C       Type = "C"
-	D       Type = "D"
+	Hallway Value = "."
+	Doorway Value = "x"
+	A       Value = "A"
+	B       Value = "B"
+	C       Value = "C"
+	D       Value = "D"
 )
 
-func (t Type) distance() int {
-	return int(t[0] - 'A')
+func (v Value) distance() int {
+	return int(v[0] - 'A')
 }
 
-func (t Type) cost() int {
-	return int(math.Pow(10, float64(t.distance())))
+func (v Value) cost() int {
+	return int(math.Pow(10, float64(v.distance())))
 }
 
-func (t Type) x() int {
-	return 3 + t.distance()*2
+func (v Value) x() int {
+	return 3 + v.distance()*2
+}
+
+func (v Value) pathToGoal(start parsers.Point) []parsers.Point {
+	result := []parsers.Point{}
+	x1, x2 := start.X, v.x()
+	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
+		result = append(result, parsers.Point{X: i, Y: 1})
+	}
+	return result
 }
 
 type Character struct {
-	value Type
+	value Value
 	moved bool
 }
 
@@ -66,8 +75,8 @@ func (state BoardState) complete() bool {
 	return true
 }
 
-func (state BoardState) charactersInRoom(value Type) []Type {
-	var inRoom []Type
+func (state BoardState) charactersInRoom(value Value) []Value {
+	var inRoom []Value
 	for point, character := range state.characters {
 		if point.X == value.x() {
 			inRoom = append(inRoom, character.value)
@@ -76,12 +85,7 @@ func (state BoardState) charactersInRoom(value Type) []Type {
 	return inRoom
 }
 
-type Move struct {
-	start parsers.Point
-	end   parsers.Point
-}
-
-func (state BoardState) move(move Move) BoardState {
+func (state BoardState) apply(move Move) BoardState {
 	updated, cost := make(Characters), 0
 	for position, character := range state.characters {
 		if position != move.start {
@@ -96,26 +100,23 @@ func (state BoardState) move(move Move) BoardState {
 	}
 	return BoardState{
 		characters: updated,
-		cost:       state.cost + cost*distance(move),
+		cost:       state.cost + cost*move.distance(),
 	}
 }
 
-func distance(move Move) int {
+type Move struct {
+	start parsers.Point
+	end   parsers.Point
+}
+
+func (move Move) distance() int {
 	start, end := move.start, move.end
 	distance := utils.Abs(start.X - end.X)
 	return distance + start.Y + end.Y - 2
 }
 
-func (state BoardState) positions() map[parsers.Point]Type {
-	positions := make(map[parsers.Point]Type)
-	for point, character := range state.characters {
-		positions[point] = character.value
-	}
-	return positions
-}
-
 type Board struct {
-	graph    graphs.Graph[parsers.Point, Type]
+	graph    graphs.Graph[parsers.Point, Value]
 	roomSize int
 }
 
@@ -133,40 +134,38 @@ func (board Board) solve(characters Characters) graphs.State {
 		},
 		FirstOnly: true,
 	})
-	fmt.Println(result.Completed[0])
 	return result.Completed[0]
 }
 
 func (board Board) nextStates(state BoardState) []graphs.State {
 	nextStates := []graphs.State{}
 	for start, character := range state.characters {
-		// Check that the character hasn't already been moved to their goal
 		if !character.atGoal(start) || !character.moved {
-			for _, move := range board.characterMoves(state, start) {
-				nextStates = append(nextStates, state.move(move))
+			for _, move := range board.moves(state, start) {
+				nextStates = append(nextStates, state.apply(move))
 			}
 		}
 	}
 	return nextStates
 }
 
-func (board Board) characterMoves(state BoardState, start parsers.Point) []Move {
-	var moves []Move
+func (board Board) moves(state BoardState, start parsers.Point) []Move {
+	moves := []Move{}
 	explored := map[parsers.Point]bool{start: true}
 	toExplore := []parsers.Point{start}
 	for len(toExplore) > 0 {
 		current := toExplore[0]
 		toExplore = toExplore[1:]
 		for _, destination := range board.graph.Neighbors(current) {
-			_, occupied := state.characters[destination]
-			if explored[destination] || occupied {
+			_, ok := state.characters[destination]
+			if explored[destination] || ok {
 				// If we've already explored a particular position or that position is occupied
 				// then break the chain and do not try to explore from this position
 				continue
 			}
 			explored[destination] = true
 			move := Move{start: start, end: destination}
-			if board.shouldGo(state, move) {
+			if board.valid(state, move) {
 				moves = append(moves, move)
 			}
 			toExplore = append(toExplore, destination)
@@ -175,39 +174,39 @@ func (board Board) characterMoves(state BoardState, start parsers.Point) []Move 
 	return moves
 }
 
-func (board Board) shouldGo(state BoardState, move Move) bool {
-	value := state.characters[move.start].value
-	startValue, endValue := board.graph.Value(move.start), board.graph.Value(move.end)
+func (board Board) valid(state BoardState, move Move) bool {
+	currentValue := state.characters[move.start].value
+	endValue := board.graph.Value(move.end)
 	if endValue == Doorway {
 		// Can never stop outside of a room
 		return false
 	} else if endValue == Hallway {
 		// Can not move to hallway once we are already in the hallway must go to a room
-		if startValue == Hallway {
+		if board.graph.Value(move.start) == Hallway {
 			return false
 		}
 		// Here we detect "deadlock", which occurs when we put our character in the Hallway
-		// and they block a character from reaching their room who is in turn blocking them
-		for _, point := range pathToGoal(move.end, value) {
-			onPath, exists := state.characters[point]
-			if !exists {
+		// and this blocks a character from reaching their room who is in turn blocking us
+		for _, point := range currentValue.pathToGoal(move.end) {
+			characterOnPath, ok := state.characters[point]
+			if !ok {
 				continue
 			}
-			deadlock := utils.Contains(pathToGoal(point, onPath.value), move.end)
-			if deadlock {
+			characterOnPathGoalPath := characterOnPath.value.pathToGoal(point)
+			if utils.Contains(characterOnPathGoalPath, move.end) {
 				return false
 			}
 		}
-	} else if value != endValue {
+	} else if currentValue != endValue {
 		// If this room is for another character then we cannot enter
 		return false
 	} else {
 		// Otherwise it is the room for this character, we need to make sure that:
 		// 1) Only valid characters are in the room
 		// 2) That we go to the correct point in the room, i.e. as far back as possible
-		charactersInRoom := state.charactersInRoom(value)
+		charactersInRoom := state.charactersInRoom(currentValue)
 		for _, characterInRoom := range charactersInRoom {
-			if characterInRoom != value {
+			if characterInRoom != currentValue {
 				// At least one character in the room needs to leave
 				return false
 			}
@@ -218,15 +217,6 @@ func (board Board) shouldGo(state BoardState, move Move) bool {
 		}
 	}
 	return true
-}
-
-func pathToGoal(location parsers.Point, value Type) []parsers.Point {
-	var result []parsers.Point
-	x1, x2 := location.X, value.x()
-	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
-		result = append(result, parsers.Point{X: i, Y: 1})
-	}
-	return result
 }
 
 func main() {
@@ -255,11 +245,11 @@ func getRows(extend bool) []string {
 }
 
 func getBoard(rows []string) Board {
-	grid := parsers.GridMaker[Type]{
+	grid := parsers.GridMaker[Value]{
 		Rows:     rows,
 		Splitter: parsers.Character,
 		Ignore:   "# ",
-		Transformer: func(position parsers.Point, value string) Type {
+		Transformer: func(position parsers.Point, value string) Value {
 			result := Hallway
 			switch position.X {
 			case A.x():
@@ -284,12 +274,12 @@ func getBoard(rows []string) Board {
 }
 
 func getCharacters(rows []string) Characters {
-	grid := parsers.GridMaker[Type]{
+	grid := parsers.GridMaker[Value]{
 		Rows:     rows,
 		Splitter: parsers.Character,
 		Ignore:   ".# ",
-		Transformer: func(position parsers.Point, value string) Type {
-			return Type(value)
+		Transformer: func(position parsers.Point, value string) Value {
+			return Value(value)
 		},
 	}.Construct()
 	characters := make(Characters)
