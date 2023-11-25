@@ -42,23 +42,17 @@ class Group:
         return self.power * multiplier
 
     def hit(self, damage: int) -> None:
-        units_destroyed = damage // self.hp
-        self.units -= units_destroyed
+        self.units -= damage // self.hp
 
     def __eq__(self, o: Optional[Self]) -> bool:
-        if o is None:
-            return False
-        return self.id == o.id
-
-    def __hash__(self) -> int:
-        return self.id
+        return o is not None and self.id == o.id
 
 
 @dataclass
 class Battle:
     groups: list[Group]
 
-    def simulate(self):
+    def simulate(self) -> None:
         current, previous = None, 0
         while len(self.groups) > 0 and current != previous:
             self.attack()
@@ -66,36 +60,37 @@ class Battle:
             current = self.winning_units()
 
     def attack(self) -> None:
-        assigned = self.assign_targets()
-        groups = list(assigned)
-        groups.sort(key=lambda group: group.initiative, reverse=True)
-        for group in groups:
+        assignments = self.assign_targets()
+        assignments.sort(key=lambda assignment: assignment[0].initiative, reverse=True)
+        for group, target in assignments:
             if group.dead:
                 continue
-            target = assigned[group]
             damage = group.calculate_damage(target)
             target.hit(damage)
             if target.dead:
                 self.groups.remove(target)
 
-    def assign_targets(self) -> dict[Group, Group]:
-        assigned: dict[Group, Group] = dict()
-        groups = list(self.groups)
-        groups.sort(key=lambda group: (group.power, group.initiative), reverse=True)
-        for group in groups:
-            target = self.get_target(group, list(assigned.values()))
+    def assign_targets(self) -> list[tuple[Group, Group]]:
+        assignments: list[tuple[Group, Group]] = []
+        targets: list[Group] = []
+        self.groups.sort(
+            key=lambda group: (group.power, group.initiative), reverse=True
+        )
+        for group in self.groups:
+            target = self.get_target(group, targets)
             if target is not None:
-                assigned[group] = target
-        return assigned
+                assignments.append((group, target))
+                targets.append(target)
+        return assignments
 
-    def get_target(self, group: Group, assigned: list[Group]) -> Optional[Group]:
+    def get_target(self, group: Group, targets: list[Group]) -> Optional[Group]:
         opponents = {
             Category.IMMUNE: Category.INFECTION,
             Category.INFECTION: Category.IMMUNE,
         }[group.category]
 
         options = self.get_category(opponents)
-        options = [option for option in options if option not in assigned]
+        options = [option for option in options if option not in targets]
         options.sort(
             key=lambda option: (
                 group.calculate_damage(option),
@@ -126,7 +121,7 @@ def main() -> None:
     answer.part2(3957, solve_part_2())
 
 
-def solve_part_1():
+def solve_part_1() -> int:
     battle = get_battle(0)
     battle.simulate()
     return battle.winning_units()
@@ -144,7 +139,7 @@ def solve_part_2() -> int:
 
 def get_battle(immune_boost: int) -> Battle:
     def parse_group(id: int, category: Category, raw: str, boost: int) -> Group:
-        traits = dict()
+        traits: dict[str, list[str]] = dict()
         match = re.search(r"\((.*)\)", raw)
         if match is not None:
             for raw_trait in match.group(1).split("; "):
