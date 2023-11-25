@@ -135,7 +135,6 @@ touch .adventofcode.session
 | 2021 | 12  | 1.490   | LEAVE  | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | LEAVE  | Dealing with large space, already in Rust               |
 | 2019 | 25  | 1.419   | LEAVE  | Mostly spends time permuting through the items          |
-| 2018 | 18  | 1.350   | TODO   | Game of life problem, optimized by using tuples         |
 | 2018 | 14  | 1.304   | MAYBE  | Would need to be a lot more clever to get better        |
 | 2017 | 22  | 1.288   | MAYBE  | Game of life problem already in Rust                    |
 | 2020 | 15  | 1.249   | LEAVE  | Even in Rust iterating to 30,000,000 takes a bit        |

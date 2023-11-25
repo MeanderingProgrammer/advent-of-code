@@ -102,6 +102,22 @@ impl Point {
         }
     }
 
+    pub fn diagonal_neighbors(&self) -> Vec<Self> {
+        match self.dimensions() {
+            2 => vec![
+                self.add_x(1).add_y(1),
+                self.add_x(1),
+                self.add_x(1).add_y(-1),
+                self.add_x(-1).add_y(1),
+                self.add_x(-1),
+                self.add_x(-1).add_y(-1),
+                self.add_y(1),
+                self.add_y(-1),
+            ],
+            _ => panic!("Unsupported number of dimensions for computing diagonal neighbors"),
+        }
+    }
+
     pub fn distance(&self, other: &Self) -> f64 {
         self.check_dimension(other);
         let mut sum_squares = 0;
