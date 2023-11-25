@@ -1,8 +1,35 @@
 use aoc_lib::answer;
-use aoc_lib::point::Point;
+use aoc_lib::grid::Grid;
 use aoc_lib::reader;
 use priority_queue::DoublePriorityQueue;
+use std::cmp::Ordering;
 use std::collections::HashMap;
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct Point(i16, i16);
+
+impl Ord for Point {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.1, self.0).cmp(&(other.1, other.0))
+    }
+}
+
+impl PartialOrd for Point {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Point {
+    fn neighbors(&self) -> Vec<Self> {
+        vec![
+            Self(self.0 + 1, self.1),
+            Self(self.0 - 1, self.1),
+            Self(self.0, self.1 + 1),
+            Self(self.0, self.1 - 1),
+        ]
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 enum Team {
@@ -13,8 +40,8 @@ enum Team {
 #[derive(Debug, Clone)]
 struct Character {
     team: Team,
-    damage: u32,
-    hp: i64,
+    damage: i16,
+    hp: i16,
 }
 
 #[derive(Debug, PartialEq)]
@@ -32,10 +59,10 @@ struct Game {
 }
 
 impl Game {
-    fn add(&mut self, positions: Vec<&Point>, character: Character) {
+    fn add(&mut self, positions: Vec<Point>, character: Character) {
         positions.into_iter().for_each(|position| {
             self.characters.insert(position.clone(), character.clone());
-            self.open_paths.push(position.clone());
+            self.open_paths.push(position);
         });
     }
 
@@ -47,7 +74,11 @@ impl Game {
         }
         match status {
             GameStatus::Succcess => {
-                let hp_value: i64 = self.characters.values().map(|character| character.hp).sum();
+                let hp_value: i64 = self
+                    .characters
+                    .values()
+                    .map(|character| character.hp as i64)
+                    .sum();
                 Some((round - 1) * hp_value)
             }
             _ => None,
@@ -75,7 +106,7 @@ impl Game {
             Some(target_position) => {
                 let target = self.characters.get_mut(&target_position).unwrap();
                 let elf_target = target.team == Team::Elf;
-                target.hp -= character.damage as i64;
+                target.hp -= character.damage;
                 if target.hp <= 0 {
                     self.characters.remove(&target_position).unwrap();
                     if self.until_elf_death && elf_target {
@@ -123,7 +154,7 @@ impl Game {
 
     fn adjacent_target(&self, position: &Point, character: &Character) -> Option<Point> {
         let neighbors = position.neighbors();
-        let mut targets: Vec<(i64, &Point)> = self
+        let mut targets: Vec<(i16, &Point)> = self
             .opponents(&character)
             .into_iter()
             .filter(|opponent| neighbors.contains(opponent))
@@ -135,7 +166,7 @@ impl Game {
 
     fn find_move(&self, position: &Point, character: &Character) -> Option<Point> {
         let distances = self.distances(position);
-        let mut target_distances: Vec<(u32, Point)> = self
+        let mut target_distances: Vec<(u16, Point)> = self
             .opponents(character)
             .iter()
             .flat_map(|opponent| opponent.neighbors())
@@ -154,7 +185,7 @@ impl Game {
         }
     }
 
-    fn distances(&self, start: &Point) -> HashMap<Point, (u32, Point)> {
+    fn distances(&self, start: &Point) -> HashMap<Point, (u16, Point)> {
         let occupied = self.positions();
         let mut queue = DoublePriorityQueue::new();
         queue.push_decrease(start.clone(), (0, start.clone()));
@@ -165,12 +196,12 @@ impl Game {
                 distances.insert(position.clone(), (length, parent.clone()));
                 position
                     .neighbors()
-                    .iter()
+                    .into_iter()
                     .filter(|neighbor| self.open_paths.contains(neighbor))
                     .filter(|neighbor| !occupied.contains(neighbor))
                     .filter(|neighbor| !distances.contains_key(neighbor))
                     .for_each(|neighbor| {
-                        queue.push_decrease(neighbor.clone(), (length + 1, position.clone()));
+                        queue.push_decrease(neighbor, (length + 1, position.clone()));
                     });
             }
         }
@@ -191,23 +222,25 @@ fn play_game(until_elf_death: bool) -> i64 {
         if result.is_some() {
             return result.unwrap();
         }
-        elf_damage += 1
+        elf_damage += 1;
     }
 }
 
-fn get_game(elf_damage: u32, until_elf_death: bool) -> Game {
+fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
+    fn from_grid(grid: &Grid<char>, value: char) -> Vec<Point> {
+        grid.points_with_value(value)
+            .into_iter()
+            .map(|point| Point(point.x() as i16, point.y() as i16))
+            .collect()
+    }
     let grid = reader::read_grid(|ch| Some(ch));
     let mut game = Game {
         characters: HashMap::new(),
-        open_paths: grid
-            .points_with_value('.')
-            .into_iter()
-            .map(|position| position.clone())
-            .collect(),
+        open_paths: from_grid(&grid, '.'),
         until_elf_death,
     };
     game.add(
-        grid.points_with_value('G'),
+        from_grid(&grid, 'G'),
         Character {
             team: Team::Goblin,
             damage: 3,
@@ -215,7 +248,7 @@ fn get_game(elf_damage: u32, until_elf_death: bool) -> Game {
         },
     );
     game.add(
-        grid.points_with_value('E'),
+        from_grid(&grid, 'E'),
         Character {
             team: Team::Elf,
             damage: elf_damage,
