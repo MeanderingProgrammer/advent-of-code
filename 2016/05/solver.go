@@ -6,11 +6,33 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
+	"sync"
 )
 
-type Part struct {
-	part   int
-	result string
+const (
+	batches   = 8
+	batchSize = 2048
+)
+
+type hashSearch struct {
+	prefix string
+}
+
+func (h hashSearch) runBatch(start int) []string {
+	results := []string{}
+	for i := start; i < start+batchSize; i++ {
+		hash := h.getHash(i)
+		if hash[0:5] == "00000" {
+			results = append(results, hash)
+		}
+	}
+	return results
+}
+
+func (h hashSearch) getHash(i int) string {
+	value := h.prefix + strconv.Itoa(i)
+	result := md5.Sum([]byte(value))
+	return hex.EncodeToString(result[:])
 }
 
 type Populator interface {
@@ -39,32 +61,34 @@ func (p *Part2) populate(passwords map[int]string, hash string) {
 
 func main() {
 	doorId := files.Content()
-	parts := make(chan Part)
-	solvePart := func(part int, populator Populator) {
-		parts <- Part{
-			part:   part,
-			result: getPassword(doorId, populator),
-		}
-	}
-	go solvePart(1, &Part1{})
-	go solvePart(2, &Part2{})
-	res1, res2 := <-parts, <-parts
-	if res2.part == 1 {
-		res1, res2 = res2, res1
-	}
-	answers.Part1("d4cd2ee1", res1.result)
-	answers.Part2("f2c730e5", res2.result)
+	answers.Part1("d4cd2ee1", getPassword(doorId, &Part1{}))
+	answers.Part2("f2c730e5", getPassword(doorId, &Part2{}))
 }
 
 func getPassword(doorId string, populator Populator) string {
+	search := hashSearch{
+		prefix: doorId,
+	}
 	index := 0
 	passwords := make(map[int]string)
 	for len(passwords) < 8 {
-		hash := getHash(doorId, index)
-		if hash[0:5] == "00000" {
-			populator.populate(passwords, hash)
+		results := make(chan []string, batches)
+		var wg sync.WaitGroup
+		for i := 0; i < batches; i++ {
+			wg.Add(1)
+			go func(start int) {
+				defer wg.Done()
+				results <- search.runBatch(start)
+			}(index)
+			index += batchSize
 		}
-		index++
+		wg.Wait()
+		close(results)
+		for result := range results {
+			for _, hash := range result {
+				populator.populate(passwords, hash)
+			}
+		}
 	}
 	result := ""
 	for i := 0; i < len(passwords); i++ {
@@ -72,11 +96,4 @@ func getPassword(doorId string, populator Populator) string {
 		result += value
 	}
 	return result
-}
-
-func getHash(doorId string, index int) string {
-	value := doorId + strconv.Itoa(index)
-	hasher := md5.New()
-	hasher.Write([]byte(value))
-	return hex.EncodeToString(hasher.Sum(nil))
 }
