@@ -136,7 +136,6 @@ touch .adventofcode.session
 | 2022 | 15  | 1.483   | LEAVE  | Dealing with large space, already in Rust               |
 | 2019 | 25  | 1.419   | LEAVE  | Mostly spends time permuting through the items          |
 | 2020 | 15  | 1.249   | LEAVE  | Even in Rust iterating to 30,000,000 takes a bit        |
-| 2016 | 24  | 1.199   | TODO   | N/A                                                     |
 | 2018 | 24  | 1.153   | LEAVE  | Complex game, fairly optimized in Python                |
 | 2019 | 20  | 1.132   | LEAVE  | Mostly the Java runtime for such a small execution      |
 | 2017 | 3   | 1.109   | TODO   | Can probably improve by using a dict / tuple            |
