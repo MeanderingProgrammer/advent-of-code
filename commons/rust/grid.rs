@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::string::ToString;
 
-pub trait GridValue: PartialEq + ToString + Clone {}
-impl<T: PartialEq + ToString + Clone> GridValue for T {}
+pub trait GridValue: PartialEq + ToString {}
+impl<T: PartialEq + ToString> GridValue for T {}
 
 #[derive(Debug)]
 pub struct Grid<T: GridValue> {
