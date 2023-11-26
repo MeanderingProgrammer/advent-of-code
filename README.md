@@ -119,7 +119,6 @@ touch .adventofcode.session
 
 | Year | Day | Runtime | Notes                                                   |
 | ---- | --- | ------- | ------------------------------------------------------- |
-| 2018 | 19  | 4.878   | Kinda like int-code but running it seems not feesible   |
 | 2022 | 16  | 4.603   | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 3.247   | Looks like a complex path finding problem               |
 | 2019 | 18  | 2.235   | Mostly the Java runtime for such a small execution      |
