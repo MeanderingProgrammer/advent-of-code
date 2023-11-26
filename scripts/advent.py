@@ -7,6 +7,7 @@ from args.generate_template import GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunTemplate
 from command.generate import Generator
+from command.graph import Grapher
 from command.run import Runner
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
@@ -17,38 +18,6 @@ from language.language import Language
 @click.group()
 def cli() -> None:
     pass
-
-
-@cli.command()
-@click.option("-t", "--template", type=click.Choice(GenerateTemplate().get_names()))
-@click.option("-y", "--year", type=int)
-@click.option("-d", "--day", type=int)
-@click.option("-l", "--language", type=LanguageType(), default="rust")
-@click.option("-i", "--info", is_flag=True)
-def generate(
-    template: Optional[str],
-    year: Optional[int],
-    day: Optional[int],
-    language: Language,
-    info: bool,
-) -> None:
-    """
-    Generates starting files for a specific day & language
-    """
-
-    if year is None and day is None:
-        template = template or "next"
-        days = [GenerateTemplate().get(template)]
-    elif template is not None:
-        raise Exception("If 'year' or 'day' is provided then 'template' should not be")
-    elif year is None or day is None:
-        raise Exception("Both 'year' and 'day' are required if either is provided")
-    else:
-        days = DayFactory(years=[year], days=[day]).get_days()
-
-    assert len(days) == 1, "Can only generate one day at a time"
-    generator = Generator(day=days[0], language=language)
-    click.echo(f"{generator}") if info else generator.generate()
 
 
 @cli.command()
@@ -71,7 +40,6 @@ def run(
     """
     Runs specific days / years for either specific or all languages
     """
-
     if len(year) == 0 and len(day) == 0:
         template = template or "latest"
         days = RunTemplate().get(template)
@@ -97,6 +65,48 @@ def run(
         save=template in ["days"] and len(language) == 0,
     )
     click.echo(f"{runner}") if info else runner.run()
+
+
+@cli.command()
+@click.option("-t", "--template", type=click.Choice(GenerateTemplate().get_names()))
+@click.option("-y", "--year", type=int)
+@click.option("-d", "--day", type=int)
+@click.option("-l", "--language", type=LanguageType(), default="rust")
+@click.option("-i", "--info", is_flag=True)
+def generate(
+    template: Optional[str],
+    year: Optional[int],
+    day: Optional[int],
+    language: Language,
+    info: bool,
+) -> None:
+    """
+    Generates starting files for a specific day & language
+    """
+    if year is None and day is None:
+        template = template or "next"
+        days = [GenerateTemplate().get(template)]
+    elif template is not None:
+        raise Exception("If 'year' or 'day' is provided then 'template' should not be")
+    elif year is None or day is None:
+        raise Exception("Both 'year' and 'day' are required if either is provided")
+    else:
+        days = DayFactory(years=[year], days=[day]).get_days()
+
+    assert len(days) == 1, "Can only generate one day at a time"
+    generator = Generator(day=days[0], language=language)
+    click.echo(f"{generator}") if info else generator.generate()
+
+
+@cli.command()
+@click.option("-a", "--archive", is_flag=True)
+@click.option("-i", "--info", is_flag=True)
+def graph(archive: bool, info: bool) -> None:
+    """
+    Creates some fun graphs based on runtimes
+    """
+    grapher = Grapher(archive=archive)
+    click.echo(f"{grapher}") if info else grapher.graph()
 
 
 if __name__ == "__main__":

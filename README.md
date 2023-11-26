@@ -17,6 +17,7 @@ pip install -r scripts/requirements.txt
 ```
 alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
+alias a_graph="./scripts/advent.py graph"
 ```
 
 # Run
@@ -114,6 +115,30 @@ This library relies on openssl which you will also need to install if you don't 
 cargo install aoc-cli
 touch .adventofcode.session
 ```
+
+# Graph
+
+The `graph` target creates a variety of graphs to visualize the runtime of days split and
+grouped on different dimensions.
+
+None of the parameters are required, the default behavior in this case is to create only
+new graphs and skip graphs that have been created before.
+
+- Alias Command: `a_graph`
+- Direct Command: `./scripts/advent.py graph`
+
+## Usage
+
+```
+a_graph \
+  --archive? \
+  --info?
+```
+
+| Variable Name | Alt  | Description                             | Default | Example |
+| ------------- | ---- | --------------------------------------- | ------- | ------- |
+| archive       | `-a` | Archive existing graphs                 | `False` | `-a`    |
+| info          | `-i` | Outputs whether graphs would be arhived | `False` | `-i`    |
 
 # Take over 1 second on M2 Mac
 
