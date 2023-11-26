@@ -56,7 +56,7 @@ def generate(
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
-@click.option("-s", "--slow", type=int, default=5)
+@click.option("-s", "--slow", type=int, default=1)
 @click.option("-i", "--info", is_flag=True)
 @click.option("--test", is_flag=True)
 def run(
