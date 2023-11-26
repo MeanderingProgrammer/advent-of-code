@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 @dataclass(frozen=True)
@@ -70,7 +71,9 @@ def create_graphs(runtimes: pd.DataFrame, saver: FigureSaver) -> None:
 
     saver.save(
         name="year_percentage",
-        ax=yearly_runtimes.plot.pie(autopct=format_label, figsize=(8, 8)),
+        ax=yearly_runtimes.plot.pie(
+            autopct=format_label, colors=sns.color_palette("tab10"), figsize=(8, 8)
+        ),
     )
 
     language_counts = runtimes["language"].value_counts()
