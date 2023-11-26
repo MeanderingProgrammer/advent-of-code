@@ -18,7 +18,7 @@ def run_until_success() -> int:
         i += 1
 
 
-def run_computer(initial_value: int):
+def run_computer(initial_value: int) -> None:
     computer = Computer(registers=dict(a=initial_value, b=0, c=0, d=0), num_outputs=100)
     computer.run(Parser().lines())
 

@@ -58,11 +58,7 @@ class Toggle(Instruction):
 
     @override
     def run(self, computer: "Computer") -> int:
-        ip = computer.ip + computer.get(self.register)
-        instructions = computer.instructions
-        if ip < len(instructions):
-            instruction = instructions[ip]
-            instructions[ip] = instruction.toggle()
+        computer.toggle(self.register)
         return 1
 
     @override
@@ -82,13 +78,9 @@ class Output(Instruction):
             raise Exception("Invalid Output Values")
         return 1
 
-    def outputs_valid(self, outputs):
-        pattern = [0, 1]
-        for i, value in enumerate(outputs):
-            expected = pattern[i % len(pattern)]
-            if value != expected:
-                return False
-        return True
+    def outputs_valid(self, outputs: list[int]) -> bool:
+        last_value = 1 if len(outputs) % 2 == 0 else 0
+        return outputs[-1] == last_value
 
     @override
     def toggle(self) -> Instruction:
@@ -128,14 +120,17 @@ class Computer:
     def output(self, value: int) -> None:
         self.outputs.append(value)
 
+    def toggle(self, value: str) -> None:
+        ip = self.ip + self.get(value)
+        if ip < len(self.instructions):
+            instruction = self.instructions[ip]
+            self.instructions[ip] = instruction.toggle()
+
     def get(self, value: str) -> int:
         return self.registers[value] if value in self.registers else int(value)
 
     def set(self, register: str, value: int) -> None:
         self.registers[register] = value
-
-    def move(self, amount: int) -> None:
-        self.ip += amount
 
     def run(self, lines: list[str]) -> None:
         self.instructions = parse_instructions(lines)
