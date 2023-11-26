@@ -16,7 +16,7 @@ use std::collections::{BTreeSet, HashMap};
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct IndividualState {
     location: String,
-    minutes_left: i64,
+    minutes_left: u16,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
@@ -25,45 +25,100 @@ struct FullState {
     valves_opened: BTreeSet<String>,
 }
 
+impl FullState {
+    fn new(starting_time: u16, individuals: usize) -> Self {
+        Self {
+            individuals: vec![
+                IndividualState {
+                    location: "AA".to_string(),
+                    minutes_left: starting_time,
+                };
+                individuals
+            ],
+            valves_opened: ["AA".to_string()].into(),
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Cave {
-    graph: HashMap<String, Vec<(String, i64)>>,
-    valve_to_flow: HashMap<String, i64>,
+    graph: HashMap<String, Vec<(String, u16)>>,
+    valve_to_flow: HashMap<String, u16>,
 }
 
 impl Cave {
-    fn next_options(&self, state: &FullState, score: i64, i: usize) -> Vec<(FullState, i64)> {
+    fn traverse(&self, starting_time: u16, individuals: usize) -> u16 {
+        let mut queue = PriorityQueue::new();
+        queue.push(FullState::new(starting_time, individuals), 0);
+        let mut max_score: u16 = 0;
+        while !queue.is_empty() {
+            let (state, score) = queue.pop().unwrap();
+            if score + self.max_score(&state) < max_score {
+                continue;
+            }
+            max_score = max_score.max(score);
+            let next_states = match individuals {
+                1 => self.next_options(&state, score, 0),
+                2 => {
+                    let first_states = self.next_options(&state, score, 0);
+                    let second_states = self.next_options(&state, score, 1);
+                    if first_states.is_empty() {
+                        second_states
+                    } else if second_states.is_empty() {
+                        first_states
+                    } else {
+                        let mut result = vec![];
+                        for (next_state, next_score) in first_states.into_iter() {
+                            let mut followup_states = self.next_options(&next_state, next_score, 1);
+                            if followup_states.is_empty() {
+                                result.push((next_state, next_score));
+                            } else {
+                                result.append(&mut followup_states);
+                            }
+                        }
+                        result
+                    }
+                }
+                _ => panic!("Failure"),
+            };
+            for (next_state, next_score) in next_states {
+                queue.push_increase(next_state, next_score);
+            }
+        }
+        max_score
+    }
+
+    fn next_options(&self, state: &FullState, score: u16, i: usize) -> Vec<(FullState, u16)> {
         let individual = &state.individuals[i];
         self.graph[&individual.location]
             .iter()
-            .filter(|(_, time)| individual.minutes_left - time > 0)
+            .filter(|(_, time)| individual.minutes_left > *time)
             .filter(|(destination, _)| !state.valves_opened.contains(destination))
             .map(|(destination, time)| {
-                let next_time_left = individual.minutes_left - time - 1;
-                let flow_rate = self.valve_to_flow.get(destination).unwrap();
+                let minutes_left = individual.minutes_left - time - 1;
 
-                let mut next_valves_opened = state.valves_opened.clone();
-                next_valves_opened.insert(destination.to_string());
+                let mut valves_opened = state.valves_opened.clone();
+                valves_opened.insert(destination.to_string());
 
-                let mut next_individuals = state.individuals.clone();
-                next_individuals[i] = IndividualState {
+                let mut individuals = state.individuals.clone();
+                individuals[i] = IndividualState {
                     location: destination.to_string(),
-                    minutes_left: next_time_left,
+                    minutes_left,
                 };
 
-                let next_state = FullState {
-                    individuals: next_individuals,
-                    valves_opened: next_valves_opened,
-                };
-                let next_score = score + (flow_rate * next_time_left);
-
-                (next_state, next_score)
+                (
+                    FullState {
+                        individuals,
+                        valves_opened,
+                    },
+                    score + (self.valve_to_flow[destination] * minutes_left),
+                )
             })
             .collect()
     }
 
-    fn optimistic_additional_score(&self, state: &FullState) -> i64 {
-        let mut unopened: Vec<i64> = self
+    fn max_score(&self, state: &FullState) -> u16 {
+        let mut unopened: Vec<u16> = self
             .valve_to_flow
             .iter()
             .filter(|(&ref name, _)| !state.valves_opened.contains(name))
@@ -74,7 +129,7 @@ impl Cave {
 
         let mut highest_values = unopened.iter().peekable();
 
-        let mut times_left: Vec<i64> = state
+        let mut times_left: Vec<u16> = state
             .individuals
             .iter()
             .map(|individual| individual.minutes_left)
@@ -99,7 +154,7 @@ impl Cave {
 #[derive(Debug)]
 struct Valve {
     name: String,
-    flow_rate: i64,
+    flow_rate: u16,
     leads_to: Vec<String>,
 }
 
@@ -131,13 +186,12 @@ impl Valve {
 fn main() {
     let valves = reader::read(|line| Valve::from_str(line).unwrap().1);
     let cave = create_cave(&valves);
-    answer::part1(1873, traverse_cave(&cave, 30, 1).unwrap());
-    answer::part2(2425, traverse_cave(&cave, 26, 2).unwrap());
+    answer::part1(1873, cave.traverse(30, 1));
+    answer::part2(2425, cave.traverse(26, 2));
 }
 
 fn create_cave(valves: &Vec<Valve>) -> Cave {
     let valve_to_flow = get_valve_to_flow(valves);
-
     // First create a graph where all edges are weighted at 1
     let mut base_graph: DiGraphMap<&str, ()> = DiGraphMap::new();
     valves.iter().for_each(|valve| {
@@ -147,9 +201,8 @@ fn create_cave(valves: &Vec<Valve>) -> Cave {
     });
     // Use a fast algorithm to get distances between all pairs
     let all_distances = floyd_warshall(&base_graph, |_| 1).unwrap();
-
     // Create a graph weighted by distance for all important valves
-    let mut graph: HashMap<String, Vec<(String, i64)>> = HashMap::new();
+    let mut graph: HashMap<String, Vec<(String, u16)>> = HashMap::new();
     for v1 in valve_to_flow.keys() {
         for v2 in valve_to_flow.keys() {
             if v1 != v2 {
@@ -167,7 +220,7 @@ fn create_cave(valves: &Vec<Valve>) -> Cave {
     }
 }
 
-fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
+fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, u16> {
     let mut valve_to_flow = HashMap::new();
     valves
         .iter()
@@ -177,59 +230,4 @@ fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, i64> {
             valve_to_flow.insert(valve.name.clone(), valve.flow_rate);
         });
     valve_to_flow
-}
-
-fn traverse_cave(cave: &Cave, starting_time: i64, individuals: usize) -> Option<i64> {
-    let mut queue = PriorityQueue::new();
-    let mut max_score: Option<i64> = None;
-
-    let starting_state = FullState {
-        individuals: vec![
-            IndividualState {
-                location: "AA".to_string(),
-                minutes_left: starting_time,
-            };
-            individuals
-        ],
-        valves_opened: ["AA".to_string()].into(),
-    };
-
-    queue.push(starting_state, 0);
-
-    while !queue.is_empty() {
-        let (state, score) = queue.pop().unwrap();
-
-        let current_max = match max_score {
-            Some(s) => s.max(score),
-            None => score,
-        };
-        max_score = Some(current_max);
-        // Mechanism to filter out states that cannot possibly reach an already seen value
-        if score + cave.optimistic_additional_score(&state) < current_max {
-            continue;
-        }
-
-        let mut across_individuals = vec![(state, score)];
-
-        for i in 0..individuals {
-            let mut next_options = Vec::new();
-            for (state, score) in &across_individuals {
-                let options = cave.next_options(state, *score, i);
-                if options.len() == 0 && i < individuals - 1 {
-                    next_options = across_individuals.clone();
-                } else {
-                    for (next_state, next_score) in options {
-                        next_options.push((next_state, next_score));
-                    }
-                }
-            }
-            across_individuals = next_options;
-        }
-
-        for (next_state, next_score) in across_individuals {
-            queue.push_increase(next_state, next_score);
-        }
-    }
-
-    max_score
 }
