@@ -2,18 +2,16 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/async"
 	"advent-of-code/commons/go/files"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 const (
-	batches   = 8
-	batchSize = 64
-	offset    = 1_000
+	offset = 1_000
 )
 
 type hashInfo struct {
@@ -28,7 +26,7 @@ type hashSearch struct {
 	hashes int
 }
 
-func (h hashSearch) runBatch(start int) []hashInfo {
+func (h hashSearch) runBatch(start int, batchSize int) []hashInfo {
 	result := []hashInfo{}
 	for i := start; i < start+batchSize; i++ {
 		result = append(result, h.getHash(i))
@@ -74,37 +72,33 @@ func main() {
 
 func generate(search hashSearch) int {
 	infos := make(map[int]hashInfo)
-	index, keys := 0, []int{}
-	for len(keys) < 64 {
-		addBatch(search, infos)
-		for index < len(infos)-offset {
-			info := infos[index]
-			if len(info.triples) > 0 && contains(infos, index+1, info.triples[0]) {
-				keys = append(keys, index)
+	index := 0
+	keys := []int{}
+	batch := async.Batch[[]hashInfo]{
+		Batches:   8,
+		BatchSize: 64,
+		Index:     0,
+		Complete: func() bool {
+			return len(keys) >= 64
+		},
+		Work: search.runBatch,
+		ProcessResults: func(results [][]hashInfo) {
+			for _, result := range results {
+				for _, info := range result {
+					infos[info.index] = info
+				}
 			}
-			index++
-		}
+			for index < len(infos)-offset {
+				info := infos[index]
+				if len(info.triples) > 0 && contains(infos, index+1, info.triples[0]) {
+					keys = append(keys, index)
+				}
+				index++
+			}
+		},
 	}
+	batch.Run()
 	return keys[63]
-}
-
-func addBatch(search hashSearch, infos map[int]hashInfo) {
-	results := make(chan hashInfo, batches*batchSize)
-	var wg sync.WaitGroup
-	for i := 0; i < batches; i++ {
-		wg.Add(1)
-		go func(start int) {
-			defer wg.Done()
-			for _, value := range search.runBatch(start) {
-				results <- value
-			}
-		}(len(infos) + (i * batchSize))
-	}
-	wg.Wait()
-	close(results)
-	for result := range results {
-		infos[result.index] = result
-	}
 }
 
 func contains(infos map[int]hashInfo, index int, target rune) bool {
