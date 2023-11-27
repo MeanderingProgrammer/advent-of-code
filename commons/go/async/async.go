@@ -1,7 +1,6 @@
 package async
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -15,7 +14,6 @@ type Batch[T any] struct {
 }
 
 func (b *Batch[T]) Run() {
-	fmt.Println(b)
 	for !b.Complete() {
 		resultChan := make(chan T, b.Batches)
 		var wg sync.WaitGroup
