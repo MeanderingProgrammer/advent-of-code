@@ -13,6 +13,7 @@ class RunName(StrEnum):
     DAYS = auto()
     LANGUAGES = auto()
     INT_CODE = auto()
+    BATCHES = auto()
     SLOW = auto()
 
 
@@ -20,25 +21,31 @@ class RunTemplate:
     def get_names(self) -> list[str]:
         return [run_name.value for run_name in RunName]
 
-    def get(self, name: str) -> list[Day]:
-        run_name = RunName(name)
-        if run_name == RunName.LATEST:
+    def get(self, name: RunName) -> list[Day]:
+        if name == RunName.LATEST:
             return [DayFactory().get_latest()]
-        elif run_name == RunName.PREVIOUS:
+        elif name == RunName.PREVIOUS:
             latest_day = DayFactory().get_latest()
             return [latest_day.add(-1)]
-        elif run_name in [RunName.ALL, RunName.DAYS]:
+        elif name in [RunName.ALL, RunName.DAYS]:
             return DayFactory().get_days()
-        elif run_name == RunName.LANGUAGES:
+        elif name == RunName.LANGUAGES:
             # Single day implemented in all languages
             return [Day("2021", "01")]
-        elif run_name == RunName.INT_CODE:
+        elif name == RunName.INT_CODE:
             days = [2] + list(range(5, 26, 2))
             return DayFactory(years=[2019], days=days).get_days()
-        elif run_name == RunName.SLOW:
+        elif name == RunName.BATCHES:
+            return [
+                Day(year="2015", day="04"),
+                Day(year="2016", day="05"),
+                Day(year="2016", day="14"),
+                Day(year="2021", day="19"),
+            ]
+        elif name == RunName.SLOW:
             return RunTemplate.__slow()
         else:
-            raise Exception(f"Unhandled name: {run_name}")
+            raise Exception(f"Unhandled name: {name}")
 
     @staticmethod
     def __slow() -> list[Day]:
