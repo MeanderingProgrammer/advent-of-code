@@ -3,9 +3,10 @@
 from typing import Optional
 
 import click
-from args.generate_template import GenerateTemplate
+from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
+from args.str_enum_type import StrEnumType
 from command.generate import Generator
 from command.graph import Grapher
 from command.run import Runner
@@ -21,7 +22,7 @@ def cli() -> None:
 
 
 @cli.command()
-@click.option("-t", "--template", type=click.Choice(RunTemplate().get_names()))
+@click.option("-t", "--template", type=StrEnumType(RunName))
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
@@ -29,7 +30,7 @@ def cli() -> None:
 @click.option("-i", "--info", is_flag=True)
 @click.option("--test", is_flag=True)
 def run(
-    template: Optional[str],
+    template: Optional[RunName],
     year: tuple[int, ...],
     day: tuple[int, ...],
     language: tuple[Language, ...],
@@ -41,8 +42,8 @@ def run(
     Runs specific days / years for either specific or all languages
     """
     if len(year) == 0 and len(day) == 0:
-        template = template or RunName.LATEST.value
-        days = RunTemplate().get(RunName(template))
+        template = template or RunName.LATEST
+        days = RunTemplate().get(template)
     elif template is not None:
         raise Exception("If 'year' or 'day' is provided then 'template' should not be")
     else:
@@ -62,19 +63,19 @@ def run(
         language_strategy=language_strategy,
         slow=slow,
         run_args=["--test"] if test else [],
-        save=template in ["days"] and len(language) == 0,
+        save=template in [RunName.DAYS] and len(language) == 0,
     )
     click.echo(f"{runner}") if info else runner.run()
 
 
 @cli.command()
-@click.option("-t", "--template", type=click.Choice(GenerateTemplate().get_names()))
+@click.option("-t", "--template", type=StrEnumType(GenerateName))
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
 @click.option("-l", "--language", type=LanguageType(), default="rust")
 @click.option("-i", "--info", is_flag=True)
 def generate(
-    template: Optional[str],
+    template: Optional[GenerateName],
     year: Optional[int],
     day: Optional[int],
     language: Language,
@@ -84,7 +85,7 @@ def generate(
     Generates starting files for a specific day & language
     """
     if year is None and day is None:
-        template = template or "next"
+        template = template or GenerateName.NEXT
         days = [GenerateTemplate().get(template)]
     elif template is not None:
         raise Exception("If 'year' or 'day' is provided then 'template' should not be")

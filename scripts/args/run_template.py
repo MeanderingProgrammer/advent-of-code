@@ -18,9 +18,6 @@ class RunName(StrEnum):
 
 
 class RunTemplate:
-    def get_names(self) -> list[str]:
-        return [run_name.value for run_name in RunName]
-
     def get(self, name: RunName) -> list[Day]:
         if name == RunName.LATEST:
             return [DayFactory().get_latest()]
