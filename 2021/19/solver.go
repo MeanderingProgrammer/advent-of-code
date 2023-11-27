@@ -159,7 +159,6 @@ func (scanner Scanner) getTransformation(other Scanner) Transformation {
 
 func main() {
 	joined := joinAllScanners()
-
 	answers.Part1(512, len(joined.points))
 	answers.Part2(16802, joined.positions.largestDistance())
 }

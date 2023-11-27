@@ -40,7 +40,6 @@ class RunTemplate:
                 Day(year="2015", day="04"),
                 Day(year="2016", day="05"),
                 Day(year="2016", day="14"),
-                Day(year="2021", day="19"),
             ]
         elif name == RunName.SLOW:
             return RunTemplate.__slow()
