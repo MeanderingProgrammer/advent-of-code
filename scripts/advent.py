@@ -5,7 +5,7 @@ from typing import Optional
 import click
 from args.generate_template import GenerateTemplate
 from args.language_type import LanguageType
-from args.run_template import RunTemplate
+from args.run_template import RunName, RunTemplate
 from command.generate import Generator
 from command.graph import Grapher
 from command.run import Runner
@@ -41,8 +41,8 @@ def run(
     Runs specific days / years for either specific or all languages
     """
     if len(year) == 0 and len(day) == 0:
-        template = template or "latest"
-        days = RunTemplate().get(template)
+        template = template or RunName.LATEST.value
+        days = RunTemplate().get(RunName(template))
     elif template is not None:
         raise Exception("If 'year' or 'day' is provided then 'template' should not be")
     else:
@@ -51,7 +51,7 @@ def run(
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
-    fast = ["latest", "days"]
+    fast = [RunName.LATEST, RunName.DAYS, RunName.BATCHES]
     language_strategy = LanguageStrategy(
         name=StrategyName.FASTEST if template in fast else StrategyName.ALL,
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
