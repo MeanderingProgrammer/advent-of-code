@@ -150,7 +150,6 @@ a_graph \
 | 2016 | 25  | 2.018   | Python   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | Python   | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
-| 2020 | 11  | 1.989   | Python   | Fairly optimized game of life seats                     |
 | 2016 | 14  | 1.664   | Go       | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | Python   | Game of life problem, optimized by using tuples         |

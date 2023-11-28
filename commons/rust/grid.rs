@@ -8,7 +8,7 @@ use std::string::ToString;
 pub trait GridValue: PartialEq + ToString {}
 impl<T: PartialEq + ToString> GridValue for T {}
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Grid<T: GridValue> {
     grid: HashMap<Point, T>,
 }
@@ -32,6 +32,10 @@ impl<T: GridValue> Grid<T> {
             }
         }
         grid
+    }
+
+    pub fn get_grid(self) -> HashMap<Point, T> {
+        self.grid
     }
 
     pub fn add(&mut self, point: Point, value: T) {
