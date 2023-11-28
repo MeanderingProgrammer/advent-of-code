@@ -14,14 +14,14 @@ class Language(abc.ABC):
     def solution_path(self, day: Day) -> Path:
         return day.dir().joinpath(self.solution_file)
 
-    def setup_command(self) -> list[str]:
+    def setup_commands(self) -> list[list[str]]:
         if self._setup:
             return []
         self._setup = True
-        return self._setup_command()
+        return self._setup_commands()
 
     @abc.abstractmethod
-    def _setup_command(self) -> list[str]:
+    def _setup_commands(self) -> list[list[str]]:
         pass
 
     @abc.abstractmethod
