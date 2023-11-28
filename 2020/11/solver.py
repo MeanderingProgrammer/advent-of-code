@@ -61,16 +61,20 @@ class SeatingChart:
     def adjacent_occupied(self, p: Point) -> int:
         result = 0
         for direction in DIRECTIONS:
-            seat = self.explore_direction(add(p, direction), direction)
-            if seat is not None and seat == Seat.OCCUPIED:
+            seat = self.explore_direction(p, direction)
+            if seat == Seat.OCCUPIED:
                 result += 1
         return result
 
     def explore_direction(self, p: Point, direction: Point) -> Optional[Seat]:
-        seat = self.chart.get(p)
-        if not self.look or seat is None or seat != Seat.FLOOR:
+        point = add(p, direction)
+        seat = self.chart.get(point)
+        if not self.look:
             return seat
-        return self.explore_direction(add(p, direction), direction)
+        while seat == Seat.FLOOR:
+            point = add(point, direction)
+            seat = self.chart.get(point)
+        return seat
 
     def occupied(self) -> int:
         return sum([seat == Seat.OCCUPIED for seat in self.chart.values()])
