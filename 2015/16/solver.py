@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
@@ -9,14 +11,17 @@ CHECKS = dict(
 )
 
 
-class Match:
-    def __init__(self, values):
-        self.properties = {}
-        for value in values:
-            value = value.split(": ")
-            self.properties[value[0]] = int(value[1])
+@dataclass(frozen=True)
+class Aunt:
+    id: int
+    properties: dict[str, int]
 
-    def does_match(self, aunt, calibrate):
+
+@dataclass(frozen=True)
+class Match:
+    properties: dict[str, int]
+
+    def does_match(self, aunt: Aunt, calibrate: bool) -> bool:
         for name, value in self.properties.items():
             aunt_value = aunt.properties.get(name)
             if aunt_value is None:
@@ -30,34 +35,41 @@ class Match:
         return True
 
 
-class Aunt:
-    def __init__(self, value):
-        self.id, raw_properties = value.split(": ", 1)
-        self.properties = {}
-        for raw_property in raw_properties.split(", "):
-            raw_property = raw_property.split(": ")
-            self.properties[raw_property[0]] = int(raw_property[1])
-
-    def get_number(self):
-        return int(self.id.split()[1])
-
-
-def main():
-    answer.part1(213, get_aunt(False))
-    answer.part2(323, get_aunt(True))
-
-
-def get_aunt(calibrate):
-    match, aunts = get_data()
-    for aunt in aunts:
-        matches = match.does_match(aunt, calibrate)
-        if matches:
-            return aunt.get_number()
-
-
-def get_data():
+def main() -> None:
     groups = Parser().line_groups()
-    return Match(groups[0]), [Aunt(value) for value in groups[1]]
+    match, aunts = get_match(groups[0]), get_aunts(groups[1])
+    answer.part1(213, get_aunt(match, aunts, False))
+    answer.part2(323, get_aunt(match, aunts, True))
+
+
+def get_match(lines: list[str]) -> Match:
+    properties: dict[str, int] = dict()
+    for line in lines:
+        key, amount = line.split(": ")
+        properties[key] = int(amount)
+    return Match(properties)
+
+
+def get_aunts(lines: list[str]) -> list[Aunt]:
+    def parse_aunt(line: str) -> Aunt:
+        id, raw_properties = line.split(": ", 1)
+        properties: dict[str, int] = dict()
+        for property in raw_properties.split(", "):
+            key, amount = property.split(": ")
+            properties[key] = int(amount)
+        return Aunt(
+            id=int(id.split()[1]),
+            properties=properties,
+        )
+
+    return [parse_aunt(line) for line in lines]
+
+
+def get_aunt(match: Match, aunts: list[Aunt], calibrate: bool) -> int:
+    for aunt in aunts:
+        if match.does_match(aunt, calibrate):
+            return aunt.id
+    raise Exception("Failed")
 
 
 if __name__ == "__main__":

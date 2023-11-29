@@ -23,7 +23,7 @@ class Organizer:
     @staticmethod
     def group(
         weights: list[int], target: int, section: int
-    ) -> Generator[list[tuple[int]], None, None]:
+    ) -> Generator[list[tuple[int, ...]], None, None]:
         for packages in range(1, len(weights) + 1):
             for sub_weights in itertools.combinations(weights, packages):
                 if sum(sub_weights) != target:

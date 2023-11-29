@@ -28,14 +28,13 @@ class Animator:
             self.on.add((self.max_x, self.max_y))
 
     def step(self) -> None:
-        next_on = set()
+        next_on: set[Point] = set()
         for x in range(self.min_x, self.max_x + 1):
             for y in range(self.min_y, self.max_y + 1):
-                point = (x, y)
-                neighbors_on = self.neighbors_on(point)
-                neighbors_needed = [2, 3] if point in self.on else [3]
+                neighbors_on = self.neighbors_on((x, y))
+                neighbors_needed = [2, 3] if (x, y) in self.on else [3]
                 if neighbors_on in neighbors_needed:
-                    next_on.add(point)
+                    next_on.add((x, y))
         self.on = next_on
         self.add_corners()
 
@@ -55,7 +54,7 @@ class Animator:
         ]
         return sum([adjacent in self.on for adjacent in adjacents])
 
-    def lights_on(self):
+    def lights_on(self) -> int:
         return len(self.on)
 
 
@@ -84,7 +83,7 @@ def run(grid: Grid, force_corners: bool) -> int:
 
 
 def points_on(grid: Grid) -> set[Point]:
-    on = set()
+    on: set[Point] = set()
     for point, value in grid.items():
         if value == "#":
             on.add((point.x(), point.y()))

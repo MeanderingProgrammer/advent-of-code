@@ -1,123 +1,118 @@
 import itertools
+from dataclasses import dataclass
+from typing import Generator, Self
 
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
+class Item:
+    name: str
+    cost: int
+    damage: int
+    armor: int
+
+
+@dataclass(frozen=True)
+class Inventory:
+    weapons: list[Item]
+    armors: list[Item]
+    rings: list[Item]
+
+    def permute(self) -> Generator[list[Item], None, None]:
+        for weapons in Inventory.iter(self.weapons, [1]):
+            for armors in Inventory.iter(self.armors, [0, 1]):
+                for rings in Inventory.iter(self.rings, [0, 1, 2]):
+                    yield weapons + armors + rings
+
+    @staticmethod
+    def iter(
+        items: list[Item], lengths: list[int]
+    ) -> Generator[list[Item], None, None]:
+        for length in lengths:
+            for item in itertools.combinations(items, length):
+                yield list(item)
+
+
+@dataclass
 class Character:
-    def __init__(self, hp, damage, armor):
-        self.starting_hp = hp
-        self.items = []
+    starting_hp: int
+    hp: int
+    damage: int
+    armor: int
+    items: list[Item]
 
-        self.hp = hp
-        self.damage = damage
-        self.armor = armor
-
-    def attack(self, opponent):
-        damage = self.get_damage() - opponent.get_armor()
-        damage = max(damage, 1)
-        opponent.hp -= damage
-
-    def get_damage(self):
-        damage = self.damage
-        for item in self.items:
-            damage += item.damage
-        return damage
-
-    def get_armor(self):
-        armor = self.armor
-        for item in self.items:
-            armor += item.armor
-        return armor
-
+    @property
     def alive(self):
         return self.hp > 0
 
-    def set_items(self, items):
+    @property
+    def total_damage(self) -> int:
+        return self.damage + sum([item.damage for item in self.items])
+
+    @property
+    def total_armor(self):
+        return self.armor + sum([item.armor for item in self.items])
+
+    def set_items(self, items: list[Item]) -> None:
+        self.hp = self.starting_hp
         self.items = items
 
-    def reset(self):
-        self.hp = self.starting_hp
-        self.items = []
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{} {} {}".format(self.hp, self.damage, self.armor)
+    def attack(self, opponent: Self) -> None:
+        damage = self.total_damage - opponent.total_armor
+        opponent.hp -= max(damage, 1)
 
 
-class Item:
-    def __init__(self, raw):
-        parts = raw.split()
-        self.name = " ".join(parts[:-3])
-        self.cost = int(parts[-3])
-        self.damage = int(parts[-2])
-        self.armor = int(parts[-1])
+def main() -> None:
+    groups = Parser().line_groups()
+    inventory = Inventory(
+        weapons=get_items(groups[0]),
+        armors=get_items(groups[1]),
+        rings=get_items(groups[2]),
+    )
+    player = Character(starting_hp=100, hp=100, damage=0, armor=0, items=[])
+    enemy = Character(
+        starting_hp=int(groups[3][0].split()[-1]),
+        hp=int(groups[3][0].split()[-1]),
+        damage=int(groups[3][1].split()[-1]),
+        armor=int(groups[3][2].split()[-1]),
+        items=[],
+    )
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {} {} {}".format(self.name, self.cost, self.damage, self.armor)
-
-
-def main():
-    player = Character(100, 0, 0)
-    enemy, weapons, armors, rings = get_data()
-
-    win_costs, loss_costs = [], []
-    for items in permute(weapons, armors, rings):
+    win_costs: list[int] = []
+    loss_costs: list[int] = []
+    for items in inventory.permute():
         player.set_items(items)
-        win = fight(player, enemy)
-        data = win_costs if win else loss_costs
-        data.append(sum([item.cost for item in items]))
-        player.reset()
-        enemy.reset()
+        enemy.set_items([])
+        cost = sum([item.cost for item in items])
+        if fight(player, enemy):
+            win_costs.append(cost)
+        else:
+            loss_costs.append(cost)
 
     answer.part1(121, min(win_costs))
     answer.part2(201, max(loss_costs))
 
 
-def fight(player, enemy):
-    while player.alive() and enemy.alive():
+def get_items(lines: list[str]) -> list[Item]:
+    def parse_item(line: str) -> Item:
+        parts = line.split()
+        return Item(
+            name=" ".join(parts[:-3]),
+            cost=int(parts[-3]),
+            damage=int(parts[-2]),
+            armor=int(parts[-1]),
+        )
+
+    return [parse_item(line) for line in lines[1:]]
+
+
+def fight(player: Character, enemy: Character) -> bool:
+    while player.alive and enemy.alive:
         player.attack(enemy)
         enemy.attack(player)
-    return not enemy.alive()
-
-
-def permute(weapons, armors, rings):
-    for weapon in iter(weapons, [1]):
-        for armor in iter(armors, [0, 1]):
-            for ring in iter(rings, [0, 1, 2]):
-                yield list(weapon) + list(armor) + list(ring)
-
-
-def iter(items, lengths):
-    for length in lengths:
-        for item in itertools.combinations(items, length):
-            yield item
-
-
-def get_data():
-    groups = Parser().line_groups()
-    weapons = get_items(groups[0])
-    armors = get_items(groups[1])
-    rings = get_items(groups[2])
-    enemy = get_character(groups[3])
-    return enemy, weapons, armors, rings
-
-
-def get_items(items):
-    return [Item(item) for item in items[1:]]
-
-
-def get_character(stats):
-    return Character(
-        int(stats[0].split()[-1]),
-        int(stats[1].split()[-1]),
-        int(stats[2].split()[-1]),
-    )
+    return not enemy.alive
 
 
 if __name__ == "__main__":
