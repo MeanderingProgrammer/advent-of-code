@@ -12,6 +12,7 @@ images/archive
 # Python
 __pycache__
 *.pyc
+.pytest_cache
 aoc.egg-info
 
 # Java / Gradle
