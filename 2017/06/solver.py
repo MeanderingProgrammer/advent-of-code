@@ -1,12 +1,15 @@
+from dataclasses import dataclass
+from typing import Callable, Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Memory:
-    def __init__(self, state):
-        self.state = state
+    state: tuple[int, ...]
 
-    def redistribute(self):
+    def redistribute(self) -> Self:
         new_state = [v for v in self.state]
 
         selection = list(range(len(new_state)))
@@ -15,51 +18,35 @@ class Memory:
         index = selection[0]
         amount = new_state[index]
         new_state[index] = 0
-
-        for i in range(amount):
+        for _ in range(amount):
             index = (index + 1) % len(new_state)
             new_state[index] += 1
 
-        return Memory(new_state)
-
-    def __eq__(self, o):
-        return str(self) == str(o)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.state)
+        return type(self)(tuple(new_state))
 
 
 def main():
-    memory = Memory(Parser().int_entries())
-
+    memory = Memory(tuple(Parser().int_entries()))
     seen = set()
 
-    def unique(memory):
+    def unique(memory: Memory) -> bool:
         seen_before = memory in seen
         seen.add(memory)
         return not seen_before
 
     memory, cycles = run_as_long(memory, unique)
-
     answer.part1(7864, cycles)
 
     caused_repitition = memory
 
-    def not_equal(memory):
+    def not_equal(memory: Memory) -> bool:
         return memory != caused_repitition
 
     memory, cycles = run_as_long(memory.redistribute(), not_equal)
-
     answer.part2(1695, cycles + 1)
 
 
-def run_as_long(memory, f):
+def run_as_long(memory: Memory, f: Callable[[Memory], bool]) -> tuple[Memory, int]:
     cycles = 0
     while f(memory):
         memory = memory.redistribute()
