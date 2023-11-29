@@ -67,6 +67,15 @@ jq -r '.[]|[.year, .day, .runtime]|@tsv' all.json | sort -rnk3 | awk '{ if ($3 >
 jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 ```
 
+## Unit Test
+
+This will test that some shared logic works across usage days. Such as the `int-code` implementation
+from 2019.
+
+```
+pytest -s
+```
+
 # Generate
 
 The `generate` target creates initial files and empty data file for the specified language.

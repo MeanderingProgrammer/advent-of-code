@@ -12,8 +12,6 @@ class RunName(StrEnum):
     ALL = auto()
     DAYS = auto()
     LANGUAGES = auto()
-    INT_CODE = auto()
-    BATCHES = auto()
     SLOW = auto()
 
 
@@ -29,15 +27,6 @@ class RunTemplate:
         elif name == RunName.LANGUAGES:
             # Single day implemented in all languages
             return [Day("2021", "01")]
-        elif name == RunName.INT_CODE:
-            days = [2] + list(range(5, 26, 2))
-            return DayFactory(years=[2019], days=days).get_days()
-        elif name == RunName.BATCHES:
-            return [
-                Day(year="2015", day="04"),
-                Day(year="2016", day="05"),
-                Day(year="2016", day="14"),
-            ]
         elif name == RunName.SLOW:
             return RunTemplate.__slow()
         else:

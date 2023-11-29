@@ -52,7 +52,7 @@ def run(
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
-    fast = [RunName.LATEST, RunName.DAYS, RunName.BATCHES]
+    fast = [RunName.LATEST, RunName.DAYS]
     language_strategy = LanguageStrategy(
         name=StrategyName.FASTEST if template in fast else StrategyName.ALL,
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
