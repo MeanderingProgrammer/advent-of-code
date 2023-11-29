@@ -1,22 +1,18 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Disk:
-    def __init__(self, id, positions, start):
-        self.id = id
-        self.positions = positions
-        self.start = start
+    id: int
+    positions: int
+    start: int
 
-    def passes(self, time):
+    def passes(self, time: int) -> bool:
         position = time + self.id + self.start
         return position % self.positions == 0
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "({}, {}, {})".format(self.id, self.positions, self.start)
 
 
 def main():
@@ -24,31 +20,29 @@ def main():
     answer.part2(3208099, calculate_first_pass(True))
 
 
-def calculate_first_pass(add_disk):
+def calculate_first_pass(add_disk: bool) -> int:
     disks = get_disks()
     if add_disk:
         disks.append(Disk(len(disks) + 1, 11, 0))
-
-    passed, time = False, 0
-    while not passed:
+    time = 1
+    while not passes_all(disks, time):
         time += 1
-        passed = passes_all(disks, time)
     return time
 
 
-def passes_all(disks, time):
+def get_disks() -> list[Disk]:
+    def parse_disk(line: str) -> Disk:
+        parts = line.split()
+        return Disk(int(parts[1][1:]), int(parts[3]), int(parts[11][:-1]))
+
+    return [parse_disk(line) for line in Parser().lines()]
+
+
+def passes_all(disks: list[Disk], time: int) -> bool:
     for disk in disks:
         if not disk.passes(time):
             return False
     return True
-
-
-def get_disks():
-    disks = []
-    for line in Parser().lines():
-        line = line.split()
-        disks.append(Disk(int(line[1][1:]), int(line[3]), int(line[11][:-1])))
-    return disks
 
 
 if __name__ == "__main__":

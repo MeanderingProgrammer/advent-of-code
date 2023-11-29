@@ -23,7 +23,7 @@ def solve_by_pattern(num_elves: int, increment: bool) -> int:
 
 # This function is used to find the patterns implemented in solve_by_pattern.
 # It is not needed after the patterns are found but leaving it here for reference.
-def get_patterns():
+def get_patterns() -> None:
     # Part 1 pattern:
     # Winning elve inceases by 2 for each elve we add.
     # If the winning elve > the total number of elves we start the pattern over.

@@ -1,45 +1,44 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Triangle:
-    def __init__(self, values):
-        sides = [int(value) for value in values]
+    values: list[str]
+
+    def valid(self) -> bool:
+        sides = [int(value) for value in self.values]
         sides.sort()
-        self.a = sides[0]
-        self.b = sides[1]
-        self.c = sides[2]
-
-    def valid(self):
-        return (self.a + self.b) > self.c
+        return (sides[0] + sides[1]) > sides[2]
 
 
-def main():
-    answer.part1(862, num_valid(get_triangles_vertically()))
-    answer.part2(1577, num_valid(get_triangles_horizontally()))
+def main() -> None:
+    answer.part1(862, num_valid(vertically()))
+    answer.part2(1577, num_valid(horizontally()))
 
 
-def num_valid(triangles):
+def num_valid(triangles: list[Triangle]) -> int:
     return sum([triangle.valid() for triangle in triangles])
 
 
-def get_triangles_vertically():
+def vertically() -> list[Triangle]:
     return [Triangle(line.split()) for line in get_lines()]
 
 
-def get_triangles_horizontally():
-    triangles, lines = [], get_lines()
-
+def horizontally() -> list[Triangle]:
+    triangles: list[Triangle] = []
+    lines = get_lines()
     for i in range(0, len(lines), 3):
         top_3 = [line.split() for line in lines[i : i + 3]]
         for j in range(3):
             sides = [line[j] for line in top_3]
             triangles.append(Triangle(sides))
-
     return triangles
 
 
-def get_lines():
+def get_lines() -> list[str]:
     return Parser().lines()
 
 

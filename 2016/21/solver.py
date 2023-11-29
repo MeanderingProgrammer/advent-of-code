@@ -1,12 +1,14 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass
 class Scrambler:
-    def __init__(self, value):
-        self.value = [v for v in value]
+    value: list[str]
 
-    def scramble(self, raw_rule):
+    def scramble(self, raw_rule: str) -> None:
         rule = raw_rule.split()
         if rule[0] == "swap":
             if rule[1] == "position":
@@ -14,7 +16,7 @@ class Scrambler:
             elif rule[1] == "letter":
                 index_1, index_2 = self.value.index(rule[2]), self.value.index(rule[5])
             else:
-                raise Exception("Unknown Swap Rule: {}".format(rule))
+                raise Exception(f"Unknown Swap Rule: {rule}")
             temp = self.value[index_1]
             self.value[index_1] = self.value[index_2]
             self.value[index_2] = temp
@@ -29,7 +31,7 @@ class Scrambler:
                 if index >= 4:
                     amount_right += 1
             else:
-                raise Exception("Unknown Rotate Rule: {}".format(rule))
+                raise Exception(f"Unknown Rotate Rule: {rule}")
             self.rotate_right(amount_right)
         elif rule[0] == "reverse":
             start, end = int(rule[2]), int(rule[4])
@@ -43,9 +45,9 @@ class Scrambler:
             del self.value[start]
             self.value.insert(end, at_start)
         else:
-            raise Exception("Unknown Rule: {}".format(rule))
+            raise Exception(f"Unknown Rule: {rule}")
 
-    def unscramble(self, raw_rule):
+    def unscramble(self, raw_rule: str) -> None:
         rule = raw_rule.split()
         if rule[0] == "swap":
             if rule[1] == "position":
@@ -53,7 +55,7 @@ class Scrambler:
             elif rule[1] == "letter":
                 index_1, index_2 = self.value.index(rule[2]), self.value.index(rule[5])
             else:
-                raise Exception("Unknown Swap Rule: {}".format(rule))
+                raise Exception(f"Unknown Swap Rule: {rule}")
             temp = self.value[index_1]
             self.value[index_1] = self.value[index_2]
             self.value[index_2] = temp
@@ -72,7 +74,7 @@ class Scrambler:
                     if goal == end:
                         break
             else:
-                raise Exception("Unknown Rotate Rule: {}".format(rule))
+                raise Exception(f"Unknown Rotate Rule: {rule}")
         elif rule[0] == "reverse":
             start, end = int(rule[2]), int(rule[4])
             substring = self.value[start : end + 1]
@@ -85,44 +87,37 @@ class Scrambler:
             del self.value[start]
             self.value.insert(end, at_start)
         else:
-            raise Exception("Unknown Rule: {}".format(rule))
+            raise Exception(f"Unknown Rule: {rule}")
 
-    def rotate_right(self, amount):
+    def rotate_right(self, amount: int) -> None:
         amount %= len(self.value)
         from_end = self.value[-amount:]
         self.value = self.value[:-amount]
         self.value = from_end + self.value
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
+    def __str__(self) -> str:
         return "".join(self.value)
 
 
-def main():
-    answer.part1("bdfhgeca", scramble("abcdefgh"))
-    answer.part2("gdfcabeh", unscramble("fbgdceah"))
+def main() -> None:
+    lines = Parser().lines()
+    answer.part1("bdfhgeca", scramble(lines, "abcdefgh"))
+    answer.part2("gdfcabeh", unscramble(lines, "fbgdceah"))
 
 
-def scramble(value):
-    scrambler = Scrambler(value)
-    for line in get_lines():
+def scramble(lines: list[str], value: str) -> str:
+    scrambler = Scrambler([v for v in value])
+    for line in lines:
         scrambler.scramble(line)
     return str(scrambler)
 
 
-def unscramble(value):
-    scrambler = Scrambler(value)
-    lines = get_lines()
+def unscramble(lines: list[str], value: str) -> str:
+    scrambler = Scrambler([v for v in value])
     lines.reverse()
     for line in lines:
         scrambler.unscramble(line)
     return str(scrambler)
-
-
-def get_lines():
-    return Parser().lines()
 
 
 if __name__ == "__main__":
