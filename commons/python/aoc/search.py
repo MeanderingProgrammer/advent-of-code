@@ -83,9 +83,9 @@ def reachable(start, maximum, get_adjacent):
     return seen
 
 
-def connected(graph, start):
-    queue = [start]
-    seen = set()
+def connected[T](graph: dict[T, set[T]], start: T) -> set[T]:
+    queue: list[T] = [start]
+    seen: set[T] = set()
     while len(queue) > 0:
         current = queue.pop()
         if current in seen:

@@ -14,7 +14,7 @@ class Computer:
     def run(self) -> None:
         while self.ip >= 0 and self.ip < len(self.instructions):
             instruction = self.instructions[self.ip]
-            instruction.run(self)
+            self.ip += instruction.run(self)
 
     def value(self, arg: str) -> int:
         try:
@@ -29,22 +29,22 @@ class Intstruction:
         self.op = parts[0]
         self.args = parts[1:]
 
-    def run(self, computer: Computer) -> None:
+    def run(self, computer: Computer) -> int:
         if self.op == "set":
             computer.regs[self.args[0]] = computer.value(self.args[1])
-            computer.ip += 1
+            return 1
         elif self.op == "sub":
             computer.regs[self.args[0]] -= computer.value(self.args[1])
-            computer.ip += 1
+            return 1
         elif self.op == "mul":
             computer.regs[self.args[0]] *= computer.value(self.args[1])
-            computer.ip += 1
             computer.multiplies += 1
+            return 1
         elif self.op == "jnz":
             if computer.value(self.args[0]) != 0:
-                computer.ip += computer.value(self.args[1])
+                return computer.value(self.args[1])
             else:
-                computer.ip += 1
+                return 1
         else:
             raise Exception(f"Unknown operation: {self.op}")
 
