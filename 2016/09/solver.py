@@ -1,16 +1,19 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Compressed:
-    def __init__(self, compressed):
-        self.compressed = compressed
+    compressed: str
 
-    def decompress(self, recursive):
-        result, i = 0, 0
+    def decompress(self, recursive: bool) -> int:
+        result: int = 0
+        i: int = 0
         while i < len(self.compressed):
             if self.compressed[i] == "(":
-                end, (length, times) = self.get_repeat_details(i + 1)
+                end, length, times = self.get_repeat_details(i + 1)
                 i = end + 1
                 if recursive:
                     section = self.compressed[i : i + length]
@@ -24,24 +27,19 @@ class Compressed:
                 i += 1
         return result
 
-    def get_repeat_details(self, start):
+    def get_repeat_details(self, start: int) -> tuple[int, int, int]:
         end = self.compressed.index(")", start)
-        return end, self.parse_details(self.compressed[start:end])
-
-    @staticmethod
-    def parse_details(details):
-        details = details.split("x")
-        return int(details[0]), int(details[1])
+        length, times = self.compressed[start:end].split("x")
+        return end, int(length), int(times)
 
 
-def main():
+def main() -> None:
     answer.part1(102239, decompress(False))
     answer.part2(10780403063, decompress(True))
 
 
-def decompress(recursive):
-    compressed = Compressed(Parser().string())
-    return compressed.decompress(recursive)
+def decompress(recursive: bool) -> int:
+    return Compressed(Parser().string()).decompress(recursive)
 
 
 if __name__ == "__main__":

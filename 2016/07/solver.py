@@ -1,77 +1,63 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class IpAddress:
-    def __init__(self, value):
-        values = value.split("[")
+    sequences: list[str]
+    hyper_sequences: list[str]
 
-        self.sequences = [values[0]]
-        self.hyper_sequences = []
-
-        for value in values[1:]:
-            value = value.split("]")
-            self.hyper_sequences.append(value[0])
-            self.sequences.append(value[1])
-
-    def ssl(self):
+    def ssl(self) -> bool:
         in_main, in_hyper = self.subsequences(3)
         for s1 in in_main:
             for s2 in in_hyper:
-                if self.inverses(s1, s2):
+                if s1[0] == s2[1] and s1[1] == s2[0]:
                     return True
         return False
 
-    def tls(self):
+    def tls(self) -> bool:
         in_main, in_hyper = self.subsequences(4)
         return len(in_main) > 0 and len(in_hyper) == 0
 
-    def subsequences(self, length):
-        in_main = [self.subsequence(sequence, length) for sequence in self.sequences]
-        in_main = [value for values in in_main for value in values]
+    def subsequences(self, length: int) -> tuple[set[str], set[str]]:
+        in_main = self.all_subsequences(self.sequences, length)
+        in_hyper = self.all_subsequences(self.hyper_sequences, length)
+        return in_main, in_hyper
 
-        in_hyper = [
-            self.subsequence(sequence, length) for sequence in self.hyper_sequences
-        ]
-        in_hyper = [value for values in in_hyper for value in values]
+    def all_subsequences(self, sequences: list[str], length: int) -> set[str]:
+        results = [self.subsequence(sequence, length) for sequence in sequences]
+        flattened = [value for values in results for value in values]
+        return set(flattened)
 
-        return set(in_main), set(in_hyper)
-
-    def subsequence(self, sequence, length):
-        result = []
+    def subsequence(self, sequence: str, length: int) -> list[str]:
+        result: list[str] = []
         for i in range(len(sequence) - length + 1):
             value = sequence[i : i + length]
-            if self.palindrome(value):
+            if value[0] == value[-1] and value[1] == value[-2] and value[0] != value[1]:
                 result.append(value)
         return result
 
-    @staticmethod
-    def palindrome(value):
-        conditions = [
-            value[0] == value[-1],
-            value[1] == value[-2],
-            value[0] != value[1],
-        ]
-        return all(conditions)
 
-    @staticmethod
-    def inverses(s1, s2):
-        conditions = [s1[0] == s2[1], s1[1] == s2[0]]
-        return all(conditions)
+def main() -> None:
+    ips = get_ip_addresses()
+    answer.part1(118, sum([ip.tls() for ip in ips]))
+    answer.part2(260, sum([ip.ssl() for ip in ips]))
 
 
-def main():
-    ip_addresses = get_ip_addresses()
+def get_ip_addresses() -> list[IpAddress]:
+    def parse_ip_address(line: str) -> IpAddress:
+        parts: list[str] = line.split("[")
+        sequences: list[str] = [parts[0]]
+        hyper_sequences: list[str] = []
+        for part in parts[1:]:
+            hyper, regular = part.split("]")
+            hyper_sequences.append(hyper)
+            sequences.append(regular)
+        return IpAddress(sequences, hyper_sequences)
 
-    supported = [ip_address.tls() for ip_address in ip_addresses]
-    answer.part1(118, sum(supported))
-
-    supported = [ip_address.ssl() for ip_address in ip_addresses]
-    answer.part2(260, sum(supported))
-
-
-def get_ip_addresses():
-    return [IpAddress(line) for line in Parser().lines()]
+    return [parse_ip_address(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":
