@@ -9,10 +9,9 @@ def main() -> None:
 
 
 def get_index(row: int, column: int) -> int:
-    row_start = 1
+    index = 1
     for i in range(1, row):
-        row_start += i
-    index = row_start
+        index += i
     for i in range(row + 1, row + column):
         index += i
     return index

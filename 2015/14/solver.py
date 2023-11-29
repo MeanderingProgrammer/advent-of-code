@@ -1,63 +1,57 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Reindeer:
-    def __init__(self, raw):
-        parts = raw.split()
-        self.speed = int(parts[3])
-        self.time = int(parts[6])
-        self.rest = int(parts[13])
+    speed: int
+    time: int
+    rest: int
 
-    def distance(self, elapsed_time):
-        cycle = self.time + self.rest
-        complete = elapsed_time // cycle
-        remainder = elapsed_time % cycle
-        remainder_at_speed = min(remainder, self.time)
-        total_seconds_at_speed = (complete * self.time) + remainder_at_speed
-        return self.speed * total_seconds_at_speed
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{} km/s for {}, rest {}".format(self.speed, self.time, self.rest)
+    def distance(self, elapsed_time: int) -> int:
+        complete, remainder = divmod(elapsed_time, self.time + self.rest)
+        return self.speed * ((complete * self.time) + min(remainder, self.time))
 
 
-def main():
-    reindeers, time = get_reindeers(), 2_503
-    answer.part1(2655, max(get_distance_after(reindeers, time)))
-    answer.part2(1059, max(get_times_in_lead(reindeers, time)))
+def main() -> None:
+    reindeers = get_reindeers()
+    answer.part1(2655, max(distances_after(reindeers, 2_503)))
+    answer.part2(1059, max_times_in_lead(reindeers, 2_503))
 
 
-def get_distance_after(reindeers, time):
-    distances = []
-    for reindeer in reindeers:
-        distances.append(reindeer.distance(time))
-    return distances
+def get_reindeers() -> list[Reindeer]:
+    def parse_reindeer(line: str) -> Reindeer:
+        parts = line.split()
+        return Reindeer(
+            speed=int(parts[3]),
+            time=int(parts[6]),
+            rest=int(parts[13]),
+        )
+
+    return [parse_reindeer(line) for line in Parser().lines()]
 
 
-def get_times_in_lead(reindeers, time):
-    times_in_lead = [0] * len(reindeers)
+def distances_after(reindeers: list[Reindeer], time: int) -> list[int]:
+    return [reindeer.distance(time) for reindeer in reindeers]
+
+
+def max_times_in_lead(reindeers: list[Reindeer], time: int) -> int:
+    times_in_lead: list[int] = [0] * len(reindeers)
     for seconds in range(1, time + 1):
-        distances = get_distance_after(reindeers, seconds)
-        indexes = indexes_of_max(distances)
-        for index in indexes:
+        for index in maxes(distances_after(reindeers, seconds)):
             times_in_lead[index] += 1
-    return times_in_lead
+    return max(times_in_lead)
 
 
-def indexes_of_max(values):
-    indexes = []
+def maxes(values: list[int]) -> list[int]:
+    indexes: list[int] = []
     maximum_value = max(values)
     for i, value in enumerate(values):
         if value == maximum_value:
             indexes.append(i)
     return indexes
-
-
-def get_reindeers():
-    return [Reindeer(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

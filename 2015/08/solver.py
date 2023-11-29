@@ -1,30 +1,31 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class String:
-    def __init__(self, value):
-        self.value = value
+    value: str
 
-    def total(self):
+    def total(self) -> int:
         return len(self.value)
 
-    def decode(self):
-        result, i = [], 0
+    def decode(self) -> int:
+        result: list[str] = []
+        i: int = 0
         while i < len(self.value):
             ch = self.value[i]
-            if ch != '"':
-                result.append(ch)
-                if ch == "\\":
-                    if self.value[i + 1] == "x":
-                        i += 3
-                    else:
-                        i += 1
             i += 1
+            if ch == '"':
+                continue
+            result.append(ch)
+            if ch == "\\":
+                i += 3 if self.value[i] == "x" else 1
         return len(result)
 
-    def encode(self):
-        result = ['"']
+    def encode(self) -> int:
+        result: list[str] = ['"']
         for ch in self.value:
             if ch in ["\\", '"']:
                 result.append("\\")
@@ -33,18 +34,11 @@ class String:
         return len(result)
 
 
-def main():
-    total, decoded, encoded = 0, 0, 0
-
-    for line in Parser().lines():
-        s = String(line)
-
-        total += s.total()
-        decoded += s.decode()
-        encoded += s.encode()
-
-    answer.part1(1350, total - decoded)
-    answer.part2(2085, encoded - total)
+def main() -> None:
+    strings: list[String] = [String(line) for line in Parser().lines()]
+    total = sum([s.total() for s in strings])
+    answer.part1(1350, total - sum([s.decode() for s in strings]))
+    answer.part2(2085, sum([s.encode() for s in strings]) - total)
 
 
 if __name__ == "__main__":
