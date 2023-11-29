@@ -1,39 +1,38 @@
+from collections import defaultdict
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Password:
-    def __init__(self, raw):
-        self.words = raw.split()
+    words: list[str]
 
-    def valid(self, check_anagram):
-        frequency = {}
+    def valid(self, check_anagram: bool) -> bool:
+        frequency = defaultdict(int)
         for word in self.words:
-            word = self.anagram(word) if check_anagram else word
-            if word not in frequency:
-                frequency[word] = 0
+            word = Password.anagram(word) if check_anagram else word
             frequency[word] += 1
         return all([value == 1 for value in frequency.values()])
 
     @staticmethod
-    def anagram(word):
-        anagram = {}
+    def anagram(word: str) -> frozenset:
+        anagram = defaultdict(int)
         for letter in word:
-            if letter not in anagram:
-                anagram[letter] = 0
             anagram[letter] += 1
         return frozenset(anagram.items())
 
 
-def main():
+def main() -> None:
     answer.part1(466, count_valid(False))
     answer.part2(251, count_valid(True))
 
 
-def count_valid(check_anagram):
-    are_valid = []
+def count_valid(check_anagram: bool) -> int:
+    are_valid: list[bool] = []
     for line in Parser().lines():
-        valid = Password(line).valid(check_anagram)
+        valid = Password(line.split()).valid(check_anagram)
         are_valid.append(valid)
     return sum(are_valid)
 
