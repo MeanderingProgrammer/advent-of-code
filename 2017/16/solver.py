@@ -1,69 +1,63 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass
 class Dance:
-    def __init__(self, length):
-        self.dancers = [chr(ord("a") + i) for i in range(length)]
+    dancers: list[str]
 
-    def spin(self, n):
+    def spin(self, n: int) -> None:
         self.dancers = self.dancers[-n:] + self.dancers[:-n]
 
-    def exchange(self, index1, index2):
-        temp = self.dancers[index1]
-        self.dancers[index1] = self.dancers[index2]
-        self.dancers[index2] = temp
+    def exchange(self, i1: int, i2: int) -> None:
+        temp = self.dancers[i1]
+        self.dancers[i1] = self.dancers[i2]
+        self.dancers[i2] = temp
 
-    def partner(self, p1, p2):
-        index1 = self.dancers.index(p1)
-        index2 = self.dancers.index(p2)
-        self.exchange(index1, index2)
+    def partner(self, p1: str, p2: str) -> None:
+        i1 = self.dancers.index(p1)
+        i2 = self.dancers.index(p2)
+        self.exchange(i1, i2)
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
+    def __str__(self) -> str:
         return "".join(self.dancers)
 
 
-def main():
-    dance = Dance(16)
-    moves = get_moves()
-    pattern = get_pattern(dance, moves)
-
+def main() -> None:
+    pattern = get_pattern()
     answer.part1("eojfmbpkldghncia", pattern[1])
-    index = 1_000_000_000 % len(pattern)
-    answer.part2("iecopnahgdflmkjb", pattern[index])
+    answer.part2("iecopnahgdflmkjb", pattern[1_000_000_000 % len(pattern)])
 
 
-def get_pattern(dance, moves):
+def get_pattern() -> list[str]:
+    dance: Dance = Dance(
+        dancers=[chr(ord("a") + i) for i in range(16)],
+    )
+    moves: list[str] = Parser().csv()
     # Pattern happens to repeat from start immediately once we see
     # a value that is the same
-    pattern = []
+    pattern: list[str] = []
     while str(dance) not in pattern:
         pattern.append(str(dance))
         perform_dance(dance, moves)
     return pattern
 
 
-def perform_dance(dance, moves):
+def perform_dance(dance: Dance, moves: list[str]) -> None:
     for move in moves:
-        op = move[0]
-        args = move[1:]
+        op, args = move[0], move[1:]
         if op == "s":
             dance.spin(int(args))
         elif op == "x":
-            indexes = args.split("/")
-            dance.exchange(int(indexes[0]), int(indexes[1]))
+            i1, i2 = args.split("/")
+            dance.exchange(int(i1), int(i2))
         elif op == "p":
-            parners = args.split("/")
-            dance.partner(parners[0], parners[1])
+            p1, p2 = args.split("/")
+            dance.partner(p1, p2)
         else:
-            raise Exception("Unkown operation: {}".format(op))
-
-
-def get_moves():
-    return Parser().csv()
+            raise Exception(f"Unkown operation: {op}")
 
 
 if __name__ == "__main__":

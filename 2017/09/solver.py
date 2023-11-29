@@ -3,14 +3,42 @@ from aoc.parser import Parser
 
 
 class Group:
-    def __init__(self, group):
-        group = self.remove_special(group)
-        self.garbage_removed = 0
-        group = self.remove_garbage(group)
-        self.group = group
+    def __init__(self, group: str):
+        group = Group.remove_special(group)
+        self.group, self.garbage_removed = Group.remove_garbage(group)
 
-    def score(self):
-        score, level = 0, 0
+    @staticmethod
+    def remove_special(group: str) -> str:
+        result: str = ""
+        index: int = 0
+        while index < len(group):
+            char = group[index]
+            if char == "!":
+                index += 2
+            else:
+                result += char
+                index += 1
+        return result
+
+    @staticmethod
+    def remove_garbage(group: str) -> tuple[str, int]:
+        result: str = ""
+        index: int = 0
+        garbage_removed: int = 0
+        while index < len(group):
+            char = group[index]
+            if char == "<":
+                end = group[index:].index(">")
+                garbage_removed += end - 1
+                index += end
+            else:
+                result += char
+            index += 1
+        return result, garbage_removed
+
+    def score(self) -> int:
+        score: int = 0
+        level: int = 0
         for char in self.group:
             if char == "{":
                 level += 1
@@ -19,39 +47,11 @@ class Group:
                 level -= 1
         return score
 
-    def remove_special(self, group):
-        result, index = [], 0
-        while index < len(group):
-            char = group[index]
-            if char == "!":
-                index += 2
-            else:
-                result.append(char)
-                index += 1
-        return "".join(result)
 
-    def remove_garbage(self, group):
-        result, index = [], 0
-        while index < len(group):
-            char = group[index]
-            if char == "<":
-                end = group[index:].index(">")
-                self.garbage_removed += end - 1
-                index += end
-            else:
-                result.append(char)
-            index += 1
-        return "".join(result)
-
-
-def main():
-    group = get_group()
+def main() -> None:
+    group = Group(Parser().string())
     answer.part1(15922, group.score())
     answer.part2(7314, group.garbage_removed)
-
-
-def get_group():
-    return Group(Parser().string())
 
 
 if __name__ == "__main__":
