@@ -1,4 +1,4 @@
-from typing import override
+from typing import Optional, override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -29,8 +29,8 @@ class JumpDroid(Bus):
             self.value = value
 
     @staticmethod
-    def __transform(actual_program):
-        program = []
+    def __transform(actual_program: list[str]) -> list[str]:
+        program: list[str] = []
         for instruction in actual_program:
             real = [value for value in instruction]
             real.append("\n")
@@ -90,7 +90,7 @@ def main() -> None:
     )
 
 
-def run_droid(actual_program):
+def run_droid(actual_program) -> Optional[int]:
     droid = JumpDroid(actual_program)
     Computer(bus=droid, memory=Parser().int_csv()).run()
     return droid.value

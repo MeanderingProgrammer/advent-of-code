@@ -30,7 +30,9 @@ def run(values: list[int], n: int) -> int:
         number_stats[value] = Stats(i)
     number = values[-1]
     for i in range(len(values), n):
-        number = number_stats[number].next()
+        current_stats = number_stats[number]
+        assert current_stats is not None
+        number = current_stats.next()
         stats = number_stats[number]
         if stats is not None:
             stats.said(i)
