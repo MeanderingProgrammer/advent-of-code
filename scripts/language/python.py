@@ -12,6 +12,7 @@ class Python(Language):
 
     @override
     def _setup_commands(self) -> list[list[str]]:
+        # Figure out how to only do this on change
         return [["pip", "install", "-q", "-e", "commons/python"]]
 
     @override

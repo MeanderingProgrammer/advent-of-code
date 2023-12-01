@@ -1,56 +1,56 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
 from aoc.board import Point
 from aoc.parser import Parser
 
-POINT_MAPPING = {
-    "R": Point(1, 0),
-    "L": Point(-1, 0),
-    "U": Point(0, 1),
-    "D": Point(0, -1),
-}
+POINT_MAPPING: dict[str, Point] = dict(
+    R=Point(1, 0),
+    L=Point(-1, 0),
+    U=Point(0, 1),
+    D=Point(0, -1),
+)
 
 
+@dataclass(frozen=True)
 class Path:
-    def __init__(self, path):
-        self.points, self.step_counts = self.all_points_on_path(path.split(","))
+    points: set[Point]
+    step_counts: dict[Point, int]
 
-    def get_intersection(self, other):
+    def intersection(self, other: Self) -> set[Point]:
         return self.points & other.points
 
-    def steps(self, location):
+    def steps(self, location: Point) -> int:
         return self.step_counts[location]
 
-    @staticmethod
-    def all_points_on_path(parts):
-        points, step_counts, steps = [Point(0, 0)], {}, 0
-        for part in parts:
-            direction = POINT_MAPPING[part[0]]
-            for i in range(int(part[1:])):
-                steps += 1
-                new_point = points[-1] + direction
-                points.append(new_point)
-                if new_point not in step_counts:
-                    step_counts[new_point] = steps
-        return set(points[1:]), step_counts
 
-
-def main():
-    p1, p2 = get_paths()
-    intersections = p1.get_intersection(p2)
-
-    lengths = [len(intersection) for intersection in intersections]
-    answer.part1(870, min(lengths))
-
-    steps = [
-        p1.steps(intersection) + p2.steps(intersection)
-        for intersection in intersections
-    ]
-    answer.part2(13698, min(steps))
-
-
-def get_paths():
+def main() -> None:
     data = Parser().lines()
-    return Path(data[0]), Path(data[1])
+    p1, p2 = create_path(data[0]), create_path(data[1])
+    intersections = p1.intersection(p2)
+    answer.part1(870, min(list(map(len, intersections))))
+    answer.part2(
+        13698, min([p1.steps(point) + p2.steps(point) for point in intersections])
+    )
+
+
+def create_path(line: str) -> Path:
+    points: list[Point] = [Point(0, 0)]
+    step_counts: dict[Point, int] = dict()
+    steps: int = 0
+    for part in line.split(","):
+        direction = POINT_MAPPING[part[0]]
+        for _ in range(int(part[1:])):
+            steps += 1
+            next_point = points[-1] + direction
+            points.append(next_point)
+            if next_point not in step_counts:
+                step_counts[next_point] = steps
+    return Path(
+        points=set(points[1:]),
+        step_counts=step_counts,
+    )
 
 
 if __name__ == "__main__":

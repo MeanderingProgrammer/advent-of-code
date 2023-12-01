@@ -1,29 +1,28 @@
 import re
+from dataclasses import dataclass
+from typing import Callable
 
 from aoc import answer
 from aoc.parser import Parser
 
 
-def in_range(value, minimum, maximum):
+def in_range(value: int, minimum: int, maximum: int) -> bool:
     return value >= minimum and value <= maximum
 
 
-def birth_year(value):
-    value = int(value)
-    return in_range(value, 1920, 2002)
+def birth_year(value: str) -> bool:
+    return in_range(int(value), 1920, 2002)
 
 
-def issue_year(value):
-    value = int(value)
-    return in_range(value, 2010, 2020)
+def issue_year(value: str) -> bool:
+    return in_range(int(value), 2010, 2020)
 
 
-def experation_year(value):
-    value = int(value)
-    return in_range(value, 2020, 2030)
+def experation_year(value: str) -> bool:
+    return in_range(int(value), 2020, 2030)
 
 
-def height(value):
+def height(value: str) -> bool:
     height = int(value[:-2])
     unit = value[-2:]
     if unit == "cm":
@@ -34,24 +33,23 @@ def height(value):
         return False
 
 
-def hair_color(value):
+def hair_color(value: str) -> bool:
     expression = "^#[0-9,a-f]{6}$"
     match = re.search(expression, value)
     return match is not None
 
 
-def eye_color(value):
-    valid = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-    return value in valid
+def eye_color(value: str) -> bool:
+    return value in ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
 
 
-def passport_id(value):
+def passport_id(value: str) -> bool:
     expression = "^[0-9]{9}$"
     match = re.search(expression, value)
     return match is not None
 
 
-FIELD_VALIDATORS = {
+FIELD_VALIDATORS: dict[str, Callable[[str], bool]] = {
     "byr": birth_year,
     "iyr": issue_year,
     "eyr": experation_year,
@@ -62,33 +60,35 @@ FIELD_VALIDATORS = {
 }
 
 
+@dataclass(frozen=True)
 class Passport:
-    def __init__(self, lines):
-        self.data = {}
-        for line in lines:
-            for part in line.split():
-                kv = part.split(":")
-                self.data[kv[0]] = kv[1]
+    data: dict[str, str]
 
-    def validate(self, run_validation):
-        for field in FIELD_VALIDATORS:
+    def validate(self, run_validation: bool) -> bool:
+        for field, validator in FIELD_VALIDATORS.items():
             if field not in self.data:
                 return False
-            validator = FIELD_VALIDATORS[field]
-            value = self.data[field]
-            if run_validation and not validator(value):
+            if run_validation and not validator(self.data[field]):
                 return False
         return True
 
 
-def main():
+def main() -> None:
     passports = get_passports()
     answer.part1(200, sum([passport.validate(False) for passport in passports]))
     answer.part2(116, sum([passport.validate(True) for passport in passports]))
 
 
-def get_passports():
-    return [Passport(group) for group in Parser().line_groups()]
+def get_passports() -> list[Passport]:
+    def parse_passport(lines: list[str]) -> Passport:
+        data: dict[str, str] = dict()
+        for line in lines:
+            for part in line.split():
+                key, value = part.split(":")
+                data[key] = value
+        return Passport(data=data)
+
+    return [parse_passport(group) for group in Parser().line_groups()]
 
 
 if __name__ == "__main__":
