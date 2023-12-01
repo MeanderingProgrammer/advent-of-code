@@ -173,7 +173,6 @@ a_graph \
 
 # Add Type Hints to (eventually)
 
-* 2018/17
 * 2018/20
 * 2018/21
 * 2018/23

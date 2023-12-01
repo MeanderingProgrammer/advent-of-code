@@ -1,7 +1,7 @@
 import sys
+from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
 sys.setrecursionlimit(10_000)
@@ -11,64 +11,35 @@ DOWN = "d"
 LEFT = "l"
 RIGHT = "r"
 
-
-class PointRange:
-    def __init__(self, raw):
-        parts = raw.split(", ")
-        coord_range = {}
-        for part in parts:
-            part = part.split("=")
-            coord_range[part[0]] = self.get_range(part[1])
-        self.xs = coord_range["x"]
-        self.ys = coord_range["y"]
-
-    def get_points(self):
-        points = []
-        for x in self.xs:
-            for y in self.ys:
-                point = Point(x, y)
-                points.append(point)
-        return points
-
-    @staticmethod
-    def get_range(values):
-        values = values.split("..")
-        if len(values) == 1:
-            return [int(values[0])]
-        elif len(values) == 2:
-            return list(range(int(values[0]), int(values[1]) + 1))
-        else:
-            raise Exception("Can not handle such a range")
+Point = tuple[int, int]
+Grid = dict[Point, str]
 
 
+@dataclass(frozen=True)
 class GroundReservoir:
-    def __init__(self, grid):
-        self.grid = grid
+    grid: Grid
+    min_y: int
+    max_y: int
+    flowing: set[Point]
+    settled: set[Point]
 
-        ys = list(self.grid.ys())[1:]
-        self.min_y = min(ys)
-        self.max_y = max(ys)
-
-        self.flowing = set()
-        self.settled = set()
-
-    def fill(self, point, direction=DOWN):
-        if self.grid[point] == CLAY:
+    def fill(self, point: Point, direction: str) -> bool:
+        if self.grid.get(point) == CLAY:
             return True
 
         self.flowing.add(point)
 
-        down = point.up()
-        if not self.grid[down] == CLAY:
+        down = (point[0], point[1] + 1)
+        if not self.grid.get(down) == CLAY:
             if down not in self.flowing and self.in_range(down, False):
-                self.fill(down)
+                self.fill(down, DOWN)
             if down not in self.settled:
                 return False
 
-        left = point.left()
-        right = point.right()
-
+        left = (point[0] - 1, point[1])
         left_filled = left not in self.flowing and self.fill(left, LEFT)
+
+        right = (point[0] + 1, point[1])
         right_filled = right not in self.flowing and self.fill(right, RIGHT)
 
         # All water at this 'level' has settled
@@ -76,47 +47,59 @@ class GroundReservoir:
             self.settled.add(point)
             while left in self.flowing:
                 self.settled.add(left)
-                left = left.left()
+                left = (left[0] - 1, left[1])
             while right in self.flowing:
                 self.settled.add(right)
-                right = right.right()
+                right = (right[0] + 1, right[1])
 
-        return (direction == LEFT and left_filled) or (
-            direction == RIGHT and right_filled
-        )
+        left_condition = direction == LEFT and left_filled
+        right_condition = direction == RIGHT and right_filled
+        return left_condition or right_condition
 
-    def in_range(self, point, use_min=True):
-        y = point.y()
+    def in_range(self, point: Point, use_min: bool = True) -> bool:
         min_value = self.min_y if use_min else 1
-        return y >= min_value and y <= self.max_y
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.grid)
+        return point[1] >= min_value and point[1] <= self.max_y
 
 
-def main():
-    start = Point(500, 0)
+def main() -> None:
     grid = get_grid()
-    grid[start] = "."
-
-    reservoir = GroundReservoir(grid)
-    reservoir.fill(start)
-    answer.part1(
-        38409, len([point for point in reservoir.flowing if reservoir.in_range(point)])
+    grid[(500, 0)] = "."
+    ys = set([point[1] for point in grid])
+    ys.remove(0)
+    reservoir = GroundReservoir(
+        grid=grid,
+        min_y=min(ys),
+        max_y=max(ys),
+        flowing=set(),
+        settled=set(),
     )
-    answer.part2(
-        32288, len([point for point in reservoir.settled if reservoir.in_range(point)])
-    )
+    reservoir.fill((500, 0), DOWN)
+    answer.part1(38409, sum([reservoir.in_range(point) for point in reservoir.flowing]))
+    answer.part2(32288, sum([reservoir.in_range(point) for point in reservoir.settled]))
 
 
-def get_grid():
-    grid = Grid()
+def get_grid() -> Grid:
+    def parse_range(value: str) -> list[int]:
+        parts = value.split("..")
+        if len(parts) == 1:
+            return [int(parts[0])]
+        else:
+            return list(range(int(parts[0]), int(parts[1]) + 1))
+
+    def parse_point_range(line: str) -> list[Point]:
+        coord_range: dict[str, list[int]] = dict()
+        for part in line.split(", "):
+            coord, value = part.split("=")
+            coord_range[coord] = parse_range(value)
+        points: list[Point] = []
+        for x in coord_range["x"]:
+            for y in coord_range["y"]:
+                points.append((x, y))
+        return points
+
+    grid = dict()
     for line in Parser().lines():
-        point_range = PointRange(line)
-        for point in point_range.get_points():
+        for point in parse_point_range(line):
             grid[point] = CLAY
     return grid
 
