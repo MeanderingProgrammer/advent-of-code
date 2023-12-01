@@ -1,40 +1,32 @@
-let rec find_matching mapping index value =
+let rec find_matching mapping value index =
   match mapping with
   | (k, v) :: xs ->
       if index + String.length k <= String.length value then
         let substring = String.sub value index (String.length k) in
         if String.compare substring k == 0 then Some v
-        else find_matching xs index value
-      else find_matching xs index value
+        else find_matching xs value index
+      else find_matching xs value index
   | [] -> None
 
-let rec find_first mapping index value =
-  if index < String.length value then
-    match find_matching mapping index value with
+let rec find_first mapping value index increment =
+  if index >= 0 && index < String.length value then
+    match find_matching mapping value index with
     | Some v -> v
-    | None -> find_first mapping (index + 1) value
+    | None -> find_first mapping value (index + increment) increment
   else -1
 
-let rec find_last mapping index value =
-  if index >= 0 then
-    match find_matching mapping index value with
-    | Some v -> v
-    | _ -> find_last mapping (index - 1) value
-  else -1
-
-let rec sum mapping result values =
+let rec score mapping values result =
   match values with
   | x :: xs ->
-      let current =
-        (10 * find_first mapping 0 x)
-        + find_last mapping (String.length x - 1) x
-      in
-      sum mapping (current + result) xs
+      let first = find_first mapping x 0 1 in
+      let second = find_first mapping x (String.length x - 1) (-1) in
+      let current = (10 * first) + second in
+      score mapping xs (current + result)
   | _ -> result
 
 let () =
   let values = Aoc.Reader.read_lines () in
-  let part1_mapping =
+  let digit_mapping =
     [
       ("0", 0);
       ("1", 1);
@@ -48,19 +40,8 @@ let () =
       ("9", 9);
     ]
   in
-  let part1 = sum part1_mapping 0 values in
-  let part2_mapping =
+  let word_mapping =
     [
-      ("0", 0);
-      ("1", 1);
-      ("2", 2);
-      ("3", 3);
-      ("4", 4);
-      ("5", 5);
-      ("6", 6);
-      ("7", 7);
-      ("8", 8);
-      ("9", 9);
       ("one", 1);
       ("two", 2);
       ("three", 3);
@@ -72,6 +53,7 @@ let () =
       ("nine", 9);
     ]
   in
-  let part2 = sum part2_mapping 0 values in
+  let part1 = score digit_mapping values 0 in
+  let part2 = score (word_mapping @ digit_mapping) values 0 in
   Aoc.Answer.part1 55538 part1 string_of_int;
   Aoc.Answer.part2 54875 part2 string_of_int
