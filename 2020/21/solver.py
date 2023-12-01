@@ -12,15 +12,6 @@ class Food:
         raw_allergens = raw[allergen_start + 11 : -1]
         self.allergens = set(raw_allergens.split(", "))
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        details = {}
-        details["Ingredients"] = ", ".join(self.ingredients)
-        details["Allergens"] = ", ".join(self.allergens)
-        return str(details)
-
 
 def main():
     foods = get_foods()
