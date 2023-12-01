@@ -42,25 +42,16 @@ class PuzzleBoard:
         for position in self.board:
             xs.append(position[0])
             ys.append(position[1])
-
         rows = []
         for y in range(max(ys), min(ys) - 1, -1):
             row = self.board[(min(xs), y)].remove_boarder()
             for x in range(min(xs) + 1, max(xs) + 1):
                 row = row.add_horizontal(self.board[(x, y)].remove_boarder())
             rows.append(row)
-
         combined = rows[0]
         for i in range(1, len(rows)):
             combined = combined.add_vertical(rows[i])
-
         return combined
-
-    def __str__(self):
-        result = ""
-        for position in self.board:
-            result += "{}: {} \n".format(position, self.board[position].identifier)
-        return result
 
     @staticmethod
     def get_adjacent(position):
@@ -162,13 +153,6 @@ class ImageTile:
         length = len(self.data)
         width = len(self.data[0])
         return (width, length)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        result = "{} \n".format(self.identifier)
-        return result + "\n".join(self.data)
 
 
 class SearchImage:
