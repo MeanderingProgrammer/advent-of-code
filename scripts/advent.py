@@ -72,7 +72,7 @@ def run(
 @click.option("-t", "--template", type=StrEnumType(GenerateName))
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
-@click.option("-l", "--language", type=LanguageType(), default="rust")
+@click.option("-l", "--language", type=LanguageType(), default="ocaml")
 @click.option("-i", "--info", is_flag=True)
 def generate(
     template: Optional[GenerateName],
