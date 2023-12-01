@@ -1,110 +1,87 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class LetterRule:
-    def __init__(self, letter):
-        self.letter = letter
+    letter: str
 
-    def get_match_indexes(self, rules, value, start_index):
-        match_indexes = set()
-        if start_index < len(value) and value[start_index] == self.letter:
-            match_indexes.add(start_index + 1)
-        return match_indexes
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '"{}"'.format(self.letter)
+    def matches(self, _: dict, value: str, index: int) -> set[int]:
+        if index < len(value) and value[index] == self.letter:
+            return set([index + 1])
+        else:
+            return set()
 
 
-class OrRule:
-    def __init__(self, rules):
-        self.rules = [AndRule(rule) for rule in rules.split(" | ")]
-
-    def get_match_indexes(self, rules, value, start_index):
-        match_indexes = set()
-        for rule in self.rules:
-            match_indexes.update(rule.get_match_indexes(rules, value, start_index))
-        return match_indexes
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return " or ".join([str(rule) for rule in self.rules])
-
-
+@dataclass(frozen=True)
 class AndRule:
-    def __init__(self, rules):
-        self.rules = [int(rule) for rule in rules.split(" ")]
+    rules: list[int]
 
-    def get_match_indexes(self, rules, value, start_index):
-        match_indexes = set()
-        match_indexes.add(start_index)
+    def matches(self, rules: dict, value: str, index: int) -> set[int]:
+        result: set[int] = set([index])
         for rule in self.rules:
             new_matches = set()
-            for match_index in match_indexes:
-                new_matches.update(
-                    rules[rule].get_match_indexes(rules, value, match_index)
-                )
-            match_indexes = new_matches
-        return match_indexes
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "(" + " and ".join([str(rule) for rule in self.rules]) + ")"
+            for match_index in result:
+                new_matches.update(rules[rule].matches(rules, value, match_index))
+            result = new_matches
+        return result
 
 
+@dataclass(frozen=True)
+class OrRule:
+    rules: list[AndRule]
+
+    def matches(self, rules: dict, value: str, index: int) -> set[int]:
+        result: set[int] = set()
+        for rule in self.rules:
+            result.update(rule.matches(rules, value, index))
+        return result
+
+
+@dataclass(frozen=True)
 class Rules:
-    def __init__(self, rules):
-        self.rules = {}
-        for raw_rule in rules:
-            parts = raw_rule.split(": ")
-            rule_number = int(parts[0])
-            rule = parts[1]
-            if rule.startswith('"') and rule.endswith('"'):
-                rule = LetterRule(rule[1])
-            elif "|" in rule:
-                rule = OrRule(rule)
-            else:
-                rule = AndRule(rule)
-            self.rules[rule_number] = rule
+    rules: dict[int, LetterRule | OrRule | AndRule]
 
-    def does_match(self, value):
-        match_indexes = self.rules[0].get_match_indexes(self.rules, value, 0)
-        return len(value) in match_indexes
-
-    def update_for_part_2(self):
-        self.rules[8] = OrRule("42 | 42 8")
-        self.rules[11] = OrRule("42 31 | 42 11 31")
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.rules)
+    def does_match(self, value: str) -> bool:
+        return len(value) in self.rules[0].matches(self.rules, value, 0)
 
 
-def main():
+def main() -> None:
     answer.part1(198, total_matches(False))
     answer.part2(372, total_matches(True))
 
 
-def total_matches(is_part2):
-    rules, messages = process()
-    if is_part2:
-        rules.update_for_part_2()
-    matches = [rules.does_match(message) for message in messages]
-    return sum(matches)
-
-
-def process():
+def total_matches(part2: bool) -> int:
     groups = Parser().line_groups()
-    return Rules(groups[0]), groups[1]
+    rules = get_rules(groups[0], part2)
+    return sum([rules.does_match(message) for message in groups[1]])
+
+
+def get_rules(lines: list[str], part2: bool) -> Rules:
+    def parse_and_rule(rules: str) -> AndRule:
+        return AndRule(rules=list(map(int, rules.split(" "))))
+
+    def parse_or_rule(rules: str) -> OrRule:
+        return OrRule(rules=[parse_and_rule(rule) for rule in rules.split(" | ")])
+
+    rules: dict[int, LetterRule | OrRule | AndRule] = dict()
+    for line in lines:
+        number, rule = line.split(": ")
+        if rule.startswith('"') and rule.endswith('"'):
+            rule = LetterRule(letter=rule[1])
+        elif "|" in rule:
+            rule = parse_or_rule(rule)
+        else:
+            rule = parse_and_rule(rule)
+        rules[int(number)] = rule
+
+    if part2:
+        rules[8] = parse_or_rule("42 | 42 8")
+        rules[11] = parse_or_rule("42 31 | 42 11 31")
+
+    return Rules(rules=rules)
 
 
 if __name__ == "__main__":
