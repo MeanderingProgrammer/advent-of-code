@@ -1,39 +1,32 @@
+from typing import Optional
+
 from aoc import answer
 from aoc.parser import Parser
 
 
-def main():
-    values = read_data()
-
-    pair = find_pair(2020, values)
-    answer.part1(1020084, pair[0] * pair[1])
-
-    triple = find_triple(values)
-    answer.part2(295086480, triple[0] * triple[1] * triple[2])
+def main() -> None:
+    values = Parser().int_lines()
+    answer.part1(1020084, find_pair(values, 2020, set()))
+    answer.part2(295086480, find_triple(values, 2020))
 
 
-def find_triple(values):
-    ignore = set()
+def find_pair(values: list[int], goal: int, ignore: set[int]) -> Optional[int]:
     for value in values:
-        needed = 2020 - value
-        ignore.add(value)
-        # Remove value from values
-        pair = find_pair(needed, values, ignore)
-        if pair is not None:
-            return (value, pair[0], pair[1])
-
-
-def find_pair(goal, values, ignore=None):
-    for value in values:
-        if ignore is None or value not in ignore:
+        if value not in ignore:
             needed = goal - value
             if needed in values:
-                return (value, needed)
+                return value * needed
     return None
 
 
-def read_data():
-    return Parser().int_lines()
+def find_triple(values: list[int], goal: int) -> int:
+    ignore: set[int] = set()
+    for value in values:
+        ignore.add(value)
+        pair = find_pair(values, goal - value, ignore)
+        if pair is not None:
+            return value * pair
+    raise Exception("Failed")
 
 
 if __name__ == "__main__":
