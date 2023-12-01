@@ -174,5 +174,3 @@ a_graph \
 # Add Type Hints to (eventually)
 
 * 2020/20
-* 2020/21
-* 2020/22

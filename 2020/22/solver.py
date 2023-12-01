@@ -1,44 +1,67 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
+class Deck:
+    id: int
+    cards: list[int]
+
+    def empty(self) -> bool:
+        return len(self) == 0
+
+    def next(self) -> int:
+        return self.cards.pop(0)
+
+    def add(self, cards: list[int]) -> None:
+        self.cards.extend(cards)
+
+    def score(self) -> int:
+        return sum([(len(self.cards) - i) * card for i, card in enumerate(self.cards)])
+
+    def copy(self, n: int) -> Self:
+        return type(self)(self.id, self.cards[:n])
+
+    def __len__(self) -> int:
+        return len(self.cards)
+
+
+@dataclass(frozen=True)
 class Game:
-    def __init__(self, deck1, deck2, recursive=False):
-        self.deck1 = deck1
-        self.deck2 = deck2
-        self.recursive = recursive
-        self.states = set()
+    deck1: Deck
+    deck2: Deck
+    recursive: bool
+    states: set[str]
 
-    def play(self):
-        winner = self.get_winner()
-        return self.deck1 if winner == 1 else self.deck2
+    def play(self) -> Deck:
+        return self.deck1 if self.get_winner() == 1 else self.deck2
 
-    def get_winner(self):
+    def get_winner(self) -> int:
         while not self.deck1.empty() and not self.deck2.empty():
-            # Prevents infnity
             if not self.update_state():
-                return self.deck1.identifier
-
+                return self.deck1.id
             card1 = self.deck1.next()
             card2 = self.deck2.next()
-
             if self.recursive and card1 <= len(self.deck1) and card2 <= len(self.deck2):
                 winner = Game(
-                    self.deck1.copy(card1), self.deck2.copy(card2), self.recursive
+                    deck1=self.deck1.copy(card1),
+                    deck2=self.deck2.copy(card2),
+                    recursive=self.recursive,
+                    states=set(),
                 ).get_winner()
             else:
-                winner = (
-                    self.deck1.identifier if card1 > card2 else self.deck2.identifier
-                )
+                winner = self.deck1.id if card1 > card2 else self.deck2.id
+            if winner == 1:
+                self.deck1.add([card1, card2])
+            else:
+                self.deck2.add([card2, card1])
+        return self.deck2.id if self.deck1.empty() else self.deck1.id
 
-            self.deck1.add([card1, card2]) if winner == 1 else self.deck2.add(
-                [card2, card1]
-            )
-
-        return self.deck2.identifier if self.deck1.empty() else self.deck1.identifier
-
-    def update_state(self):
-        state = str(self.deck1) + str(self.deck2)
+    def update_state(self) -> bool:
+        state = str(self.deck1.cards) + str(self.deck2.cards)
         if state in self.states:
             return False
         else:
@@ -46,57 +69,24 @@ class Game:
             return True
 
 
-class Deck:
-    def __init__(self, cards, identifier):
-        self.cards = [int(card) for card in cards]
-        self.identifier = identifier
-
-    def empty(self):
-        return len(self.cards) == 0
-
-    def next(self):
-        card = self.cards[0]
-        self.cards = self.cards[1:]
-        return card
-
-    def add(self, cards):
-        self.cards += cards
-
-    def score(self):
-        score = 0
-        for i, card in enumerate(self.cards):
-            multiplier = len(self.cards) - i
-            score += multiplier * card
-        return score
-
-    def copy(self, n):
-        cards = [card for card in self.cards]
-        return Deck(cards[:n], self.identifier)
-
-    def __len__(self):
-        return len(self.cards)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.cards)
-
-
-def main():
+def main() -> None:
     answer.part1(32102, run_game(False))
     answer.part2(34173, run_game(True))
 
 
-def run_game(recursive):
-    game = Game(*get_decks(), recursive)
+def run_game(recursive: bool) -> int:
+    def parse_deck(id: int, lines: list[str]) -> Deck:
+        return Deck(id=id, cards=list(map(int, lines[1:])))
+
+    groups = Parser().line_groups()
+    game = Game(
+        deck1=parse_deck(1, groups[0]),
+        deck2=parse_deck(2, groups[1]),
+        recursive=recursive,
+        states=set(),
+    )
     winner = game.play()
     return winner.score()
-
-
-def get_decks():
-    groups = Parser().line_groups()
-    return Deck(groups[0][1:], 1), Deck(groups[1][1:], 2)
 
 
 if __name__ == "__main__":
