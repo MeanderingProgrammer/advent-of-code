@@ -1,107 +1,64 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
+class Edge:
+    node: str
+    weight: int
+
+
+@dataclass(frozen=True)
 class RuleGraph:
-    def __init__(self):
-        self.graph = {}
+    nodes: dict[str, list[Edge]]
 
-    def add(self, node_edges):
-        node = node_edges.get_node()
-        edges = node_edges.get_edges()
-        self.graph[node] = edges
-
-    def get_nodes(self):
-        return self.graph.keys()
-
-    def are_connected(self, start, end):
-        # In this case the start and end are not conntected
+    def connected(self, start: str, end: str) -> bool:
         if start == end:
             return False
-
-        to_explore = [start]
-        seen = set()
-        seen.add(start)
-
-        for node in to_explore:
+        queue: list[str] = [start]
+        seen: set[str] = set(queue)
+        for node in queue:
             if node == end:
                 return True
-            next_nodes = self.graph[node]
-            next_nodes = [next_node.get_node() for next_node in next_nodes]
-            next_nodes = list(
-                filter(lambda next_node: next_node not in seen, next_nodes)
-            )
-            for next_node in next_nodes:
-                seen.add(next_node)
-            to_explore.extend(next_nodes)
+            for edge in self.nodes[node]:
+                if edge.node not in seen:
+                    seen.add(edge.node)
+                    queue.append(edge.node)
         return False
 
-    def get_bags_needed(self, start):
-        bags_needed = 0
-        edges = self.graph[start]
-        for edge in edges:
-            node = edge.get_node()
-            weight = edge.get_weight()
-
-            bags_needed += weight
-            bags_needed += weight * self.get_bags_needed(node)
-
-        return bags_needed
+    def bags_needed(self, start: str) -> int:
+        result: int = 0
+        for edge in self.nodes[start]:
+            result += edge.weight * (1 + self.bags_needed(edge.node))
+        return result
 
 
-class Edge:
-    def __init__(self, raw_edge):
-        parts = raw_edge.split()
-        self.node = " ".join(parts[1:-1])
-        self.weight = int(parts[0])
-
-    def get_node(self):
-        return self.node
-
-    def get_weight(self):
-        return self.weight
-
-
-class BagRule:
-    def __init__(self, line):
-        key_raw_edges = line.split(" bags contain ")
-        raw_edges = key_raw_edges[1]
-        self.node = key_raw_edges[0]
-        self.edges = []
-        if raw_edges != "no other bags":
-            raw_edges = raw_edges.split(", ")
-            for raw_edge in raw_edges:
-                self.edges.append(Edge(raw_edge))
-
-    def get_node(self):
-        return self.node
-
-    def get_edges(self):
-        return self.edges
-
-
-def main():
-    bag_rules = process()
-
-    graph = RuleGraph()
-    for bag_rule in bag_rules:
-        graph.add(bag_rule)
-
+def main() -> None:
+    graph = get_rule_graph()
     answer.part1(172, get_connected_to(graph, "shiny gold"))
-    answer.part2(39645, graph.get_bags_needed("shiny gold"))
+    answer.part2(39645, graph.bags_needed("shiny gold"))
 
 
-def get_connected_to(graph, end):
-    nodes = []
-    for node in graph.get_nodes():
-        connected = graph.are_connected(node, end)
-        if connected:
-            nodes.append(node)
-    return len(nodes)
+def get_rule_graph() -> RuleGraph:
+    def parse_edge(raw_edge: str) -> Edge:
+        parts = raw_edge.split()
+        return Edge(node=" ".join(parts[1:-1]), weight=int(parts[0]))
+
+    nodes: dict[str, list[Edge]] = dict()
+    for line in Parser().lines():
+        node, raw_edges = line[:-1].split(" bags contain ")
+        nodes[node] = (
+            []
+            if raw_edges == "no other bags"
+            else list(map(parse_edge, raw_edges.split(", ")))
+        )
+    return RuleGraph(nodes=nodes)
 
 
-def process():
-    return [BagRule(line[:-1]) for line in Parser().lines()]
+def get_connected_to(graph: RuleGraph, end: str) -> int:
+    return sum([graph.connected(start, end) for start in graph.nodes])
 
 
 if __name__ == "__main__":

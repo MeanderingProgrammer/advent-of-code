@@ -1,59 +1,44 @@
 from collections import defaultdict
+from dataclasses import dataclass
 
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Adapters:
-    def __init__(self, data):
-        self.data = sorted(data)
-        # Add starting point
-        self.data.insert(0, 0)
-        # Add ending point
-        self.data.append(self.data[-1] + 3)
+    data: list[int]
 
-    def get_chains(self):
+    def chains(self) -> dict[int, int]:
         chains = defaultdict(int)
         for i in range(1, len(self.data)):
-            current = self.data[i]
-            previous = self.data[i - 1]
-            difference = current - previous
-            chains[difference] += 1
+            chains[self.data[i] - self.data[i - 1]] += 1
         return chains
 
-    def get_num_combinations(self):
-        num_paths = []
-        for i in range(len(self.data) - 1):
-            num_paths.append(self.get_num_paths(i))
-
+    def num_combinations(self) -> int:
+        num_paths: list[int] = list(map(self.num_paths, self.data[:-1]))
         for i in range(len(num_paths) - 2, -1, -1):
-            paths = num_paths[i]
-            num_paths[i] = 0
-            for j in range(i + 1, i + 1 + paths):
-                num_paths[i] += num_paths[j]
+            num_paths[i] = sum(num_paths[i + 1 : i + 1 + num_paths[i]])
         return num_paths[0]
 
-    def get_num_paths(self, i):
-        current = self.data[i]
-        max_value = self.data[i] + 3
-        next_adapters = [
-            adapter
-            for adapter in self.data
-            if adapter > current and adapter <= max_value
-        ]
-        return len(next_adapters)
+    def num_paths(self, current: int) -> int:
+        return sum(
+            [adapter > current and adapter <= current + 3 for adapter in self.data]
+        )
 
 
-def main():
-    adapters = process()
-
-    chains = adapters.get_chains()
+def main() -> None:
+    adapters = get_adapters()
+    chains = adapters.chains()
     answer.part1(2343, chains[1] * chains[3])
-    answer.part2(31581162962944, adapters.get_num_combinations())
+    answer.part2(31581162962944, adapters.num_combinations())
 
 
-def process():
-    return Adapters(Parser().int_lines())
+def get_adapters() -> Adapters:
+    data = sorted(Parser().int_lines())
+    # Add starting & ending points
+    data = [0] + data + [data[-1] + 3]
+    return Adapters(data=data)
 
 
 if __name__ == "__main__":

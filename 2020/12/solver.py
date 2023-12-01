@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Any, Self
+
 from aoc import answer
 from aoc.parser import Parser
 
@@ -16,85 +19,79 @@ COMMANDS_V2 = {
 }
 
 
-class Ship:
-    def __init__(self, commands, is_v1):
-        self.commands = commands
-        self.__point = Position(1, 0) if is_v1 else Position(10, 1)
-        self.__pos = Position(0, 0)
-
-    def move(self, instruction):
-        self.__point, self.__pos = self.commands[instruction.get_command()](
-            self.__point, self.__pos, instruction.get_amount()
-        )
-
-    def get_position(self):
-        return self.__pos
-
-
+@dataclass(frozen=True)
 class Position:
-    def __init__(self, x, y):
-        self.__x, self.__y = x, y
+    x: int
+    y: int
 
-    def rotate_left(self, amount):
-        x, y = self.__x, self.__y
-        for i in range(amount // 90):
+    def rotate_left(self, amount: int) -> Self:
+        x, y = self.x, self.y
+        for _ in range(amount // 90):
             x, y = y * -1, x
-        return Position(x, y)
+        return type(self)(x, y)
 
-    def get_distance(self):
-        return abs(self.x) + abs(self.y)
+    def __add__(self, other: Self) -> Self:
+        return type(self)(self.x + other.x, self.y + other.y)
 
-    def __add__(self, other):
-        return Position(self.__x + other.__x, self.__y + other.__y)
-
-    def __radd__(self, other):
+    def __radd__(self, other: Self) -> Self:
         return self.__add__(other)
 
-    def __mul__(self, amount):
-        return Position(self.__x * amount, self.__y * amount)
+    def __mul__(self, amount: int) -> Self:
+        return type(self)(self.x * amount, self.y * amount)
 
-    def __rmul__(self, amount):
+    def __rmul__(self, amount: int) -> Self:
         return self.__mul__(amount)
 
-    def __len__(self):
-        return abs(self.__x) + abs(self.__y)
 
-
-TRANSFORMS = {
-    "R": lambda amount: ("L", 360 - amount),
-    "S": lambda amount: ("N", amount * -1),
-    "W": lambda amount: ("E", amount * -1),
-}
-
-
+@dataclass(frozen=True)
 class Instruction:
-    def __init__(self, instruction):
-        self.__command, self.__amount = instruction[0], int(instruction[1:])
-        if self.__command in TRANSFORMS:
-            self.__command, self.__amount = TRANSFORMS[self.__command](self.__amount)
-
-    def get_command(self):
-        return self.__command
-
-    def get_amount(self):
-        return self.__amount
+    command: str
+    amount: int
 
 
-def main():
+@dataclass
+class Ship:
+    commands: dict[str, Any]
+    point: Position
+    position: Position
+
+    def move(self, instruction: Instruction) -> None:
+        command = self.commands[instruction.command]
+        self.point, self.position = command(
+            self.point, self.position, instruction.amount
+        )
+
+
+def main() -> None:
     answer.part1(362, move_ship(True))
     answer.part2(29895, move_ship(False))
 
 
-def move_ship(is_v1):
-    commands = COMMANDS_V1 if is_v1 else COMMANDS_V2
-    ship = Ship(commands, is_v1)
+def move_ship(part1: bool) -> int:
+    commands = COMMANDS_V1 if part1 else COMMANDS_V2
+    ship = Ship(
+        commands=commands,
+        point=Position(1, 0) if part1 else Position(10, 1),
+        position=Position(0, 0),
+    )
     for instruction in get_instructions():
         ship.move(instruction)
-    return len(ship.get_position())
+    return abs(ship.position.x) + abs(ship.position.y)
 
 
-def get_instructions():
-    return [Instruction(line) for line in Parser().lines()]
+def get_instructions() -> list[Instruction]:
+    def parse_instruction(line: str) -> Instruction:
+        command, amount = line[0], int(line[1:])
+        if command == "R":
+            return Instruction("L", 360 - amount)
+        elif command == "S":
+            return Instruction("N", amount * -1)
+        elif command == "W":
+            return Instruction("E", amount * -1)
+        else:
+            return Instruction(command, amount)
+
+    return list(map(parse_instruction, Parser().lines()))
 
 
 if __name__ == "__main__":

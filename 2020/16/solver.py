@@ -1,127 +1,105 @@
+from dataclasses import dataclass
 from functools import reduce
+from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class ValueRange:
-    def __init__(self, value_range):
-        parts = value_range.split("-")
-        self.start = int(parts[0])
-        self.end = int(parts[1])
+    start: int
+    end: int
 
-    def contains(self, value):
+    def contains(self, value: int) -> bool:
         return value >= self.start and value <= self.end
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return "{}-{}".format(self.start, self.end)
-
-
+@dataclass
 class Rule:
-    def __init__(self, rule):
-        parts = rule.split(": ")
-        self.field_name = parts[0]
-        self.value_ranges = [
-            ValueRange(value_range) for value_range in parts[1].split(" or ")
-        ]
-        self.row = None
+    field_name: str
+    value_ranges: list[ValueRange]
+    row: Optional[int]
 
-    def matches(self, value):
-        for value_range in self.value_ranges:
-            if value_range.contains(value):
-                return True
-        return False
+    def matches(self, value: int) -> bool:
+        return any([value_range.contains(value) for value_range in self.value_ranges])
 
-    def starts_with(self, prefix):
+    def starts_with(self, prefix: str) -> bool:
         return self.field_name.startswith(prefix)
 
-    def assign(self, i):
-        self.row = i
 
-    def is_assigned(self):
-        return self.row is not None
-
-    def get_row(self):
-        return self.row
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}: {} assigned to {}".format(
-            self.field_name, self.value_ranges, self.row
-        )
-
-
+@dataclass(frozen=True)
 class Ticket:
-    def __init__(self, ticket):
-        self.values = [int(value) for value in ticket.split(",")]
+    values: list[int]
 
-    def get_value(self, i):
-        return self.values[i]
-
-    def get_unmatched_values(self, rules):
-        unmatched_values = []
-        for value in self.values:
-            if not self.matches_any_rule(value, rules):
-                unmatched_values.append(value)
-        return unmatched_values
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.values)
+    def unmatched_values(self, rules: list[Rule]) -> list[int]:
+        return [
+            value for value in self.values if not Ticket.matches_any_rule(value, rules)
+        ]
 
     @staticmethod
-    def matches_any_rule(value, rules):
-        for rule in rules:
-            if rule.matches(value):
-                return True
-        return False
+    def matches_any_rule(value: int, rules: list[Rule]) -> bool:
+        return any([rule.matches(value) for rule in rules])
 
 
-def main():
-    rules, my_ticket, nearby_tickets = process()
+def main() -> None:
+    groups = Parser().line_groups()
+    rules = list(map(parse_rule, groups[0]))
+    my_ticket = parse_ticket(groups[1][1])
+    nearby_tickets = list(map(parse_ticket, groups[2][1:]))
     answer.part1(26980, solve_part_1(rules, nearby_tickets))
     answer.part2(3021381607403, solve_part_2(rules, my_ticket, nearby_tickets))
 
 
-def solve_part_1(rules, nearby_tickets):
-    unmatched_values = []
+def parse_rule(line: str) -> Rule:
+    def parse_value_range(raw: str) -> ValueRange:
+        start, end = raw.split("-")
+        return ValueRange(start=int(start), end=int(end))
+
+    parts = line.split(": ")
+    return Rule(
+        field_name=parts[0],
+        value_ranges=list(map(parse_value_range, parts[1].split(" or "))),
+        row=None,
+    )
+
+
+def parse_ticket(line: str) -> Ticket:
+    return Ticket(values=list(map(int, line.split(","))))
+
+
+def solve_part_1(rules: list[Rule], nearby_tickets: list[Ticket]) -> int:
+    unmatched_values: list[int] = []
     for ticket in nearby_tickets:
-        unmatched_values.extend(ticket.get_unmatched_values(rules))
+        unmatched_values.extend(ticket.unmatched_values(rules))
     return sum(unmatched_values)
 
 
-def solve_part_2(rules, my_ticket, nearby_tickets):
-    remaining_tickets = []
+def solve_part_2(
+    rules: list[Rule], my_ticket: Ticket, nearby_tickets: list[Ticket]
+) -> int:
+    remaining_tickets: list[Ticket] = []
     for ticket in nearby_tickets:
-        if len(ticket.get_unmatched_values(rules)) == 0:
+        if len(ticket.unmatched_values(rules)) == 0:
             remaining_tickets.append(ticket)
 
     assign_rules(rules, remaining_tickets)
-    departure_indexes = [
-        rule.get_row() for rule in rules if rule.starts_with("departure")
-    ]
-    departure_values = [my_ticket.get_value(i) for i in departure_indexes]
+    departure_indexes = [rule.row for rule in rules if rule.starts_with("departure")]
+    departure_values = [my_ticket.values[i] for i in departure_indexes if i is not None]
     return reduce((lambda x, y: x * y), departure_values)
 
 
-def assign_rules(rules, nearby_tickets):
-    while not all([rule.is_assigned() for rule in rules]):
+def assign_rules(rules: list[Rule], tickets: list[Ticket]) -> None:
+    while not all([rule.row is not None for rule in rules]):
         for i in range(len(rules)):
-            values = [ticket.get_value(i) for ticket in nearby_tickets]
+            values = [ticket.values[i] for ticket in tickets]
             possible_rules = get_possible_rules(rules, values)
             if len(possible_rules) == 1:
-                possible_rules[0].assign(i)
+                possible_rules[0].row = i
 
 
-def get_possible_rules(rules, values):
-    possible_rules = [rule for rule in rules if not rule.is_assigned()]
+def get_possible_rules(rules: list[Rule], values: list[int]) -> list[Rule]:
+    possible_rules = [rule for rule in rules if rule.row is None]
     for value in values:
         matching_rules = []
         for rule in possible_rules:
@@ -129,14 +107,6 @@ def get_possible_rules(rules, values):
                 matching_rules.append(rule)
         possible_rules = matching_rules
     return possible_rules
-
-
-def process():
-    groups = Parser().line_groups()
-    rules = [Rule(rule) for rule in groups[0]]
-    my_ticket = Ticket(groups[1][1])
-    nearby_tickets = [Ticket(ticket) for ticket in groups[2][1:]]
-    return rules, my_ticket, nearby_tickets
 
 
 if __name__ == "__main__":
