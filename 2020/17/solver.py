@@ -1,47 +1,36 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Point:
-    def __init__(self, dimensions, x, y, z=0, w=0):
-        self.dimensions = dimensions
-        self.coords = (x, y, z, w)
+    dimens: int
+    coords: tuple[int, ...]
 
-    def get_neighbors(self):
-        neighbors = [self]
-        for dimen in range(self.dimensions):
-            length = len(neighbors)
-            for i in range(length):
-                neighbor = neighbors[i]
-                coords = list(neighbor.coords)
+    def get_neighbors(self) -> list[Self]:
+        neighbors: list[Self] = [self]
+        for dimen in range(self.dimens):
+            for i in range(len(neighbors)):
+                coords: list[int] = list(neighbors[i].coords)
                 coords[dimen] -= 1
-                neighbors.append(Point(self.dimensions, *coords))
+                neighbors.append(type(self)(self.dimens, tuple(coords)))
                 coords[dimen] += 2
-                neighbors.append(Point(self.dimensions, *coords))
+                neighbors.append(type(self)(self.dimens, tuple(coords)))
         return neighbors[1:]
 
-    def __eq__(self, other):
-        return self.coords == other.coords
 
-    def __hash__(self):
-        return hash(self.coords)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.coords)
-
-
+@dataclass
 class Status:
-    def __init__(self, active=False):
-        self.active = active
-        self.active_neighbors = 0
+    active: bool
+    active_neighbors: int = 0
 
-    def increment(self):
+    def increment(self) -> None:
         self.active_neighbors += 1
 
-    def update_state(self):
+    def update_state(self) -> None:
         if self.active:
             if self.active_neighbors not in [2, 3]:
                 self.active = False
@@ -50,91 +39,47 @@ class Status:
                 self.active = True
         self.active_neighbors = 0
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return "#" if self.active else "."
-
-
+@dataclass(frozen=True)
 class Grid:
-    def __init__(self, dimensions):
-        self.dimensions = dimensions
-        self.grid = {}
-        self.step_count = 0
+    grid: dict[Point, Status]
 
-    def add(self, point, status):
-        self.grid[point] = status
-
-    def step(self):
-        self.update_counts()
-        self.update_states()
-        self.step_count += 1
-
-    def update_counts(self):
-        active_points = [point for point in self.grid if self.grid[point].active]
-        for active_point in active_points:
-            for neighbor in active_point.get_neighbors():
+    def step(self) -> None:
+        for point, status in list(self.grid.items()):
+            if not status.active:
+                continue
+            for neighbor in point.get_neighbors():
                 if neighbor not in self.grid:
-                    self.grid[neighbor] = Status()
+                    self.grid[neighbor] = Status(active=False)
                 self.grid[neighbor].increment()
 
-    def update_states(self):
         for status in self.grid.values():
             status.update_state()
 
-    def get_active(self):
+    def get_active(self) -> int:
         return sum([status.active for status in self.grid.values()])
 
-    def __str__(self):
-        w_bounds = self.get_dimen_bounds(lambda point: point.coords[3])
-        z_bounds = self.get_dimen_bounds(lambda point: point.coords[2])
-        y_bounds = self.get_dimen_bounds(lambda point: point.coords[1])
-        x_bounds = self.get_dimen_bounds(lambda point: point.coords[0])
 
-        result = ""
-
-        for w in range(w_bounds[0], w_bounds[1] + 1):
-            for z in range(z_bounds[0], z_bounds[1] + 1):
-                result += "z = {}, w = {} \n".format(z, w)
-                for y in range(y_bounds[1], y_bounds[0] - 1, -1):
-                    row = ""
-                    for x in range(x_bounds[0], x_bounds[1] + 1):
-                        status = self.grid.get(
-                            Point(self.dimensions, x, y, z, w), Status()
-                        )
-                        row += str(status)
-                    result += row + "\n"
-                result += "\n"
-
-        return result
-
-    def get_dimen_bounds(self, extractor):
-        values = [extractor(point) for point in self.grid]
-        return min(values), max(values)
-
-
-def main():
+def main() -> None:
     answer.part1(284, simulate(3))
     answer.part2(2240, simulate(4))
 
 
-def simulate(dimensions):
-    grid = get_grid(dimensions)
-    for i in range(6):
+def simulate(dimens: int) -> int:
+    grid = get_grid(dimens)
+    for _ in range(6):
         grid.step()
     return grid.get_active()
 
 
-def get_grid(dimensions):
+def get_grid(dimens: int) -> Grid:
+    grid: dict[Point, Status] = dict()
     lines = Parser().lines()
-    grid = Grid(dimensions)
-    for y, datum in enumerate(lines):
+    for y, line in enumerate(lines):
         y = len(lines) - y - 1
-        for x in range(len(datum)):
-            status = datum[x]
-            grid.add(Point(dimensions, x, y), Status(status == "#"))
-    return grid
+        for x, status in enumerate(line):
+            grid[Point(dimens, (x, y, 0, 0))] = Status(active=status == "#")
+    return Grid(grid=grid)
 
 
 if __name__ == "__main__":

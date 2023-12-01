@@ -1,101 +1,82 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Number:
-    def __init__(self, value):
-        self.value = int(value)
+    value: int
 
-    def evaluate(self, prefer_addition):
+    def evaluate(self, _: bool) -> int:
         return self.value
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return "{}".format(self.value)
-
-
+@dataclass(frozen=True)
 class Expression:
-    def __init__(self, expression):
-        self.expressions = []
-        self.operators = []
+    expressions: list[Self | Number]
+    operators: list[str]
 
-        i = 0
-        while i < len(expression):
-            char = expression[i]
-            if char == "(":
-                end_index = self.get_end_index(i, expression)
-                self.expressions.append(Expression(expression[i + 1 : end_index]))
-                i = end_index + 1
-            elif char.isdigit():
-                self.expressions.append(Number(char))
-                i += 1
-            else:
-                self.operators.append(char)
-                i += 1
-
-    def evaluate(self, prefer_addition):
+    def evaluate(self, addition: bool) -> int:
         if len(self.expressions) == 1:
-            return self.expressions[0].evaluate(prefer_addition)
-
-        if prefer_addition:
+            return self.expressions[0].evaluate(addition)
+        if addition:
             operator = "+" if "+" in self.operators else "*"
             index = self.operators.index(operator)
         else:
             operator = self.operators[0]
             index = 0
-
-        left = self.expressions[index]
-        right = self.expressions[index + 1]
-
-        if operator == "+":
-            result = left.evaluate(prefer_addition) + right.evaluate(prefer_addition)
-        else:
-            result = left.evaluate(prefer_addition) * right.evaluate(prefer_addition)
-
+        left = self.expressions[index].evaluate(addition)
+        right = self.expressions[index + 1].evaluate(addition)
+        result = left + right if operator == "+" else left * right
         self.expressions[index] = Number(result)
         del self.expressions[index + 1]
         del self.operators[index]
-
-        return self.evaluate(prefer_addition)
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        result = "(" + str(self.expressions[0])
-        for i in range(len(self.operators)):
-            result += str(self.operators[i])
-            result += str(self.expressions[i + 1])
-        return result + ")"
-
-    @staticmethod
-    def get_end_index(start_index, expression):
-        count = 0
-        for i in range(start_index, len(expression)):
-            letter = expression[i]
-            if letter == "(":
-                count += 1
-            elif letter == ")":
-                count -= 1
-                if count == 0:
-                    return i
+        return self.evaluate(addition)
 
 
-def main():
+def main() -> None:
     answer.part1(69490582260, sum_expressions(False))
     answer.part2(362464596624526, sum_expressions(True))
 
 
-def sum_expressions(prefer_addition):
-    expressions = get_expressions()
-    answers = [expression.evaluate(prefer_addition) for expression in expressions]
-    return sum(answers)
+def sum_expressions(addition: bool) -> int:
+    return sum([expression.evaluate(addition) for expression in get_expressions()])
 
 
-def get_expressions():
-    return [Expression(line.replace(" ", "")) for line in Parser().lines()]
+def get_expressions() -> list[Expression]:
+    def get_end_index(start: int, line: str) -> int:
+        count = 0
+        for i in range(start, len(line)):
+            char = line[i]
+            if char == "(":
+                count += 1
+            elif char == ")":
+                count -= 1
+                if count == 0:
+                    return i
+        raise Exception("Failed")
+
+    def parse_expression(line: str) -> Expression:
+        expressions: list[Expression | Number] = []
+        operators: list[str] = []
+        i = 0
+        while i < len(line):
+            char = line[i]
+            if char == "(":
+                end_index = get_end_index(i, line)
+                expressions.append(parse_expression(line[i + 1 : end_index]))
+                i = end_index + 1
+            elif char.isdigit():
+                expressions.append(Number(int(char)))
+                i += 1
+            else:
+                operators.append(char)
+                i += 1
+        return Expression(expressions, operators)
+
+    return [parse_expression(line.replace(" ", "")) for line in Parser().lines()]
 
 
 if __name__ == "__main__":
