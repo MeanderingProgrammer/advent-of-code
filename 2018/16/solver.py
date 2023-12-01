@@ -1,103 +1,111 @@
+from dataclasses import dataclass
+from typing import Callable, Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
+class Registers:
+    values: list[int]
+
+    def set(self, index: int, value: int) -> None:
+        self.values[index] = value
+
+    def get(self, index: int) -> int:
+        return self.values[index]
+
+    def copy(self) -> Self:
+        return type(self)(list(self.values))
+
+
+@dataclass(frozen=True)
+class Instruction:
+    instruction: list[int]
+
+    def opcode(self) -> int:
+        return self.instruction[0]
+
+    def one(self) -> int:
+        return self.instruction[1]
+
+    def two(self) -> int:
+        return self.instruction[2]
+
+    def three(self) -> int:
+        return self.instruction[3]
+
+
+@dataclass(frozen=True)
 class Parameter:
-    def __init__(self, register):
-        self.register = register
+    register: bool
 
-    def get(self, value, regs):
+    def get(self, value: int, regs: Registers) -> int:
         return regs.get(value) if self.register else value
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "r" if self.register else "i"
 
 
 class Operator:
-    def __init__(self, register, symbol, f):
+    def __init__(self, register: bool, f: Callable[[int, int], int]):
         self.v1 = Parameter(True)
         self.v2 = Parameter(register)
-        self.symbol = symbol
         self.f = f
 
-    def process(self, instruction, regs):
+    def process(self, instruction: Instruction, regs: Registers) -> None:
         a = self.v1.get(instruction.one(), regs)
         b = self.v2.get(instruction.two(), regs)
         regs.set(instruction.three(), self.f(a, b))
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}{}".format(self.symbol, self.v2)
-
 
 class Add(Operator):
-    def __init__(self, register):
-        super().__init__(register, "add", lambda x, y: x + y)
+    def __init__(self, register: bool):
+        super().__init__(register, lambda x, y: x + y)
 
 
 class Mult(Operator):
-    def __init__(self, register):
-        super().__init__(register, "mul", lambda x, y: x * y)
+    def __init__(self, register: bool):
+        super().__init__(register, lambda x, y: x * y)
 
 
 class And(Operator):
-    def __init__(self, register):
-        super().__init__(register, "ban", lambda x, y: x & y)
+    def __init__(self, register: bool):
+        super().__init__(register, lambda x, y: x & y)
 
 
 class Or(Operator):
-    def __init__(self, register):
-        super().__init__(register, "bor", lambda x, y: x | y)
+    def __init__(self, register: bool):
+        super().__init__(register, lambda x, y: x | y)
 
 
 class Set:
-    def __init__(self, register):
+    def __init__(self, register: bool):
         self.v1 = Parameter(register)
 
-    def process(self, instruction, regs):
+    def process(self, instruction: Instruction, regs: Registers) -> None:
         value = self.v1.get(instruction.one(), regs)
         regs.set(instruction.three(), value)
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "set{}".format(self.v1)
-
 
 class Comparison:
-    def __init__(self, reg1, reg2, symbol, f):
+    def __init__(self, reg1: bool, reg2: bool, f: Callable[[int, int], bool]):
         self.v1 = Parameter(reg1)
         self.v2 = Parameter(reg2)
-        self.symbol = symbol
         self.f = f
 
-    def process(self, instruction, regs):
+    def process(self, instruction: Instruction, regs: Registers) -> None:
         a = self.v1.get(instruction.one(), regs)
         b = self.v2.get(instruction.two(), regs)
         value = 1 if self.f(a, b) else 0
         regs.set(instruction.three(), value)
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return "{}{}{}".format(self.symbol, self.v1, self.v2)
-
 
 class GreaterThan(Comparison):
-    def __init__(self, reg1, reg2):
-        super().__init__(reg1, reg2, "gt", lambda x, y: x > y)
+    def __init__(self, reg1: bool, reg2: bool):
+        super().__init__(reg1, reg2, lambda x, y: x > y)
 
 
 class Equals(Comparison):
-    def __init__(self, reg1, reg2):
-        super().__init__(reg1, reg2, "eq", lambda x, y: x == y)
+    def __init__(self, reg1: bool, reg2: bool):
+        super().__init__(reg1, reg2, lambda x, y: x == y)
 
 
 ALL_INSTRUCTIONS = {
@@ -120,129 +128,83 @@ ALL_INSTRUCTIONS = {
 }
 
 
-class Registers:
-    def __init__(self, values, parse=True):
-        self.values = [int(part) for part in values.split(", ")] if parse else values
-
-    def set(self, index, value):
-        self.values[index] = value
-
-    def get(self, index):
-        return self.values[index]
-
-    def copy(self):
-        return Registers([value for value in self.values], False)
-
-    def __eq__(self, o):
-        return str(self) == str(o)
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.values)
-
-
-class Instruction:
-    def __init__(self, instruction):
-        self.instruction = [int(part) for part in instruction.split()]
-
-    def opcode(self):
-        return self.instruction[0]
-
-    def one(self):
-        return self.instruction[1]
-
-    def two(self):
-        return self.instruction[2]
-
-    def three(self):
-        return self.instruction[3]
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return str(self.instruction)
-
-
+@dataclass(frozen=True)
 class SampleInstruction:
-    def __init__(self, parts):
-        self.before = Registers(parts[0].split(" [")[1][:-1])
-        self.instruction = Instruction(parts[1])
-        self.after = Registers(parts[2].split(" [")[1][:-1])
+    before: Registers
+    instruction: Instruction
+    after: Registers
 
-    def opcode(self):
-        return self.instruction.opcode()
-
-    def test_all(self):
-        meets = set()
-        for instruction in ALL_INSTRUCTIONS.values():
-            before_copy = self.before.copy()
-            instruction.process(self.instruction, before_copy)
-            if before_copy == self.after:
-                meets.add(str(instruction))
+    def test_all(self) -> set[str]:
+        meets: set[str] = set()
+        for name, instruction in ALL_INSTRUCTIONS.items():
+            register_copy = self.before.copy()
+            instruction.process(self.instruction, register_copy)
+            if register_copy == self.after:
+                meets.add(name)
         return meets
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        result = [
-            "Before: {}".format(self.before),
-            "{}".format(self.instruction),
-            "After: {}".format(self.after),
-        ]
-        return "\n".join(result)
-
-
-def main():
+def main() -> None:
     groups = Parser().line_groups()
-    instructions = get_sample_instructions(groups)
+    mapping, many_behaviors = get_mapping(groups[:-2])
+    answer.part1(560, many_behaviors)
+    answer.part2(622, process_instructions(mapping, groups[-1]))
 
-    mapping, behave_as_at_least_3 = {}, 0
-    for instruction in instructions:
-        opcode = instruction.opcode()
-        possible = instruction.test_all()
+
+def get_mapping(groups: list[list[str]]) -> tuple[dict[int, str], int]:
+    initial_mapping: dict[int, set[str]] = dict()
+    many_behaviors: int = 0
+    for sample_instruction in get_sample_instructions(groups):
+        opcode = sample_instruction.instruction.opcode()
+        possible = sample_instruction.test_all()
         if len(possible) >= 3:
-            behave_as_at_least_3 += 1
-        if opcode not in mapping:
-            mapping[opcode] = possible
+            many_behaviors += 1
+        if opcode not in initial_mapping:
+            initial_mapping[opcode] = possible
         else:
-            mapping[opcode] &= possible
-    answer.part1(560, behave_as_at_least_3)
-
-    mapping = collapse(mapping)
-    regs = Registers([0, 0, 0, 0], False)
-    for instruction in groups[-1]:
-        instruction = Instruction(instruction)
-        ALL_INSTRUCTIONS[mapping[instruction.opcode()]].process(instruction, regs)
-    answer.part2(622, regs.get(0))
+            initial_mapping[opcode] &= possible
+    return collapse(initial_mapping), many_behaviors
 
 
-def get_sample_instructions(groups):
-    return [SampleInstruction(instruction) for instruction in groups[:-2]]
+def get_sample_instructions(groups: list[list[str]]) -> list[SampleInstruction]:
+    def parse_registers(line: str) -> Registers:
+        return Registers(list(map(int, line.split(" [")[1][:-1].split(", "))))
+
+    def parse_sample_instruction(lines: list[str]) -> SampleInstruction:
+        return SampleInstruction(
+            before=parse_registers(lines[0]),
+            instruction=parse_instruction(lines[1]),
+            after=parse_registers(lines[2]),
+        )
+
+    return [parse_sample_instruction(lines) for lines in groups]
 
 
-def collapse(mapping):
-    new_mapping = {}
+def parse_instruction(line: str) -> Instruction:
+    return Instruction(list(map(int, line.split())))
 
+
+def collapse(mapping: dict[int, set[str]]) -> dict[int, str]:
+    collapsed: dict[int, str] = dict()
     while len(mapping) > 0:
-        for key in mapping:
-            value = mapping[key]
-            if len(value) == 1:
-                new_mapping[key] = list(value)[0]
-
-        for key in new_mapping:
-            value = new_mapping[key]
+        for key, options in mapping.items():
+            if len(options) > 1:
+                continue
+            selected_option = list(options)[0]
+            collapsed[key] = selected_option
+        for key, value in collapsed.items():
             mapping.pop(key, None)
             for values in mapping.values():
                 values.discard(value)
+    return collapsed
 
-    return new_mapping
+
+def process_instructions(mapping: dict[int, str], lines: list[str]) -> int:
+    regs = Registers([0, 0, 0, 0])
+    for line in lines:
+        instruction = parse_instruction(line)
+        ALL_INSTRUCTIONS[mapping[instruction.opcode()]].process(instruction, regs)
+    return regs.get(0)
 
 
 if __name__ == "__main__":
