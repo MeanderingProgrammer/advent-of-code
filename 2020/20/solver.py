@@ -1,33 +1,103 @@
+from dataclasses import dataclass
+from typing import Optional, Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
-class PuzzleBoard:
-    def __init__(self):
-        self.board = {}
+class ImageTile:
+    def __init__(self, data: list[str], identifier: Optional[int] = None):
+        if identifier is None:
+            self.identifier: int = int(data[0][5:-1])
+            self.data: list[str] = data[1:]
+        else:
+            self.identifier: int = identifier
+            self.data: list[str] = data
+        self.edges: list[str] = [
+            "".join(row[0] for row in self.data),  # LEFT
+            self.data[0],  # TOP
+            "".join(row[-1] for row in self.data),  # RIGHT
+            self.data[-1],  # BOTTOM
+        ]
 
-    def add(self, tile):
+    def remove_boarder(self) -> Self:
+        boarderless = [row[1:-1] for row in self.data[1:-1]]
+        return type(self)(boarderless, self.identifier)
+
+    def add_horizontal(self, other: Self) -> Self:
+        combined = [self.data[i] + other.data[i] for i in range(len(self.data))]
+        return type(self)(combined, self.identifier)
+
+    def add_vertical(self, other: Self) -> Self:
+        combined = self.data + other.data
+        return type(self)(combined, self.identifier)
+
+    def all_permutations(self) -> None:
+        self.permutations: list[Self] = []
+        tile = self
+        for _ in range(4):
+            tile = tile.rotate()
+            self.permutations.append(tile)
+        tile = self.flip()
+        for _ in range(4):
+            tile = tile.rotate()
+            self.permutations.append(tile)
+
+    def rotate(self) -> Self:
+        size = len(self.data)
+        rotated = [[str(j) for j in range(size)] for _ in range(size)]
+        for i in range(size):
+            for j in range(size):
+                rotated[size - 1 - j][i] = self.data[i][j]
+        rotated = ["".join(row) for row in rotated]
+        return type(self)(rotated, self.identifier)
+
+    def flip(self) -> Self:
+        size = len(self.data)
+        rotated = [[str(j) for j in range(size)] for _ in range(size)]
+        for i in range(size):
+            for j in range(size):
+                rotated[i][size - 1 - j] = self.data[i][j]
+        rotated = ["".join(row) for row in rotated]
+        return type(self)(rotated, self.identifier)
+
+    def get_num_positive(self) -> int:
+        num_positive = 0
+        for row in self.data:
+            for value in row:
+                if value == "#":
+                    num_positive += 1
+        return num_positive
+
+    def dimensions(self) -> tuple[int, int]:
+        return len(self.data[0]), len(self.data)
+
+
+@dataclass(frozen=True)
+class PuzzleBoard:
+    board: dict[tuple[int, int], ImageTile]
+
+    def add(self, tile: ImageTile) -> bool:
         if len(self.board) == 0:
             self.board[(0, 0)] = tile
             return True
 
-        all_available = self.get_all_available()
-        for available in all_available:
+        for available in self.get_all_available():
             edges_needed = self.get_edges_needed(available)
             for permutation in tile.permutations:
-                if self.matches(permutation, edges_needed):
+                if PuzzleBoard.matches(permutation, edges_needed):
                     self.board[available] = permutation
                     return True
         return False
 
-    def get_all_available(self):
-        available = set()
+    def get_all_available(self) -> set[tuple[int, int]]:
+        available: set[tuple[int, int]] = set()
         for position in self.board:
-            available.update(self.get_adjacent(position))
+            available.update(PuzzleBoard.get_adjacent(position))
         return available
 
-    def get_edges_needed(self, position):
-        edges_needed = []
+    def get_edges_needed(self, position: tuple[int, int]) -> list[Optional[str]]:
+        edges_needed: list[Optional[str]] = []
         for i, adjacent in enumerate(self.get_adjacent(position)):
             opposing_edge = (i + 2) % 4
             if adjacent in self.board:
@@ -36,7 +106,7 @@ class PuzzleBoard:
                 edges_needed.append(None)
         return edges_needed
 
-    def coalesce(self):
+    def coalesce(self) -> ImageTile:
         xs = []
         ys = []
         for position in self.board:
@@ -48,13 +118,13 @@ class PuzzleBoard:
             for x in range(min(xs) + 1, max(xs) + 1):
                 row = row.add_horizontal(self.board[(x, y)].remove_boarder())
             rows.append(row)
-        combined = rows[0]
+        combined: ImageTile = rows[0]
         for i in range(1, len(rows)):
             combined = combined.add_vertical(rows[i])
         return combined
 
     @staticmethod
-    def get_adjacent(position):
+    def get_adjacent(position: tuple[int, int]) -> list[tuple[int, int]]:
         return [
             (position[0] - 1, position[1]),  # LEFT
             (position[0], position[1] + 1),  # TOP
@@ -63,7 +133,7 @@ class PuzzleBoard:
         ]
 
     @staticmethod
-    def matches(tile, edges_needed):
+    def matches(tile: ImageTile, edges_needed: list[Optional[str]]) -> bool:
         for i, edge in enumerate(tile.edges):
             needed = edges_needed[i]
             if needed is not None:
@@ -72,97 +142,12 @@ class PuzzleBoard:
         return True
 
 
-class ImageTile:
-    def __init__(self, data, identifier=None):
-        if identifier is None:
-            self.identifier = int(data[0][5:-1])
-            self.data = data[1:]
-        else:
-            self.identifier = identifier
-            self.data = data
-        size = len(self.data)
-        self.edges = [
-            "".join(row[0] for row in self.data),  # LEFT
-            self.data[0],  # TOP
-            "".join(row[size - 1] for row in self.data),  # RIGHT
-            self.data[size - 1],  # BOTTOM
-        ]
-
-    def remove_boarder(self):
-        boarderless = []
-        for row in self.data[1:-1]:
-            boarderless.append(row[1:-1])
-        return ImageTile(boarderless, self.identifier)
-
-    def add_horizontal(self, other):
-        new_id = "{} + {}".format(self.identifier, other.identifier)
-        combined = []
-        for i, row in enumerate(self.data):
-            combined.append(row + other.data[i])
-        return ImageTile(combined, new_id)
-
-    def add_vertical(self, other):
-        new_id = "{}\n{}".format(self.identifier, other.identifier)
-        combined = [row for row in self.data]
-        combined.extend(other.data)
-        return ImageTile(combined, new_id)
-
-    def all_permutations(self):
-        self.permutations = []
-        tile = self
-        for i in range(4):
-            tile = tile.rotate()
-            self.permutations.append(tile)
-        tile = self.flip()
-        for i in range(4):
-            tile = tile.rotate()
-            self.permutations.append(tile)
-
-    def rotate(self):
-        size = len(self.data)
-        rotated = [[j for j in range(size)] for i in range(size)]
-        for i in range(size):
-            for j in range(size):
-                value = self.data[i][j]
-                new_i = size - 1 - j
-                new_j = i
-                rotated[new_i][new_j] = value
-        rotated = ["".join(row) for row in rotated]
-        return ImageTile(rotated, self.identifier)
-
-    def flip(self):
-        size = len(self.data)
-        rotated = [[j for j in range(size)] for i in range(size)]
-        for i in range(size):
-            for j in range(size):
-                value = self.data[i][j]
-                new_j = size - 1 - j
-                rotated[i][new_j] = value
-        rotated = ["".join(row) for row in rotated]
-        return ImageTile(rotated, self.identifier)
-
-    def get_num_positive(self):
-        num_positive = 0
-        for row in self.data:
-            for value in row:
-                if value == "#":
-                    num_positive += 1
-        return num_positive
-
-    def dimensions(self):
-        length = len(self.data)
-        width = len(self.data[0])
-        return (width, length)
-
-
 class SearchImage:
-    def __init__(self, image):
-        length = len(image)
-        width = len(image[0])
-        self.dimensions = (width, length)
-        self.points = self.get_positive_points(image)
+    def __init__(self, image: list[str]):
+        self.dimensions: tuple[int, int] = (len(image[0]), len(image))
+        self.points: list[tuple[int, int]] = SearchImage.get_positive_points(image)
 
-    def find_num_matches(self, tile):
+    def find_num_matches(self, tile: ImageTile) -> int:
         num_matches = 0
         for starting_point in self.starting_points(tile.dimensions()):
             cropped = self.crop(starting_point, tile)
@@ -170,24 +155,24 @@ class SearchImage:
                 num_matches += 1
         return num_matches
 
-    def starting_points(self, dimensions):
+    def starting_points(self, dimensions: tuple[int, int]) -> list[tuple[int, int]]:
         max_x = dimensions[0] - self.dimensions[0]
         max_y = dimensions[1] - self.dimensions[1]
 
-        starting_points = []
+        starting_points: list[tuple[int, int]] = []
         for x in range(max_x):
             for y in range(max_y):
                 starting_points.append((x, y))
         return starting_points
 
-    def crop(self, point, tile):
-        cropped = []
+    def crop(self, point: tuple[int, int], tile: ImageTile) -> list[str]:
+        cropped: list[str] = []
         for i in range(self.dimensions[1]):
             row = tile.data[i + point[1]]
             cropped.append(row[point[0] : point[0] + self.dimensions[0]])
         return cropped
 
-    def does_match(self, image):
+    def does_match(self, image: list[str]) -> bool:
         for point in self.points:
             value = image[point[1]][point[0]]
             if value != "#":
@@ -195,8 +180,8 @@ class SearchImage:
         return True
 
     @staticmethod
-    def get_positive_points(image):
-        positive_points = []
+    def get_positive_points(image: list[str]) -> list[tuple[int, int]]:
+        positive_points: list[tuple[int, int]] = []
         for row in range(len(image)):
             for col in range(len(image[row])):
                 value = image[row][col]
@@ -205,35 +190,26 @@ class SearchImage:
         return positive_points
 
 
-def main():
-    board = PuzzleBoard()
+def main() -> None:
+    board = PuzzleBoard(board=dict())
     solve_board(board)
     answer.part1(15003787688423, corner_values(board))
     answer.part2(1705, get_roughness(board))
 
 
-def solve_board(board):
-    image_tiles = get_image_tiles()
+def solve_board(board: PuzzleBoard) -> None:
+    image_tiles = [ImageTile(group) for group in Parser().line_groups()]
     [image_tile.all_permutations() for image_tile in image_tiles]
-
     remaining_tiles = image_tiles
     while len(remaining_tiles) != 0:
         still_remaining = []
         for tile in remaining_tiles:
             if not board.add(tile):
                 still_remaining.append(tile)
-
-        # Luckily they didn't give input that caused us to need to
-        # implement recursive backtracking, yay!
-        if len(remaining_tiles) == len(still_remaining):
-            # Nothing was added should break with exception
-            print(board.board)
-            raise Exception("Was unable to add anything, something broken")
-
         remaining_tiles = still_remaining
 
 
-def corner_values(board):
+def corner_values(board: PuzzleBoard) -> int:
     xs = []
     ys = []
     for position in board.board:
@@ -251,26 +227,20 @@ def corner_values(board):
     return value
 
 
-def get_roughness(board):
-    image = board.coalesce()
-    image_positive = image.get_num_positive()
-
-    search_image = get_image_search()
+def get_roughness(board: PuzzleBoard) -> int:
+    search_image = SearchImage(Parser(file_name="sea-monster").lines())
     search_positive = len(search_image.points)
 
+    image = board.coalesce()
+    image_positive = image.get_num_positive()
     image.all_permutations()
+
     for permutation in image.permutations:
         num_matches = search_image.find_num_matches(permutation)
         if num_matches > 0:
             return image_positive - (num_matches * search_positive)
 
-
-def get_image_tiles():
-    return [ImageTile(group) for group in Parser().line_groups()]
-
-
-def get_image_search():
-    return SearchImage(Parser(file_name="sea-monster").lines())
+    raise Exception("Failed")
 
 
 if __name__ == "__main__":
