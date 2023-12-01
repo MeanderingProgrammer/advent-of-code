@@ -1,104 +1,88 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
-LENGTH = 36
+
+@dataclass(frozen=True)
+class Instruction:
+    name: str
+    value: str
+
+    def is_mask(self) -> bool:
+        return self.name == "mask"
+
+    def memory_address(self) -> int:
+        return int(self.name[4:-1])
 
 
+@dataclass
 class Computer:
-    def __init__(self, version):
-        self.version = version
-        self.mask = "X" * LENGTH
-        self.memory = {}
+    version: int
+    mask: str
+    memory: dict[int, int]
 
-    def run(self, instruction):
+    def run(self, instruction: Instruction) -> None:
         if instruction.is_mask():
             self.mask = instruction.value
         else:
             if self.version == 1:
-                self.apply_v1(instruction.get_memory_address(), instruction.get_value())
+                self.v1(instruction.memory_address(), int(instruction.value))
             elif self.version == 2:
-                self.apply_v2(instruction.get_memory_address(), instruction.get_value())
+                self.v2(instruction.memory_address(), int(instruction.value))
 
-    def apply_v2(self, memory_address, value):
-        memory_masks = self.get_memory_masks_v2(self.to_binary_string(memory_address))
-        for memory_mask in memory_masks:
-            address = int(memory_mask, 2)
-            self.memory[address] = value
+    def v1(self, memory_address: int, value: int) -> None:
+        self.memory[memory_address] = self.mask_v1(self.binary(value))
 
-    def get_memory_masks_v2(self, value):
-        memory_masks = [""]
+    def mask_v1(self, value: str) -> int:
+        masked_value: str = ""
         for i in range(len(value)):
-            value_bit = value[i]
+            mask_bit = self.mask[i]
+            masked_value += value[i] if mask_bit == "X" else mask_bit
+        return int(masked_value, 2)
+
+    def v2(self, memory_address: int, value: int) -> None:
+        for memory_mask in self.masks_v2(self.binary(memory_address)):
+            self.memory[int(memory_mask, 2)] = value
+
+    def masks_v2(self, value: str) -> list[str]:
+        memory_masks: list[str] = [""]
+        for i in range(len(value)):
             mask_bit = self.mask[i]
             if mask_bit != "X":
-                to_add = value_bit if mask_bit == "0" else "1"
+                to_add = value[i] if mask_bit == "0" else "1"
                 for i in range(len(memory_masks)):
                     memory_masks[i] += to_add
             else:
-                to_extend = []
+                with_zero: list[str] = []
                 for i in range(len(memory_masks)):
-                    to_extend.append(memory_masks[i] + "0")
+                    with_zero.append(memory_masks[i] + "0")
                     memory_masks[i] += "1"
-                memory_masks.extend(to_extend)
+                memory_masks.extend(with_zero)
         return memory_masks
 
-    def apply_v1(self, memory_address, value):
-        self.memory[memory_address] = self.apply_mask_v1(self.to_binary_string(value))
-
-    def apply_mask_v1(self, value):
-        masked_value = ""
-        for i in range(len(value)):
-            value_bit = value[i]
-            mask_bit = self.mask[i]
-            to_add = value_bit if mask_bit == "X" else mask_bit
-            masked_value += to_add
-        return int(masked_value, 2)
-
-    def to_binary_string(self, value):
-        binary = bin(value)[2:]
-        zeroes_needed = LENGTH - len(binary)
-        leading_zeroes = "0" * zeroes_needed
-        return leading_zeroes + binary
-
-    def get_total_memory(self):
-        total = 0
-        for address in self.memory:
-            value = self.memory[address]
-            total += value
-        return total
+    def binary(self, value: int) -> str:
+        return bin(value)[2:].zfill(len(self.mask))
 
 
-class Instruction:
-    def __init__(self, instruction):
-        parts = instruction.split(" = ")
-        self.name = parts[0]
-        self.value = parts[1]
-
-    def is_mask(self):
-        return self.name == "mask"
-
-    def get_memory_address(self):
-        return int(self.name[4:-1])
-
-    def get_value(self):
-        return int(self.value)
-
-
-def main():
+def main() -> None:
     answer.part1(10035335144067, run_computer(1))
     answer.part2(3817372618036, run_computer(2))
 
 
-def run_computer(version):
-    computer = Computer(version)
-    instructions = get_instructions()
-    for instruction in instructions:
+def run_computer(version: int) -> int:
+    computer = Computer(version=version, mask="X" * 36, memory=dict())
+    for instruction in get_instructions():
         computer.run(instruction)
-    return computer.get_total_memory()
+    return sum(computer.memory.values())
 
 
-def get_instructions():
-    return [Instruction(line) for line in Parser().lines()]
+def get_instructions() -> list[Instruction]:
+    def parse_instruction(line: str) -> Instruction:
+        name, value = line.split(" = ")
+        return Instruction(name=name, value=value)
+
+    return list(map(parse_instruction, Parser().lines()))
 
 
 if __name__ == "__main__":

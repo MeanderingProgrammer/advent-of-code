@@ -1,48 +1,50 @@
-import math
+from dataclasses import dataclass
+from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
 
 
+@dataclass(frozen=True)
 class Bus:
-    def __init__(self, bus_id):
-        self.real = bus_id != "x"
-        if self.real:
-            self.bus_id = int(bus_id)
+    interval: Optional[int]
 
-    def get_wait_time(self, arrive_time):
-        if not self.real:
-            return math.inf
-        interval = self.bus_id
-        late_time = arrive_time % interval
-        time_to_wait = interval - late_time
-        return time_to_wait % interval
+    def wait_time(self, arrival: int) -> Optional[int]:
+        if self.interval is None:
+            return None
+        late_time = arrival % self.interval
+        time_to_wait = self.interval - late_time
+        return time_to_wait % self.interval
 
 
 def main():
-    data = process()
-
-    arrive_time = int(data[0])
-    buses = [Bus(bus) for bus in data[1].split(",")]
-
-    answer.part1(296, solve_part_1(arrive_time, buses))
+    raw_arrival, raw_buses = Parser().lines()
+    arrival, buses = int(raw_arrival), get_buses(raw_buses)
+    answer.part1(296, solve_part_1(buses, arrival))
     answer.part2(535296695251210, solve_part_2(buses))
 
 
-def solve_part_1(arrive_time, buses):
-    wait_times = [bus.get_wait_time(arrive_time) for bus in buses]
-    min_wait_times = min(wait_times)
+def get_buses(raw_buses: str) -> list[Bus]:
+    return [Bus(None if raw == "x" else int(raw)) for raw in raw_buses.split(",")]
+
+
+def solve_part_1(buses: list[Bus], arrival: int) -> int:
+    wait_times = [bus.wait_time(arrival) for bus in buses]
+    min_wait_times = min(
+        [wait_time for wait_time in wait_times if wait_time is not None]
+    )
     bus = buses[wait_times.index(min_wait_times)]
-    return bus.bus_id * min_wait_times
+    assert bus.interval is not None
+    return bus.interval * min_wait_times
 
 
-def solve_part_2(buses):
+def solve_part_2(buses: list[Bus]) -> int:
     # Uses CRT: https://brilliant.org/wiki/chinese-remainder-theorem/
-    multiple = get_multiple(buses)
     total = 0
+    multiple = get_multiple(buses)
     for i, bus in enumerate(buses):
-        if bus.real:
-            n = bus.bus_id
+        if bus.interval is not None:
+            n = bus.interval
             a = (n - i) % n
             y = multiple // n
             z = get_inverse_mod(y, n)
@@ -50,47 +52,19 @@ def solve_part_2(buses):
     return total % multiple
 
 
-def get_multiple(buses):
-    result = 1
+def get_multiple(buses: list[Bus]) -> int:
+    result: int = 1
     for bus in buses:
-        if bus.real:
-            result *= bus.bus_id
+        if bus.interval is not None:
+            result *= bus.interval
     return result
 
 
-def get_inverse_mod(y, n):
+def get_inverse_mod(y: int, n: int) -> int:
     for i in range(1, n):
         if (y * i) % n == 1:
             return i
-    return None
-
-
-def brute_force_2(buses):
-    intervals = [bus.bus_id if bus.real else 0 for bus in buses]
-    max_interval = max(intervals)
-    max_offset = intervals.index(max_interval)
-    return find_start_time(buses, max_interval, max_offset)
-
-
-def find_start_time(buses, interval, offset):
-    index = 1
-    while True:
-        start_time = (interval * index) - offset
-        if consecutive_from_start(start_time, buses):
-            return start_time
-        index += 1
-
-
-def consecutive_from_start(start_time, buses):
-    for i, bus in enumerate(buses):
-        if bus.real:
-            if bus.get_wait_time(start_time) != i:
-                return False
-    return True
-
-
-def process():
-    return Parser().lines()
+    raise Exception("Failed")
 
 
 if __name__ == "__main__":
