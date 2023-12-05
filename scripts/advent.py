@@ -73,12 +73,14 @@ def run(
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
 @click.option("-l", "--language", type=LanguageType(), default="ocaml")
+@click.option("-p", "--puzzle", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
 def generate(
     template: Optional[GenerateName],
     year: Optional[int],
     day: Optional[int],
     language: Language,
+    puzzle: bool,
     info: bool,
 ) -> None:
     """
@@ -95,7 +97,7 @@ def generate(
         days = DayFactory(years=[year], days=[day]).get_days()
 
     assert len(days) == 1, "Can only generate one day at a time"
-    generator = Generator(day=days[0], language=language)
+    generator = Generator(day=days[0], language=language, puzzle=puzzle)
     click.echo(f"{generator}") if info else generator.generate()
 
 

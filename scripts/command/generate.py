@@ -11,6 +11,7 @@ from pojo.day import Day
 class Generator:
     day: Day
     language: Language
+    puzzle: bool
 
     def generate(self) -> None:
         # Create day directory, okay if it already exists
@@ -50,13 +51,14 @@ class Generator:
         advent_cookie_file = ".adventofcode.session"
         if Path(advent_cookie_file).exists() and shutil.which("aoc") is not None:
             print("Downloading input using aoc-cli")
+            puzzle_path = self.day.dir().joinpath("puzzle.md")
             download_command = [
                 "aoc download",
-                f"--year {self.day.year}",
-                f"--day {self.day.day}",
-                f"--input-file {data_path}",
-                "--input-only",
-                f"--session-file ./{advent_cookie_file}",
+                f"-y {self.day.year}",
+                f"-d {self.day.day}",
+                f"-s ./{advent_cookie_file}",
+                f"-i {data_path}",
+                f"-p {puzzle_path}" if self.puzzle else "-I",
             ]
             os.system(" ".join(download_command))
         else:
