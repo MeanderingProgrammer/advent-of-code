@@ -12,8 +12,12 @@ class Python(Language):
 
     @override
     def _setup_commands(self) -> list[list[str]]:
-        # Figure out how to only do this on change
-        return [["pip", "install", "-q", "-e", "commons/python"]]
+        try:
+            import aoc
+
+            return []
+        except ModuleNotFoundError:
+            return [["pip", "install", "-q", "-e", "commons/python"]]
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
