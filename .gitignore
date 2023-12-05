@@ -8,7 +8,6 @@ out
 all.json
 slow.json
 images/archive
-puzzle.md
 
 # Python
 __pycache__
