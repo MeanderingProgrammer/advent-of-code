@@ -98,6 +98,7 @@ a_gen \
   --year <year>? \
   --day <day>? \
   --language <language>? \
+  --puzzle? \
   --info?
 ```
 
@@ -107,6 +108,7 @@ a_gen \
 | year          | `-y` | Year to generate starting files for     | None    | `-y 2022`   |
 | day           | `-d` | Day to generate starting files for      | None    | `-d 5`      |
 | language      | `-l` | Language to generate starting files for | `rust`  | `-l python` |
+| puzzle        | `-p` | Download puzzle description as well     | `False` | `-p`        |
 | info          | `-i` | Outputs which day would get generated   | `False` | `-i`        |
 
 - If `template` is provided then `year` & `day` must not be provided
