@@ -1,7 +1,7 @@
 let rec print_it values =
   match values with
   | x :: xs ->
-      Printf.printf "%s " x;
+      Printf.printf "%s\n" x;
       print_it xs
   | _ -> Printf.printf "done\n"
 
