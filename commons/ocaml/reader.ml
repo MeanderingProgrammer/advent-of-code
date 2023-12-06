@@ -11,12 +11,19 @@ let get_filename () =
   Arg.parse speclist print_endline "";
   if !test then "sample" else "data"
 
-let read_lines () =
+let get_filepath () =
   let year, day = get_year_day (Sys.get_argv ()).(0) in
   let filename = get_filename () in
-  let filepath = String.concat ~sep:"/" [ year; day; filename ^ ".txt" ] in
+  String.concat ~sep:"/" [ year; day; filename ^ ".txt" ]
+
+let read () =
+  let filepath = get_filepath () in
+  In_channel.read_all filepath
+
+let read_lines () =
+  let filepath = get_filepath () in
   In_channel.read_lines filepath
 
 let read_ints () =
-  let lines = read_lines in
-  List.map ~f:int_of_string (lines ())
+  let lines = read_lines () in
+  List.map ~f:int_of_string lines
