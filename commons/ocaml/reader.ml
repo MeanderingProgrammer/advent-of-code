@@ -16,18 +16,19 @@ let get_filepath () =
   let filename = get_filename () in
   String.concat ~sep:"/" [ year; day; filename ^ ".txt" ]
 
-let read () =
+let read () : string =
   let filepath = get_filepath () in
   In_channel.read_all filepath
 
-let read_groups () =
+let read_groups () : string list list =
   let data = read () in
-  Str.split (Str.regexp "\n\n") data
+  let groups = Str.split (Str.regexp "\n\n") data in
+  List.map ~f:String.split_lines groups
 
-let read_lines () =
+let read_lines () : string list =
   let filepath = get_filepath () in
   In_channel.read_lines filepath
 
-let read_ints () =
+let read_ints () : int list =
   let lines = read_lines () in
   List.map ~f:int_of_string lines
