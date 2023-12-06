@@ -20,6 +20,10 @@ let read () =
   let filepath = get_filepath () in
   In_channel.read_all filepath
 
+let read_groups () =
+  let data = read () in
+  Str.split (Str.regexp "\n\n") data
+
 let read_lines () =
   let filepath = get_filepath () in
   In_channel.read_lines filepath
