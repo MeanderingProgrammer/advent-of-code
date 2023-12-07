@@ -106,7 +106,7 @@ def generate(
 @click.option("-i", "--info", is_flag=True)
 def graph(archive: bool, info: bool) -> None:
     """
-    Creates some fun graphs based on runtimes
+    Creates some fun graphs of runtimes
     """
     grapher = Grapher(archive=archive)
     click.echo(f"{grapher}") if info else grapher.graph()
