@@ -1,8 +1,8 @@
 import json
-import subprocess
 import time
 from dataclasses import dataclass
 
+from component.command import execute
 from component.display_runtimes import Displayer
 from component.language_strategy import LanguageStrategy
 from language.language import Language
@@ -48,20 +48,10 @@ class Runner:
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")
-        [Runner.__execute(command) for command in language.setup_commands()]
-        runtime = Runner.__execute(language.run_command(day, self.run_args))
+        [execute(command) for command in language.setup_commands()]
+        runtime = execute(language.run_command(day, self.run_args))
         print(f"Runtime: {runtime:.3f} seconds")
         return RuntimeInfo(day, language.name, runtime)
-
-    @staticmethod
-    def __execute(command: list[str]) -> float:
-        if len(command) == 0:
-            return 0
-        start = time.time()
-        result = subprocess.run(command, stderr=subprocess.PIPE)
-        if result.returncode != 0:
-            raise Exception(f"Failed due to: {result.stderr.decode()}")
-        return time.time() - start
 
     def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
         if not self.save:
