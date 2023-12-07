@@ -13,7 +13,7 @@ class Generator:
     language: Language
     puzzle: bool
 
-    def generate(self) -> None:
+    def run(self) -> None:
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         solution_path = self.language.solution_path(self.day)

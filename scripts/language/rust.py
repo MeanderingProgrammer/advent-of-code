@@ -12,7 +12,7 @@ class Rust(Language):
     solution_file: str = field(default="solver.rs", repr=False)
 
     @override
-    def _setup_commands(self) -> list[list[str]]:
+    def setup_commands(self) -> list[list[str]]:
         return [["cargo", "build", "-rq", "--bins"]]
 
     @override

@@ -13,7 +13,7 @@ from component.figure_saver import FigureSaver
 class Grapher:
     archive: bool
 
-    def graph(self) -> None:
+    def run(self) -> None:
         plt.style.use("ggplot")
 
         runtimes_file = Path("all.json")
