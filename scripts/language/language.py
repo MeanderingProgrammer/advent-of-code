@@ -1,5 +1,5 @@
 import abc
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from pojo.day import Day
@@ -7,21 +7,14 @@ from pojo.day import Day
 
 @dataclass(kw_only=True, init=False)
 class Language(abc.ABC):
-    _setup: bool = field(default=False, repr=False)
     name: str
     solution_file: str
 
     def solution_path(self, day: Day) -> Path:
         return day.dir().joinpath(self.solution_file)
 
-    def setup_commands(self) -> list[list[str]]:
-        if self._setup:
-            return []
-        self._setup = True
-        return self._setup_commands()
-
     @abc.abstractmethod
-    def _setup_commands(self) -> list[list[str]]:
+    def setup_commands(self) -> list[list[str]]:
         pass
 
     @abc.abstractmethod

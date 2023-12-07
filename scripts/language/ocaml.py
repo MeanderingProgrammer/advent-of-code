@@ -12,7 +12,7 @@ class Ocaml(Language):
     solution_file: str = field(default="solver.ml", repr=False)
 
     @override
-    def _setup_commands(self) -> list[list[str]]:
+    def setup_commands(self) -> list[list[str]]:
         return [
             ["opam", "install", "--deps-only", "."],
             ["dune", "build"],

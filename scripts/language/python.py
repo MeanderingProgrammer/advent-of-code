@@ -11,13 +11,8 @@ class Python(Language):
     solution_file: str = field(default="solver.py", repr=False)
 
     @override
-    def _setup_commands(self) -> list[list[str]]:
-        try:
-            import aoc
-
-            return []
-        except ModuleNotFoundError:
-            return [["pip", "install", "-q", "-e", "commons/python"]]
+    def setup_commands(self) -> list[list[str]]:
+        return [["pip", "install", "-q", "-e", "commons/python"]]
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:

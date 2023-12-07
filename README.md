@@ -15,10 +15,31 @@ pip install -r scripts/requirements.txt
 ## Set Aliases
 
 ```
+alias a_setup="./scripts/advent.py setup"
 alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
 alias a_graph="./scripts/advent.py graph"
 ```
+
+# Setup Languages
+
+The `setup` target is used to do any language specific setup prior to running.
+
+This includes downloading any necessary libraries, compiling targets, etc.
+
+- Alias Command: `a_setup`
+- Direct Command: `./scripts/advent.py setup`
+
+## Usage
+
+```
+a_setup \
+  --info?
+```
+
+| Variable Name | Alt  | Description                           | Default | Example |
+| ------------- | ---- | ------------------------------------- | ------- | ------- |
+| info          | `-i` | Outputs which languages will be setup | `False` | `-i`    |
 
 # Run
 
@@ -69,8 +90,8 @@ jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 
 ## Unit Test
 
-This will test that some shared logic works across usage days. Such as the `int-code` implementation
-from 2019.
+This will test that some shared logic works across usage days. Such as the `int-code`
+implementation from 2019.
 
 ```
 pytest -s

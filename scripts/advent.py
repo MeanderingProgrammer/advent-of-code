@@ -10,6 +10,7 @@ from args.str_enum_type import StrEnumType
 from command.generate import Generator
 from command.graph import Grapher
 from command.run import Runner
+from command.setup import Setup
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
 from component.language_strategy import LanguageStrategy, StrategyName
@@ -19,6 +20,17 @@ from language.language import Language
 @click.group()
 def cli() -> None:
     pass
+
+
+@cli.command()
+@click.option("-i", "--info", is_flag=True)
+def setup(info: bool) -> None:
+    """
+    Setup all languages
+    """
+    languages = LanguageFactory().get_all()
+    setup = Setup(languages=languages)
+    click.echo(f"{setup}") if info else setup.run()
 
 
 @cli.command()
@@ -98,7 +110,7 @@ def generate(
 
     assert len(days) == 1, "Can only generate one day at a time"
     generator = Generator(day=days[0], language=language, puzzle=puzzle)
-    click.echo(f"{generator}") if info else generator.generate()
+    click.echo(f"{generator}") if info else generator.run()
 
 
 @cli.command()
@@ -109,7 +121,7 @@ def graph(archive: bool, info: bool) -> None:
     Creates some fun graphs of runtimes
     """
     grapher = Grapher(archive=archive)
-    click.echo(f"{grapher}") if info else grapher.graph()
+    click.echo(f"{grapher}") if info else grapher.run()
 
 
 if __name__ == "__main__":

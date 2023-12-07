@@ -11,7 +11,7 @@ class Go(Language):
     solution_file: str = field(default="solver.go", repr=False)
 
     @override
-    def _setup_commands(self) -> list[list[str]]:
+    def setup_commands(self) -> list[list[str]]:
         # For now we use go run, which both compiles and runs our code
         return []
 
