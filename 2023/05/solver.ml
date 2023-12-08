@@ -11,90 +11,90 @@ let parse_seeds s =
   | _ :: numbers :: _ -> parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
-type range_offset = { first : int; last : int; offset : int }
-
-let rec update_offsets offsets first last offset =
-  match offsets with
-  | x :: xs ->
-      let value, next_first =
-        if first >= last || x.first > last || x.last < first then ([ x ], first)
-        else
-          let before =
-            if x.first < first then
-              [ { first = x.first; last = first - 1; offset = x.offset } ]
-            else []
-          in
-          let overlap =
-            [
-              { first; last = Int.min x.last last; offset = offset + x.offset };
-            ]
-          in
-          let after =
-            if x.last > last then
-              [ { first = last + 1; last = x.last; offset = x.offset } ]
-            else []
-          in
-          ( before @ overlap @ after,
-            if x.last == Int.max_int then x.last else x.last + 1 )
-      in
-      value @ update_offsets xs next_first last offset
-  | [] -> []
+type range = { first : int; last : int; offset : int }
 
 let add_conversion offsets conversion =
   match parse_numbers conversion with
   | destination :: source :: length :: _ ->
       let offset = destination - source in
-      update_offsets offsets source (source + length - 1) offset
+      { first = source; last = source + length - 1; offset } :: offsets
   | _ -> raise (Invalid_argument conversion)
 
 let rec add_conversions offsets conversions =
   match conversions with
   | x :: xs -> add_conversions (add_conversion offsets x) xs
-  | _ -> offsets
+  | [] -> offsets
 
-let group_offsets group =
-  let initial_offsets =
-    [ { first = Int.min_int; last = Int.max_int; offset = 0 } ]
-  in
-  let conversions = List.tl group in
-  add_conversions initial_offsets conversions
-
-let rec groups_offsets groups =
+let rec group_offsets groups =
   match groups with
   | x :: xs ->
-      let offsets = group_offsets x in
-      offsets :: groups_offsets xs
+      let offsets = add_conversions [] (List.tl x) in
+      offsets :: group_offsets xs
   | [] -> []
 
-let rec find offset value =
+let adjust_range r =
+  { first = r.first + r.offset; last = r.last + r.offset; offset = r.offset }
+
+let get_first r = r.first
+let get_last r = r.last
+let get_min values = List.fold_left Int.min (List.hd values) (List.tl values)
+let get_max values = List.fold_left Int.max (List.hd values) (List.tl values)
+
+let rec map_range offset r new_ranges =
   match offset with
   | x :: xs ->
-      if value <= x.last && value >= x.first then value + x.offset
-      else find xs value
-  | _ -> raise (Invalid_argument "Could not find")
+      let split_ranges =
+        if x.last >= r.first && x.first <= r.last then
+          let first = Int.max x.first r.first in
+          let last = Int.min x.last r.last in
+          [ { first; last; offset = x.offset } ]
+        else []
+      in
+      map_range xs r (split_ranges @ new_ranges)
+  | [] ->
+      if List.length new_ranges == 0 then [ r ]
+      else
+        let ranges = List.map adjust_range new_ranges in
+        let min_consumed = get_min (List.map get_first new_ranges) in
+        let min_range =
+          { first = r.first; last = min_consumed - 1; offset = 0 }
+        in
+        let max_consumed = get_max (List.map get_last new_ranges) in
+        let max_range =
+          { first = max_consumed + 1; last = r.last; offset = 0 }
+        in
+        if r.first != min_consumed && r.last != max_consumed then
+          min_range :: max_range :: ranges
+        else if r.first != min_consumed then min_range :: ranges
+        else if r.last != max_consumed then max_range :: ranges
+        else ranges
 
-let rec apply offsets value =
+let rec map_ranges offset ranges =
+  match ranges with
+  | x :: xs -> map_range offset x [] @ map_ranges offset xs
+  | [] -> ranges
+
+let rec apply offsets ranges =
   match offsets with
-  | x :: xs ->
-      let next_value = find x value in
-      apply xs next_value
-  | [] -> value
+  | x :: xs -> apply xs (map_ranges x ranges)
+  | [] -> get_min (List.map get_first ranges)
 
-let get_min locations =
-  List.fold_left Int.min (List.hd locations) (List.tl locations)
-
-let rec get_seed_pairs seeds =
+let rec seed_ranges seeds =
   match seeds with
-  | start :: length :: xs ->
-      let pair = List.init length (fun i -> start + i) in
-      pair @ get_seed_pairs xs
+  | x :: xs -> { first = x; last = x; offset = 0 } :: seed_ranges xs
+  | _ -> []
+
+let rec get_seeds seeds =
+  match seeds with
+  | first :: length :: xs ->
+      { first; last = first + length - 1; offset = 0 } :: get_seeds xs
   | _ -> []
 
 let () =
   let groups = Aoc.Reader.read_groups () in
   let seeds = parse_seeds (List.nth (List.nth groups 0) 0) in
-  let offsets = groups_offsets (List.tl groups) in
-  let part1 = get_min (List.map (apply offsets) seeds) in
-  let part2 = get_min (List.map (apply offsets) (get_seed_pairs seeds)) in
+  let offsets = group_offsets (List.tl groups) in
+  let part1 = (apply offsets) (seed_ranges seeds) in
+  let part2 = (apply offsets) (get_seeds seeds) in
   Aoc.Answer.part1 621354867 part1 string_of_int;
-  Aoc.Answer.part2 1 part2 string_of_int
+  Aoc.Answer.part2 15880236 part2 string_of_int
