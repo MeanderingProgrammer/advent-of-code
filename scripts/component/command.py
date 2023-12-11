@@ -1,12 +1,11 @@
 import subprocess
-import time
+from typing import Optional
 
 
-def execute(command: list[str]) -> float:
+def execute(command: list[str]) -> Optional[str]:
     if len(command) == 0:
-        return 0.0
-    start = time.time()
+        return None
     result = subprocess.run(command, stderr=subprocess.PIPE)
     if result.returncode != 0:
-        raise Exception(f"Failed due to: {result.stderr.decode()}")
-    return time.time() - start
+        return result.stderr.decode()
+    return None
