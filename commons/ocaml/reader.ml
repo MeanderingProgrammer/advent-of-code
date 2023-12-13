@@ -1,5 +1,5 @@
 let get_year_day executable =
-  let parts = Core.String.split executable ~on:'/' in
+  let parts = String.split_on_char '/' executable in
   let name = Core.List.last_exn parts in
   Core.String.lsplit2_exn name ~on:'_'
 
@@ -12,7 +12,7 @@ let get_filename () =
 let get_filepath () =
   let year, day = get_year_day (Core.Sys.get_argv ()).(0) in
   let filename = get_filename () in
-  Core.String.concat ~sep:"/" [ year; day; filename ^ ".txt" ]
+  String.concat "/" [ year; day; filename ^ ".txt" ]
 
 let read () : string =
   let filepath = get_filepath () in
@@ -21,7 +21,7 @@ let read () : string =
 let read_groups () : string list list =
   let data = read () in
   let groups = Str.split (Str.regexp "\n\n") data in
-  Core.List.map ~f:Core.String.split_lines groups
+  List.map Core.String.split_lines groups
 
 let read_lines () : string list =
   let filepath = get_filepath () in
@@ -29,4 +29,4 @@ let read_lines () : string list =
 
 let read_ints () : int list =
   let lines = read_lines () in
-  Core.List.map ~f:int_of_string lines
+  List.map int_of_string lines
