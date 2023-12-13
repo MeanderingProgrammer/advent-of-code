@@ -8,7 +8,7 @@ let parse_numbers s =
 (* Time: <numbers> *)
 let parse_values s =
   match String.split_on_char ':' s with
-  | _ :: numbers :: _ -> parse_numbers numbers
+  | [ _; numbers ] -> parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
 let rec variants time found max_time record_distance =

@@ -8,14 +8,14 @@ let parse_numbers s =
 (* seeds: <numbers> *)
 let parse_seeds s =
   match String.split_on_char ':' s with
-  | _ :: numbers :: _ -> parse_numbers numbers
+  | [ _; numbers ] -> parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
 type range = { first : int; last : int; offset : int }
 
 let add_conversion offsets conversion =
   match parse_numbers conversion with
-  | destination :: source :: length :: _ ->
+  | [ destination; source; length ] ->
       let offset = destination - source in
       { first = source; last = source + length - 1; offset } :: offsets
   | _ -> raise (Invalid_argument conversion)

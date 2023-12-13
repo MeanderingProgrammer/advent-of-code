@@ -22,7 +22,7 @@ type hand = { cards : char list; bid : int }
 (* 32T3K 765 *)
 let parse_hand s =
   match String.split_on_char ' ' s with
-  | cards :: bid :: _ ->
+  | [ cards; bid ] ->
       { cards = List.of_seq (String.to_seq cards); bid = int_of_string bid }
   | _ -> raise (Invalid_argument s)
 
