@@ -13,7 +13,7 @@ let get_id game = game.id
 (*Game <id>: <ball_set_1>; <ball_set_2>; <ball_set_3>*)
 let parse_game s =
   match String.split_on_char ':' s with
-  | game_id :: ball_sets :: _ ->
+  | [ game_id; ball_sets ] ->
       {
         id = int_of_string (get_nth game_id 1);
         ball_sets = List.map parse_ball_set (String.split_on_char ';' ball_sets);
