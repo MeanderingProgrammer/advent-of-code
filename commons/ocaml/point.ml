@@ -8,3 +8,6 @@ let adjacent (p : point) : (direction * point) list =
     (LEFT, { x = p.x - 1; y = p.y });
     (RIGHT, { x = p.x + 1; y = p.y });
   ]
+
+let distance (p1 : point) (p2 : point) : int =
+  Int.abs (p1.x - p2.x) + Int.abs (p1.y - p2.y)
