@@ -32,9 +32,7 @@ let rec match_count result winning found =
   | [] -> result
 
 let card_match_count c = match_count 0 c.winning c.found
-
-let score n =
-  if Int.equal n 0 then 0 else 2.0 ** float_of_int (n - 1) |> int_of_float
+let score n = if Int.equal n 0 then 0 else Aoc.Math.int_pow 2 (n - 1)
 
 let rec update_counts counts first last amount =
   match counts with
