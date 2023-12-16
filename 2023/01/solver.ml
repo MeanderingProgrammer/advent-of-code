@@ -1,9 +1,11 @@
+open Core
+
 let rec find_matching mapping value index =
   match mapping with
   | (k, v) :: xs ->
       if index + String.length k <= String.length value then
-        let substring = String.sub value index (String.length k) in
-        if String.compare substring k == 0 then Some v
+        let substring = String.sub value ~pos:index ~len:(String.length k) in
+        if String.equal substring k then Some v
         else find_matching xs value index
       else find_matching xs value index
   | [] -> None

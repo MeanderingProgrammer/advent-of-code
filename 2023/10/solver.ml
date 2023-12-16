@@ -1,7 +1,8 @@
+open Core
 open Aoc.Point
 
 let valid_adjacent grid location =
-  let pipe = List.assoc location grid in
+  let pipe = List.Assoc.find_exn ~equal:point_equal grid location in
   let valid_directions =
     match pipe with
     | '|' -> [ UP; DOWN ]
@@ -15,29 +16,33 @@ let valid_adjacent grid location =
   let locations = adjacent location in
   let valid_locations =
     List.filter
-      (fun (direction, _) -> List.mem direction valid_directions)
+      ~f:(fun (direction, _) ->
+        List.exists ~f:(direction_equal direction) valid_directions)
       locations
   in
-  List.map (fun (_, location) -> location) valid_locations
+  List.map ~f:(fun (_, location) -> location) valid_locations
 
 let rec traverse grid steps locations seen =
-  let seen = List.map (fun location -> (location, steps)) locations @ seen in
+  let seen = List.map ~f:(fun location -> (location, steps)) locations @ seen in
   let next_locations =
-    List.flatten (List.map (valid_adjacent grid) locations)
+    Stdlib.List.flatten (List.map ~f:(valid_adjacent grid) locations)
   in
   let next_locations =
     List.filter
-      (fun location -> Option.is_none (List.assoc_opt location seen))
+      ~f:(fun location ->
+        Option.is_none (List.Assoc.find ~equal:point_equal seen location))
       next_locations
   in
-  if List.length next_locations == 0 then seen
+  if List.is_empty next_locations then seen
   else traverse grid (steps + 1) next_locations seen
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let start, _ = List.find (fun (_, ch) -> ch == 'S') grid in
-  let grid = (start, 'F') :: List.remove_assoc start grid in
+  let start, _ = List.find_exn ~f:(fun (_, ch) -> Char.equal ch 'S') grid in
+  let grid = (start, 'F') :: List.Assoc.remove ~equal:point_equal grid start in
   let distances = traverse grid 0 [ start ] [] in
-  let values = List.map (fun (_, distance) -> distance) distances in
-  let part1 = List.fold_left Int.max (List.hd values) (List.tl values) in
+  let values = List.map ~f:(fun (_, distance) -> distance) distances in
+  let part1 =
+    List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
+  in
   Aoc.Answer.part1 6690 part1 string_of_int

@@ -1,13 +1,15 @@
-let non_empty s = String.length (String.trim s) != 0
+open Core
+
+let non_empty s = not (String.is_empty (String.strip s))
 
 (* 79 14 55 13 *)
 let parse_numbers s =
-  let numbers = String.split_on_char ' ' s in
-  List.map int_of_string (List.filter non_empty numbers)
+  let numbers = String.split ~on:' ' s in
+  List.map ~f:int_of_string (List.filter ~f:non_empty numbers)
 
 (* seeds: <numbers> *)
 let parse_seeds s =
-  match String.split_on_char ':' s with
+  match String.split ~on:':' s with
   | [ _; numbers ] -> parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
@@ -28,7 +30,7 @@ let rec add_conversions offsets conversions =
 let rec group_offsets groups =
   match groups with
   | x :: xs ->
-      let offsets = add_conversions [] (List.tl x) in
+      let offsets = add_conversions [] (List.tl_exn x) in
       offsets :: group_offsets xs
   | [] -> []
 
@@ -37,8 +39,12 @@ let adjust_range r =
 
 let get_first r = r.first
 let get_last r = r.last
-let get_min values = List.fold_left Int.min (List.hd values) (List.tl values)
-let get_max values = List.fold_left Int.max (List.hd values) (List.tl values)
+
+let get_min values =
+  List.fold_left ~init:(List.hd_exn values) ~f:Int.min (List.tl_exn values)
+
+let get_max values =
+  List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
 
 let rec map_range offset r new_ranges =
   match offset with
@@ -52,21 +58,23 @@ let rec map_range offset r new_ranges =
       in
       map_range xs r (split_ranges @ new_ranges)
   | [] ->
-      if List.length new_ranges == 0 then [ r ]
+      if List.is_empty new_ranges then [ r ]
       else
-        let ranges = List.map adjust_range new_ranges in
-        let min_consumed = get_min (List.map get_first new_ranges) in
+        let ranges = List.map ~f:adjust_range new_ranges in
+        let min_consumed = get_min (List.map ~f:get_first new_ranges) in
         let min_range =
           { first = r.first; last = min_consumed - 1; offset = 0 }
         in
-        let max_consumed = get_max (List.map get_last new_ranges) in
+        let max_consumed = get_max (List.map ~f:get_last new_ranges) in
         let max_range =
           { first = max_consumed + 1; last = r.last; offset = 0 }
         in
-        if r.first != min_consumed && r.last != max_consumed then
-          min_range :: max_range :: ranges
-        else if r.first != min_consumed then min_range :: ranges
-        else if r.last != max_consumed then max_range :: ranges
+        if
+          (not (Int.equal r.first min_consumed))
+          && not (Int.equal r.last max_consumed)
+        then min_range :: max_range :: ranges
+        else if not (Int.equal r.first min_consumed) then min_range :: ranges
+        else if not (Int.equal r.last max_consumed) then max_range :: ranges
         else ranges
 
 let rec map_ranges offset ranges =
@@ -77,7 +85,7 @@ let rec map_ranges offset ranges =
 let rec apply offsets ranges =
   match offsets with
   | x :: xs -> apply xs (map_ranges x ranges)
-  | [] -> get_min (List.map get_first ranges)
+  | [] -> get_min (List.map ~f:get_first ranges)
 
 let rec seed_ranges seeds =
   match seeds with
@@ -92,8 +100,8 @@ let rec get_seeds seeds =
 
 let () =
   let groups = Aoc.Reader.read_groups () in
-  let seeds = parse_seeds (List.nth (List.nth groups 0) 0) in
-  let offsets = group_offsets (List.tl groups) in
+  let seeds = parse_seeds (List.nth_exn (List.nth_exn groups 0) 0) in
+  let offsets = group_offsets (List.tl_exn groups) in
   let part1 = (apply offsets) (seed_ranges seeds) in
   let part2 = (apply offsets) (get_seeds seeds) in
   Aoc.Answer.part1 621354867 part1 string_of_int;
