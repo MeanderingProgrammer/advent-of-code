@@ -1,8 +1,22 @@
 open Aoc.Point
 
+let rec set_grid grid data =
+  match data with
+  | (p, x) :: xs ->
+      Hashtbl.add grid p x;
+      set_grid grid xs
+  | [] -> ()
+
+let get_max grid f =
+  let values = Hashtbl.to_seq_keys grid |> Seq.map f |> List.of_seq in
+  List.fold_left Int.max (List.hd values) (List.tl values) + 1
+
 let find_rocks grid direction =
-  let rocks = List.filter (fun (_, ch) -> ch == 'O') !grid in
-  let points = List.map (fun (p, _) -> p) rocks in
+  let points =
+    Hashtbl.to_seq grid
+    |> Seq.filter (fun (_, ch) -> ch == 'O')
+    |> Seq.map fst |> List.of_seq
+  in
   match direction with
   | UP -> List.sort (fun a b -> Int.compare a.y b.y) points
   | DOWN -> List.sort (fun a b -> Int.compare b.y a.y) points
@@ -18,17 +32,15 @@ let rec move_rock grid direction rock =
     | RIGHT -> { rock with x = rock.x + 1 }
   in
   let can_move =
-    match List.assoc_opt next !grid with
+    match Hashtbl.find_opt grid next with
     | None -> false
     | Some value -> Char.equal '.' value
   in
   match can_move with
   | false -> ()
   | true ->
-      grid := List.remove_assoc rock !grid;
-      grid := (rock, '.') :: !grid;
-      grid := List.remove_assoc next !grid;
-      grid := (next, 'O') :: !grid;
+      Hashtbl.replace grid rock '.';
+      Hashtbl.replace grid next 'O';
       move_rock grid direction next
 
 let rec move_rocks grid direction rocks =
@@ -42,31 +54,61 @@ let find_and_move grid direction =
   let rocks = find_rocks grid direction in
   move_rocks grid direction rocks
 
-let get_load grid =
-  let ys = List.map (fun (p, _) -> p.y) !grid in
-  let max_y = List.fold_left Int.max (List.hd ys) (List.tl ys) + 1 in
+let get_load grid max_y =
   let rocks = find_rocks grid UP in
   let values = List.map (fun p -> max_y - p.y) rocks in
   List.fold_left ( + ) 0 values
 
-let rec run_cycle grid i =
-  match i with
-  | 0 -> ()
-  | _ ->
-      find_and_move grid UP;
-      find_and_move grid LEFT;
-      find_and_move grid DOWN;
-      find_and_move grid RIGHT;
-      Printf.printf "LOAD = %d\n" (get_load grid);
-      run_cycle grid (i - 1)
+let run_cycle grid =
+  find_and_move grid UP;
+  find_and_move grid LEFT;
+  find_and_move grid DOWN;
+  find_and_move grid RIGHT
+
+let grid_row grid xs y =
+  let chars = List.map (fun x -> Hashtbl.find grid { x; y }) xs in
+  String.of_seq (List.to_seq chars)
+
+let grid_string grid max_x max_y =
+  let xs = Seq.take max_x (Seq.ints 0) |> List.of_seq in
+  let ys = Seq.take max_y (Seq.ints 0) |> List.of_seq in
+  let rows = List.map (grid_row grid xs) ys in
+  String.concat "\n" rows
+
+let rec until_repeat grid max_x max_y seen =
+  run_cycle grid;
+  let as_string = grid_string grid max_x max_y in
+  match List.assoc_opt as_string seen with
+  | None ->
+      let next = get_load grid max_y in
+      until_repeat grid max_x max_y ((as_string, next) :: seen)
+  | Some _ ->
+      let result = List.rev seen in
+      let preamble =
+        Option.get
+          (List.find_index (fun (x, _) -> String.equal x as_string) result)
+      in
+      let pattern = List.filteri (fun i _ -> i >= preamble) result in
+      let pattern = List.map (fun (_, x) -> x) pattern in
+      (preamble, pattern)
 
 let () =
-  let grid = ref (Aoc.Reader.read_grid ()) in
+  let grid = Hashtbl.create 1000 in
+  set_grid grid (Aoc.Reader.read_grid ());
+  let max_x = get_max grid (fun p -> p.x) in
+  let max_y = get_max grid (fun p -> p.y) in
+
   find_and_move grid UP;
-  let part1 = get_load grid in
+  let part1 = get_load grid max_y in
+
+  (* Complete the first cycle *)
   find_and_move grid LEFT;
   find_and_move grid DOWN;
   find_and_move grid RIGHT;
-  run_cycle grid 100;
-  (* Aoc.Answer.part1 136 part1 string_of_int *)
-  Aoc.Answer.part1 109654 part1 string_of_int
+
+  let starting_seen = [ (grid_string grid max_x max_y, get_load grid max_y) ] in
+  let preamble, pattern = until_repeat grid max_x max_y starting_seen in
+  let pattern_index = (1000000000 - 1 - preamble) mod List.length pattern in
+  let part2 = List.nth pattern pattern_index in
+  Aoc.Answer.part1 109654 part1 string_of_int;
+  Aoc.Answer.part2 94876 part2 string_of_int
