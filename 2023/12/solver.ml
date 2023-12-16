@@ -2,6 +2,10 @@ open Core
 
 type row = { springs : char list; groups : int list }
 
+let row_equal r1 r2 =
+  List.equal Char.equal r1.springs r2.springs
+  && List.equal Int.equal r1.groups r2.groups
+
 (* 1,1,3 *)
 let parse_groups s = List.map ~f:int_of_string (String.split ~on:',' s)
 
@@ -32,7 +36,8 @@ let rec count springs groups cache =
         let next_springs = List.filteri ~f:(fun i _ -> i > group) springs in
         count next_springs (List.tl_exn groups) cache
   in
-  match Stdlib.List.assoc_opt (springs, groups) !cache with
+  let state = { springs; groups } in
+  match List.Assoc.find ~equal:row_equal !cache state with
   | Some value -> value
   | None ->
       let value =
@@ -48,7 +53,7 @@ let rec count springs groups cache =
                 | '?' -> handle_empty () + handle_group group
                 | _ -> raise (Invalid_argument (String.make 1 spring))))
       in
-      cache := ((springs, groups), value) :: !cache;
+      cache := (state, value) :: !cache;
       value
 
 let count_folded r = count r.springs r.groups (ref [])

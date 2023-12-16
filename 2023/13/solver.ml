@@ -2,21 +2,23 @@ open Core
 open Aoc.Point
 
 let get_max grid f =
-  let points, _ = Stdlib.List.split grid in
+  let points = List.map ~f:(fun (p, _) -> p) grid in
   let values = List.map ~f points in
   List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
 
 let get_range max inclusive =
   let offset = if inclusive then 1 else 0 in
-  Seq.take (max + offset) (Seq.ints 0) |> Stdlib.List.of_seq
+  List.init (max + offset) ~f:(fun i -> i)
 
 let rec differences grid range f src dst =
   match range with
   | [] -> 0
   | x :: xs ->
-      let target_value = Stdlib.List.assoc (f src x) grid in
+      let target_value =
+        List.Assoc.find_exn ~equal:point_equal grid (f src x)
+      in
       let difference =
-        match Stdlib.List.assoc_opt (f dst x) grid with
+        match List.Assoc.find ~equal:point_equal grid (f dst x) with
         | None -> 0
         | Some value -> if Char.equal value target_value then 0 else 1
       in

@@ -25,7 +25,7 @@ let valid_adjacent grid location =
 let rec traverse grid steps locations seen =
   let seen = List.map ~f:(fun location -> (location, steps)) locations @ seen in
   let next_locations =
-    Stdlib.List.flatten (List.map ~f:(valid_adjacent grid) locations)
+    List.concat (List.map ~f:(valid_adjacent grid) locations)
   in
   let next_locations =
     List.filter
