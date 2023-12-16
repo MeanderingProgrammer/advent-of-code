@@ -42,7 +42,5 @@ let () =
   let grid = (start, 'F') :: List.Assoc.remove ~equal:point_equal grid start in
   let distances = traverse grid 0 [ start ] [] in
   let values = List.map ~f:(fun (_, distance) -> distance) distances in
-  let part1 =
-    List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
-  in
+  let part1 = Aoc.Util.max values in
   Aoc.Answer.part1 6690 part1 string_of_int
