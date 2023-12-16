@@ -1,4 +1,5 @@
 open Point
+open Grid
 
 let get_year_day executable =
   let parts = String.split_on_char '/' executable in
@@ -33,12 +34,6 @@ let read_ints () : int list =
   let lines = read_lines () in
   List.map int_of_string lines
 
-let grid_point (y : int) (x : int) (ch : char) : point * char = ({ x; y }, ch)
-
-let grid_line (y : int) (s : string) : (point * char) list =
-  let chars = s |> String.to_seq |> List.of_seq in
-  List.mapi (grid_point y) chars
-
 let read_grid () : (point * char) list =
   let lines = read_lines () in
-  List.flatten (List.mapi grid_line lines)
+  parse_grid lines
