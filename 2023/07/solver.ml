@@ -86,7 +86,7 @@ let compare_hands wild_joker a b =
   let b_type = get_hand_type wild_joker b.cards in
   let type_comparison = Int.compare (to_value a_type) (to_value b_type) in
   if not (Int.equal type_comparison 0) then type_comparison
-  else compare_cards wild_joker (Stdlib.List.combine a.cards b.cards)
+  else compare_cards wild_joker (List.zip_exn a.cards b.cards)
 
 let winnings i h = (i + 1) * h.bid
 

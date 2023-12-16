@@ -8,4 +8,4 @@ let grid_line (y : int) (s : string) : (point * char) list =
   List.mapi ~f:(grid_point y) chars
 
 let parse_grid (lines : string list) : (point * char) list =
-  Stdlib.List.flatten (List.mapi ~f:grid_line lines)
+  List.concat (List.mapi ~f:grid_line lines)
