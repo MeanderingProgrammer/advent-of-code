@@ -1,14 +1,5 @@
 type operation = Remove of string | Add of string * int
 
-let rec print_it values =
-  match values with
-  | [] -> Printf.printf "done\n"
-  | x :: xs ->
-      (match x with
-      | Remove label -> Printf.printf "REMOVE: %s\n" label
-      | Add (label, length) -> Printf.printf "ADD: %s %d\n" label length);
-      print_it xs
-
 let hash s =
   let rec calculate chars value =
     match chars with
@@ -28,10 +19,49 @@ let parse s =
       | [ label; length ] -> Add (label, int_of_string length)
       | _ -> raise (Invalid_argument s))
 
+let rec update box label value =
+  match box with
+  | [] -> []
+  | (l, v) :: xs ->
+      let current = if String.equal label l then (label, value) else (l, v) in
+      current :: update xs label value
+
+let run_op operation hash_map =
+  match operation with
+  | Remove label ->
+      let hash_value = hash label in
+      let box = Array.get hash_map hash_value in
+      let updated_box = List.remove_assoc label box in
+      Array.set hash_map hash_value updated_box
+  | Add (label, value) ->
+      let hash_value = hash label in
+      let box = Array.get hash_map hash_value in
+      let updated_box =
+        if List.mem_assoc label box then update box label value
+        else (label, value) :: box
+      in
+      Array.set hash_map hash_value updated_box
+
+let rec run_ops operations hash_map =
+  match operations with
+  | [] -> ()
+  | x :: xs ->
+      run_op x hash_map;
+      run_ops xs hash_map
+
+let focussing_power i box =
+  let box = List.rev box in
+  let values = List.mapi (fun j (_, value) -> (j + 1) * value) box in
+  let partial = List.fold_left ( + ) 0 values in
+  (i + 1) * partial
+
 let () =
   let data = Aoc.Reader.read () in
   let values = String.split_on_char ',' (String.trim data) in
   let part1 = List.fold_left ( + ) 0 (List.map hash values) in
   let operations = List.map parse values in
-  print_it operations;
-  Aoc.Answer.part1 514281 part1 string_of_int
+  let hash_map = Array.make 256 [] in
+  run_ops operations hash_map;
+  let part2 = Array.fold_left ( + ) 0 (Array.mapi focussing_power hash_map) in
+  Aoc.Answer.part1 514281 part1 string_of_int;
+  Aoc.Answer.part2 244199 part2 string_of_int
