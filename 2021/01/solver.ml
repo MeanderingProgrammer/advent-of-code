@@ -1,3 +1,5 @@
+open Core
+
 let increases values =
   let rec f acc values =
     match values with
@@ -17,5 +19,7 @@ let winsorize values =
 
 let () =
   let values = Aoc.Reader.read_ints () in
-  Aoc.Answer.part1 1292 (increases values) string_of_int;
-  Aoc.Answer.part2 1262 (increases (List.rev (winsorize values))) string_of_int
+  let part1 = increases values in
+  let part2 = increases (List.rev (winsorize values)) in
+  Aoc.Answer.part1 1292 part1 string_of_int;
+  Aoc.Answer.part2 1262 part2 string_of_int

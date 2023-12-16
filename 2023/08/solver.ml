@@ -1,3 +1,5 @@
+open Core
+
 type edge = { left : string; right : string }
 
 (* (BBB, CCC) *)
@@ -14,7 +16,7 @@ let parse_node s =
   | _ -> raise (Invalid_argument s)
 
 let get_next network direction node =
-  let current_edge = List.assoc node network in
+  let current_edge = List.Assoc.find_exn ~equal:String.equal network node in
   match direction with
   | 'L' -> current_edge.left
   | 'R' -> current_edge.right
@@ -34,18 +36,18 @@ let rec follow_until i target directions network location =
     follow_until (i + 1) target directions network next_location
 
 let is_zzz s = String.equal s "ZZZ"
-let ends ch s = String.ends_with ~suffix:ch s
+let ends ch s = String.is_suffix ~suffix:ch s
 
 let () =
   let groups = Aoc.Reader.read_groups () in
-  let directions =
-    List.nth (List.nth groups 0) 0 |> String.to_seq |> List.of_seq
-  in
-  let network = List.map parse_node (List.nth groups 1) in
+  let directions = List.nth_exn (List.nth_exn groups 0) 0 |> String.to_list in
+  let network = List.map ~f:parse_node (List.nth_exn groups 1) in
   let part1 = follow_until 0 is_zzz directions network "AAA" in
-  let all_nodes, _ = List.split network in
-  let starts = List.filter (ends "A") all_nodes in
-  let loops = List.map (follow_until 0 (ends "Z") directions network) starts in
+  let all_nodes, _ = Stdlib.List.split network in
+  let starts = List.filter ~f:(ends "A") all_nodes in
+  let loops =
+    List.map ~f:(follow_until 0 (ends "Z") directions network) starts
+  in
   let part2 = Aoc.Math.lcm loops in
   Aoc.Answer.part1 24253 part1 string_of_int;
   Aoc.Answer.part2 12357789728873 part2 string_of_int

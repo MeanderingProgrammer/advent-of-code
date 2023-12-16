@@ -1,18 +1,23 @@
+open Core
 open Aoc.Point
 
 type universe_data = { x_expansions : int list; y_expansions : int list }
 
 let rec get_holes grid f current max =
-  if current == max then []
-  else if List.exists (fun p -> f p == current) grid then
+  if Int.equal current max then []
+  else if List.exists ~f:(fun p -> Int.equal (f p) current) grid then
     get_holes grid f (current + 1) max
   else current :: get_holes grid f (current + 1) max
 
 let get_universe grid =
-  let xs = List.map (fun p -> p.x) grid in
-  let ys = List.map (fun p -> p.y) grid in
-  let max_x = List.fold_left Int.max (List.hd xs) (List.tl xs) in
-  let max_y = List.fold_left Int.max (List.hd ys) (List.tl ys) in
+  let xs = List.map ~f:(fun p -> p.x) grid in
+  let ys = List.map ~f:(fun p -> p.y) grid in
+  let max_x =
+    List.fold_left ~init:(List.hd_exn xs) ~f:Int.max (List.tl_exn xs)
+  in
+  let max_y =
+    List.fold_left ~init:(List.hd_exn ys) ~f:Int.max (List.tl_exn ys)
+  in
   {
     x_expansions = get_holes grid (fun p -> p.x) 0 max_x;
     y_expansions = get_holes grid (fun p -> p.y) 0 max_y;
@@ -47,12 +52,12 @@ let rec get_distances universe points multiplier =
 
 let sum_distances universe points multiplier =
   let distances = get_distances universe points multiplier in
-  List.fold_left ( + ) 0 distances
+  List.fold_left ~init:0 ~f:( + ) distances
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let grid = List.filter (fun (_, ch) -> ch == '#') grid in
-  let grid = List.map (fun (p, _) -> p) grid in
+  let grid = List.filter ~f:(fun (_, ch) -> Char.equal ch '#') grid in
+  let grid = List.map ~f:(fun (p, _) -> p) grid in
   let universe = get_universe grid in
   let part1 = sum_distances universe grid 2 in
   let part2 = sum_distances universe grid 1_000_000 in
