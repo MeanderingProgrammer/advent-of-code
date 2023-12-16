@@ -43,7 +43,7 @@ let () =
   let directions = List.nth_exn (List.nth_exn groups 0) 0 |> String.to_list in
   let network = List.map ~f:parse_node (List.nth_exn groups 1) in
   let part1 = follow_until 0 is_zzz directions network "AAA" in
-  let all_nodes = List.map ~f:(fun (node, _) -> node) network in
+  let all_nodes, _ = List.unzip network in
   let starts = List.filter ~f:(ends "A") all_nodes in
   let loops =
     List.map ~f:(follow_until 0 (ends "Z") directions network) starts
