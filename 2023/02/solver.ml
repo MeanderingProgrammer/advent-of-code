@@ -68,11 +68,7 @@ let () =
   let games = List.map ~f:parse_game values in
   let balls = [ ("red", 12); ("green", 13); ("blue", 14) ] in
   let valid_games = List.filter ~f:(valid_game balls) games in
-  let part1 =
-    List.fold_left ~init:0 ~f:( + ) (List.map ~f:get_id valid_games)
-  in
-  let part2 =
-    List.fold_left ~init:0 ~f:( + ) (List.map ~f:min_set_power games)
-  in
+  let part1 = Aoc.Util.sum (List.map ~f:get_id valid_games) in
+  let part2 = Aoc.Util.sum (List.map ~f:min_set_power games) in
   Aoc.Answer.part1 2348 part1 string_of_int;
   Aoc.Answer.part2 76008 part2 string_of_int

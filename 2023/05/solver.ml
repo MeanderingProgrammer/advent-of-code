@@ -40,12 +40,6 @@ let adjust_range r =
 let get_first r = r.first
 let get_last r = r.last
 
-let get_min values =
-  List.fold_left ~init:(List.hd_exn values) ~f:Int.min (List.tl_exn values)
-
-let get_max values =
-  List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
-
 let rec map_range offset r new_ranges =
   match offset with
   | x :: xs ->
@@ -61,11 +55,11 @@ let rec map_range offset r new_ranges =
       if List.is_empty new_ranges then [ r ]
       else
         let ranges = List.map ~f:adjust_range new_ranges in
-        let min_consumed = get_min (List.map ~f:get_first new_ranges) in
+        let min_consumed = Aoc.Util.min (List.map ~f:get_first new_ranges) in
         let min_range =
           { first = r.first; last = min_consumed - 1; offset = 0 }
         in
-        let max_consumed = get_max (List.map ~f:get_last new_ranges) in
+        let max_consumed = Aoc.Util.max (List.map ~f:get_last new_ranges) in
         let max_range =
           { first = max_consumed + 1; last = r.last; offset = 0 }
         in
@@ -85,7 +79,7 @@ let rec map_ranges offset ranges =
 let rec apply offsets ranges =
   match offsets with
   | x :: xs -> apply xs (map_ranges x ranges)
-  | [] -> get_min (List.map ~f:get_first ranges)
+  | [] -> Aoc.Util.min (List.map ~f:get_first ranges)
 
 let rec seed_ranges seeds =
   match seeds with

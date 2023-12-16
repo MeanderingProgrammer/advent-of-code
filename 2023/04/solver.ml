@@ -52,9 +52,9 @@ let () =
   let values = Aoc.Reader.read_lines () in
   let cards = List.map ~f:parse_card values in
   let matches = List.map ~f:card_match_count cards in
-  let part1 = List.fold_left ~f:( + ) ~init:0 (List.map ~f:score matches) in
+  let part1 = Aoc.Util.sum (List.map ~f:score matches) in
   let initial_counts = List.init (List.length matches) ~f:(const 1) in
   let counts = winnings 0 matches initial_counts in
-  let part2 = List.fold_left ~f:( + ) ~init:0 counts in
+  let part2 = Aoc.Util.sum counts in
   Aoc.Answer.part1 18619 part1 string_of_int;
   Aoc.Answer.part2 8063216 part2 string_of_int

@@ -12,22 +12,20 @@ let rec combinations k values =
         with_x @ without_x
     | [] -> []
 
-let sum values = List.fold_left ~init:0 ~f:( + ) values
-
 let rec valid_combinations k target values =
   let groups = combinations k values in
   let valid_groups =
-    List.filter ~f:(fun group -> Int.equal (sum group) target) groups
+    List.filter ~f:(fun group -> Int.equal (Aoc.Util.sum group) target) groups
   in
   if List.length valid_groups > 0 then valid_groups
   else valid_combinations (k + 1) target values
 
-let entanglement values = List.fold_left ~init:1 ~f:( * ) values
-
 let run values sections =
-  let valid_groups = valid_combinations 0 (sum values / sections) values in
+  let valid_groups =
+    valid_combinations 0 (Aoc.Util.sum values / sections) values
+  in
   let entanglements =
-    List.map ~f:(fun group -> entanglement group) valid_groups
+    List.map ~f:(fun group -> Aoc.Util.multiply group) valid_groups
   in
   let sorted_entanglements = List.sort ~compare entanglements in
   List.hd_exn sorted_entanglements

@@ -52,16 +52,18 @@ let rec run_ops operations hash_map =
 let focussing_power i box =
   let box = List.rev box in
   let values = List.mapi (fun j (_, value) -> (j + 1) * value) box in
-  let partial = List.fold_left ( + ) 0 values in
+  let partial = Aoc.Util.sum values in
   (i + 1) * partial
 
 let () =
   let data = Aoc.Reader.read () in
   let values = String.split_on_char ',' (String.trim data) in
-  let part1 = List.fold_left ( + ) 0 (List.map hash values) in
+  let part1 = Aoc.Util.sum (List.map hash values) in
   let operations = List.map parse values in
   let hash_map = Array.make 256 [] in
   run_ops operations hash_map;
-  let part2 = Array.fold_left ( + ) 0 (Array.mapi focussing_power hash_map) in
+  let part2 =
+    Aoc.Util.sum (Array.mapi focussing_power hash_map |> Array.to_list)
+  in
   Aoc.Answer.part1 514281 part1 string_of_int;
   Aoc.Answer.part2 244199 part2 string_of_int

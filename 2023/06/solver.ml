@@ -34,7 +34,7 @@ let () =
   let distances = parse_values (List.nth_exn values 1) in
   let time_distances = List.zip_exn times distances in
   let winning_variants = List.map ~f:count_variants time_distances in
-  let part1 = List.fold_left ~init:1 ~f:( * ) winning_variants in
+  let part1 = Aoc.Util.multiply winning_variants in
   let part2 = count_variants (join times, join distances) in
   Aoc.Answer.part1 140220 part1 string_of_int;
   Aoc.Answer.part2 39570185 part2 string_of_int

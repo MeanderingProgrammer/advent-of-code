@@ -58,9 +58,7 @@ let get_hand_type wild_joker cards =
     ]
   in
   let values = if wild_joker then values else count cards 'J' :: values in
-  let max =
-    List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
-  in
+  let max = Aoc.Util.max values in
   let jokers = if wild_joker then count cards 'J' else 0 in
   let num_2 = get_count 2 values in
   if Int.equal (max + jokers) 5 then FIVE_KIND
@@ -93,7 +91,7 @@ let winnings i h = (i + 1) * h.bid
 let total_winnings hands wild_joker =
   let compare = compare_hands wild_joker in
   let ordered = List.sort ~compare hands in
-  List.fold_left ~init:0 ~f:( + ) (List.mapi ~f:winnings ordered)
+  Aoc.Util.sum (List.mapi ~f:winnings ordered)
 
 let () =
   let values = Aoc.Reader.read_lines () in

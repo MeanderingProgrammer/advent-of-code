@@ -12,12 +12,8 @@ let rec get_holes grid f current max =
 let get_universe grid =
   let xs = List.map ~f:(fun p -> p.x) grid in
   let ys = List.map ~f:(fun p -> p.y) grid in
-  let max_x =
-    List.fold_left ~init:(List.hd_exn xs) ~f:Int.max (List.tl_exn xs)
-  in
-  let max_y =
-    List.fold_left ~init:(List.hd_exn ys) ~f:Int.max (List.tl_exn ys)
-  in
+  let max_x = Aoc.Util.max xs in
+  let max_y = Aoc.Util.max ys in
   {
     x_expansions = get_holes grid (fun p -> p.x) 0 max_x;
     y_expansions = get_holes grid (fun p -> p.y) 0 max_y;
@@ -51,8 +47,7 @@ let rec get_distances universe points multiplier =
   | [] -> []
 
 let sum_distances universe points multiplier =
-  let distances = get_distances universe points multiplier in
-  List.fold_left ~init:0 ~f:( + ) distances
+  Aoc.Util.sum (get_distances universe points multiplier)
 
 let () =
   let grid = Aoc.Reader.read_grid () in

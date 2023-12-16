@@ -4,7 +4,7 @@ open Aoc.Point
 let get_max grid f =
   let points, _ = List.unzip grid in
   let values = List.map ~f points in
-  List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
+  Aoc.Util.max values
 
 let get_range max inclusive =
   let offset = if inclusive then 1 else 0 in
@@ -31,12 +31,10 @@ let can_fold grid max f target line =
   let values =
     List.map2_exn ~f:(differences grid range f) before_line folded_over
   in
-  let value = List.fold_left ~init:0 ~f:( + ) values in
-  Int.equal value target
+  Int.equal (Aoc.Util.sum values) target
 
 let sum values multiplier =
-  List.fold_left ~init:0 ~f:( + )
-    (List.map ~f:(fun value -> (value + 1) * multiplier) values)
+  Aoc.Util.sum (List.map ~f:(fun value -> (value + 1) * multiplier) values)
 
 let reflections target grid =
   let max_x = get_max grid (fun p -> p.x) in
@@ -56,11 +54,7 @@ let reflections target grid =
 let () =
   let groups = Aoc.Reader.read_groups () in
   let grids = List.map ~f:Aoc.Grid.parse_grid groups in
-  let part1 =
-    List.fold_left ~init:0 ~f:( + ) (List.map ~f:(reflections 0) grids)
-  in
-  let part2 =
-    List.fold_left ~init:0 ~f:( + ) (List.map ~f:(reflections 1) grids)
-  in
+  let part1 = Aoc.Util.sum (List.map ~f:(reflections 0) grids) in
+  let part2 = Aoc.Util.sum (List.map ~f:(reflections 1) grids) in
   Aoc.Answer.part1 30487 part1 string_of_int;
   Aoc.Answer.part2 31954 part2 string_of_int

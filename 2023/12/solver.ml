@@ -69,9 +69,7 @@ let count_unfolded r =
 let () =
   let values = Aoc.Reader.read_lines () in
   let rows = List.map ~f:parse_row values in
-  let part1 = List.fold_left ~init:0 ~f:( + ) (List.map ~f:count_folded rows) in
-  let part2 =
-    List.fold_left ~init:0 ~f:( + ) (List.map ~f:count_unfolded rows)
-  in
+  let part1 = Aoc.Util.sum (List.map ~f:count_folded rows) in
+  let part2 = Aoc.Util.sum (List.map ~f:count_unfolded rows) in
   Aoc.Answer.part1 8075 part1 string_of_int;
   Aoc.Answer.part2 4232520187524 part2 string_of_int

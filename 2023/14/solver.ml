@@ -9,7 +9,7 @@ let rec set_grid grid data =
 
 let get_max grid f =
   let values = Hashtbl.to_seq_keys grid |> Seq.map f |> List.of_seq in
-  List.fold_left Int.max (List.hd values) (List.tl values) + 1
+  Aoc.Util.max values + 1
 
 let find_rocks grid direction =
   let points =
@@ -56,8 +56,7 @@ let find_and_move grid direction =
 
 let get_load grid max_y =
   let rocks = find_rocks grid UP in
-  let values = List.map (fun p -> max_y - p.y) rocks in
-  List.fold_left ( + ) 0 values
+  Aoc.Util.sum (List.map (fun p -> max_y - p.y) rocks)
 
 let run_cycle grid =
   find_and_move grid UP;
