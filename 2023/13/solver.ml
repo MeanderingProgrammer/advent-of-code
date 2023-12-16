@@ -2,7 +2,7 @@ open Core
 open Aoc.Point
 
 let get_max grid f =
-  let points = List.map ~f:(fun (p, _) -> p) grid in
+  let points, _ = List.unzip grid in
   let values = List.map ~f points in
   List.fold_left ~init:(List.hd_exn values) ~f:Int.max (List.tl_exn values)
 
