@@ -1,3 +1,5 @@
+open Core
+
 type operation = Remove of string | Add of string * int
 
 let hash s =
@@ -8,14 +10,14 @@ let hash s =
         calculate xs next_value
     | [] -> value
   in
-  calculate (String.to_seq s |> List.of_seq) 0
+  calculate (String.to_list s) 0
 
 (* cm- | qp=3 *)
 let parse s =
-  match String.ends_with ~suffix:"-" s with
-  | true -> Remove (String.sub s 0 (String.length s - 1))
+  match String.is_suffix ~suffix:"-" s with
+  | true -> Remove (String.sub s ~pos:0 ~len:(String.length s - 1))
   | false -> (
-      match String.split_on_char '=' s with
+      match String.split ~on:'=' s with
       | [ label; length ] -> Add (label, int_of_string length)
       | _ -> raise (Invalid_argument s))
 
@@ -31,13 +33,14 @@ let run_op operation hash_map =
   | Remove label ->
       let hash_value = hash label in
       let box = Array.get hash_map hash_value in
-      let updated_box = List.remove_assoc label box in
+      let updated_box = List.Assoc.remove ~equal:String.equal box label in
       Array.set hash_map hash_value updated_box
   | Add (label, value) ->
       let hash_value = hash label in
       let box = Array.get hash_map hash_value in
       let updated_box =
-        if List.mem_assoc label box then update box label value
+        if List.Assoc.mem ~equal:String.equal box label then
+          update box label value
         else (label, value) :: box
       in
       Array.set hash_map hash_value updated_box
@@ -51,19 +54,19 @@ let rec run_ops operations hash_map =
 
 let focussing_power i box =
   let box = List.rev box in
-  let values = List.mapi (fun j (_, value) -> (j + 1) * value) box in
+  let values = List.mapi ~f:(fun j (_, value) -> (j + 1) * value) box in
   let partial = Aoc.Util.sum values in
   (i + 1) * partial
 
 let () =
   let data = Aoc.Reader.read () in
-  let values = String.split_on_char ',' (String.trim data) in
-  let part1 = Aoc.Util.sum (List.map hash values) in
-  let operations = List.map parse values in
-  let hash_map = Array.make 256 [] in
+  let values = String.split ~on:',' (String.strip data) in
+  let part1 = Aoc.Util.sum (List.map ~f:hash values) in
+  let operations = List.map ~f:parse values in
+  let hash_map = Array.create ~len:256 [] in
   run_ops operations hash_map;
   let part2 =
-    Aoc.Util.sum (Array.mapi focussing_power hash_map |> Array.to_list)
+    Aoc.Util.sum (Array.mapi ~f:focussing_power hash_map |> Array.to_list)
   in
   Aoc.Answer.part1 514281 part1 string_of_int;
   Aoc.Answer.part2 244199 part2 string_of_int
