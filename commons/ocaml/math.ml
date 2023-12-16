@@ -1,3 +1,4 @@
+let int_pow a b = float_of_int a ** float_of_int b |> int_of_float
 let rec gcd a b = if b = 0 then a else gcd b (a mod b)
 let lcm_pair a b = a * b / gcd a b
 
