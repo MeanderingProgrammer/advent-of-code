@@ -1,5 +1,3 @@
-open Aoc.Point
-
 let rec set_grid grid data =
   match data with
   | (p, x) :: xs ->
@@ -18,15 +16,16 @@ let find_rocks grid direction =
     |> Seq.map fst |> List.of_seq
   in
   match direction with
-  | UP -> List.sort (fun a b -> Int.compare a.y b.y) points
-  | DOWN -> List.sort (fun a b -> Int.compare b.y a.y) points
-  | LEFT -> List.sort (fun a b -> Int.compare a.x b.x) points
-  | RIGHT -> List.sort (fun a b -> Int.compare b.x a.x) points
+  | Aoc.Direction.UP ->
+      List.sort (fun a b -> Int.compare a.Aoc.Point.y b.y) points
+  | DOWN -> List.sort (fun a b -> Int.compare b.Aoc.Point.y a.y) points
+  | LEFT -> List.sort (fun a b -> Int.compare a.Aoc.Point.x b.x) points
+  | RIGHT -> List.sort (fun a b -> Int.compare b.Aoc.Point.x a.x) points
 
 let rec move_rock grid direction rock =
   let next =
     match direction with
-    | UP -> { rock with y = rock.y - 1 }
+    | Aoc.Direction.UP -> { rock with Aoc.Point.y = rock.Aoc.Point.y - 1 }
     | DOWN -> { rock with y = rock.y + 1 }
     | LEFT -> { rock with x = rock.x - 1 }
     | RIGHT -> { rock with x = rock.x + 1 }
@@ -56,7 +55,7 @@ let find_and_move grid direction =
 
 let get_load grid max_y =
   let rocks = find_rocks grid UP in
-  Aoc.Util.sum (List.map (fun p -> max_y - p.y) rocks)
+  Aoc.Util.sum (List.map (fun p -> max_y - p.Aoc.Point.y) rocks)
 
 let run_cycle grid =
   find_and_move grid UP;
@@ -65,7 +64,7 @@ let run_cycle grid =
   find_and_move grid RIGHT
 
 let grid_row grid xs y =
-  let chars = List.map (fun x -> Hashtbl.find grid { x; y }) xs in
+  let chars = List.map (fun x -> Hashtbl.find grid { Aoc.Point.x; y }) xs in
   String.of_seq (List.to_seq chars)
 
 let grid_string grid max_x max_y =
