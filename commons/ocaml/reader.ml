@@ -1,6 +1,4 @@
 open Core
-open Point
-open Grid
 
 let get_year_day executable =
   let parts = String.split ~on:'/' executable in
@@ -35,6 +33,6 @@ let read_ints () : int list =
   let lines = read_lines () in
   List.map ~f:int_of_string lines
 
-let read_grid () : (point * char) list =
+let read_grid () : (Point.t * char) list =
   let lines = read_lines () in
-  parse_grid lines
+  Grid.parse_grid lines
