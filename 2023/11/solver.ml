@@ -1,5 +1,4 @@
 open Core
-open Aoc.Point
 
 type universe_data = { x_expansions : int list; y_expansions : int list }
 
@@ -10,7 +9,7 @@ let rec get_holes grid f current max =
   else current :: get_holes grid f (current + 1) max
 
 let get_universe grid =
-  let xs = List.map ~f:(fun p -> p.x) grid in
+  let xs = List.map ~f:(fun p -> p.Aoc.Point.x) grid in
   let ys = List.map ~f:(fun p -> p.y) grid in
   let max_x = Aoc.Util.max xs in
   let max_y = Aoc.Util.max ys in
@@ -27,7 +26,7 @@ let rec points_between expansions v1 v2 =
   | [] -> 0
 
 let get_distance universe x y multiplier =
-  let initial_distance = distance x y in
+  let initial_distance = Aoc.Point.distance x y in
   let x_between = points_between universe.x_expansions x.x y.x in
   let y_between = points_between universe.y_expansions x.y y.y in
   initial_distance + ((x_between + y_between) * (multiplier - 1))

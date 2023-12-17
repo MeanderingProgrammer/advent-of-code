@@ -1,5 +1,4 @@
 open Core
-open Aoc.Point
 
 let get_max grid f =
   let points, _ = List.unzip grid in
@@ -15,10 +14,10 @@ let rec differences grid range f src dst =
   | [] -> 0
   | x :: xs ->
       let target_value =
-        List.Assoc.find_exn ~equal:point_equal grid (f src x)
+        List.Assoc.find_exn ~equal:Aoc.Point.equal grid (f src x)
       in
       let difference =
-        match List.Assoc.find ~equal:point_equal grid (f dst x) with
+        match List.Assoc.find ~equal:Aoc.Point.equal grid (f dst x) with
         | None -> 0
         | Some value -> if Char.equal value target_value then 0 else 1
       in
@@ -37,7 +36,7 @@ let sum values multiplier =
   Aoc.Util.sum (List.map ~f:(fun value -> (value + 1) * multiplier) values)
 
 let reflections target grid =
-  let max_x = get_max grid (fun p -> p.x) in
+  let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
   let max_y = get_max grid (fun p -> p.y) in
   let valid_xs =
     List.filter
