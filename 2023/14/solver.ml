@@ -1,26 +1,28 @@
+open Core
+
 let rec set_grid grid data =
   match data with
   | (p, x) :: xs ->
-      Hashtbl.add grid p x;
+      Hashtbl.add_exn grid ~key:p ~data:x;
       set_grid grid xs
   | [] -> ()
 
 let get_max grid f =
-  let values = Hashtbl.to_seq_keys grid |> Seq.map f |> List.of_seq in
+  let values = List.map ~f (Hashtbl.keys grid) in
   Aoc.Util.max values + 1
 
 let find_rocks grid direction =
   let points =
-    Hashtbl.to_seq grid
-    |> Seq.filter (fun (_, ch) -> ch == 'O')
-    |> Seq.map fst |> List.of_seq
+    Hashtbl.to_alist grid
+    |> List.filter ~f:(fun (_, ch) -> Char.equal ch 'O')
+    |> List.map ~f:(fun (p, _) -> p)
   in
   match direction with
   | Aoc.Direction.UP ->
-      List.sort (fun a b -> Int.compare a.Aoc.Point.y b.y) points
-  | DOWN -> List.sort (fun a b -> Int.compare b.Aoc.Point.y a.y) points
-  | LEFT -> List.sort (fun a b -> Int.compare a.Aoc.Point.x b.x) points
-  | RIGHT -> List.sort (fun a b -> Int.compare b.Aoc.Point.x a.x) points
+      List.sort ~compare:(fun a b -> Int.compare a.Aoc.Point.y b.y) points
+  | DOWN -> List.sort ~compare:(fun a b -> Int.compare b.y a.y) points
+  | LEFT -> List.sort ~compare:(fun a b -> Int.compare a.x b.x) points
+  | RIGHT -> List.sort ~compare:(fun a b -> Int.compare b.x a.x) points
 
 let rec move_rock grid direction rock =
   let next =
@@ -31,15 +33,17 @@ let rec move_rock grid direction rock =
     | RIGHT -> { rock with x = rock.x + 1 }
   in
   let can_move =
-    match Hashtbl.find_opt grid next with
+    match Hashtbl.find grid next with
     | None -> false
     | Some value -> Char.equal '.' value
   in
   match can_move with
   | false -> ()
   | true ->
-      Hashtbl.replace grid rock '.';
-      Hashtbl.replace grid next 'O';
+      Hashtbl.remove grid rock;
+      Hashtbl.add_exn grid ~key:rock ~data:'.';
+      Hashtbl.remove grid next;
+      Hashtbl.add_exn grid ~key:next ~data:'O';
       move_rock grid direction next
 
 let rec move_rocks grid direction rocks =
@@ -55,7 +59,7 @@ let find_and_move grid direction =
 
 let get_load grid max_y =
   let rocks = find_rocks grid UP in
-  Aoc.Util.sum (List.map (fun p -> max_y - p.Aoc.Point.y) rocks)
+  Aoc.Util.sum (List.map ~f:(fun p -> max_y - p.Aoc.Point.y) rocks)
 
 let run_cycle grid =
   find_and_move grid UP;
@@ -64,37 +68,39 @@ let run_cycle grid =
   find_and_move grid RIGHT
 
 let grid_row grid xs y =
-  let chars = List.map (fun x -> Hashtbl.find grid { Aoc.Point.x; y }) xs in
-  String.of_seq (List.to_seq chars)
+  let chars =
+    List.map ~f:(fun x -> Hashtbl.find_exn grid { Aoc.Point.x; y }) xs
+  in
+  String.of_char_list chars
 
 let grid_string grid max_x max_y =
-  let xs = Seq.take max_x (Seq.ints 0) |> List.of_seq in
-  let ys = Seq.take max_y (Seq.ints 0) |> List.of_seq in
-  let rows = List.map (grid_row grid xs) ys in
-  String.concat "\n" rows
+  let xs = List.init max_x ~f:(fun x -> x) in
+  let ys = List.init max_y ~f:(fun y -> y) in
+  let rows = List.map ~f:(grid_row grid xs) ys in
+  String.concat ~sep:"\n" rows
 
 let rec until_repeat grid max_x max_y seen =
   run_cycle grid;
   let as_string = grid_string grid max_x max_y in
-  match List.assoc_opt as_string seen with
+  match List.Assoc.find ~equal:String.equal seen as_string with
   | None ->
       let next = get_load grid max_y in
       until_repeat grid max_x max_y ((as_string, next) :: seen)
   | Some _ ->
       let result = List.rev seen in
-      let preamble =
-        Option.get
-          (List.find_index (fun (x, _) -> String.equal x as_string) result)
+      let preamble, _ =
+        Option.value_exn
+          (List.findi ~f:(fun _ (x, _) -> String.equal x as_string) result)
       in
-      let pattern = List.filteri (fun i _ -> i >= preamble) result in
-      let pattern = List.map (fun (_, x) -> x) pattern in
+      let pattern = List.filteri ~f:(fun i _ -> i >= preamble) result in
+      let pattern = List.map ~f:(fun (_, x) -> x) pattern in
       (preamble, pattern)
 
 let () =
-  let grid = Hashtbl.create 1000 in
+  let grid = Hashtbl.create (module Aoc.Point) in
   set_grid grid (Aoc.Reader.read_grid ());
-  let max_x = get_max grid (fun p -> p.x) in
-  let max_y = get_max grid (fun p -> p.y) in
+  let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
+  let max_y = get_max grid (fun p -> p.Aoc.Point.y) in
 
   find_and_move grid UP;
   let part1 = get_load grid max_y in
@@ -107,6 +113,6 @@ let () =
   let starting_seen = [ (grid_string grid max_x max_y, get_load grid max_y) ] in
   let preamble, pattern = until_repeat grid max_x max_y starting_seen in
   let pattern_index = (1000000000 - 1 - preamble) mod List.length pattern in
-  let part2 = List.nth pattern pattern_index in
+  let part2 = List.nth_exn pattern pattern_index in
   Aoc.Answer.part1 109654 part1 string_of_int;
   Aoc.Answer.part2 94876 part2 string_of_int
