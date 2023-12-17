@@ -5,6 +5,7 @@ type t = { x : int; y : int }
 let compare = Stdlib.compare
 let equal (p1 : t) (p2 : t) : bool = Int.equal p1.x p2.x && Int.equal p1.y p2.y
 let hash (p : t) : int = Hashtbl.hash (p.x, p.y)
+let to_string (p : t) : string = Printf.sprintf "(%d, %d)" p.x p.y
 
 let sexp_of_t (p : t) =
   Sexp.List
