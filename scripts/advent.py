@@ -108,7 +108,7 @@ def generate(
     else:
         days = DayFactory(years=[year], days=[day]).get_days()
 
-    assert len(days) == 1, "Can only generate one day at a time"
+    assert len(days) == 1, f"Can only generate one day at a time found: {len(days)}"
     generator = Generator(day=days[0], language=language, puzzle=puzzle)
     click.echo(f"{generator}") if info else generator.run()
 
