@@ -1,0 +1,4 @@
+(executable
+ (public_name 2023_18)
+ (name solver)
+ (libraries aoc))
