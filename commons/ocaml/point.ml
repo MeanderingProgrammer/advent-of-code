@@ -13,7 +13,7 @@ let sexp_of_t (p : t) =
 
 let adjacent (p : t) : (Direction.t * t) list =
   [
-    (Direction.UP, { x = p.x; y = p.y - 1 });
+    (UP, { x = p.x; y = p.y - 1 });
     (DOWN, { x = p.x; y = p.y + 1 });
     (LEFT, { x = p.x - 1; y = p.y });
     (RIGHT, { x = p.x + 1; y = p.y });
