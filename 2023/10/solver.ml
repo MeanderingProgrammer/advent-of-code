@@ -10,7 +10,7 @@ let valid_adjacent grid location =
     | 'J' -> [ UP; LEFT ]
     | '7' -> [ DOWN; LEFT ]
     | 'F' -> [ DOWN; RIGHT ]
-    | _ -> raise (Invalid_argument (String.make 1 pipe))
+    | _ -> raise (Invalid_argument (Char.to_string pipe))
   in
   let locations = Aoc.Point.adjacent location in
   let valid_locations =
@@ -35,53 +35,64 @@ let rec traverse grid steps locations seen =
   if List.is_empty next_locations then seen
   else traverse grid (steps + 1) next_locations seen
 
-let increment point_values previous point =
-  match List.Assoc.find ~equal:Aoc.Point.equal point_values point with
+let increment (curr_char : char option) (prev_char : char) : bool =
+  match curr_char with
   | None -> false
   | Some v -> (
       match v with
       | '|' -> true
-      | 'J' -> Char.equal 'F' previous
-      | '7' -> Char.equal 'L' previous
+      | 'J' -> Char.equal 'F' prev_char
+      | '7' -> Char.equal 'L' prev_char
       | _ -> false)
 
-let rec count_walls point_values previous y x_values =
-  match x_values with
-  | [] -> 0
-  | x :: xs ->
-      let point = { Aoc.Point.x; y } in
-      let next =
-        match List.Assoc.find ~equal:Aoc.Point.equal point_values point with
-        | None -> previous
-        | Some v -> if Char.equal '-' v then previous else v
+let rec row_wall_counts (loop : Aoc.Grid.t) (y : int) (prev_value : int)
+    (prev_char : char) (x : int) (max_x : int) : (Aoc.Point.t * int) list =
+  match x > max_x with
+  | true -> []
+  | false ->
+      let point : Aoc.Point.t = { x; y } in
+      let curr_char = List.Assoc.find ~equal:Aoc.Point.equal loop point in
+      let curr_value =
+        prev_value + if increment curr_char prev_char then 1 else 0
       in
-      let value = if increment point_values previous point then 1 else 0 in
-      value + count_walls point_values next y xs
+      let next_char =
+        match curr_char with
+        | None -> prev_char
+        | Some v -> if Char.equal '-' v then prev_char else v
+      in
+      (point, curr_value)
+      :: row_wall_counts loop y curr_value next_char (x + 1) max_x
 
-let point_contained point_values xs point =
-  let after = List.filter ~f:(fun x -> x > point.Aoc.Point.x) xs in
-  let walls_after = count_walls point_values '|' point.Aoc.Point.y after in
-  Int.equal (walls_after mod 2) 1
+let rec get_wall_counts (loop : Aoc.Grid.t) (max_x : int) (y : int) :
+    (Aoc.Point.t * int) list =
+  match y < 0 with
+  | true -> []
+  | false ->
+      let row = row_wall_counts loop y 0 '|' 0 max_x in
+      row @ get_wall_counts loop max_x (y - 1)
 
-let contained grid points =
-  let not_in point = not (List.mem ~equal:Aoc.Point.equal points point) in
+let point_contained (wall_counts : (Aoc.Point.t * int) list)
+    (point : Aoc.Point.t) : bool =
+  match List.Assoc.find ~equal:Aoc.Point.equal wall_counts point with
+  | None -> false
+  | Some walls_after -> Int.equal (walls_after mod 2) 1
+
+let contained (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
   let possible, _ = List.unzip grid in
+  let not_in p = not (List.mem ~equal:Aoc.Point.equal points p) in
   let possible = List.filter ~f:not_in possible in
-  let max_x = Aoc.Util.max (List.map ~f:(fun p -> p.Aoc.Point.x) points) in
-  let xs = List.init (max_x + 1) ~f:(fun x -> x) in
-  let point_values =
-    List.map
-      ~f:(fun p -> (p, List.Assoc.find_exn ~equal:Aoc.Point.equal grid p))
-      points
-  in
-  List.count ~f:(point_contained point_values xs) possible
+  let grid_value p = List.Assoc.find_exn ~equal:Aoc.Point.equal grid p in
+  let loop = List.map ~f:(fun p -> (p, grid_value p)) points in
+  let max_x = Aoc.Util.max (List.map ~f:(fun p -> p.x) points) in
+  let max_y = Aoc.Util.max (List.map ~f:(fun p -> p.y) points) in
+  let wall_counts = get_wall_counts loop max_x max_y in
+  List.count ~f:(point_contained wall_counts) possible
 
 let () =
   let grid = Aoc.Reader.read_grid () in
   let start, _ = List.find_exn ~f:(fun (_, ch) -> Char.equal ch 'S') grid in
-  let grid =
-    (start, 'F') :: List.Assoc.remove ~equal:Aoc.Point.equal grid start
-  in
+  let grid = List.Assoc.remove ~equal:Aoc.Point.equal grid start in
+  let grid = (start, 'F') :: grid in
   let point_distances = traverse grid 0 [ start ] [] in
   let points, distances = List.unzip point_distances in
   let part1 = Aoc.Util.max distances in
