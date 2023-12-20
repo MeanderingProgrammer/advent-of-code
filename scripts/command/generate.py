@@ -16,16 +16,18 @@ class Generator:
     def run(self) -> None:
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
+        # Copy over language template if not already present
         solution_path = self.language.solution_path(self.day)
         if solution_path.exists():
-            raise Exception(f"Solution already exists under: {solution_path}")
-        # At this point we can assume this is the first time we are processing
-        # this day for this language, since the solution path does not exist
-        self.__copy_template_files()
-        self.language.template_processing(self.day)
-        data_created = self.__create_data_file()
+            print(f"Solution already exists under: {solution_path}")
+        else:
+            self.__copy_template_files()
+            self.language.template_processing(self.day)
+        data_created = self.__pull_aoc_file("-I -i", "data.txt")
         if data_created:
             self.__create_sample_file()
+        if self.puzzle:
+            self.__pull_aoc_file("-P -p", "puzzle.md")
 
     def __copy_template_files(self) -> None:
         template_directory = Path(f"scripts/templates/{self.language.name}")
@@ -42,28 +44,26 @@ class Generator:
                     print(f"Copying {template_file} to {destination}")
                     shutil.copy(template_file, destination)
 
-    def __create_data_file(self) -> bool:
-        data_path = self.day.dir().joinpath("data.txt")
-        if data_path.exists():
-            print(f"{data_path} already exists, leaving as is")
+    def __pull_aoc_file(self, flags: str, file_name: str) -> bool:
+        file_path = self.day.dir().joinpath(file_name)
+        if file_path.exists():
+            print(f"{file_path} already exists, leaving as is")
             return False
-        print(f"Creating data file at: {data_path}")
+        print(f"Creating file at: {file_path}")
         advent_cookie_file = ".adventofcode.session"
         if Path(advent_cookie_file).exists() and shutil.which("aoc") is not None:
             print("Downloading input using aoc-cli")
-            puzzle_path = self.day.dir().joinpath("puzzle.md")
             download_command = [
                 "aoc download",
                 f"-y {self.day.year}",
                 f"-d {self.day.day}",
                 f"-s ./{advent_cookie_file}",
-                f"-i {data_path}",
-                f"-p {puzzle_path}" if self.puzzle else "-I",
+                f"{flags} {file_path}",
             ]
             os.system(" ".join(download_command))
         else:
-            print(f"Creating empty {data_path} since aoc-cli is not setup")
-            data_path.touch()
+            print(f"Creating empty {file_path} since aoc-cli is not setup")
+            file_path.touch()
         return True
 
     def __create_sample_file(self) -> None:
