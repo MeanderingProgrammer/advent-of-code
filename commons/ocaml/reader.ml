@@ -33,6 +33,6 @@ let read_ints () : int list =
   let lines = read_lines () in
   List.map ~f:int_of_string lines
 
-let read_grid () : (Point.t * char) list =
+let read_grid () : Grid.t =
   let lines = read_lines () in
   Grid.parse_grid lines
