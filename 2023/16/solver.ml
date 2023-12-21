@@ -1,16 +1,10 @@
 open Core
-(* open Printf *)
 
 type state = { position : Aoc.Point.t; direction : Aoc.Direction.t }
 
 let state_equal (s1 : state) (s2 : state) : bool =
   Aoc.Point.equal s1.position s2.position
   && Aoc.Direction.equal s1.direction s2.direction
-
-(* let state_string (s : state) : string = *)
-(*   sprintf "%s | %s" *)
-(*     (Aoc.Point.to_string s.position) *)
-(*     (Aoc.Direction.to_string s.direction) *)
 
 let next_directions grid (s : state) : Aoc.Direction.t list =
   let value = List.Assoc.find_exn ~equal:Aoc.Point.equal grid s.position in
@@ -84,6 +78,5 @@ let () =
   in
   let explored = follow grid [ start ] [ start ] in
   let energized = get_energized explored in
-  (* printf "%s\n" (String.concat ~sep:"\n" (List.map ~f:Aoc.Point.to_string energized)); *)
   let part1 = List.length energized in
-  Aoc.Answer.part1 46 part1 string_of_int
+  Aoc.Answer.part1 8901 part1 string_of_int
