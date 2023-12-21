@@ -1,10 +1,12 @@
-# IntelliJ
+# IDE
 .idea
 *.iml
 out
 
 # Used by helper scripts
 .adventofcode.session
+sample.txt
+puzzle.md
 all.json
 slow.json
 images/archive
