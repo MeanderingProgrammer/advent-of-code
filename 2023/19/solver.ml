@@ -108,4 +108,4 @@ let () =
   printf "%s\n" (String.concat ~sep:"\n" (List.map ~f:part_string parts));
   let parts = List.filter ~f:(accepted rules "in") parts in
   let part1 = Aoc.Util.sum (List.map ~f:part_value parts) in
-  Aoc.Answer.part1 19114 part1 string_of_int
+  Aoc.Answer.part1 409898 part1 string_of_int
