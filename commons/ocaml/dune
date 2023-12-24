@@ -1,3 +1,4 @@
 (library
   (name aoc)
-  (libraries core str))
+  (libraries core str)
+  (preprocess (pps ppx_jane)))
