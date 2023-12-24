@@ -1,6 +1,6 @@
 open Core
 
-type t = { x : int; y : int } [@@deriving compare, equal, hash, sexp_of]
+type t = { x : int; y : int } [@@deriving compare, equal, hash, sexp]
 
 let to_string (p : t) : string = Printf.sprintf "(%d, %d)" p.x p.y
 
