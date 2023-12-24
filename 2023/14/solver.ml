@@ -1,12 +1,5 @@
 open Core
 
-let rec set_grid grid data =
-  match data with
-  | (p, x) :: xs ->
-      Hashtbl.add_exn grid ~key:p ~data:x;
-      set_grid grid xs
-  | [] -> ()
-
 let get_max grid f =
   let values = List.map ~f (Hashtbl.keys grid) in
   Aoc.Util.max values + 1
@@ -97,8 +90,7 @@ let rec until_repeat grid max_x max_y seen =
       (preamble, pattern)
 
 let () =
-  let grid = Hashtbl.create (module Aoc.Point) in
-  set_grid grid (Aoc.Reader.read_grid ());
+  let grid = Aoc.Reader.read_grid_table () in
   let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
   let max_y = get_max grid (fun p -> p.Aoc.Point.y) in
 

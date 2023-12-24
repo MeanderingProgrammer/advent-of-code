@@ -36,3 +36,7 @@ let read_ints () : int list =
 let read_grid () : Grid.t =
   let lines = read_lines () in
   Grid.parse_grid lines
+
+let read_grid_table () : (Point.t, char) Hashtbl.t =
+  let grid = read_grid () in
+  Hashtbl.of_alist_exn (module Point) grid
