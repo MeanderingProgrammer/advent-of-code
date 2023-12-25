@@ -1,4 +1,5 @@
 (executable
  (public_name EXEC)
  (name solver)
- (libraries aoc))
+ (libraries aoc)
+ (preprocess (pps ppx_jane)))
