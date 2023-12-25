@@ -1,4 +1,4 @@
 (library
   (name aoc)
-  (libraries core str)
+  (libraries core str core_kernel.pairing_heap)
   (preprocess (pps ppx_jane)))
