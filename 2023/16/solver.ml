@@ -91,7 +91,7 @@ let rec max_energized (grid : (Aoc.Point.t, char) Hashtbl.t)
       max_energized grid xs (Int.max max energized)
 
 let () =
-  let grid = Aoc.Reader.read_grid_table () in
+  let grid = Aoc.Reader.read_grid () in
   let start =
     { position = { x = 0; y = 0 }; direction = Aoc.Direction.RIGHT }
   in

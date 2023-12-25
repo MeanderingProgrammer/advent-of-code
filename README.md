@@ -179,7 +179,6 @@ a_graph \
 | 2023 | 16  | 301.257 | Ocaml    | No optimizations on finding max, lots of repeated work  |
 | 2022 | 16  | 4.603   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 3.247   | Go       | Looks like a complex path finding problem               |
-| 2023 | 10  | 2.355   | Ocaml    | Iterates over a grid several times over                 |
 | 2019 | 18  | 2.235   | Java     | Mostly the Java runtime for such a small execution      |
 | 2016 | 25  | 2.018   | Python   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | Python   | That chips and generator problem, not fun               |
@@ -188,6 +187,7 @@ a_graph \
 | 2019 | 23  | 1.621   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | Python   | Game of life problem, optimized by using tuples         |
 | 2018 | 15  | 1.509   | Rust     | Complex game state with path finding between characters |
+| 2023 | 10  | 1.493   | Ocaml    | Iterates over a grid several times over                 |
 | 2021 | 12  | 1.490   | Go       | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | Rust     | Dealing with large space, already in Rust               |
 | 2016 | 5   | 1.471   | Go       | Final md5 hash that isn't running under 1 second        |
