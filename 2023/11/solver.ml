@@ -50,8 +50,8 @@ let sum_distances universe points multiplier =
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let grid = List.filter ~f:(fun (_, ch) -> Char.equal ch '#') grid in
-  let grid = List.map ~f:(fun (p, _) -> p) grid in
+  let grid = Hashtbl.filter ~f:(Char.equal '#') grid in
+  let grid = Hashtbl.keys grid in
   let universe = get_universe grid in
   let part1 = sum_distances universe grid 2 in
   let part2 = sum_distances universe grid 1_000_000 in

@@ -1,29 +1,26 @@
 open Core
 
-let get_max grid f =
-  let points, _ = List.unzip grid in
-  let values = List.map ~f points in
+let get_max (grid : Aoc.Grid.t) f =
+  let values = List.map ~f (Hashtbl.keys grid) in
   Aoc.Util.max values
 
 let get_range max inclusive =
   let offset = if inclusive then 1 else 0 in
   List.init (max + offset) ~f:(fun i -> i)
 
-let rec differences grid range f src dst =
+let rec differences (grid : Aoc.Grid.t) range f src dst =
   match range with
   | [] -> 0
   | x :: xs ->
-      let target_value =
-        List.Assoc.find_exn ~equal:Aoc.Point.equal grid (f src x)
-      in
+      let target_value = Hashtbl.find_exn grid (f src x) in
       let difference =
-        match List.Assoc.find ~equal:Aoc.Point.equal grid (f dst x) with
+        match Hashtbl.find grid (f dst x) with
         | None -> 0
         | Some value -> if Char.equal value target_value then 0 else 1
       in
       difference + differences grid xs f src dst
 
-let can_fold grid max f target line =
+let can_fold (grid : Aoc.Grid.t) max f target line =
   let range = get_range max true in
   let before_line = get_range line true in
   let folded_over = List.map ~f:(fun i -> line + (line - i + 1)) before_line in
@@ -35,7 +32,7 @@ let can_fold grid max f target line =
 let sum values multiplier =
   Aoc.Util.sum (List.map ~f:(fun value -> (value + 1) * multiplier) values)
 
-let reflections target grid =
+let reflections target (grid : Aoc.Grid.t) =
   let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
   let max_y = get_max grid (fun p -> p.y) in
   let valid_xs =

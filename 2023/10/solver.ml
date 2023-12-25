@@ -1,7 +1,7 @@
 open Core
 
-let valid_adjacent grid location =
-  let pipe = List.Assoc.find_exn ~equal:Aoc.Point.equal grid location in
+let valid_adjacent (grid : Aoc.Grid.t) (location : Aoc.Point.t) =
+  let pipe = Hashtbl.find_exn grid location in
   let valid_directions =
     match pipe with
     | '|' -> [ Aoc.Direction.UP; DOWN ]
@@ -21,7 +21,7 @@ let valid_adjacent grid location =
   in
   List.map ~f:(fun (_, location) -> location) valid_locations
 
-let rec traverse grid steps locations seen =
+let rec traverse (grid : Aoc.Grid.t) steps locations seen =
   let seen = List.map ~f:(fun location -> (location, steps)) locations @ seen in
   let next_locations =
     List.concat (List.map ~f:(valid_adjacent grid) locations)
@@ -51,7 +51,7 @@ let rec row_wall_counts (loop : Aoc.Grid.t) (y : int) (prev_value : int)
   | true -> []
   | false ->
       let point : Aoc.Point.t = { x; y } in
-      let curr_char = List.Assoc.find ~equal:Aoc.Point.equal loop point in
+      let curr_char = Hashtbl.find loop point in
       let curr_value =
         prev_value + if increment curr_char prev_char then 1 else 0
       in
@@ -78,11 +78,14 @@ let point_contained (wall_counts : (Aoc.Point.t * int) list)
   | Some walls_after -> Int.equal (walls_after mod 2) 1
 
 let contained (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
-  let possible, _ = List.unzip grid in
+  let possible = Hashtbl.keys grid in
   let not_in p = not (List.mem ~equal:Aoc.Point.equal points p) in
   let possible = List.filter ~f:not_in possible in
-  let grid_value p = List.Assoc.find_exn ~equal:Aoc.Point.equal grid p in
-  let loop = List.map ~f:(fun p -> (p, grid_value p)) points in
+  let loop =
+    Hashtbl.filter_keys
+      ~f:(fun p -> List.mem ~equal:Aoc.Point.equal points p)
+      grid
+  in
   let max_x = Aoc.Util.max (List.map ~f:(fun p -> p.x) points) in
   let max_y = Aoc.Util.max (List.map ~f:(fun p -> p.y) points) in
   let wall_counts = get_wall_counts loop max_x max_y in
@@ -90,9 +93,10 @@ let contained (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let start, _ = List.find_exn ~f:(fun (_, ch) -> Char.equal ch 'S') grid in
-  let grid = List.Assoc.remove ~equal:Aoc.Point.equal grid start in
-  let grid = (start, 'F') :: grid in
+  let start, _ =
+    List.find_exn ~f:(fun (_, ch) -> Char.equal ch 'S') (Hashtbl.to_alist grid)
+  in
+  Hashtbl.set grid ~key:start ~data:'F';
   let point_distances = traverse grid 0 [ start ] [] in
   let points, distances = List.unzip point_distances in
   let part1 = Aoc.Util.max distances in

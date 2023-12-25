@@ -90,7 +90,7 @@ let rec until_repeat grid max_x max_y seen =
       (preamble, pattern)
 
 let () =
-  let grid = Aoc.Reader.read_grid_table () in
+  let grid = Aoc.Reader.read_grid () in
   let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
   let max_y = get_max grid (fun p -> p.Aoc.Point.y) in
 
