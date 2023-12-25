@@ -176,6 +176,7 @@ a_graph \
 
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
+| 2023 | 16  | 301.257 | Ocaml    | No optimizations on finding max, lots of repeated work  |
 | 2022 | 16  | 4.603   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 3.247   | Go       | Looks like a complex path finding problem               |
 | 2023 | 10  | 2.355   | Ocaml    | Iterates over a grid several times over                 |
