@@ -7,8 +7,7 @@ let state_equal (s1 : state) (s2 : state) : bool =
   Aoc.Point.equal s1.position s2.position
   && Aoc.Direction.equal s1.direction s2.direction
 
-let next_directions (grid : (Aoc.Point.t, char) Hashtbl.t) (s : state) :
-    Aoc.Direction.t list =
+let next_directions (grid : Aoc.Grid.t) (s : state) : Aoc.Direction.t list =
   let value = Hashtbl.find_exn grid s.position in
   match value with
   | '.' -> [ s.direction ]
@@ -48,36 +47,34 @@ let move (position : Aoc.Point.t) (direction : Aoc.Direction.t) : Aoc.Point.t =
 let next_state (s : state) (direction : Aoc.Direction.t) : state =
   { position = move s.position direction; direction }
 
-let next_states (grid : (Aoc.Point.t, char) Hashtbl.t) (s : state) : state list
-    =
+let next_states (grid : Aoc.Grid.t) (s : state) : state list =
   let directions = next_directions grid s in
   List.map ~f:(next_state s) directions
 
-let grid_contains (grid : (Aoc.Point.t, char) Hashtbl.t) (s : state) : bool =
-  Option.is_some (Hashtbl.find grid s.position)
+let grid_contains (grid : Aoc.Grid.t) (s : state) : bool =
+  Hashtbl.mem grid s.position
 
 let unexplored (explored : state list) (s : state) : bool =
   not (List.mem ~equal:state_equal explored s)
 
-let move_states (grid : (Aoc.Point.t, char) Hashtbl.t) (explored : state list)
+let move_states (grid : Aoc.Grid.t) (explored : state list)
     (states : state list) : state list =
   let states = List.concat (List.map ~f:(next_states grid) states) in
   let states = List.filter ~f:(grid_contains grid) states in
   List.filter ~f:(unexplored explored) states
 
-let rec follow (grid : (Aoc.Point.t, char) Hashtbl.t) (explored : state list)
+let rec follow (grid : Aoc.Grid.t) (explored : state list)
     (current : state list) =
   let next = move_states grid explored current in
   if List.is_empty next then explored else follow grid (next @ explored) next
 
-let get_energized (grid : (Aoc.Point.t, char) Hashtbl.t) (start : state) : int =
+let get_energized (grid : Aoc.Grid.t) (start : state) : int =
   let explored = follow grid [ start ] [ start ] in
   Set.length (PointSet.of_list (List.map ~f:(fun s -> s.position) explored))
 
-let rec max_energized (grid : (Aoc.Point.t, char) Hashtbl.t)
-    (points : Aoc.Point.t list) (max : int) : int =
+let rec max_energized (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
   match points with
-  | [] -> max
+  | [] -> 0
   | position :: xs ->
       let energized =
         Aoc.Util.max
@@ -88,7 +85,7 @@ let rec max_energized (grid : (Aoc.Point.t, char) Hashtbl.t)
             get_energized grid { position; direction = RIGHT };
           ]
       in
-      max_energized grid xs (Int.max max energized)
+      Int.max energized (max_energized grid xs)
 
 let () =
   let grid = Aoc.Reader.read_grid () in
@@ -96,8 +93,8 @@ let () =
     { position = { x = 0; y = 0 }; direction = Aoc.Direction.RIGHT }
   in
   let part1 = get_energized grid start in
-  let side = Aoc.Util.max (List.map ~f:(fun p -> p.x) (Hashtbl.keys grid)) in
-  let coords = List.init (side + 1) ~f:(fun s -> s) in
+  let side = (Aoc.Grid.max grid).x in
+  let coords = List.init (side + 1) ~f:Aoc.Util.identity in
   let points =
     List.map ~f:(fun (x : int) : Aoc.Point.t -> { x; y = 0 }) coords
   in
@@ -110,6 +107,6 @@ let () =
   let points =
     points @ List.map ~f:(fun (y : int) : Aoc.Point.t -> { x = side; y }) coords
   in
-  let part2 = max_energized grid points 0 in
+  let part2 = max_energized grid points in
   Aoc.Answer.part1 8901 part1 string_of_int;
   Aoc.Answer.part2 9064 part2 string_of_int

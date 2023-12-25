@@ -1,9 +1,5 @@
 open Core
 
-let get_max (grid : Aoc.Grid.t) f =
-  let values = List.map ~f (Hashtbl.keys grid) in
-  Aoc.Util.max values
-
 let get_range max inclusive =
   let offset = if inclusive then 1 else 0 in
   List.init (max + offset) ~f:(fun i -> i)
@@ -32,18 +28,17 @@ let can_fold (grid : Aoc.Grid.t) max f target line =
 let sum values multiplier =
   Aoc.Util.sum (List.map ~f:(fun value -> (value + 1) * multiplier) values)
 
-let reflections target (grid : Aoc.Grid.t) =
-  let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
-  let max_y = get_max grid (fun p -> p.y) in
+let reflections (target : int) (grid : Aoc.Grid.t) : int =
+  let max = Aoc.Grid.max grid in
   let valid_xs =
     List.filter
-      ~f:(can_fold grid max_y (fun a b -> { x = a; y = b }) target)
-      (get_range max_x false)
+      ~f:(can_fold grid max.y (fun a b -> { x = a; y = b }) target)
+      (get_range max.x false)
   in
   let valid_ys =
     List.filter
-      ~f:(can_fold grid max_x (fun a b -> { x = b; y = a }) target)
-      (get_range max_y false)
+      ~f:(can_fold grid max.x (fun a b -> { x = b; y = a }) target)
+      (get_range max.y false)
   in
   sum valid_xs 1 + sum valid_ys 100
 
