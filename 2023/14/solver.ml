@@ -1,9 +1,5 @@
 open Core
 
-let get_max grid f =
-  let values = List.map ~f (Hashtbl.keys grid) in
-  Aoc.Util.max values + 1
-
 let find_rocks grid direction =
   let points =
     Hashtbl.to_alist grid
@@ -60,25 +56,13 @@ let run_cycle grid =
   find_and_move grid DOWN;
   find_and_move grid RIGHT
 
-let grid_row grid xs y =
-  let chars =
-    List.map ~f:(fun x -> Hashtbl.find_exn grid { Aoc.Point.x; y }) xs
-  in
-  String.of_char_list chars
-
-let grid_string grid max_x max_y =
-  let xs = List.init max_x ~f:(fun x -> x) in
-  let ys = List.init max_y ~f:(fun y -> y) in
-  let rows = List.map ~f:(grid_row grid xs) ys in
-  String.concat ~sep:"\n" rows
-
-let rec until_repeat grid max_x max_y seen =
+let rec until_repeat grid max_y seen =
   run_cycle grid;
-  let as_string = grid_string grid max_x max_y in
+  let as_string = Aoc.Grid.to_string grid in
   match List.Assoc.find ~equal:String.equal seen as_string with
   | None ->
       let next = get_load grid max_y in
-      until_repeat grid max_x max_y ((as_string, next) :: seen)
+      until_repeat grid max_y ((as_string, next) :: seen)
   | Some _ ->
       let result = List.rev seen in
       let preamble, _ =
@@ -91,8 +75,7 @@ let rec until_repeat grid max_x max_y seen =
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let max_x = get_max grid (fun p -> p.Aoc.Point.x) in
-  let max_y = get_max grid (fun p -> p.Aoc.Point.y) in
+  let max_y = (Aoc.Grid.max grid).y + 1 in
 
   find_and_move grid UP;
   let part1 = get_load grid max_y in
@@ -102,8 +85,8 @@ let () =
   find_and_move grid DOWN;
   find_and_move grid RIGHT;
 
-  let starting_seen = [ (grid_string grid max_x max_y, get_load grid max_y) ] in
-  let preamble, pattern = until_repeat grid max_x max_y starting_seen in
+  let starting_seen = [ (Aoc.Grid.to_string grid, get_load grid max_y) ] in
+  let preamble, pattern = until_repeat grid max_y starting_seen in
   let pattern_index = (1000000000 - 1 - preamble) mod List.length pattern in
   let part2 = List.nth_exn pattern pattern_index in
   Aoc.Answer.part1 109654 part1 string_of_int;

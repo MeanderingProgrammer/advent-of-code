@@ -86,9 +86,8 @@ let contained (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
       ~f:(fun p -> List.mem ~equal:Aoc.Point.equal points p)
       grid
   in
-  let max_x = Aoc.Util.max (List.map ~f:(fun p -> p.x) points) in
-  let max_y = Aoc.Util.max (List.map ~f:(fun p -> p.y) points) in
-  let wall_counts = get_wall_counts loop max_x max_y in
+  let max = Aoc.Point.max points in
+  let wall_counts = get_wall_counts loop max.x max.y in
   List.count ~f:(point_contained wall_counts) possible
 
 let () =

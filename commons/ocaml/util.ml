@@ -8,3 +8,5 @@ let max (values : int list) : int =
 
 let min (values : int list) : int =
   List.fold_left ~init:(List.hd_exn values) ~f:Int.min (List.tl_exn values)
+
+let identity (value : 'a) : 'a = value
