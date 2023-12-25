@@ -1,10 +1,15 @@
 open Core
 open Printf
 
-module Edge = struct
-  type t = Aoc.Point.t * int
+module Node = struct
+  type t = Aoc.Point.t * Aoc.Direction.t list
+  [@@deriving compare, equal, hash, sexp]
+end
 
-  let compare ((_, w1) : t) ((_, w2) : t) = Int.compare w1 w2
+module Edge = struct
+  type 'a t = 'a * int
+
+  let compare ((_, w1) : 'a t) ((_, w2) : 'a t) = Int.compare w1 w2
 end
 
 let neighbor_string ((d, p) : Aoc.Direction.t * Aoc.Point.t) : string =
@@ -19,16 +24,15 @@ let dijkstra (grid : Aoc.Grid.t) (start : Aoc.Point.t) =
   let q = Pairing_heap.create ~cmp:Edge.compare () in
   Pairing_heap.add q (start, 0);
 
-  printf "NEIGHBORS = %s\n"
-    (List.to_string ~f:neighbor_string (neighbors grid start));
-
-  let distances = Hashtbl.create (module Aoc.Point) in
-  Hashtbl.add_exn distances ~key:start ~data:0;
+  let distances = Hashtbl.create (module Node) in
+  (* Hashtbl.add_exn distances ~key:start ~data:0; *)
   printf "EMPTY %b\n" (Hashtbl.is_empty distances);
 
   while not (Pairing_heap.is_empty q) do
     let p, w = Pairing_heap.pop_exn q in
-    printf "%s -> %d\n" (Aoc.Point.to_string p) w
+    printf "%s -> %d\n" (Aoc.Point.to_string p) w;
+    let adjacent = neighbors grid p in
+    printf "NEIGHBORS = %s\n" (List.to_string ~f:neighbor_string adjacent)
   done
 
 let () =
