@@ -6,12 +6,19 @@ let get_x (p : t) : int = p.x
 let get_y (p : t) : int = p.y
 let to_string (p : t) : string = Printf.sprintf "(%d, %d)" p.x p.y
 
+let move (p : t) (d : Direction.t) (amount : int) : t =
+  match d with
+  | UP -> { p with y = p.y - amount }
+  | DOWN -> { p with y = p.y + amount }
+  | LEFT -> { p with x = p.x - amount }
+  | RIGHT -> { p with x = p.x + amount }
+
 let adjacent (p : t) : (Direction.t * t) list =
   [
-    (UP, { x = p.x; y = p.y - 1 });
-    (DOWN, { x = p.x; y = p.y + 1 });
-    (LEFT, { x = p.x - 1; y = p.y });
-    (RIGHT, { x = p.x + 1; y = p.y });
+    (UP, move p UP 1);
+    (DOWN, move p DOWN 1);
+    (LEFT, move p LEFT 1);
+    (RIGHT, move p RIGHT 1);
   ]
 
 let distance (p1 : t) (p2 : t) : int =

@@ -36,7 +36,7 @@ let card_value wild_joker card =
   | 'Q' -> 12
   | 'J' -> if wild_joker then 1 else 11
   | 'T' -> 10
-  | _ -> int_of_char card - int_of_char '0'
+  | _ -> Char.get_digit_exn card
 
 let get_count value values = List.count ~f:(Int.equal value) values
 
