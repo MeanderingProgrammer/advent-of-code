@@ -40,7 +40,7 @@ def setup(info: bool) -> None:
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
 @click.option("-s", "--slow", type=int, default=1)
 @click.option("-i", "--info", is_flag=True)
-@click.option("--test", is_flag=True)
+@click.option("-T", "--test", is_flag=True)
 def run(
     template: Optional[RunName],
     year: tuple[int, ...],
