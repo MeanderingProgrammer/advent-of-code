@@ -1,51 +1,31 @@
 open Core
-open Printf
 
-type comparison = LESS_THAN | GREATER_THAN
-type condition = { category : char; comp : comparison; value : int }
+type range = { first : int; last : int }
+type condition = { category : char; range : range }
 type workflow = { condition : condition option; destination : string }
 type rule = string * workflow list
 type part = (char * int) list
-
-let comparison_string (c : comparison) : string =
-  match c with LESS_THAN -> "<" | GREATER_THAN -> ">"
-
-let condition_string (c : condition) : string =
-  sprintf "(%c %s %d)" c.category (comparison_string c.comp) c.value
-
-let workflow_string (w : workflow) : string =
-  let condition_str =
-    match w.condition with None -> "ALL" | Some c -> condition_string c
-  in
-  sprintf "%s -> %s" condition_str w.destination
-
-let rule_string ((name, workflows) : rule) : string =
-  sprintf "%s -> [%s]" name
-    (String.concat ~sep:", " (List.map ~f:workflow_string workflows))
-
-let rec part_string (p : part) : string =
-  match p with
-  | [] -> ""
-  | (c, v) :: xs -> sprintf "(%c, %d), " c v ^ part_string xs
+type part_range = (char * range) list
 
 (* {...} | ...} *)
 let remove_bracket (s : string) : string =
   let offset = if String.is_prefix ~prefix:"{" s then 1 else 0 in
   String.sub s ~pos:offset ~len:(String.length s - (1 + offset))
 
-(* < | > *)
-let parse_comparison (c : char) : comparison =
+(* <2006 *)
+let parse_range (c : char) (value : int) : range =
   match c with
-  | '<' -> LESS_THAN
-  | '>' -> GREATER_THAN
+  | '<' -> { first = 1; last = value - 1 }
+  | '>' -> { first = value + 1; last = 4000 }
   | _ -> raise (Invalid_argument (Char.to_string c))
 
-(* a<comparison>2006 *)
+(* a<range> *)
 let parse_condition (s : string) : condition =
   {
     category = String.get s 0;
-    comp = parse_comparison (String.get s 1);
-    value = int_of_string (String.sub s ~pos:2 ~len:(String.length s - 2));
+    range =
+      parse_range (String.get s 1)
+        (int_of_string (String.sub s ~pos:2 ~len:(String.length s - 2)));
   }
 
 (* <condition>:qkq | rfg *)
@@ -78,11 +58,9 @@ let parse_part (s : string) : part =
 let matches (c : condition option) (p : part) : bool =
   match c with
   | None -> true
-  | Some c -> (
+  | Some c ->
       let value = List.Assoc.find_exn ~equal:Char.equal p c.category in
-      match c.comp with
-      | LESS_THAN -> value < c.value
-      | GREATER_THAN -> value > c.value)
+      value >= c.range.first && value <= c.range.last
 
 let rec find_matching (workflows : workflow list) (p : part) : string =
   match workflows with
@@ -100,12 +78,62 @@ let rec accepted (rules : rule list) (current : string) (p : part) : bool =
 
 let part_value (p : part) : int = Aoc.Util.sum (List.map ~f:(fun (_, v) -> v) p)
 
+let combinations (p : part_range) : int =
+  Aoc.Util.multiply (List.map ~f:(fun (_, r) -> r.last - r.first + 1) p)
+
+let rec find_overlap (p : part_range) (workflows : workflow list) =
+  match workflows with
+  | [] -> []
+  | x :: xs -> (
+      match x.condition with
+      | None -> (x.destination, p) :: find_overlap p xs
+      | Some c ->
+          let r = List.Assoc.find_exn ~equal:Char.equal p c.category in
+          let p = List.Assoc.remove ~equal:Char.equal p c.category in
+          let overlap : range =
+            {
+              first = Int.max r.first c.range.first;
+              last = Int.min r.last c.range.last;
+            }
+          in
+          let overlap_p =
+            List.Assoc.add ~equal:Char.equal p c.category overlap
+          in
+          let remainder =
+            if r.first < c.range.first then { r with last = c.range.first - 1 }
+            else { r with first = c.range.last + 1 }
+          in
+          let remainder_p =
+            List.Assoc.add ~equal:Char.equal p c.category remainder
+          in
+          (x.destination, overlap_p) :: find_overlap remainder_p xs)
+
+let rec split_ranges (rules : rule list) (pending : (string * part_range) list)
+    =
+  match pending with
+  | [] -> []
+  | (name, p) :: xs -> (
+      match name with
+      | "A" -> p :: split_ranges rules xs
+      | "R" -> split_ranges rules xs
+      | _ ->
+          let workflows = List.Assoc.find_exn ~equal:String.equal rules name in
+          let pending = find_overlap p workflows in
+          split_ranges rules (pending @ xs))
+
 let () =
   let groups = Aoc.Reader.read_groups () in
   let rules = List.map ~f:parse_rule (List.nth_exn groups 0) in
   let parts = List.map ~f:parse_part (List.nth_exn groups 1) in
-  printf "%s\n" (String.concat ~sep:"\n" (List.map ~f:rule_string rules));
-  printf "%s\n" (String.concat ~sep:"\n" (List.map ~f:part_string parts));
-  let parts = List.filter ~f:(accepted rules "in") parts in
-  let part1 = Aoc.Util.sum (List.map ~f:part_value parts) in
-  Aoc.Answer.part1 409898 part1 string_of_int
+  let accepted_parts = List.filter ~f:(accepted rules "in") parts in
+  let part1 = Aoc.Util.sum (List.map ~f:part_value accepted_parts) in
+  let full_range : range = { first = 1; last = 4000 } in
+  let initial_range : part_range =
+    [
+      ('x', full_range); ('m', full_range); ('a', full_range); ('s', full_range);
+    ]
+  in
+  let ranges = split_ranges rules [ ("in", initial_range) ] in
+  let part2 = Aoc.Util.sum (List.map ~f:combinations ranges) in
+  Aoc.Answer.part1 409898 part1 string_of_int;
+  Aoc.Answer.part2 113057405770956 part2 string_of_int
