@@ -15,33 +15,32 @@ let parse_seeds s =
 
 type range = { first : int; last : int; offset : int }
 
-let add_conversion offsets conversion =
-  match parse_numbers conversion with
+let parse_range s =
+  match parse_numbers s with
   | [ destination; source; length ] ->
-      let offset = destination - source in
-      { first = source; last = source + length - 1; offset } :: offsets
-  | _ -> raise (Invalid_argument conversion)
+      {
+        first = source;
+        last = source + length - 1;
+        offset = destination - source;
+      }
+  | _ -> raise (Invalid_argument s)
 
-let rec add_conversions offsets conversions =
+let rec parse_offset conversions =
   match conversions with
-  | x :: xs -> add_conversions (add_conversion offsets x) xs
-  | [] -> offsets
-
-let rec group_offsets groups =
-  match groups with
-  | x :: xs ->
-      let offsets = add_conversions [] (List.tl_exn x) in
-      offsets :: group_offsets xs
   | [] -> []
+  | x :: xs -> parse_range x :: parse_offset xs
+
+let rec parse_offsets groups =
+  match groups with
+  | [] -> []
+  | x :: xs -> parse_offset (List.tl_exn x) :: parse_offsets xs
 
 let adjust_range r =
   { first = r.first + r.offset; last = r.last + r.offset; offset = r.offset }
 
-let get_first r = r.first
-let get_last r = r.last
-
 let rec map_range offset r new_ranges =
   match offset with
+  | [] -> List.map ~f:adjust_range new_ranges
   | x :: xs ->
       let split_ranges =
         if x.last >= r.first && x.first <= r.last then
@@ -51,40 +50,21 @@ let rec map_range offset r new_ranges =
         else []
       in
       map_range xs r (split_ranges @ new_ranges)
-  | [] ->
-      if List.is_empty new_ranges then [ r ]
-      else
-        let ranges = List.map ~f:adjust_range new_ranges in
-        let min_consumed = Aoc.Util.min (List.map ~f:get_first new_ranges) in
-        let min_range =
-          { first = r.first; last = min_consumed - 1; offset = 0 }
-        in
-        let max_consumed = Aoc.Util.max (List.map ~f:get_last new_ranges) in
-        let max_range =
-          { first = max_consumed + 1; last = r.last; offset = 0 }
-        in
-        if
-          (not (Int.equal r.first min_consumed))
-          && not (Int.equal r.last max_consumed)
-        then min_range :: max_range :: ranges
-        else if not (Int.equal r.first min_consumed) then min_range :: ranges
-        else if not (Int.equal r.last max_consumed) then max_range :: ranges
-        else ranges
 
 let rec map_ranges offset ranges =
   match ranges with
-  | x :: xs -> map_range offset x [] @ map_ranges offset xs
   | [] -> ranges
+  | x :: xs -> map_range offset x [] @ map_ranges offset xs
 
 let rec apply offsets ranges =
   match offsets with
+  | [] -> Aoc.Util.min (List.map ~f:(fun r -> r.first) ranges)
   | x :: xs -> apply xs (map_ranges x ranges)
-  | [] -> Aoc.Util.min (List.map ~f:get_first ranges)
 
 let rec seed_ranges seeds =
   match seeds with
+  | [] -> []
   | x :: xs -> { first = x; last = x; offset = 0 } :: seed_ranges xs
-  | _ -> []
 
 let rec get_seeds seeds =
   match seeds with
@@ -94,8 +74,8 @@ let rec get_seeds seeds =
 
 let () =
   let groups = Aoc.Reader.read_groups () in
-  let seeds = parse_seeds (List.nth_exn (List.nth_exn groups 0) 0) in
-  let offsets = group_offsets (List.tl_exn groups) in
+  let seeds = parse_seeds (List.hd_exn (List.hd_exn groups)) in
+  let offsets = parse_offsets (List.tl_exn groups) in
   let part1 = (apply offsets) (seed_ranges seeds) in
   let part2 = (apply offsets) (get_seeds seeds) in
   Aoc.Answer.part1 621354867 part1 string_of_int;
