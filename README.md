@@ -72,7 +72,7 @@ a_run \
 | year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022` |
 | day           | `-d` | List of days to run                     | None     | `-d 1 -d 3 -d 5`  |
 | language      | `-l` | Limit runs to the specified languages   | None     | `-l golang`       |
-| test          | N/A  | Passes test flag to each day            | `False`  | `--test`          |
+| test          | `-T` | Passes test flag to each day            | `False`  | `-T`              |
 | info          | `-i` | Outputs which days would run            | `False`  | `-i`              |
 
 - If `template` is provided then `year` & `day` must not be provided
