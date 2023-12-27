@@ -1,5 +1,4 @@
 open Core
-module PointSet = Set.Make (Aoc.Point)
 
 type state = { position : Aoc.Point.t; direction : Aoc.Direction.t }
 
@@ -70,7 +69,8 @@ let rec follow (grid : Aoc.Grid.t) (explored : state list)
 
 let get_energized (grid : Aoc.Grid.t) (start : state) : int =
   let explored = follow grid [ start ] [ start ] in
-  Set.length (PointSet.of_list (List.map ~f:(fun s -> s.position) explored))
+  Set.length
+    (Aoc.Types.PointSet.of_list (List.map ~f:(fun s -> s.position) explored))
 
 let rec max_energized (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
   match points with
