@@ -92,9 +92,7 @@ let contained (grid : Aoc.Grid.t) (points : Aoc.Point.t list) : int =
 
 let () =
   let grid = Aoc.Reader.read_grid () in
-  let start, _ =
-    List.find_exn ~f:(fun (_, ch) -> Char.equal ch 'S') (Hashtbl.to_alist grid)
-  in
+  let start = Aoc.Grid.find_value grid 'S' in
   Hashtbl.set grid ~key:start ~data:'F';
   let point_distances = traverse grid 0 [ start ] [] in
   let points, distances = List.unzip point_distances in
