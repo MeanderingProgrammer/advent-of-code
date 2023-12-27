@@ -29,10 +29,8 @@ let rec move_rock grid direction rock =
   match can_move with
   | false -> ()
   | true ->
-      Hashtbl.remove grid rock;
-      Hashtbl.add_exn grid ~key:rock ~data:'.';
-      Hashtbl.remove grid next;
-      Hashtbl.add_exn grid ~key:next ~data:'O';
+      Hashtbl.set grid ~key:rock ~data:'.';
+      Hashtbl.set grid ~key:next ~data:'O';
       move_rock grid direction next
 
 let rec move_rocks grid direction rocks =
