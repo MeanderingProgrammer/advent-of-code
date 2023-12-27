@@ -24,6 +24,10 @@ let adjacent (p : t) : (Direction.t * t) list =
 let distance (p1 : t) (p2 : t) : int =
   Int.abs (p1.x - p2.x) + Int.abs (p1.y - p2.y)
 
+let min (points : t list) : t =
+  let min_of (f : t -> int) : int = Util.min (List.map ~f points) in
+  { x = min_of get_x; y = min_of get_y }
+
 let max (points : t list) : t =
   let max_of (f : t -> int) : int = Util.max (List.map ~f points) in
   { x = max_of get_x; y = max_of get_y }
