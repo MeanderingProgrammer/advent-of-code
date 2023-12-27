@@ -177,6 +177,7 @@ a_graph \
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
 | 2023 | 16  | 301.257 | Ocaml    | No optimizations on finding max, lots of repeated work  |
+| 2023 | 23  | 14.103  | Ocaml    | Optimized graph, but no early termination in search     |
 | 2023 | 17  | 12.571  | Ocaml    | Path finding algorithm in Ocaml, may not be much to do  |
 | 2023 | 21  | 9.129   | Ocaml    | A growing set of points, should use different language  |
 | 2022 | 16  | 4.603   | Rust     | Path finding with multiple agents is fairly optimized   |
