@@ -14,6 +14,12 @@ let parse_grid (lines : string list) : t =
 
 let max (grid : t) : Point.t = Point.max (Hashtbl.keys grid)
 
+let find_value (grid : t) (value : char) : Point.t =
+  let with_value = Hashtbl.filter ~f:(Char.equal value) grid in
+  let points, _ = List.unzip (Hashtbl.to_alist with_value) in
+  assert (Int.equal 1 (List.length points));
+  List.hd_exn points
+
 let to_string (grid : t) : string =
   let max_point = max grid in
   let xs = List.init (max_point.x + 1) ~f:Util.identity in
