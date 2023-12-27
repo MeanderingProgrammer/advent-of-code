@@ -194,7 +194,6 @@ a_graph \
 | 2016 | 5   | 1.471   | Go       | Final md5 hash that isn't running under 1 second        |
 | 2019 | 25  | 1.419   | Rust     | Mostly spends time permuting through the items          |
 | 2020 | 15  | 1.249   | Rust     | Even in Rust iterating to 30,000,000 takes a bit        |
-| 2023 | 14  | 1.243   | Ocaml    | Creates string of each grid to check for repeat         |
 | 2018 | 24  | 1.153   | Python   | Complex game, fairly optimized in Python                |
 | 2019 | 20  | 1.132   | Java     | Mostly the Java runtime for such a small execution      |
 | 2023 | 12  | 1.122   | Ocaml    | Good algorithm, has problems with 5x input size         |
