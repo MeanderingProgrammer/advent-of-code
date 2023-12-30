@@ -97,13 +97,13 @@ let fall_count (settled : grid) (bricks : brick list) (b : brick) : int =
     List.length would_fall
     + Aoc.Util.sum (List.map ~f:(helper removed) would_fall)
   in
-  helper (Hashtbl.of_alist_exn (module Int) []) b
+  helper (Hashtbl.create (module Int)) b
 
 let () =
   let values = Aoc.Reader.read_lines () in
   let bricks = List.mapi ~f:parse_brick values in
   let bricks = List.sort ~compare:by_lowest bricks in
-  let settled = Hashtbl.of_alist_exn (module Point) [] in
+  let settled = Hashtbl.create (module Point) in
   List.iter ~f:(fall settled) bricks;
   let id_ordered = List.sort ~compare:by_id bricks in
   let fall_counts = List.map ~f:(fall_count settled id_ordered) bricks in
