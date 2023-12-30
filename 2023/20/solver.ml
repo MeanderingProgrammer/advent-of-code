@@ -19,7 +19,7 @@ let parse_module_info (s : string) : string * module_info =
       let state =
         match String.get role_name 0 with
         | '%' -> FlipFlop (ref false)
-        | '&' -> Conjunction (Hashtbl.of_alist_exn (module String) [])
+        | '&' -> Conjunction (Hashtbl.create (module String))
         | 'b' -> Broadcast
         | _ -> raise (Invalid_argument role_name)
       in
