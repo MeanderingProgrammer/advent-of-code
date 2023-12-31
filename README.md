@@ -1,8 +1,31 @@
 # Advent of Code
 
-Public Repo for Advent of Code Solutions
+Public Repo for Advent of Code Solutions.
 
 ![Years Completed](images/advent-completed.png)
+
+# History
+
+When I first started Advent in 2020 I wrote everything in `Python` for simplicity
+as well as getting better at my main scripting language.
+
+I then decided to go back and solve all the years from 2015 on also in `Python`.
+
+Since then I have used Advent as an opportunity to learn new languages.
+
+So far this has been:
+
+- 2021: [Go](https://go.dev/)
+- 2022: [Rust](https://www.rust-lang.org/)
+- 2023: [OCaml](https://ocaml.org/)
+
+Sometime after 2022 I decided to go back and optimize every solution with the goal
+of having no single solution take more than 1 second to run.
+
+Sometimes this involves algorithm improvements, other times I decided to re-write
+solutions from `Python` into something like `Rust` or `Go`.
+
+There is a section at the bottom of this doc tracking any remaining outliers.
 
 # Setup
 
