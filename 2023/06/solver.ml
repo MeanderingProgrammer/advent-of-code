@@ -1,16 +1,9 @@
 open Core
 
-let non_empty s = not (String.is_empty (String.strip s))
-
-(*  7   15   30 *)
-let parse_numbers s =
-  let numbers = String.split ~on:' ' s in
-  List.map ~f:int_of_string (List.filter ~f:non_empty numbers)
-
 (* Time: <numbers> *)
 let parse_values s =
   match String.split ~on:':' s with
-  | [ _; numbers ] -> parse_numbers numbers
+  | [ _; numbers ] -> Aoc.Util.parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
 let rec variants time found max_time record_distance =

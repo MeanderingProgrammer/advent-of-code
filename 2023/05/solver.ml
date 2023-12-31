@@ -1,22 +1,15 @@
 open Core
 
-let non_empty s = not (String.is_empty (String.strip s))
-
-(* 79 14 55 13 *)
-let parse_numbers s =
-  let numbers = String.split ~on:' ' s in
-  List.map ~f:int_of_string (List.filter ~f:non_empty numbers)
-
 (* seeds: <numbers> *)
 let parse_seeds s =
   match String.split ~on:':' s with
-  | [ _; numbers ] -> parse_numbers numbers
+  | [ _; numbers ] -> Aoc.Util.parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
 type range = { first : int; last : int; offset : int }
 
 let parse_range s =
-  match parse_numbers s with
+  match Aoc.Util.parse_numbers s with
   | [ destination; source; length ] ->
       {
         first = source;
