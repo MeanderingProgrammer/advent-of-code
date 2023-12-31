@@ -1,5 +1,4 @@
 open Core
-open Printf
 
 let () =
   let values = Aoc.Reader.read_lines () in
