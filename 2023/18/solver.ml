@@ -1,9 +1,10 @@
+open Aoc
 open Core
 
-type plan = { direction : Aoc.Direction.t; amount : int }
+type plan = { direction : Direction.t; amount : int }
 
 (* U | D | L | R *)
-let parse_direct_dir (s : string) : Aoc.Direction.t =
+let parse_direct_dir (s : string) : Direction.t =
   match s with
   | "U" -> UP
   | "D" -> DOWN
@@ -19,7 +20,7 @@ let parse_direct (s : string) : plan =
   | _ -> raise (Invalid_argument s)
 
 (* 0 | 1 | 2 | 3 *)
-let parse_color_dir (c : char) : Aoc.Direction.t =
+let parse_color_dir (c : char) : Direction.t =
   match c with
   | '0' -> RIGHT
   | '1' -> DOWN
@@ -36,23 +37,22 @@ let parse_color (s : string) : plan =
       { direction = parse_color_dir direction; amount = int_of_string hex }
   | _ -> raise (Invalid_argument s)
 
-let plan_edge (point : Aoc.Point.t) (p : plan) : Aoc.Point.t =
+let plan_edge (point : Point.t) (p : plan) : Point.t =
   match p.direction with
   | UP -> { point with y = point.y - p.amount }
   | DOWN -> { point with y = point.y + p.amount }
   | LEFT -> { point with x = point.x - p.amount }
   | RIGHT -> { point with x = point.x + p.amount }
 
-let rec plan_edges (current : Aoc.Point.t) (plans : plan list) :
-    Aoc.Point.t list =
+let rec plan_edges (current : Point.t) (plans : plan list) : Point.t list =
   match plans with
   | [] -> []
   | x :: xs ->
       let edge = plan_edge current x in
       edge :: plan_edges edge xs
 
-let shoelace (edges : Aoc.Point.t list) : int =
-  let rec helper (edges : Aoc.Point.t list) : int =
+let shoelace (edges : Point.t list) : int =
+  let rec helper (edges : Point.t list) : int =
     match edges with
     | p1 :: p2 :: xs ->
         let value = (p1.x * p2.y) - (p2.x * p1.y) in
@@ -64,15 +64,15 @@ let shoelace (edges : Aoc.Point.t list) : int =
   (result / 2) + 1
 
 let calculate_area (plans : plan list) : int =
-  let start : Aoc.Point.t = { x = 0; y = 0 } in
+  let start : Point.t = { x = 0; y = 0 } in
   let edges = start :: plan_edges start plans in
   shoelace edges
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let direct = List.map ~f:parse_direct values in
   let color = List.map ~f:parse_color values in
   let part1 = calculate_area direct in
   let part2 = calculate_area color in
-  Aoc.Answer.part1 48795 part1 string_of_int;
-  Aoc.Answer.part2 40654918441248 part2 string_of_int
+  Answer.part1 48795 part1 string_of_int;
+  Answer.part2 40654918441248 part2 string_of_int

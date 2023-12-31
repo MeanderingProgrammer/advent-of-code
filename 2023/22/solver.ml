@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 module Point = struct
@@ -94,13 +95,12 @@ let fall_count (settled : grid) (bricks : brick list) (b : brick) : int =
     let holding = List.filter ~f:(fun id -> not (Int.equal id b.id)) holding in
     let holding = List.map ~f:(List.nth_exn bricks) holding in
     let would_fall = List.filter ~f:(unsupported removed) holding in
-    List.length would_fall
-    + Aoc.Util.sum (List.map ~f:(helper removed) would_fall)
+    List.length would_fall + Util.sum (List.map ~f:(helper removed) would_fall)
   in
   helper (Hashtbl.create (module Int)) b
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let bricks = List.mapi ~f:parse_brick values in
   let bricks = List.sort ~compare:by_lowest bricks in
   let settled = Hashtbl.create (module Point) in
@@ -108,6 +108,6 @@ let () =
   let id_ordered = List.sort ~compare:by_id bricks in
   let fall_counts = List.map ~f:(fall_count settled id_ordered) bricks in
   let part1 = List.count ~f:(Int.equal 0) fall_counts in
-  let part2 = Aoc.Util.sum fall_counts in
-  Aoc.Answer.part1 519 part1 string_of_int;
-  Aoc.Answer.part2 109531 part2 string_of_int
+  let part2 = Util.sum fall_counts in
+  Answer.part1 519 part1 string_of_int;
+  Answer.part2 109531 part2 string_of_int

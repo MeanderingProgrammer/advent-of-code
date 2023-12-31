@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type pulse_type = Low | High
@@ -53,7 +54,7 @@ let rec initialize_conjuctions (modules : module_map) (names : string list) =
       initialize_conjuctions modules xs
 
 let get_modules () : module_map =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let module_infos = List.map ~f:parse_module_info values in
   let modules = Hashtbl.of_alist_exn (module String) module_infos in
   initialize_conjuctions modules (Hashtbl.keys modules);
@@ -124,10 +125,10 @@ let until_rx_high (modules : module_map) : int =
   let rx_input = List.hd_exn (find_inputs modules "rx") in
   let main_inputs = find_inputs modules rx_input in
   let periods = List.map ~f:(until_high rx_input) main_inputs in
-  Aoc.Util.multiply periods
+  Util.multiply periods
 
 let () =
   let part1 = run_for (get_modules ()) 1_000 in
   let part2 = until_rx_high (get_modules ()) in
-  Aoc.Answer.part1 818649769 part1 string_of_int;
-  Aoc.Answer.part2 246313604784977 part2 string_of_int
+  Answer.part1 818649769 part1 string_of_int;
+  Answer.part2 246313604784977 part2 string_of_int

@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type range = { first : int; last : int }
@@ -76,10 +77,10 @@ let rec accepted (rules : rule list) (current : string) (p : part) : bool =
   | "R" -> false
   | _ -> accepted rules matching p
 
-let part_value (p : part) : int = Aoc.Util.sum (List.map ~f:(fun (_, v) -> v) p)
+let part_value (p : part) : int = Util.sum (List.map ~f:(fun (_, v) -> v) p)
 
 let combinations (p : part_range) : int =
-  Aoc.Util.multiply (List.map ~f:(fun (_, r) -> r.last - r.first + 1) p)
+  Util.multiply (List.map ~f:(fun (_, r) -> r.last - r.first + 1) p)
 
 let rec find_overlap (p : part_range) (workflows : workflow list) =
   match workflows with
@@ -122,11 +123,11 @@ let rec split_ranges (rules : rule list) (pending : (string * part_range) list)
           split_ranges rules (pending @ xs))
 
 let () =
-  let groups = Aoc.Reader.read_groups () in
+  let groups = Reader.read_groups () in
   let rules = List.map ~f:parse_rule (List.nth_exn groups 0) in
   let parts = List.map ~f:parse_part (List.nth_exn groups 1) in
   let accepted_parts = List.filter ~f:(accepted rules "in") parts in
-  let part1 = Aoc.Util.sum (List.map ~f:part_value accepted_parts) in
+  let part1 = Util.sum (List.map ~f:part_value accepted_parts) in
   let full_range : range = { first = 1; last = 4000 } in
   let initial_range : part_range =
     [
@@ -134,6 +135,6 @@ let () =
     ]
   in
   let ranges = split_ranges rules [ ("in", initial_range) ] in
-  let part2 = Aoc.Util.sum (List.map ~f:combinations ranges) in
-  Aoc.Answer.part1 409898 part1 string_of_int;
-  Aoc.Answer.part2 113057405770956 part2 string_of_int
+  let part2 = Util.sum (List.map ~f:combinations ranges) in
+  Answer.part1 409898 part1 string_of_int;
+  Answer.part2 113057405770956 part2 string_of_int

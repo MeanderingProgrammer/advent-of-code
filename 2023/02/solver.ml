@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 let get_nth s i = List.nth_exn (String.split ~on:' ' s) i
@@ -64,11 +65,11 @@ let min_set_power game =
   get_ball "red" result * get_ball "blue" result * get_ball "green" result
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let games = List.map ~f:parse_game values in
   let balls = [ ("red", 12); ("green", 13); ("blue", 14) ] in
   let valid_games = List.filter ~f:(valid_game balls) games in
-  let part1 = Aoc.Util.sum (List.map ~f:get_id valid_games) in
-  let part2 = Aoc.Util.sum (List.map ~f:min_set_power games) in
-  Aoc.Answer.part1 2348 part1 string_of_int;
-  Aoc.Answer.part2 76008 part2 string_of_int
+  let part1 = Util.sum (List.map ~f:get_id valid_games) in
+  let part2 = Util.sum (List.map ~f:min_set_power games) in
+  Answer.part1 2348 part1 string_of_int;
+  Answer.part2 76008 part2 string_of_int

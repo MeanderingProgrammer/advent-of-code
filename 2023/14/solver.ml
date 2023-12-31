@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 let find_rocks grid direction =
@@ -7,8 +8,8 @@ let find_rocks grid direction =
     |> List.map ~f:(fun (p, _) -> p)
   in
   match direction with
-  | Aoc.Direction.UP ->
-      List.sort ~compare:(fun a b -> Int.compare a.Aoc.Point.y b.y) points
+  | Direction.UP ->
+      List.sort ~compare:(fun a b -> Int.compare a.Point.y b.y) points
   | DOWN -> List.sort ~compare:(fun a b -> Int.compare b.y a.y) points
   | LEFT -> List.sort ~compare:(fun a b -> Int.compare a.x b.x) points
   | RIGHT -> List.sort ~compare:(fun a b -> Int.compare b.x a.x) points
@@ -16,7 +17,7 @@ let find_rocks grid direction =
 let rec move_rock grid direction rock =
   let next =
     match direction with
-    | Aoc.Direction.UP -> { rock with Aoc.Point.y = rock.Aoc.Point.y - 1 }
+    | Direction.UP -> { rock with Point.y = rock.Point.y - 1 }
     | DOWN -> { rock with y = rock.y + 1 }
     | LEFT -> { rock with x = rock.x - 1 }
     | RIGHT -> { rock with x = rock.x + 1 }
@@ -46,7 +47,7 @@ let find_and_move grid direction =
 
 let get_load grid max_y =
   let rocks = find_rocks grid UP in
-  Aoc.Util.sum (List.map ~f:(fun p -> max_y - p.Aoc.Point.y) rocks)
+  Util.sum (List.map ~f:(fun p -> max_y - p.Point.y) rocks)
 
 let run_cycle grid =
   find_and_move grid UP;
@@ -56,7 +57,7 @@ let run_cycle grid =
 
 let rec until_repeat grid max_y seen =
   run_cycle grid;
-  let as_string = Aoc.Grid.to_string grid in
+  let as_string = Grid.to_string grid in
   match List.Assoc.find ~equal:String.equal seen as_string with
   | None ->
       let next = get_load grid max_y in
@@ -72,8 +73,8 @@ let rec until_repeat grid max_y seen =
       (preamble, pattern)
 
 let () =
-  let grid = Aoc.Reader.read_grid () in
-  let max_y = (Aoc.Grid.max grid).y + 1 in
+  let grid = Reader.read_grid () in
+  let max_y = (Grid.max grid).y + 1 in
 
   find_and_move grid UP;
   let part1 = get_load grid max_y in
@@ -83,9 +84,9 @@ let () =
   find_and_move grid DOWN;
   find_and_move grid RIGHT;
 
-  let starting_seen = [ (Aoc.Grid.to_string grid, get_load grid max_y) ] in
+  let starting_seen = [ (Grid.to_string grid, get_load grid max_y) ] in
   let preamble, pattern = until_repeat grid max_y starting_seen in
   let pattern_index = (1000000000 - 1 - preamble) mod List.length pattern in
   let part2 = List.nth_exn pattern pattern_index in
-  Aoc.Answer.part1 109654 part1 string_of_int;
-  Aoc.Answer.part2 94876 part2 string_of_int
+  Answer.part1 109654 part1 string_of_int;
+  Answer.part2 94876 part2 string_of_int

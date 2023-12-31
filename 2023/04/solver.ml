@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type card = { winning : int list; found : int list }
@@ -6,10 +7,7 @@ type card = { winning : int list; found : int list }
 let parse_card_numbers s =
   match String.split s ~on:'|' with
   | [ winning; found ] ->
-      {
-        winning = Aoc.Util.parse_numbers winning;
-        found = Aoc.Util.parse_numbers found;
-      }
+      { winning = Util.parse_numbers winning; found = Util.parse_numbers found }
   | _ -> raise (Invalid_argument s)
 
 (* Card 1: <card_numbers> *)
@@ -27,7 +25,7 @@ let rec match_count result winning found =
   | [] -> result
 
 let card_match_count c = match_count 0 c.winning c.found
-let score n = if Int.equal n 0 then 0 else Aoc.Math.int_pow 2 (n - 1)
+let score n = if Int.equal n 0 then 0 else Math.int_pow 2 (n - 1)
 
 let rec update_counts counts first last amount =
   match counts with
@@ -44,12 +42,12 @@ let rec winnings i matches counts =
   | [] -> counts
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let cards = List.map ~f:parse_card values in
   let matches = List.map ~f:card_match_count cards in
-  let part1 = Aoc.Util.sum (List.map ~f:score matches) in
+  let part1 = Util.sum (List.map ~f:score matches) in
   let initial_counts = List.init (List.length matches) ~f:(const 1) in
   let counts = winnings 0 matches initial_counts in
-  let part2 = Aoc.Util.sum counts in
-  Aoc.Answer.part1 18619 part1 string_of_int;
-  Aoc.Answer.part2 8063216 part2 string_of_int
+  let part2 = Util.sum counts in
+  Answer.part1 18619 part1 string_of_int;
+  Answer.part2 8063216 part2 string_of_int
