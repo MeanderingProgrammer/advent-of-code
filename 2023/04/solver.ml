@@ -1,20 +1,15 @@
 open Core
 
-let is_valid s = not (String.is_empty (String.strip s))
-
-(*  83 86  6 31 17  9 48 53 *)
-let parse_numbers s =
-  let split = String.split s ~on:' ' in
-  let filtered = List.filter ~f:is_valid split in
-  List.map ~f:int_of_string filtered
-
 type card = { winning : int list; found : int list }
 
 (* <winning> | <found> *)
 let parse_card_numbers s =
   match String.split s ~on:'|' with
   | [ winning; found ] ->
-      { winning = parse_numbers winning; found = parse_numbers found }
+      {
+        winning = Aoc.Util.parse_numbers winning;
+        found = Aoc.Util.parse_numbers found;
+      }
   | _ -> raise (Invalid_argument s)
 
 (* Card 1: <card_numbers> *)

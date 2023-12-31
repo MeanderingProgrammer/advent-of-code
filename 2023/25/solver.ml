@@ -18,7 +18,9 @@ let add_edges (g : graph) (s : string) : unit =
 
 let get_and_remove (g : graph) (node : string) (remove : string) : string list =
   let edges = Hashtbl.find_exn g node in
-  let edges = List.filter ~f:(Aoc.Util.not_equal remove) edges in
+  let edges =
+    List.filter ~f:(fun edge -> not (String.equal edge remove)) edges
+  in
   Hashtbl.remove g node;
   edges
 
