@@ -9,4 +9,5 @@ let max (values : int list) : int =
 let min (values : int list) : int =
   List.fold_left ~init:(List.hd_exn values) ~f:Int.min (List.tl_exn values)
 
+let not_equal (s1 : string) (s2 : string) : bool = not (String.equal s1 s2)
 let identity (value : 'a) : 'a = value
