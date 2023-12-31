@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 (* 0 3 6 9 12 15 *)
@@ -26,14 +27,14 @@ let get_missing last numbers =
     if last then List.map ~f:get_last non_zero_diffs
     else List.mapi ~f:get_first non_zero_diffs
   in
-  Aoc.Util.sum values
+  Util.sum values
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let all_numbers = List.map ~f:parse_numbers values in
   let missing_last = List.map ~f:(get_missing true) all_numbers in
-  let part1 = Aoc.Util.sum missing_last in
+  let part1 = Util.sum missing_last in
   let missing_first = List.map ~f:(get_missing false) all_numbers in
-  let part2 = Aoc.Util.sum missing_first in
-  Aoc.Answer.part1 1916822650 part1 string_of_int;
-  Aoc.Answer.part2 966 part2 string_of_int
+  let part2 = Util.sum missing_first in
+  Answer.part1 1916822650 part1 string_of_int;
+  Answer.part2 966 part2 string_of_int

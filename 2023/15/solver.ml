@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type operation = Remove of string | Add of string * int
@@ -55,18 +56,18 @@ let rec run_ops operations hash_map =
 let focussing_power i box =
   let box = List.rev box in
   let values = List.mapi ~f:(fun j (_, value) -> (j + 1) * value) box in
-  let partial = Aoc.Util.sum values in
+  let partial = Util.sum values in
   (i + 1) * partial
 
 let () =
-  let data = Aoc.Reader.read () in
+  let data = Reader.read () in
   let values = String.split ~on:',' (String.strip data) in
-  let part1 = Aoc.Util.sum (List.map ~f:hash values) in
+  let part1 = Util.sum (List.map ~f:hash values) in
   let operations = List.map ~f:parse values in
   let hash_map = Array.create ~len:256 [] in
   run_ops operations hash_map;
   let part2 =
-    Aoc.Util.sum (Array.mapi ~f:focussing_power hash_map |> Array.to_list)
+    Util.sum (Array.mapi ~f:focussing_power hash_map |> Array.to_list)
   in
-  Aoc.Answer.part1 514281 part1 string_of_int;
-  Aoc.Answer.part2 244199 part2 string_of_int
+  Answer.part1 514281 part1 string_of_int;
+  Answer.part2 244199 part2 string_of_int

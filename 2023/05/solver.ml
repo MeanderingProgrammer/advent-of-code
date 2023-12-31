@@ -1,15 +1,16 @@
+open Aoc
 open Core
 
 (* seeds: <numbers> *)
 let parse_seeds s =
   match String.split ~on:':' s with
-  | [ _; numbers ] -> Aoc.Util.parse_numbers numbers
+  | [ _; numbers ] -> Util.parse_numbers numbers
   | _ -> raise (Invalid_argument s)
 
 type range = { first : int; last : int; offset : int }
 
 let parse_range s =
-  match Aoc.Util.parse_numbers s with
+  match Util.parse_numbers s with
   | [ destination; source; length ] ->
       {
         first = source;
@@ -51,7 +52,7 @@ let rec map_ranges offset ranges =
 
 let rec apply offsets ranges =
   match offsets with
-  | [] -> Aoc.Util.min (List.map ~f:(fun r -> r.first) ranges)
+  | [] -> Util.min (List.map ~f:(fun r -> r.first) ranges)
   | x :: xs -> apply xs (map_ranges x ranges)
 
 let rec seed_ranges seeds =
@@ -66,10 +67,10 @@ let rec get_seeds seeds =
   | _ -> []
 
 let () =
-  let groups = Aoc.Reader.read_groups () in
+  let groups = Reader.read_groups () in
   let seeds = parse_seeds (List.hd_exn (List.hd_exn groups)) in
   let offsets = parse_offsets (List.tl_exn groups) in
   let part1 = (apply offsets) (seed_ranges seeds) in
   let part2 = (apply offsets) (get_seeds seeds) in
-  Aoc.Answer.part1 621354867 part1 string_of_int;
-  Aoc.Answer.part2 15880236 part2 string_of_int
+  Answer.part1 621354867 part1 string_of_int;
+  Answer.part2 15880236 part2 string_of_int

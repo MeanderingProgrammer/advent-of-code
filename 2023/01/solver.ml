@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 let rec find_matching mapping value index =
@@ -27,7 +28,7 @@ let rec score mapping values result =
   | _ -> result
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let digit_mapping =
     [
       ("0", 0);
@@ -57,5 +58,5 @@ let () =
   in
   let part1 = score digit_mapping values 0 in
   let part2 = score (word_mapping @ digit_mapping) values 0 in
-  Aoc.Answer.part1 55538 part1 string_of_int;
-  Aoc.Answer.part2 54875 part2 string_of_int
+  Answer.part1 55538 part1 string_of_int;
+  Answer.part2 54875 part2 string_of_int

@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type edge = { left : string; right : string }
@@ -39,7 +40,7 @@ let is_zzz s = String.equal s "ZZZ"
 let ends ch s = String.is_suffix ~suffix:ch s
 
 let () =
-  let groups = Aoc.Reader.read_groups () in
+  let groups = Reader.read_groups () in
   let directions = List.nth_exn (List.nth_exn groups 0) 0 |> String.to_list in
   let network = List.map ~f:parse_node (List.nth_exn groups 1) in
   let part1 = follow_until 0 is_zzz directions network "AAA" in
@@ -48,6 +49,6 @@ let () =
   let loops =
     List.map ~f:(follow_until 0 (ends "Z") directions network) starts
   in
-  let part2 = Aoc.Math.lcm loops in
-  Aoc.Answer.part1 24253 part1 string_of_int;
-  Aoc.Answer.part2 12357789728873 part2 string_of_int
+  let part2 = Math.lcm loops in
+  Answer.part1 24253 part1 string_of_int;
+  Answer.part2 12357789728873 part2 string_of_int

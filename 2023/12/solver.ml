@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type row = { springs : char list; groups : int list }
@@ -67,9 +68,9 @@ let count_unfolded r =
   count springs groups (ref [])
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let rows = List.map ~f:parse_row values in
-  let part1 = Aoc.Util.sum (List.map ~f:count_folded rows) in
-  let part2 = Aoc.Util.sum (List.map ~f:count_unfolded rows) in
-  Aoc.Answer.part1 8075 part1 string_of_int;
-  Aoc.Answer.part2 4232520187524 part2 string_of_int
+  let part1 = Util.sum (List.map ~f:count_folded rows) in
+  let part2 = Util.sum (List.map ~f:count_unfolded rows) in
+  Answer.part1 8075 part1 string_of_int;
+  Answer.part2 4232520187524 part2 string_of_int

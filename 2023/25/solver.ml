@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type graph = (string, string list) Hashtbl.t
@@ -67,8 +68,8 @@ let node_sizes (g : graph) : int list =
 
 let () =
   let graph : graph = Hashtbl.create (module String) in
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   List.iter ~f:(add_edges graph) values;
   let graph = until_cut_size graph 3 in
-  let part1 = Aoc.Util.multiply (node_sizes graph) in
-  Aoc.Answer.part1 567606 part1 string_of_int
+  let part1 = Util.multiply (node_sizes graph) in
+  Answer.part1 567606 part1 string_of_int

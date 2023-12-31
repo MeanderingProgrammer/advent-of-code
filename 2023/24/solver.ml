@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type point = { x : float; y : float; z : float }
@@ -89,7 +90,7 @@ let gaussian_elimination (matrix : float list array) : int list =
   Array.to_list (Array.map ~f:int_of_float result)
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let stones = List.map ~f:parse_stone values in
   let between = Float.between ~low:200000000000000. ~high:400000000000000. in
   let part1 = List.count ~f:(intersects between) (all_pairs stones) in
@@ -98,5 +99,5 @@ let () =
   let l2 = gaussian_elimination (create_matrix stones pull_xz) in
   let _, z = (List.nth_exn l2 0, List.nth_exn l2 1) in
   let part2 = x + y + z in
-  Aoc.Answer.part1 14672 part1 string_of_int;
-  Aoc.Answer.part2 646810057104753 part2 string_of_int
+  Answer.part1 14672 part1 string_of_int;
+  Answer.part2 646810057104753 part2 string_of_int

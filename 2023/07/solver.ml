@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 type hand_type =
@@ -58,7 +59,7 @@ let get_hand_type wild_joker cards =
     ]
   in
   let values = if wild_joker then values else count cards 'J' :: values in
-  let max = Aoc.Util.max values in
+  let max = Util.max values in
   let jokers = if wild_joker then count cards 'J' else 0 in
   let num_2 = get_count 2 values in
   if Int.equal (max + jokers) 5 then FIVE_KIND
@@ -91,12 +92,12 @@ let winnings i h = (i + 1) * h.bid
 let total_winnings hands wild_joker =
   let compare = compare_hands wild_joker in
   let ordered = List.sort ~compare hands in
-  Aoc.Util.sum (List.mapi ~f:winnings ordered)
+  Util.sum (List.mapi ~f:winnings ordered)
 
 let () =
-  let values = Aoc.Reader.read_lines () in
+  let values = Reader.read_lines () in
   let hands = List.map ~f:parse_hand values in
   let part1 = total_winnings hands false in
   let part2 = total_winnings hands true in
-  Aoc.Answer.part1 248105065 part1 string_of_int;
-  Aoc.Answer.part2 249515436 part2 string_of_int
+  Answer.part1 248105065 part1 string_of_int;
+  Answer.part2 249515436 part2 string_of_int

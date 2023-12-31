@@ -1,3 +1,4 @@
+open Aoc
 open Core
 
 let increases values =
@@ -18,8 +19,8 @@ let winsorize values =
   f [] values
 
 let () =
-  let values = Aoc.Reader.read_ints () in
+  let values = Reader.read_ints () in
   let part1 = increases values in
   let part2 = increases (List.rev (winsorize values)) in
-  Aoc.Answer.part1 1292 part1 string_of_int;
-  Aoc.Answer.part2 1262 part2 string_of_int
+  Answer.part1 1292 part1 string_of_int;
+  Answer.part2 1262 part2 string_of_int
