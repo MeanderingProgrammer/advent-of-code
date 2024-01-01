@@ -2,14 +2,14 @@ open Aoc
 open Core
 
 module Node = struct
-  type t = { p : Point.t; ds : Direction.t list }
+  type t = { position : Point.t; directions : Direction.t list }
   [@@deriving compare, equal, hash, sexp]
 end
 
 module Edge = struct
-  type 'a t = { n : 'a; w : int }
+  type t = { node : Node.t; weight : int }
 
-  let compare (e1 : 'a t) (e2 : 'a t) = Int.compare e1.w e2.w
+  let compare (e1 : t) (e2 : t) = Int.compare e1.weight e2.weight
 end
 
 let adjacent_line (p : Point.t) (length : int) (d : Direction.t option) :
@@ -26,12 +26,14 @@ let adjacent_line (p : Point.t) (length : int) (d : Direction.t option) :
   let result =
     List.map ~f:(fun d -> (d, List.map ~f:(Point.move p d) amounts)) turns
   in
-  (* Add in the forward direction which does not need to exend to the length *)
+  (* Add in the forward direction which does not need to extend to the length *)
   match d with None -> result | Some d -> (d, [ Point.move p d 1 ]) :: result
 
 let neighbors (grid : Grid.t) (n : Node.t) (turn_resistance : int) :
     (Direction.t * Point.t list) list =
-  let result = adjacent_line n.p turn_resistance (List.hd n.ds) in
+  let result =
+    adjacent_line n.position turn_resistance (List.hd n.directions)
+  in
   List.filter ~f:(fun (_, ps) -> Hashtbl.mem grid (List.last_exn ps)) result
 
 (* Based on: https://github.com/jamespwilliams/aoc2021/blob/master/15/ocaml/common.ml *)
@@ -42,10 +44,10 @@ let dijkstra (grid : Grid.t) (start : Point.t) (target : Point.t)
     Util.sum (List.map ~f:heat_value ps)
   in
 
-  let start_node : Node.t = { p = start; ds = [] } in
+  let start_node : Node.t = { position = start; directions = [] } in
 
   let q = Pairing_heap.create ~cmp:Edge.compare () in
-  Pairing_heap.add q { n = start_node; w = 0 };
+  Pairing_heap.add q { node = start_node; weight = 0 };
 
   let distances = Hashtbl.create (module Node) in
   Hashtbl.add_exn distances ~key:start_node ~data:0;
@@ -55,21 +57,25 @@ let dijkstra (grid : Grid.t) (start : Point.t) (target : Point.t)
 
   let rec run () : int =
     let e = Pairing_heap.pop_exn q in
-    match Point.equal e.n.p target with
-    | true -> e.w
+    match Point.equal e.node.position target with
+    | true -> e.weight
     | false ->
         List.iter
           ~f:(fun ((d, ps) : Direction.t * Point.t list) ->
-            let ds = List.init (List.length ps) ~f:(fun _ -> d) in
-            let next_ds = List.take (ds @ e.n.ds) (allowed_repeats + 1) in
-            let next_node : Node.t = { p = List.last_exn ps; ds = next_ds } in
-            let distance = e.w + get_heat ps in
-            let repeats = List.count ~f:(Direction.equal d) next_ds in
+            let directions = List.init (List.length ps) ~f:(const d) in
+            let next_directions =
+              List.take (directions @ e.node.directions) (allowed_repeats + 1)
+            in
+            let next_node : Node.t =
+              { position = List.last_exn ps; directions = next_directions }
+            in
+            let distance = e.weight + get_heat ps in
+            let repeats = List.count ~f:(Direction.equal d) next_directions in
             if distance < get_distance next_node && repeats <= allowed_repeats
             then (
-              Pairing_heap.add q { n = next_node; w = distance };
+              Pairing_heap.add q { node = next_node; weight = distance };
               Hashtbl.set distances ~key:next_node ~data:distance))
-          (neighbors grid e.n turn_resistance);
+          (neighbors grid e.node turn_resistance);
         run ()
   in
   run ()
