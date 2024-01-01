@@ -109,39 +109,43 @@ let rec collapse (grid : Grid.t) (graph : graph) (paths : path list) : graph =
           in
           collapse grid graph (xs @ options))
 
-type node = Point.t list
-type weighted_edge = { node : node; weight : int }
+type node = { last : Point.t; path : Point.t list }
+type state = { node : node; weight : int }
 
 let neighbors (graph : graph) (slippery : bool) (n : node) :
     (Point.t * int) list =
-  let edges = Hashtbl.find_exn graph (List.hd_exn n) in
+  let edges = Hashtbl.find_exn graph n.last in
   let result =
     if slippery then List.filter ~f:(fun e -> not e.uphill) edges else edges
   in
   let result =
-    List.filter ~f:(fun e -> not (List.mem ~equal:Point.equal n e.dst)) result
+    List.filter
+      ~f:(fun e -> not (List.mem ~equal:Point.equal n.path e.dst))
+      result
   in
   List.map ~f:(fun e -> (e.dst, e.length)) result
 
 let search (graph : graph) (start : Point.t) (target : Point.t)
     (slippery : bool) : int =
-  let rec run (states : weighted_edge list) : int list =
+  let rec run (states : state list) (max : int) : int =
     match states with
-    | [] -> []
-    | e :: xs -> (
-        match Point.equal target (List.hd_exn e.node) with
-        | true -> e.weight :: run xs
+    | [] -> max
+    | s :: xs -> (
+        match Point.equal target s.node.last with
+        | true -> run xs (Int.max max s.weight)
         | false ->
             let additional =
               List.map
-                ~f:(fun ((p, w) : Point.t * int) : weighted_edge ->
-                  { node = p :: e.node; weight = e.weight + w })
-                (neighbors graph slippery e.node)
+                ~f:(fun ((p, w) : Point.t * int) : state ->
+                  {
+                    node = { last = p; path = p :: s.node.path };
+                    weight = s.weight + w;
+                  })
+                (neighbors graph slippery s.node)
             in
-            run (additional @ xs))
+            run (additional @ xs) max)
   in
-  let distances = run [ { node = [ start ]; weight = 0 } ] in
-  Util.max distances
+  run [ { node = { last = start; path = [ start ] }; weight = 0 } ] 0
 
 let () =
   let grid = Reader.read_grid () in
