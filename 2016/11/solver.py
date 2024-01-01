@@ -1,7 +1,7 @@
 import itertools
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, Self
 
 from aoc import answer, search
 from aoc.parser import Parser
@@ -17,10 +17,10 @@ class Item:
     element: str
     item_type: ItemType
 
-    def generator(self) -> "Item":
+    def generator(self) -> Self:
         if self.item_type == ItemType.GENERATOR:
             raise Exception("Cannot get generator for a generator")
-        return Item(self.element, ItemType.GENERATOR)
+        return type(self)(self.element, ItemType.GENERATOR)
 
 
 class State:
@@ -39,8 +39,8 @@ class State:
     def total_below(self, floor: int) -> int:
         return sum([len(self.state[level]) for level in range(floor)])
 
-    def move(self, new_level: int, items_to_move: list[Item]) -> "State":
-        new_state = State()
+    def move(self, new_level: int, items_to_move: list[Item]) -> Self:
+        new_state = type(self)()
         for floor, items in self.state.items():
             for item in items:
                 if item not in items_to_move:
@@ -74,46 +74,38 @@ class State:
         raise Exception(f"Could not find item: {target}")
 
     def _equalize(self) -> dict[int, set[str]]:
-        if self.equalized is not None:
-            return self.equalized
-        result: dict[int, set[str]] = {i: set() for i in range(4)}
-        item_index = 0
-        for i, items in self.state.items():
-            for item in items:
-                if item.item_type == ItemType.CHIP:
-                    result[i].add(f"{item_index}C")
-                    generator_item = item.generator()
-                    generator_floor = self._get_floor(generator_item)
-                    result[generator_floor].add(f"{item_index}G")
-                    item_index += 1
-        self.equalized = result
+        if self.equalized is None:
+            result: dict[int, set[str]] = {i: set() for i in range(4)}
+            item_index = 0
+            for floor, items in self.state.items():
+                for item in items:
+                    if item.item_type == ItemType.CHIP:
+                        result[floor].add(f"{item_index}C")
+                        generator_floor = self._get_floor(item.generator())
+                        result[generator_floor].add(f"{item_index}G")
+                        item_index += 1
+            self.equalized = result
         return self.equalized
 
-    def __eq__(self, o):
+    def __eq__(self, o: Self) -> bool:
         return self._equalize() == o._equalize()
 
     def _freeze(self):
-        result = set()
+        result = []
         for floor, items in self._equalize().items():
-            result.add((floor, frozenset(items)))
+            result.append((floor, frozenset(items)))
         return frozenset(result)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         if self.hashed is None:
             self.hashed = hash(self._freeze())
         return self.hashed
 
-    def __lt__(self, o):
+    def __lt__(self, o: Self) -> bool:
         return len(self.get(3)) < len(o.get(3))
 
-    def __repr__(self):
-        return str(self)
 
-    def __str__(self):
-        return str(self.state)
-
-
-def main():
+def main() -> None:
     answer.part1(37, count_steps([]))
     additional_items = [
         "elerium generator",
@@ -162,15 +154,15 @@ def get_end_state(start: State) -> State:
     return state
 
 
-def get_adjacent(item: tuple[int, State]) -> set[tuple[int, State]]:
+def get_adjacent(item: tuple[int, State]) -> list[tuple[int, State]]:
     level, state = item
     options = pair(state.get(level))
 
-    adjacent = set()
+    adjacent = []
     for legal_state in get_legal(level, state, options, False):
-        adjacent.add((level - 1, legal_state))
+        adjacent.append((level - 1, legal_state))
     for legal_state in get_legal(level, state, options, True):
-        adjacent.add((level + 1, legal_state))
+        adjacent.append((level + 1, legal_state))
     return adjacent
 
 

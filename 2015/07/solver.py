@@ -41,7 +41,7 @@ class Value:
             return int(variable)
 
 
-def main():
+def main() -> None:
     first = evaluate(None)
     answer.part1(3176, first)
     answer.part2(14710, evaluate(first))

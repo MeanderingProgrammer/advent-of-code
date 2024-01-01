@@ -15,7 +15,7 @@ class Disk:
         return position % self.positions == 0
 
 
-def main():
+def main() -> None:
     answer.part1(121834, calculate_first_pass(False))
     answer.part2(3208099, calculate_first_pass(True))
 
