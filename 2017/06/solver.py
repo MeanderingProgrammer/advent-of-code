@@ -25,7 +25,7 @@ class Memory:
         return type(self)(tuple(new_state))
 
 
-def main():
+def main() -> None:
     memory = Memory(tuple(Parser().int_entries()))
     seen = set()
 
