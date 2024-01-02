@@ -1,5 +1,4 @@
 use crate::grid::{Grid, GridValue};
-use crate::point::Point;
 use clap::Parser;
 use std::env;
 use std::fs::File;
@@ -35,15 +34,6 @@ pub fn read_full_groups() -> Vec<String> {
 
 pub fn read_grid<T: GridValue>(f: fn(char) -> Option<T>) -> Grid<T> {
     Grid::from_lines(read_lines(), |ch| f(ch))
-}
-
-pub fn read_points() -> Vec<Point> {
-    let mut result: Vec<Point> = Vec::new();
-    for line in read_lines().iter() {
-        let values = line.split(",").map(|coord| to_int(coord)).collect();
-        result.push(Point::new_nd(values));
-    }
-    result
 }
 
 pub fn read_int() -> Vec<i64> {

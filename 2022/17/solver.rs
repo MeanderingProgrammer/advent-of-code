@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
+use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
 use std::collections::HashMap;
 
@@ -23,7 +23,7 @@ struct FallingShape {
 
 impl FallingShape {
     fn new(shape: Shape, height: i64) -> Self {
-        let anchor = Point::new_2d(2, height + 4);
+        let anchor = Point::new(2, height + 4);
         FallingShape { anchor, shape }
     }
 
@@ -31,35 +31,21 @@ impl FallingShape {
         self.shape
             .locations
             .iter()
-            .map(|point| point.add_x(self.anchor.x()).add_y(self.anchor.y()))
+            .map(|point| point.add(self.anchor.x, self.anchor.y))
             .collect()
     }
 
     fn apply_jet(&self, jet: &char) -> Self {
         match jet {
-            '<' => self.left(),
-            '>' => self.right(),
+            '<' => self.go(&Direction::Left),
+            '>' => self.go(&Direction::Right),
             _ => panic!("Unhandled jet value"),
         }
     }
 
-    fn right(&self) -> Self {
-        FallingShape {
-            anchor: self.anchor.add_x(1),
-            shape: self.shape.clone(),
-        }
-    }
-
-    fn left(&self) -> Self {
-        FallingShape {
-            anchor: self.anchor.add_x(-1),
-            shape: self.shape.clone(),
-        }
-    }
-
-    fn down(&self) -> Self {
-        FallingShape {
-            anchor: self.anchor.add_y(-1),
+    fn go(&self, direction: &Direction) -> Self {
+        Self {
+            anchor: self.anchor.step(direction),
             shape: self.shape.clone(),
         }
     }
@@ -67,7 +53,7 @@ impl FallingShape {
     fn collides(&self, grid: &Grid<char>) -> bool {
         self.points()
             .iter()
-            .any(|point| grid.contains(&point) || point.y() < 0 || point.x() < 0 || point.x() > 6)
+            .any(|point| grid.contains(&point) || point.y < 0 || point.x < 0 || point.x > 6)
     }
 }
 
@@ -77,48 +63,48 @@ fn main() {
     let shapes = vec![
         // ####
         Shape::new(vec![
-            Point::new_2d(0, 0),
-            Point::new_2d(1, 0),
-            Point::new_2d(2, 0),
-            Point::new_2d(3, 0),
+            Point::new(0, 0),
+            Point::new(1, 0),
+            Point::new(2, 0),
+            Point::new(3, 0),
         ]),
         // .#.
         // ###
         // .#.
         Shape::new(vec![
-            Point::new_2d(1, 0),
-            Point::new_2d(0, 1),
-            Point::new_2d(1, 1),
-            Point::new_2d(2, 1),
-            Point::new_2d(1, 2),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(1, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
         ]),
         // ..#
         // ..#
         // ###
         Shape::new(vec![
-            Point::new_2d(0, 0),
-            Point::new_2d(1, 0),
-            Point::new_2d(2, 0),
-            Point::new_2d(2, 1),
-            Point::new_2d(2, 2),
+            Point::new(0, 0),
+            Point::new(1, 0),
+            Point::new(2, 0),
+            Point::new(2, 1),
+            Point::new(2, 2),
         ]),
         // #
         // #
         // #
         // #
         Shape::new(vec![
-            Point::new_2d(0, 0),
-            Point::new_2d(0, 1),
-            Point::new_2d(0, 2),
-            Point::new_2d(0, 3),
+            Point::new(0, 0),
+            Point::new(0, 1),
+            Point::new(0, 2),
+            Point::new(0, 3),
         ]),
         // ##
         // ##
         Shape::new(vec![
-            Point::new_2d(0, 0),
-            Point::new_2d(1, 0),
-            Point::new_2d(0, 1),
-            Point::new_2d(1, 1),
+            Point::new(0, 0),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(1, 1),
         ]),
     ];
 
@@ -162,7 +148,7 @@ fn simulate<'a>(
                 next_position
             };
 
-            let next_position = falling_shape.down();
+            let next_position = falling_shape.go(&Direction::Up);
             falling_shape = if next_position.collides(&grid) {
                 crashed = true;
                 falling_shape
@@ -173,8 +159,8 @@ fn simulate<'a>(
 
         falling_shape
             .points()
-            .iter()
-            .for_each(|point| grid.add(point.clone(), '#'));
+            .into_iter()
+            .for_each(|point| grid.add(point, '#'));
 
         rocks_dropped += 1;
 
@@ -205,7 +191,7 @@ fn remove_points_below(grid: &mut Grid<char>, threshold: i64) {
     let points_to_remove: Vec<Point> = grid
         .points()
         .iter()
-        .filter(|point| point.y() < threshold)
+        .filter(|point| point.y < threshold)
         .map(|&point| point.clone())
         .collect();
 

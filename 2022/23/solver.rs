@@ -110,7 +110,7 @@ impl Elves {
         let mut grid = Grid::new();
         self.locations
             .iter()
-            .map(|(x, y)| Point::new_2d(*x, -*y))
+            .map(|(x, y)| Point::new(*x, -*y))
             .for_each(|point| grid.add(point, '#'));
         grid
     }
@@ -142,7 +142,7 @@ fn get_elves() -> Elves {
         locations: grid
             .points_with_value('#')
             .iter()
-            .map(|elve| (elve.x(), -elve.y()))
+            .map(|elve| (elve.x, -elve.y))
             .collect(),
         round: 0,
     }

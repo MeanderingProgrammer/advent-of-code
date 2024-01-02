@@ -87,7 +87,7 @@ impl CoverageZone {
             let (input, x) = parse_number(input)?;
             let (input, _) = tag(", y=")(input)?;
             let (input, y) = parse_number(input)?;
-            Ok((input, Point::new_2d(x, y)))
+            Ok((input, Point::new(x, y)))
         }
 
         // Sensor at <point>: closest beacon is at <point>
@@ -96,7 +96,7 @@ impl CoverageZone {
         let (input, _) = tag(": closest beacon is at ")(input)?;
         let (input, beacon) = parse_point(input)?;
 
-        let (x, y) = (center.x(), center.y());
+        let (x, y) = (center.x, center.y);
         let radius = center.manhattan_distance(&beacon);
 
         Ok((

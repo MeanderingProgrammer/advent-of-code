@@ -1,36 +1,17 @@
 use aoc_lib::answer;
 use aoc_lib::grid::{Bound, Grid};
-use aoc_lib::point::Point;
+use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
 use queues::{IsQueue, Queue};
 use std::collections::HashSet;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-enum Direction {
-    Up,
-    Right,
-    Down,
-    Left,
-}
-
-impl Direction {
-    fn from_ch(ch: &char) -> Self {
-        match ch {
-            '^' => Direction::Up,
-            '>' => Direction::Right,
-            'v' => Direction::Down,
-            '<' => Direction::Left,
-            _ => unreachable!(),
-        }
-    }
-
-    fn next(&self, position: &Point) -> Point {
-        match self {
-            Self::Up => position.add_y(-1),
-            Self::Right => position.add_x(1),
-            Self::Down => position.add_y(1),
-            Self::Left => position.add_x(-1),
-        }
+fn parse_direction(ch: &char) -> Option<Direction> {
+    match ch {
+        '^' => Some(Direction::Up),
+        '>' => Some(Direction::Right),
+        'v' => Some(Direction::Down),
+        '<' => Some(Direction::Left),
+        _ => None,
     }
 }
 
@@ -42,16 +23,16 @@ struct Blizzard {
 
 impl Blizzard {
     fn next(&self, valley: &Valley) -> Self {
-        let suggested_position = self.direction.next(&self.position);
+        let suggested_position = self.position.step(&self.direction);
         let next_position = if valley.valid_position(&suggested_position) {
             suggested_position
         } else {
-            let (x, y) = (self.position.x(), self.position.y());
+            let (x, y) = (self.position.x, self.position.y);
             match self.direction {
-                Direction::Up => Point::new_2d(x, valley.end().y() - 1),
-                Direction::Right => Point::new_2d(valley.start().x(), y),
-                Direction::Down => Point::new_2d(x, valley.start().y() + 1),
-                Direction::Left => Point::new_2d(valley.end().x(), y),
+                Direction::Up => Point::new(x, valley.end().y - 1),
+                Direction::Right => Point::new(valley.start().x, y),
+                Direction::Down => Point::new(x, valley.start().y + 1),
+                Direction::Left => Point::new(valley.end().x, y),
             }
         };
         Self {
@@ -72,7 +53,6 @@ impl Valley {
     fn new(grid: Grid<char>) -> Self {
         let mut blizzards = HashSet::new();
         let mut blizzard_positions = HashSet::new();
-
         grid.points()
             .iter()
             .map(|point| (point, grid.get(point)))
@@ -81,24 +61,22 @@ impl Valley {
                 blizzard_positions.insert(point.clone());
                 blizzards.insert(Blizzard {
                     position: point.clone(),
-                    direction: Direction::from_ch(value),
+                    direction: parse_direction(value).unwrap(),
                 });
             });
-
-        let bounds = grid.bounds(0);
         Self {
-            bounds,
+            bounds: grid.bounds(0),
             blizzards,
             blizzard_positions,
         }
     }
 
     fn start(&self) -> &Point {
-        self.bounds.lower()
+        &self.bounds.lower
     }
 
     fn end(&self) -> &Point {
-        self.bounds.upper()
+        &self.bounds.upper
     }
 
     fn search(&mut self, start: &Point, end: &Point) -> Option<i64> {
@@ -155,7 +133,7 @@ impl Valley {
             return false;
         }
         // Only the start and end are valid at the ends of the y-axis
-        if position.y() == self.start().y() || position.y() == self.end().y() {
+        if position.y == self.start().y || position.y == self.end().y {
             return position == self.start() || position == self.end();
         }
         true
@@ -172,11 +150,9 @@ fn main() {
         _ => None,
     }));
     let (start, end) = (valley.start().clone(), valley.end().clone());
-
     let to_end = valley.search(&start, &end).unwrap();
-    answer::part1(277, to_end);
-
     let to_start = valley.search(&end, &start).unwrap();
     let and_back = valley.search(&start, &end).unwrap();
+    answer::part1(277, to_end);
     answer::part2(877, to_end + to_start + and_back);
 }

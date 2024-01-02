@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::grid::Grid;
+use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader;
-use std::collections::HashMap;
-
-type Point = (i16, i16);
+use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Seat {
@@ -34,15 +34,15 @@ impl Seat {
 
 #[derive(Debug, Clone, PartialEq)]
 struct SeatingChart {
-    chart: HashMap<Point, Seat>,
+    chart: Grid<Seat>,
     look: bool,
 }
 
 impl SeatingChart {
     fn next(&self) -> Self {
-        let mut next_chart = HashMap::new();
-        self.chart.iter().for_each(|(p, seat)| {
-            next_chart.insert(p.clone(), self.next_seat(p, seat));
+        let mut next_chart = Grid::new();
+        self.chart.points().into_iter().for_each(|p| {
+            next_chart.add(p.clone(), self.next_seat(p));
         });
         Self {
             chart: next_chart,
@@ -50,14 +50,14 @@ impl SeatingChart {
         }
     }
 
-    fn next_seat(&self, p: &Point, seat: &Seat) -> Seat {
-        match seat {
-            Seat::Floor => seat.clone(),
+    fn next_seat(&self, p: &Point) -> Seat {
+        match self.chart.get(p) {
+            Seat::Floor => Seat::Floor,
             Seat::Empty => {
                 if self.adjacent_occupied(p) == 0 {
                     Seat::Occupied
                 } else {
-                    seat.clone()
+                    Seat::Empty
                 }
             }
             Seat::Occupied => {
@@ -65,39 +65,28 @@ impl SeatingChart {
                 if self.adjacent_occupied(p) >= to_empty {
                     Seat::Empty
                 } else {
-                    seat.clone()
+                    Seat::Occupied
                 }
             }
         }
     }
 
     fn adjacent_occupied(&self, p: &Point) -> usize {
-        let directions: Vec<Point> = vec![
-            (1, 1),
-            (1, 0),
-            (1, -1),
-            (-1, 1),
-            (-1, 0),
-            (-1, -1),
-            (0, 1),
-            (0, -1),
-        ];
-        directions
-            .into_iter()
-            .map(|direction| self.explore_direction(p, direction))
+        Heading::iter()
+            .map(|heading| self.explore_direction(p, &heading))
             .filter(|&seat| seat == Some(&Seat::Occupied))
             .count()
     }
 
-    fn explore_direction(&self, p: &Point, direction: Point) -> Option<&Seat> {
-        let mut point = (p.0 + direction.0, p.1 + direction.1);
-        let mut seat = self.chart.get(&point);
+    fn explore_direction(&self, p: &Point, heading: &Heading) -> Option<&Seat> {
+        let mut point = p.head(heading);
+        let mut seat = self.chart.get_or(&point);
         if !self.look {
             seat
         } else {
             while seat == Some(&Seat::Floor) {
-                point = (point.0 + direction.0, point.1 + direction.1);
-                seat = self.chart.get(&point);
+                point = point.head(heading);
+                seat = self.chart.get_or(&point);
             }
             seat
         }
@@ -106,6 +95,7 @@ impl SeatingChart {
     fn occupied(&self) -> usize {
         self.chart
             .values()
+            .into_iter()
             .filter(|&seat| *seat == Seat::Occupied)
             .count()
     }
@@ -118,11 +108,11 @@ fn main() {
 
 fn run_until_stable(look: bool) -> usize {
     let mut previous = SeatingChart {
-        chart: HashMap::new(),
+        chart: Grid::new(),
         look,
     };
     let mut current = SeatingChart {
-        chart: get_chart(),
+        chart: reader::read_grid(|ch| Seat::from_ch(ch)),
         look,
     };
     while previous != current {
@@ -130,15 +120,4 @@ fn run_until_stable(look: bool) -> usize {
         current = current.next();
     }
     previous.occupied()
-}
-
-fn get_chart() -> HashMap<Point, Seat> {
-    let mut chart: HashMap<Point, Seat> = HashMap::new();
-    reader::read_grid(|ch| Seat::from_ch(ch))
-        .get_grid()
-        .into_iter()
-        .for_each(|(point, seat)| {
-            chart.insert((point.x() as i16, point.y() as i16), seat);
-        });
-    chart
 }

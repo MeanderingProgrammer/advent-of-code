@@ -1,6 +1,5 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::line::Line2d;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
 
@@ -18,17 +17,17 @@ impl SandFlow {
         Self {
             grid,
             with_floor,
-            max_height: bounds.upper().y() + if with_floor { 1 } else { 0 },
-            start: Point::new_2d(500, 0),
+            max_height: bounds.upper.y + if with_floor { 1 } else { 0 },
+            start: Point::new(500, 0),
         }
     }
 
     fn drop_grain(&mut self) -> bool {
         let mut grain = self.start.clone();
-        while grain.y() < self.max_height {
+        while grain.y < self.max_height {
             let next = vec![(0, 1), (-1, 1), (1, 1)]
                 .into_iter()
-                .map(|(x, y)| grain.add_x(x).add_y(y))
+                .map(|(x, y)| grain.add(x, y))
                 .filter(|point| !self.grid.contains(&point))
                 .next();
             if next.is_none() {
@@ -36,13 +35,13 @@ impl SandFlow {
             }
             grain = next.unwrap();
         }
-        if self.with_floor || grain.y() < self.max_height {
+        if self.with_floor || grain.y < self.max_height {
             self.grid.add(grain.clone(), 'O');
         }
         if self.with_floor {
             grain == self.start
         } else {
-            grain.y() >= self.max_height
+            grain.y >= self.max_height
         }
     }
 
@@ -70,7 +69,7 @@ fn get_grid() -> Grid<char> {
         line.to_string()
             .split(" -> ")
             .map(|point| match point.split_once(",") {
-                Some((x, y)) => Point::new_2d(x.parse().unwrap(), y.parse().unwrap()),
+                Some((x, y)) => Point::new(x.parse().unwrap(), y.parse().unwrap()),
                 None => panic!(),
             })
             .collect()
@@ -81,9 +80,16 @@ fn get_grid() -> Grid<char> {
         .iter()
         .flat_map(|rock_formation| {
             (1..rock_formation.len())
-                .map(|i| Line2d::new(rock_formation[i - 1].clone(), rock_formation[i].clone()))
+                .flat_map(|i| get_points(&rock_formation[i - 1], &rock_formation[i]))
         })
-        .flat_map(|line| line.as_points().into_iter())
-        .for_each(|point| grid.add(point.clone(), '#'));
+        .for_each(|point| grid.add(point, '#'));
     grid
+}
+
+fn get_points(p1: &Point, p2: &Point) -> Vec<Point> {
+    let (x1, x2) = (p1.x, p2.x);
+    let (y1, y2) = (p1.y, p2.y);
+    (x1.min(x2)..=x1.max(x2))
+        .flat_map(move |x| (y1.min(y2)..=y1.max(y2)).map(move |y| Point::new(x, y)))
+        .collect()
 }
