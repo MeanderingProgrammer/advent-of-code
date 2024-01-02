@@ -36,8 +36,10 @@ impl Garden {
             result = result
                 .into_iter()
                 .flat_map(|point| {
-                    let neighbors = point.neighbors();
-                    neighbors.into_iter().filter(|point| self.not_wall(point))
+                    point
+                        .neighbors()
+                        .into_iter()
+                        .filter(|point| self.not_wall(point))
                 })
                 .collect();
         }
