@@ -212,7 +212,6 @@ a_graph \
 | 2019 | 23  | 1.621   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2019 | 24  | 1.607   | Python   | Game of life problem, optimized by using tuples         |
 | 2018 | 15  | 1.509   | Rust     | Complex game state with path finding between characters |
-| 2023 | 10  | 1.493   | Ocaml    | Iterates over a grid several times over                 |
 | 2021 | 12  | 1.490   | Go       | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | Rust     | Dealing with large space, already in Rust               |
 | 2016 | 5   | 1.471   | Go       | Final md5 hash that isn't running under 1 second        |
