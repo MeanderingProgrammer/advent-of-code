@@ -50,6 +50,9 @@ The `setup` target is used to do any language specific setup prior to running.
 
 This includes downloading any necessary libraries, compiling targets, etc.
 
+None of the parameters are required, the default behavior in this case is to setup
+all supported languages.
+
 - Alias Command: `a_setup`
 - Direct Command: `./scripts/advent.py setup`
 
@@ -57,12 +60,14 @@ This includes downloading any necessary libraries, compiling targets, etc.
 
 ```
 a_setup \
+  (--language <language>)* \
   --info?
 ```
 
-| Variable Name | Alt  | Description                           | Default | Example |
-| ------------- | ---- | ------------------------------------- | ------- | ------- |
-| info          | `-i` | Outputs which languages will be setup | `False` | `-i`    |
+| Variable Name | Alt  | Description                            | Default | Example   |
+| ------------- | ---- | -------------------------------------- | ------- | --------- |
+| language      | `-l` | Limit setup to the specified languages | None    | `-l rust` |
+| info          | `-i` | Outputs which languages will be setup  | `False` | `-i`      |
 
 # Run
 

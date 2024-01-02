@@ -23,13 +23,15 @@ def cli() -> None:
 
 
 @cli.command()
+@click.option("-l", "--language", type=LanguageType(), multiple=True)
 @click.option("-i", "--info", is_flag=True)
-def setup(info: bool) -> None:
+def setup(language: tuple[Language, ...], info: bool) -> None:
     """
-    Setup all languages
+    Setup specified languages
     """
-    languages = LanguageFactory().get_all()
-    setup = Setup(languages=languages)
+    setup = Setup(
+        languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
+    )
     click.echo(f"{setup}") if info else setup.run()
 
 
