@@ -1,38 +1,32 @@
 use aoc_lib::answer;
+use aoc_lib::grid::Grid;
+use aoc_lib::point::Point;
 use aoc_lib::reader;
 use std::collections::HashSet;
-
-type Point = (i64, i64);
-
-fn add(p1: &Point, p2: &Point) -> Point {
-    (p1.0 + p2.0, p1.1 + p2.1)
-}
 
 #[derive(Debug)]
 struct Animator {
     force_corners: bool,
     on: HashSet<Point>,
-    min_x: i64,
-    max_x: i64,
-    min_y: i64,
-    max_y: i64,
+    min: Point,
+    max: Point,
 }
 
 impl Animator {
     fn add_corners(&mut self) {
         if self.force_corners {
-            self.on.insert((self.min_x, self.min_y));
-            self.on.insert((self.min_x, self.max_y));
-            self.on.insert((self.max_x, self.min_y));
-            self.on.insert((self.max_x, self.max_y));
+            self.on.insert(self.min.clone());
+            self.on.insert(Point::new(self.min.x, self.max.y));
+            self.on.insert(Point::new(self.max.x, self.min.y));
+            self.on.insert(self.max.clone());
         }
     }
 
     fn step(&mut self) {
         let mut next_on = HashSet::new();
-        for x in self.min_x..=self.max_x {
-            for y in self.min_y..=self.max_y {
-                let point = (x, y);
+        for x in self.min.x..=self.max.x {
+            for y in self.min.y..=self.max.y {
+                let point = Point::new(x, y);
                 let neighbors_on = self.neighbors_on(&point);
                 let neighbors_needed = if self.on.contains(&point) {
                     vec![2, 3]
@@ -49,19 +43,10 @@ impl Animator {
     }
 
     fn neighbors_on(&self, point: &Point) -> usize {
-        let directions = vec![
-            (-1, 0),
-            (1, 0),
-            (0, -1),
-            (0, 1),
-            (-1, -1),
-            (-1, 1),
-            (1, -1),
-            (1, 1),
-        ];
-        directions
+        point
+            .diagonal_neighbors()
             .iter()
-            .filter(|direction| self.on.contains(&add(point, direction)))
+            .filter(|point| self.on.contains(point))
             .count()
     }
 
@@ -71,35 +56,22 @@ impl Animator {
 }
 
 fn main() {
-    let lines = reader::read_lines();
-    answer::part1(1061, run(&lines, false));
-    answer::part2(1006, run(&lines, true));
+    let grid = reader::read_grid(|ch| Some(ch));
+    answer::part1(1061, run(&grid, false));
+    answer::part2(1006, run(&grid, true));
 }
 
-fn run(lines: &Vec<String>, force_corners: bool) -> usize {
-    let mut on = HashSet::new();
-    let mut min_x = 0;
-    let mut max_x = 0;
-    let mut min_y = 0;
-    let mut max_y = 0;
-    for (y, line) in lines.iter().enumerate() {
-        min_y = min_y.min(y);
-        max_y = max_y.max(y);
-        for (x, value) in line.chars().enumerate() {
-            min_x = min_x.min(x);
-            max_x = max_x.max(x);
-            if value == '#' {
-                on.insert((x as i64, y as i64));
-            }
-        }
-    }
+fn run(grid: &Grid<char>, force_corners: bool) -> usize {
+    let bound = grid.bounds(0);
     let mut animator = Animator {
         force_corners,
-        on,
-        min_x: min_x as i64,
-        max_x: max_x as i64,
-        min_y: min_y as i64,
-        max_y: max_y as i64,
+        on: grid
+            .points_with_value('#')
+            .into_iter()
+            .map(|point| point.clone())
+            .collect(),
+        min: bound.lower.clone(),
+        max: bound.upper.clone(),
     };
     animator.add_corners();
     for _ in 0..100 {
