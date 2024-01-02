@@ -149,16 +149,13 @@ let search (graph : graph) (start : Point.t) (target : Point.t)
 
 let () =
   let grid = Reader.read_grid () in
-
   let start : Point.t = { x = 1; y = 0 } in
-  let graph = Hashtbl.create (module Point) in
   let start_path = { traversed = [ (DOWN, start) ]; uphill = false } in
-  let graph = collapse grid graph [ start_path ] in
-
+  let graph = collapse grid (Hashtbl.create (module Point)) [ start_path ] in
   let max = Grid.max grid in
-  let target = { max with x = max.x - 1 } in
+  let search = search graph start { max with x = max.x - 1 } in
 
-  let part1 = search graph start target true in
-  let part2 = search graph start target false in
+  let part1 = search true in
+  let part2 = search false in
   Answer.part1 2154 part1 string_of_int;
   Answer.part2 6654 part2 string_of_int
