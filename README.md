@@ -224,4 +224,3 @@ a_graph \
 | 2020 | 15  | 1.249   | Rust     | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2018 | 24  | 1.153   | Python   | Complex game, fairly optimized in Python                |
 | 2019 | 20  | 1.132   | Java     | Mostly the Java runtime for such a small execution      |
-| 2023 | 12  | 1.122   | Ocaml    | Good algorithm, has problems with 5x input size         |
