@@ -27,11 +27,23 @@ let rec step_n (grid : Grid.t) (len : int) (n : int)
   | true -> (Set.length current, current)
   | false -> step_n grid len (n - 1) (step grid len current)
 
-let part2_magic (a0 : int) (a1 : int) (a2 : int) (n : int) : int =
-  let b0 = a0 in
-  let b1 = a1 - a0 in
-  let b2 = a2 - a1 - b1 in
-  b0 + (b1 * n) + (n * (n - 1) / 2 * b2)
+let solve_quadratic (f : int array) (n : int) : int =
+  (* f(x) = ax² + bx + c = plots in 65 + 131 * x *)
+  (* Solving for c is easy since we have f[0] *)
+  (* f[0] = a(0)² + b(0) + c -> c = f[0] *)
+  (* Solve for b in terms of a using f[1] & c = f[0] *)
+  (* f[1] = a(1)² + b(1) + f[0] *)
+  (* b = f[1] - f[0] - a *)
+  (* Solve for a using f[2], b, & c = f[0] *)
+  (* f[2] = a(2)² + b(2) + f[0] *)
+  (* 4a + 2b = f[2] - f[0] *)
+  (* 4a + 2(f[1] - f[0] - a) = f[2] - f[0] *)
+  (* 4a + 2f[1] - 2f[0] - 2a = f[2] - f[0] *)
+  (* a = (f[2] -2f[1] + f[0]) / 2 *)
+  let a = (f.(2) - (2 * f.(1)) + f.(0)) / 2 in
+  let b = f.(1) - f.(0) - a in
+  let c = f.(0) in
+  (a * n * n) + (b * n) + c
 
 let () =
   let grid = Reader.read_grid () in
@@ -41,13 +53,13 @@ let () =
   let initial = Types.PointSet.of_list [ start ] in
   let part1, points = step_n grid len 64 initial in
 
-  (* Honestly no clue, something about patterns in a growing diamond shape *)
+  (* Quadratic pattern in a growing diamond shape *)
   (* https://www.reddit.com/r/adventofcode/comments/18nevo3/comment/keaiiq7 *)
-  let a0, points = step_n grid len 1 points in
-  let a1, points = step_n grid len len points in
-  let a2, _ = step_n grid len len points in
-  let iterations = 26501365 / len in
-  let part2 = part2_magic a0 a1 a2 iterations in
+  let f0, points = step_n grid len 1 points in
+  let f1, points = step_n grid len len points in
+  let f2, _ = step_n grid len len points in
+  let n = (26501365 - 65) / len in
+  let part2 = solve_quadratic [| f0; f1; f2 |] n in
 
   Answer.part1 3847 part1 string_of_int;
   Answer.part2 637537341306357 part2 string_of_int
