@@ -13,7 +13,7 @@ module Edge = struct
 end
 
 let adjacent_line (p : Point.t) (length : int) (d : Direction.t option) :
-    (Direction.t * Point.t list) list =
+    (Direction.t * bool * Point.t list) list =
   (* Handle turning directions which must extend out to the specified length *)
   (* Initially all directions are considered a turn, afterwards it is the *)
   (* directions which are not straight or backwards *)
@@ -24,17 +24,19 @@ let adjacent_line (p : Point.t) (length : int) (d : Direction.t option) :
   in
   let amounts = List.init length ~f:(fun i -> i + 1) in
   let result =
-    List.map ~f:(fun d -> (d, List.map ~f:(Point.move p d) amounts)) turns
+    List.map ~f:(fun d -> (d, true, List.map ~f:(Point.move p d) amounts)) turns
   in
   (* Add in the forward direction which does not need to extend to the length *)
-  match d with None -> result | Some d -> (d, [ Point.move p d 1 ]) :: result
+  match d with
+  | None -> result
+  | Some d -> (d, false, [ Point.move p d 1 ]) :: result
 
 let neighbors (grid : Grid.t) (n : Node.t) (turn_resistance : int) :
-    (Direction.t * Point.t list) list =
+    (Direction.t * bool * Point.t list) list =
   let result =
     adjacent_line n.position turn_resistance (List.hd n.directions)
   in
-  List.filter ~f:(fun (_, ps) -> Hashtbl.mem grid (List.last_exn ps)) result
+  List.filter ~f:(fun (_, _, ps) -> Hashtbl.mem grid (List.last_exn ps)) result
 
 (* Based on: https://github.com/jamespwilliams/aoc2021/blob/master/15/ocaml/common.ml *)
 let dijkstra (grid : Grid.t) (start : Point.t) (target : Point.t)
@@ -61,16 +63,16 @@ let dijkstra (grid : Grid.t) (start : Point.t) (target : Point.t)
     | true -> e.weight
     | false ->
         List.iter
-          ~f:(fun ((d, ps) : Direction.t * Point.t list) ->
+          ~f:(fun ((d, is_turn, ps) : Direction.t * bool * Point.t list) ->
             let directions = List.init (List.length ps) ~f:(const d) in
             let next_directions =
-              List.take (directions @ e.node.directions) (allowed_repeats + 1)
+              if is_turn then directions else directions @ e.node.directions
             in
             let next_node : Node.t =
               { position = List.last_exn ps; directions = next_directions }
             in
             let distance = e.weight + get_heat ps in
-            let repeats = List.count ~f:(Direction.equal d) next_directions in
+            let repeats = List.length next_node.directions in
             if distance < get_distance next_node && repeats <= allowed_repeats
             then (
               Pairing_heap.add q { node = next_node; weight = distance };

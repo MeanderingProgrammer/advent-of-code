@@ -12,7 +12,7 @@ struct Node {
 }
 
 impl Node {
-    fn get_neighbors(&self, length: usize) -> Vec<(Direction, Vec<Point>)> {
+    fn get_neighbors(&self, length: usize) -> Vec<(Direction, bool, Vec<Point>)> {
         // Handle turning directions which must extend out to the specified length
         // Initially all directions are considered a turn, afterwards it is the
         // directions which are not straight or backwards
@@ -28,14 +28,14 @@ impl Node {
                 Direction::Left | Direction::Right => vec![Direction::Up, Direction::Down],
             },
         };
-        let mut neighbors: Vec<(Direction, Vec<Point>)> = turns
+        let mut neighbors: Vec<(Direction, bool, Vec<Point>)> = turns
             .into_iter()
             .map(|turn| {
                 let positions = (1..=length)
                     .into_iter()
                     .map(|i| self.position.step_n(&turn, i as i64))
                     .collect();
-                (turn, positions)
+                (turn, true, positions)
             })
             .collect();
         // Add in the forward direction which does not need to extend to the length
@@ -43,7 +43,7 @@ impl Node {
             None => (),
             Some(direction) => {
                 let position = self.position.step(direction);
-                neighbors.push((direction.clone(), vec![position]));
+                neighbors.push((direction.clone(), false, vec![position]));
             }
         };
         neighbors
@@ -78,20 +78,17 @@ impl Search {
             }
             node.get_neighbors(turn_resistance)
                 .into_iter()
-                .filter(|(_, positions)| self.grid.contains(positions.last().unwrap()))
-                .for_each(|(direction, positions)| {
+                .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
+                .for_each(|(direction, is_turn, positions)| {
                     let mut directions = vec![direction.clone(); positions.len()];
-                    directions.append(&mut node.directions.clone());
-                    let directions = directions.into_iter().take(allowed_repeats + 1).collect();
+                    if !is_turn {
+                        directions.append(&mut node.directions.clone());
+                    }
                     let next_node = Node {
                         position: positions.last().unwrap().clone(),
                         directions,
                     };
-                    let repeats = next_node
-                        .directions
-                        .iter()
-                        .filter(|next_direction| next_direction == &&direction)
-                        .count();
+                    let repeats = next_node.directions.len();
                     if repeats <= allowed_repeats && !seen.contains(&next_node) {
                         let heat: u32 = positions
                             .iter()
