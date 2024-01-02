@@ -12,16 +12,15 @@ struct PointGrid {
 
 impl PointGrid {
     fn new(points: Vec<Point>) -> Self {
-        let xs = points.iter().map(|point| point.x());
-        let x_bounds = (xs.clone().min().unwrap(), xs.clone().max().unwrap());
-
-        let ys = points.iter().map(|point| point.y());
-        let y_bounds = (ys.clone().min().unwrap(), ys.clone().max().unwrap());
+        let xs: Vec<i64> = points.iter().map(|point| point.x).collect();
+        let x_bounds = (*xs.iter().min().unwrap(), *xs.iter().max().unwrap());
+        let ys: Vec<i64> = points.iter().map(|point| point.y).collect();
+        let y_bounds = (*ys.iter().min().unwrap(), *ys.iter().max().unwrap());
 
         let mut distances = HashMap::new();
         for x in x_bounds.0..=x_bounds.1 {
             for y in y_bounds.0..=y_bounds.1 {
-                let start = Point::new_2d(x, y);
+                let start = Point::new(x, y);
                 let mut from_start = HashMap::new();
                 for end in &points {
                     from_start.insert(end.clone(), start.manhattan_distance(end));
@@ -73,10 +72,10 @@ impl PointGrid {
 
     fn finite(&self, cluster: &Vec<Point>) -> bool {
         cluster.iter().all(|point| {
-            self.x_bounds.0 != point.x()
-                && self.x_bounds.1 != point.x()
-                && self.y_bounds.0 != point.y()
-                && self.y_bounds.1 != point.y()
+            self.x_bounds.0 != point.x
+                && self.x_bounds.1 != point.x
+                && self.y_bounds.0 != point.y
+                && self.y_bounds.1 != point.y
         })
     }
 
@@ -91,7 +90,8 @@ impl PointGrid {
 }
 
 fn main() {
-    let point_grid = PointGrid::new(reader::read_points());
+    let points: Vec<Point> = reader::read(|line| line.parse().unwrap());
+    let point_grid = PointGrid::new(points);
     answer::part1(3251, point_grid.largest_finite());
     answer::part2(47841, point_grid.within_distance(10_000));
 }

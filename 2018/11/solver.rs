@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::point::Point;
+use aoc_lib::point::{Point, Point3d};
 use aoc_lib::reader;
 use std::collections::HashMap;
 
@@ -48,7 +48,7 @@ impl PowerGrid {
         Self { size, grid }
     }
 
-    fn get_largest_size(&self) -> Point {
+    fn get_largest_size(&self) -> Point3d {
         let mut result = (0, 0, 0, 0);
         for sub_grid_size in 1..self.size {
             let largest = self.get_largest(sub_grid_size);
@@ -56,7 +56,7 @@ impl PowerGrid {
                 result = (largest.0, largest.1, largest.2, sub_grid_size);
             }
         }
-        Point::new_3d(result.0, result.1, result.3)
+        Point3d::new(result.0, result.1, result.3)
     }
 
     fn get_largest(&self, size: i64) -> (i64, i64, i64) {
@@ -90,9 +90,6 @@ fn main() {
     let values = reader::read_int();
     let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);
-    answer::part1(
-        Point::new_2d(243, 43),
-        Point::new_2d(largest_3.0, largest_3.1),
-    );
-    answer::part2(Point::new_3d(236, 151, 15), power_grid.get_largest_size());
+    answer::part1(Point::new(243, 43), Point::new(largest_3.0, largest_3.1));
+    answer::part2(Point3d::new(236, 151, 15), power_grid.get_largest_size());
 }

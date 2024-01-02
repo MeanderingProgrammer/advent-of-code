@@ -1,35 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
+use aoc_lib::point::Point;
 use aoc_lib::reader;
 use priority_queue::DoublePriorityQueue;
-use std::cmp::Ordering;
 use std::collections::HashMap;
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Point(i16, i16);
-
-impl Ord for Point {
-    fn cmp(&self, other: &Self) -> Ordering {
-        (self.1, self.0).cmp(&(other.1, other.0))
-    }
-}
-
-impl PartialOrd for Point {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Point {
-    fn neighbors(&self) -> Vec<Self> {
-        vec![
-            Self(self.0 + 1, self.1),
-            Self(self.0 - 1, self.1),
-            Self(self.0, self.1 + 1),
-            Self(self.0, self.1 - 1),
-        ]
-    }
-}
 
 #[derive(Debug, Clone, PartialEq)]
 enum Team {
@@ -230,7 +204,7 @@ fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
     fn from_grid(grid: &Grid<char>, value: char) -> Vec<Point> {
         grid.points_with_value(value)
             .into_iter()
-            .map(|point| Point(point.x() as i16, point.y() as i16))
+            .map(|point| point.clone())
             .collect()
     }
     let grid = reader::read_grid(|ch| Some(ch));

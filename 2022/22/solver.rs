@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
+use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
 use nom::{
     bytes::complete::tag,
@@ -83,9 +83,9 @@ impl Cube {
                 current.relative = next_relative_position;
             }
         } else {
-            next_relative_position = Point::new_2d(
-                (next_relative_position.x() + self.size) % self.size,
-                (next_relative_position.y() + self.size) % self.size,
+            next_relative_position = Point::new(
+                (next_relative_position.x + self.size) % self.size,
+                (next_relative_position.y + self.size) % self.size,
             );
             let mut next_direction = current.direction.clone();
 
@@ -94,11 +94,11 @@ impl Cube {
                 .unwrap()
                 .get_edge(&current.direction);
             for _ in 0..edge.rotations {
-                next_relative_position = Point::new_2d(
-                    self.size - next_relative_position.y() - 1,
-                    next_relative_position.x(),
+                next_relative_position = Point::new(
+                    self.size - next_relative_position.y - 1,
+                    next_relative_position.x,
                 );
-                next_direction = next_direction.turn(&Turn::Right);
+                next_direction = Turn::Right.turn(&next_direction);
             }
 
             if self.legal(&edge.block.absolute(self.size, &next_relative_position)) {
@@ -110,7 +110,7 @@ impl Cube {
     }
 
     fn in_relative_bounds(&self, position: &Point) -> bool {
-        let (x, y) = (position.x(), position.y());
+        let (x, y) = (position.x, position.y);
         x >= 0 && x < self.size && y >= 0 && y < self.size
     }
 
@@ -125,33 +125,21 @@ enum Turn {
     Left,
 }
 
+impl Turn {
+    fn turn(&self, direction: &Direction) -> Direction {
+        match (direction, self) {
+            (Direction::Up, Self::Left) | (Direction::Down, Self::Right) => Direction::Left,
+            (Direction::Up, Self::Right) | (Direction::Down, Self::Left) => Direction::Right,
+            (Direction::Right, Self::Left) | (Direction::Left, Self::Right) => Direction::Up,
+            (Direction::Right, Self::Right) | (Direction::Left, Self::Left) => Direction::Down,
+        }
+    }
+}
+
 #[derive(Debug)]
 enum Instruction {
     Move(i64),
     Turn(Turn),
-}
-
-#[derive(Debug, Clone)]
-enum Direction {
-    Right,
-    Down,
-    Left,
-    Up,
-}
-
-impl Direction {
-    fn turn(&self, turn: &Turn) -> Self {
-        match (self, turn) {
-            (Self::Up, Turn::Left) => Self::Left,
-            (Self::Up, Turn::Right) => Self::Right,
-            (Self::Right, Turn::Left) => Self::Up,
-            (Self::Right, Turn::Right) => Self::Down,
-            (Self::Down, Turn::Left) => Self::Right,
-            (Self::Down, Turn::Right) => Self::Left,
-            (Self::Left, Turn::Left) => Self::Down,
-            (Self::Left, Turn::Right) => Self::Up,
-        }
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -191,11 +179,11 @@ impl Block {
             Self::E => (1, 2),
             Self::F => (0, 3),
         };
-        Point::new_2d(col * size, row * size)
+        Point::new(col * size, row * size)
     }
 
     fn absolute(&self, size: i64, relative: &Point) -> Point {
-        self.top_left(size).add_x(relative.x()).add_y(relative.y())
+        self.top_left(size).add(relative.x, relative.y)
     }
 }
 
@@ -213,24 +201,19 @@ impl State {
         Self {
             block: Block::A,
             size: cube.size,
-            relative: Point::new_2d(0, 0),
+            relative: Point::new(0, 0),
             direction: Direction::Right,
         }
     }
 
     fn next(&self) -> Point {
-        match self.direction {
-            Direction::Up => self.relative.add_y(-1),
-            Direction::Right => self.relative.add_x(1),
-            Direction::Down => self.relative.add_y(1),
-            Direction::Left => self.relative.add_x(-1),
-        }
+        self.relative.step(&self.direction)
     }
 
     fn score(&self) -> i64 {
         let position = self.block.absolute(self.size, &self.relative);
-        let row_score = (position.y() + 1) * 1_000;
-        let column_score = (position.x() + 1) * 4;
+        let row_score = (position.y + 1) * 1_000;
+        let column_score = (position.x + 1) * 4;
         let direction_score = match self.direction {
             Direction::Right => 0,
             Direction::Down => 1,
@@ -287,7 +270,7 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
                 }
             }
             Instruction::Turn(turn) => {
-                state.direction = state.direction.turn(turn);
+                state.direction = turn.turn(&state.direction);
             }
         }
     }
@@ -350,7 +333,7 @@ fn parse_instructions(line: &str) -> Vec<Instruction> {
         .map(|part| match part {
             "L" => Instruction::Turn(Turn::Left),
             "R" => Instruction::Turn(Turn::Right),
-            amount => Instruction::Move(amount.parse::<i64>().unwrap()),
+            amount => Instruction::Move(amount.parse().unwrap()),
         })
         .collect()
 }
