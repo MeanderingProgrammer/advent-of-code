@@ -1,3 +1,5 @@
 {
-  "extraPaths": ["commons/python"]
+    "extraPaths": [
+        "commons/python"
+    ]
 }
