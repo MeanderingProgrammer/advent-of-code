@@ -15,12 +15,14 @@ let get_neighbors (grid : Grid.t) (len : int) (p : Point.t) =
   let neighbors = List.filter ~f:(valid_neighbor grid len) neighbors in
   Types.PointSet.of_list neighbors
 
-let step (grid : Grid.t) (len : int) current =
+let step (grid : Grid.t) (len : int) (current : Types.PointSet.t) :
+    Types.PointSet.t =
   Set.fold ~init:Types.PointSet.empty
     ~f:(fun acc x -> Set.union acc (get_neighbors grid len x))
     current
 
-let rec step_n (grid : Grid.t) (len : int) (n : int) current =
+let rec step_n (grid : Grid.t) (len : int) (n : int)
+    (current : Types.PointSet.t) : int * Types.PointSet.t =
   match Int.equal n 0 with
   | true -> (Set.length current, current)
   | false -> step_n grid len (n - 1) (step grid len current)
