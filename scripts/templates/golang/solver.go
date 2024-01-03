@@ -1,13 +1,13 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
 	"fmt"
 )
 
 func main() {
-	data := files.ReadLines()
+	data := file.ReadLines()
 	fmt.Println(data)
-	answers.Part1(1, 1)
+	answer.Part1(1, 1)
 }

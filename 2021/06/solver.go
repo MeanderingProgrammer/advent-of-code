@@ -1,16 +1,15 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 )
 
 type School map[int]int
 
 func (school *School) runDay() {
 	nextSchool := make(map[int]int)
-
 	for counter, numFish := range *school {
 		if counter == 0 {
 			nextSchool[6] += numFish
@@ -19,7 +18,6 @@ func (school *School) runDay() {
 			nextSchool[counter-1] += numFish
 		}
 	}
-
 	*school = nextSchool
 }
 
@@ -32,8 +30,8 @@ func (school School) totalFish() int {
 }
 
 func main() {
-	answers.Part1(345793, fishAfter(80))
-	answers.Part2(1572643095893, fishAfter(256))
+	answer.Part1(345793, fishAfter(80))
+	answer.Part2(1572643095893, fishAfter(256))
 }
 
 func fishAfter(days int) int {
@@ -46,8 +44,8 @@ func fishAfter(days int) int {
 
 func getSchool() School {
 	school := make(map[int]int)
-	fishes := parsers.SubstringAfter(files.Content(), ": ")
-	for _, fish := range parsers.IntCsv(fishes) {
+	fishes := util.SubstringAfter(file.Content(), ": ")
+	for _, fish := range util.IntCsv(fishes) {
 		school[fish]++
 	}
 	return school

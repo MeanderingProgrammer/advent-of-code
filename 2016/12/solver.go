@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -25,7 +25,7 @@ func (c *Computer) get(register string) int {
 	if ok {
 		return value
 	} else {
-		return conversions.ToInt(register)
+		return util.ToInt(register)
 	}
 }
 
@@ -79,9 +79,9 @@ func (i *Jump) run(computer *Computer) int {
 }
 
 func main() {
-	instructions := files.Read(parseInstruction)
-	answers.Part1(318117, run(instructions, false))
-	answers.Part2(9227771, run(instructions, true))
+	instructions := file.Read(parseInstruction)
+	answer.Part1(318117, run(instructions, false))
+	answer.Part2(9227771, run(instructions, true))
 }
 
 func run(instructions []Instruction, ignite bool) int {
@@ -114,7 +114,7 @@ func parseInstruction(line string) Instruction {
 	} else if op == "jnz" {
 		return &Jump{
 			register: parts[1],
-			value:    conversions.ToInt(parts[2]),
+			value:    util.ToInt(parts[2]),
 		}
 	} else {
 		panic("Unknown operation: " + op)

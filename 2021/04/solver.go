@@ -1,9 +1,12 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/util"
 )
 
 type Boards []*Board
@@ -32,8 +35,8 @@ func (boards Boards) incomplete() Boards {
 }
 
 type Board struct {
-	grid     parsers.Grid[int]
-	marked   map[parsers.Point]bool
+	grid     grid.Grid[int]
+	marked   map[point.Point]bool
 	order    []int
 	complete bool
 }
@@ -43,19 +46,19 @@ func (board *Board) mark(value int) {
 	if len(points) != 1 {
 		return
 	}
-	point := points[0]
+	p := points[0]
 
-	board.marked[point] = true
+	board.marked[p] = true
 	board.order = append(board.order, value)
 
-	rowComplete := board.isComplete(point, func(p parsers.Point) int { return p.Y })
-	columnComplete := board.isComplete(point, func(p parsers.Point) int { return p.X })
+	rowComplete := board.isComplete(p, func(p point.Point) int { return p.Y })
+	columnComplete := board.isComplete(p, func(p point.Point) int { return p.X })
 	if rowComplete || columnComplete {
 		board.complete = true
 	}
 }
 
-func (board Board) isComplete(targetPoint parsers.Point, f func(parsers.Point) int) bool {
+func (board Board) isComplete(targetPoint point.Point, f func(point.Point) int) bool {
 	targetCoord := f(targetPoint)
 	for _, point := range board.grid.Points() {
 		if f(point) == targetCoord && !board.marked[point] {
@@ -80,27 +83,27 @@ func main() {
 	order, boards := getData()
 
 	scores := boards.runToComplete(order)
-	answers.Part1(44088, scores[0])
-	answers.Part2(23670, scores[len(scores)-1])
+	answer.Part1(44088, scores[0])
+	answer.Part2(23670, scores[len(scores)-1])
 }
 
 func getData() ([]int, Boards) {
-	orderBoards := files.ReadGroups()
-	return parsers.IntCsv(orderBoards[0]), parseBoards(orderBoards[1:])
+	orderBoards := file.ReadGroups()
+	return util.IntCsv(orderBoards[0]), parseBoards(orderBoards[1:])
 }
 
 func parseBoards(boards []string) Boards {
 	var result Boards
 	for _, board := range boards {
-		grid := parsers.GridMaker[int]{
-			Rows:        parsers.Lines(board),
-			Splitter:    parsers.Field,
+		grid := parser.GridMaker[int]{
+			Rows:        util.Lines(board),
+			Splitter:    parser.Field,
 			Ignore:      "",
-			Transformer: parsers.ToInt,
+			Transformer: parser.ToInt,
 		}.Construct()
 		board := Board{
 			grid:     grid,
-			marked:   make(map[parsers.Point]bool),
+			marked:   make(map[point.Point]bool),
 			order:    nil,
 			complete: false,
 		}

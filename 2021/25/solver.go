@@ -1,9 +1,11 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
 	"fmt"
 )
 
@@ -14,7 +16,7 @@ const (
 	South Cucumber = "v"
 )
 
-func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
+func (cucumber Cucumber) target(start point.Point) point.Point {
 	switch cucumber {
 	case East:
 		return start.Add(1, 0)
@@ -26,12 +28,12 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 }
 
 type Grid struct {
-	parsers.Grid[Cucumber]
+	grid.Grid[Cucumber]
 }
 
 type Move struct {
-	start parsers.Point
-	end   parsers.Point
+	start point.Point
+	end   point.Point
 }
 
 func (grid Grid) untilStop() int {
@@ -75,15 +77,15 @@ func (grid Grid) move(toMove Cucumber) bool {
 }
 
 func main() {
-	answers.Part1(492, getGrid().untilStop())
+	answer.Part1(492, getGrid().untilStop())
 }
 
 func getGrid() Grid {
-	grid := parsers.GridMaker[Cucumber]{
-		Rows:     files.ReadLines(),
-		Splitter: parsers.Character,
+	grid := parser.GridMaker[Cucumber]{
+		Rows:     file.ReadLines(),
+		Splitter: parser.Character,
 		Ignore:   ".",
-		Transformer: func(point parsers.Point, value string) Cucumber {
+		Transformer: func(point point.Point, value string) Cucumber {
 			return Cucumber(value)
 		},
 	}.Construct()

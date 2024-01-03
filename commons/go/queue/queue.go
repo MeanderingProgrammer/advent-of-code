@@ -1,4 +1,4 @@
-package graphs
+package queue
 
 import (
 	"container/heap"

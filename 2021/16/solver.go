@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -79,9 +79,8 @@ func (packet Packet) calculateSubPacket(index int) int {
 func main() {
 	packets, _ := parsePackets(getData(), -1)
 	packet := packets[0]
-
-	answers.Part1(929, packet.versionSum())
-	answers.Part2(911945136934, packet.calculate())
+	answer.Part1(929, packet.versionSum())
+	answer.Part2(911945136934, packet.calculate())
 }
 
 func parsePackets(packets string, max int) ([]Packet, int) {
@@ -95,13 +94,13 @@ func parsePackets(packets string, max int) ([]Packet, int) {
 			packet.value = value
 			i = newIndex
 		} else if packets[i] == '0' {
-			length := conversions.BinaryToDecimal(packets[i+1 : i+16])
+			length := util.BinaryToDecimal(packets[i+1 : i+16])
 			i += 16
 			subPackets, _ := parsePackets(packets[i:i+length], -1)
 			packet.subPackets = subPackets
 			i += length
 		} else {
-			length := conversions.BinaryToDecimal(packets[i+1 : i+12])
+			length := util.BinaryToDecimal(packets[i+1 : i+12])
 			i += 12
 			subPackets, bitsParsed := parsePackets(packets[i:], length)
 			packet.subPackets = subPackets
@@ -114,8 +113,8 @@ func parsePackets(packets string, max int) ([]Packet, int) {
 
 func getHeader(packets string, i int) Packet {
 	return Packet{
-		version:    conversions.BinaryToDecimal(packets[i : i+3]),
-		packetType: conversions.BinaryToDecimal(packets[i+3 : i+6]),
+		version:    util.BinaryToDecimal(packets[i : i+3]),
+		packetType: util.BinaryToDecimal(packets[i+3 : i+6]),
 	}
 }
 
@@ -126,15 +125,15 @@ func pullType4Number(packets string, i int) (int, int) {
 		i += 5
 	}
 	number.WriteString(packets[i+1 : i+5])
-	return conversions.BinaryToDecimal(number.String()), i + 5
+	return util.BinaryToDecimal(number.String()), i + 5
 }
 
 func getData() string {
 	var packets strings.Builder
-	for _, hex := range files.Content() {
+	for _, hex := range file.Content() {
 		hexadecimal := string(hex)
-		decimal := conversions.HexToDecimal(hexadecimal)
-		binary := conversions.DecimalToBinary(decimal)
+		decimal := util.HexToDecimal(hexadecimal)
+		binary := util.DecimalToBinary(decimal)
 		for i := 0; i < 4-len(binary); i++ {
 			packets.WriteString("0")
 		}

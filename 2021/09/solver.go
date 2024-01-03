@@ -1,45 +1,47 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/util"
 	"sort"
 )
 
-type Points []parsers.Point
+type Points []point.Point
 
-func (points Points) contains(point parsers.Point) bool {
+func (points Points) contains(p point.Point) bool {
 	for _, contained := range points {
-		if contained == point {
+		if contained == p {
 			return true
 		}
 	}
 	return false
 }
 
-func (points Points) riskLevel(grid Grid) int {
+func (points Points) riskLevel(g Grid) int {
 	result := 0
 	for _, point := range points {
-		result += grid.Get(point) + 1
+		result += g.Get(point) + 1
 	}
 	return result
 }
 
-func (points Points) basinSizes(grid Grid) []int {
+func (points Points) basinSizes(g Grid) []int {
 	var basinSizes []int
 	for _, point := range points {
-		basinSizes = append(basinSizes, basinSize(grid, point))
+		basinSizes = append(basinSizes, basinSize(g, point))
 	}
 	return basinSizes
 }
 
-func basinSize(grid Grid, point parsers.Point) int {
-	basin := Points{point}
+func basinSize(g Grid, p point.Point) int {
+	basin := Points{p}
 	for i := 0; i < len(basin); i++ {
 		for _, adjacent := range basin[i].Adjacent() {
-			if grid.Contains(adjacent) && grid.Get(adjacent) < 9 && !basin.contains(adjacent) {
+			if g.Contains(adjacent) && g.Get(adjacent) < 9 && !basin.contains(adjacent) {
 				basin = append(basin, adjacent)
 			}
 		}
@@ -48,39 +50,39 @@ func basinSize(grid Grid, point parsers.Point) int {
 }
 
 type Grid struct {
-	parsers.Grid[int]
+	grid.Grid[int]
 }
 
-func (grid Grid) minimums() Points {
-	isMinimum := func(point parsers.Point) bool {
-		value := grid.Get(point)
-		for _, adjacent := range point.Adjacent() {
-			if grid.Contains(adjacent) && grid.Get(adjacent) <= value {
+func (g Grid) minimums() Points {
+	isMinimum := func(p point.Point) bool {
+		value := g.Get(p)
+		for _, adjacent := range p.Adjacent() {
+			if g.Contains(adjacent) && g.Get(adjacent) <= value {
 				return false
 			}
 		}
 		return true
 	}
-	return utils.Filter(grid.Points(), isMinimum)
+	return util.Filter(g.Points(), isMinimum)
 }
 
 func main() {
 	grid := getGrid()
 
 	minimums := grid.minimums()
-	answers.Part1(506, minimums.riskLevel(grid))
+	answer.Part1(506, minimums.riskLevel(grid))
 
 	basinSizes := minimums.basinSizes(grid)
 	sort.Sort(sort.Reverse(sort.IntSlice(basinSizes)))
-	answers.Part2(931200, basinSizes[0]*basinSizes[1]*basinSizes[2])
+	answer.Part2(931200, basinSizes[0]*basinSizes[1]*basinSizes[2])
 }
 
 func getGrid() Grid {
-	grid := parsers.GridMaker[int]{
-		Rows:        files.ReadLines(),
-		Splitter:    parsers.Character,
+	grid := parser.GridMaker[int]{
+		Rows:        file.ReadLines(),
+		Splitter:    parser.Character,
 		Ignore:      "",
-		Transformer: parsers.ToInt,
+		Transformer: parser.ToInt,
 	}.Construct()
 	return Grid{grid}
 }

@@ -1,8 +1,7 @@
-package files
+package file
 
 import (
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/util"
 	"flag"
 	"os"
 	"runtime"
@@ -17,10 +16,7 @@ func init() {
 }
 
 func ReadInt() []int {
-	toInt := func(line string) int {
-		return conversions.ToInt(line)
-	}
-	return Read(toInt)
+	return Read(util.ToInt)
 }
 
 func Read[T any](f func(string) T) []T {
@@ -47,7 +43,7 @@ func Content() string {
 	year, day := getYearDay()
 	filepath := []string{year, day, fileName()}
 	content, err := os.ReadFile(strings.Join(filepath, "/"))
-	utils.CheckError(err)
+	util.CheckError(err)
 	return strings.ReplaceAll(string(content), "\r\n", "\n")
 }
 

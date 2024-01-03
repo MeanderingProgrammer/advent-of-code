@@ -1,11 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -26,7 +24,7 @@ func (number *SnailNumber) isLeaf() bool {
 
 func (number *SnailNumber) toString() string {
 	if number.isLeaf() {
-		return conversions.ToString(number.value)
+		return util.ToString(number.value)
 	} else {
 		var result strings.Builder
 		result.WriteString("[")
@@ -159,10 +157,9 @@ func (number *SnailNumber) magnitude() int {
 }
 
 func main() {
-	numbers := files.ReadLines()
-
-	answers.Part1(3892, sumAll(numbers))
-	answers.Part2(4909, sumAny(numbers))
+	numbers := file.ReadLines()
+	answer.Part1(3892, sumAll(numbers))
+	answer.Part2(4909, sumAny(numbers))
 }
 
 func sumAll(numbers []string) int {
@@ -174,16 +171,16 @@ func sumAll(numbers []string) int {
 }
 
 func sumAny(numbers []string) int {
-	max := 0
+	result := 0
 	for i, v1 := range numbers {
 		for j, v2 := range numbers {
 			if i != j {
 				sum := parse(v1, nil).add(parse(v2, nil))
-				max = utils.Max(max, sum.magnitude())
+				result = util.Max(result, sum.magnitude())
 			}
 		}
 	}
-	return max
+	return result
 }
 
 func parse(rawNumber string, parent *SnailNumber) *SnailNumber {
@@ -191,11 +188,11 @@ func parse(rawNumber string, parent *SnailNumber) *SnailNumber {
 	result.parent = parent
 	if rawNumber[0] == '[' {
 		unnested := rawNumber[1 : len(rawNumber)-1]
-		left, right := parsers.SplitAt(unnested, getSplit(unnested))
+		left, right := util.SplitAt(unnested, getSplit(unnested))
 		result.left = parse(left, &result)
 		result.right = parse(right, &result)
 	} else {
-		result.value = conversions.ToInt(rawNumber)
+		result.value = util.ToInt(rawNumber)
 	}
 	return &result
 }

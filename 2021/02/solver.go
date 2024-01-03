@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -42,9 +42,8 @@ func (instructions Instructions) follow(f func(*Position, int, Direction)) int {
 
 func main() {
 	instructions := getInstructions()
-
-	answers.Part1(1459206, instructions.follow(part1))
-	answers.Part2(1320534480, instructions.follow(part2))
+	answer.Part1(1459206, instructions.follow(part1))
+	answer.Part2(1320534480, instructions.follow(part2))
 }
 
 func getInstructions() Instructions {
@@ -52,10 +51,10 @@ func getInstructions() Instructions {
 		parts := strings.Fields(line)
 		return Instruction{
 			direction: Direction(parts[0]),
-			amount:    conversions.ToInt(parts[1]),
+			amount:    util.ToInt(parts[1]),
 		}
 	}
-	return files.Read(toInstruction)
+	return file.Read(toInstruction)
 }
 
 func part1(position *Position, amount int, direction Direction) {
