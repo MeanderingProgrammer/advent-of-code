@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
+use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader;
 
 #[derive(Debug)]
@@ -25,9 +25,9 @@ impl SandFlow {
     fn drop_grain(&mut self) -> bool {
         let mut grain = self.start.clone();
         while grain.y < self.max_height {
-            let next = vec![(0, 1), (-1, 1), (1, 1)]
+            let next = vec![Heading::South, Heading::SouthWest, Heading::SouthEast]
                 .into_iter()
-                .map(|(x, y)| grain.add(x, y))
+                .map(|heading| &grain + &heading)
                 .filter(|point| !self.grid.contains(&point))
                 .next();
             if next.is_none() {

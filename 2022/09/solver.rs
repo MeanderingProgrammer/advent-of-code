@@ -44,7 +44,7 @@ fn follow_trail(motions: &Vec<Motion>, length: usize) -> usize {
 
     motions.iter().for_each(|motion| {
         for _ in 0..motion.amount {
-            rope[0] = rope[0].step(&motion.direction);
+            rope[0] = &rope[0] + &motion.direction;
             for i in 0..(rope.len() - 1) {
                 rope[i + 1] = adjust_trail(&rope[i], &rope[i + 1]);
             }
@@ -59,7 +59,7 @@ fn adjust_trail(front: &Point, back: &Point) -> Point {
     if front.distance(back) < 2.0 {
         back.clone()
     } else {
-        back.add(
+        back + &Point::new(
             get_adjustment(back.x, front.x),
             get_adjustment(back.y, front.y),
         )

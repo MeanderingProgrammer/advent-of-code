@@ -79,13 +79,13 @@ impl SeatingChart {
     }
 
     fn explore_direction(&self, p: &Point, heading: &Heading) -> Option<&Seat> {
-        let mut point = p.head(heading);
+        let mut point = p + heading;
         let mut seat = self.chart.get_or(&point);
         if !self.look {
             seat
         } else {
             while seat == Some(&Seat::Floor) {
-                point = point.head(heading);
+                point = &point + heading;
                 seat = self.chart.get_or(&point);
             }
             seat

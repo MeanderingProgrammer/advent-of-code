@@ -45,11 +45,11 @@ fn main() {
             Direction::Forward => {
                 // X (horizontal) works the same way in parts 1 & 2
                 // Y is used for part 2 depth and unused by part 1
-                p = p.add(instruction.amount, p.z * instruction.amount, 0);
+                p = &p + &Point3d::new(instruction.amount, p.z * instruction.amount, 0);
             }
             // Z functions as depth for part 1 & aim for part 2
-            Direction::Down => p = p.add(0, 0, instruction.amount),
-            Direction::Up => p = p.add(0, 0, -instruction.amount),
+            Direction::Down => p = &p + &Point3d::new(0, 0, instruction.amount),
+            Direction::Up => p = &p + &Point3d::new(0, 0, -instruction.amount),
         }
     });
 
