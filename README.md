@@ -214,7 +214,6 @@ a_graph \
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
 | 2016 | 14  | 1.664   | Go       | Already batched implementation of md5                   |
 | 2019 | 23  | 1.621   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
-| 2019 | 24  | 1.607   | Python   | Game of life problem, optimized by using tuples         |
 | 2018 | 15  | 1.509   | Rust     | Complex game state with path finding between characters |
 | 2021 | 12  | 1.490   | Go       | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | Rust     | Dealing with large space, already in Rust               |
