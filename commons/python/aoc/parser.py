@@ -18,8 +18,9 @@ class Parser:
             args = parser.parse_args()
             return "sample" if args.test else "data"
 
+        year, day = sys.path[0].split("/")[-2:]
         file_name = self.file_name or get_file_name()
-        file_path = "{}/{}.txt".format(sys.path[0], file_name)
+        file_path = f"data/{year}/{day}/{file_name}.txt"
         with open(file_path, "r") as f:
             data = f.read()
         if self.strip:

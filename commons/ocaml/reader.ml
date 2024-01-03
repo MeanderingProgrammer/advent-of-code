@@ -14,7 +14,7 @@ let get_filename () =
 let get_filepath () =
   let year, day = get_year_day (Sys.get_argv ()).(0) in
   let filename = get_filename () in
-  String.concat ~sep:"/" [ year; day; filename ^ ".txt" ]
+  String.concat ~sep:"/" [ "data"; year; day; filename ^ ".txt" ]
 
 let read () : string =
   let filepath = get_filepath () in
