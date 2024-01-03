@@ -1,11 +1,12 @@
 import subprocess
-from typing import Optional
 
 
-def execute(command: list[str]) -> Optional[str]:
+def execute(command: list[str]) -> None:
     if len(command) == 0:
         return None
     result = subprocess.run(command, stderr=subprocess.PIPE)
     if result.returncode != 0:
-        return result.stderr.decode()
+        error_message = result.stderr.decode()
+        print(error_message)
+        exit(1)
     return None
