@@ -13,12 +13,7 @@ import (
 type Points []point.Point
 
 func (points Points) contains(p point.Point) bool {
-	for _, contained := range points {
-		if contained == p {
-			return true
-		}
-	}
-	return false
+	return util.Contains(points, p)
 }
 
 func (points Points) riskLevel(g Grid) int {
