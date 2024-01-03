@@ -31,7 +31,7 @@ impl FallingShape {
         self.shape
             .locations
             .iter()
-            .map(|point| point.add(self.anchor.x, self.anchor.y))
+            .map(|point| point + &self.anchor)
             .collect()
     }
 
@@ -45,7 +45,7 @@ impl FallingShape {
 
     fn go(&self, direction: &Direction) -> Self {
         Self {
-            anchor: self.anchor.step(direction),
+            anchor: &self.anchor + direction,
             shape: self.shape.clone(),
         }
     }

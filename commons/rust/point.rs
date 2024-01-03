@@ -1,13 +1,26 @@
 use std::cmp::Ordering;
+use std::ops::{Add, Mul};
 use std::str::FromStr;
+use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, EnumIter, Clone, PartialEq, Eq, Hash)]
 pub enum Direction {
     Up,
     Down,
     Left,
     Right,
+}
+
+impl Direction {
+    pub fn to_point(&self) -> Point {
+        match self {
+            Self::Up => Point::new(0, -1),
+            Self::Down => Point::new(0, 1),
+            Self::Left => Point::new(-1, 0),
+            Self::Right => Point::new(1, 0),
+        }
+    }
 }
 
 #[derive(Debug, EnumIter)]
@@ -20,6 +33,21 @@ pub enum Heading {
     NorthWest,
     South,
     North,
+}
+
+impl Heading {
+    pub fn to_point(&self) -> Point {
+        match self {
+            Self::SouthEast => Point::new(1, 1),
+            Self::East => Point::new(1, 0),
+            Self::NorthEast => Point::new(1, -1),
+            Self::SouthWest => Point::new(-1, 1),
+            Self::West => Point::new(-1, 0),
+            Self::NorthWest => Point::new(-1, -1),
+            Self::South => Point::new(0, 1),
+            Self::North => Point::new(0, -1),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
@@ -62,64 +90,55 @@ impl PartialOrd for Point {
     }
 }
 
+impl Add for &Point {
+    type Output = Point;
+
+    fn add(self, rhs: &Point) -> Point {
+        Point {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+impl Add<&Direction> for &Point {
+    type Output = Point;
+
+    fn add(self, rhs: &Direction) -> Point {
+        self + &rhs.to_point()
+    }
+}
+
+impl Add<&Heading> for &Point {
+    type Output = Point;
+
+    fn add(self, rhs: &Heading) -> Point {
+        self + &rhs.to_point()
+    }
+}
+
+impl Mul<i64> for &Point {
+    type Output = Point;
+
+    fn mul(self, rhs: i64) -> Point {
+        Point {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
+    }
+}
+
 impl Point {
     pub fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 
-    pub fn add(&self, dx: i64, dy: i64) -> Self {
-        Self {
-            x: self.x + dx,
-            y: self.y + dy,
-        }
-    }
-
-    pub fn step_n(&self, direction: &Direction, n: i64) -> Self {
-        match direction {
-            Direction::Up => self.add(0, -n),
-            Direction::Down => self.add(0, n),
-            Direction::Left => self.add(-n, 0),
-            Direction::Right => self.add(n, 0),
-        }
-    }
-
-    pub fn step(&self, direction: &Direction) -> Self {
-        self.step_n(direction, 1)
-    }
-
     pub fn neighbors(&self) -> Vec<Self> {
-        vec![
-            self.add(0, -1),
-            self.add(0, 1),
-            self.add(-1, 0),
-            self.add(1, 0),
-        ]
-    }
-
-    pub fn head(&self, heading: &Heading) -> Self {
-        match heading {
-            Heading::SouthEast => self.add(1, 1),
-            Heading::East => self.add(1, 0),
-            Heading::NorthEast => self.add(1, -1),
-            Heading::SouthWest => self.add(-1, 1),
-            Heading::West => self.add(-1, 0),
-            Heading::NorthWest => self.add(-1, -1),
-            Heading::South => self.add(0, 1),
-            Heading::North => self.add(0, -1),
-        }
+        Direction::iter().map(|dir| self + &dir).collect()
     }
 
     pub fn diagonal_neighbors(&self) -> Vec<Self> {
-        vec![
-            self.add(1, 1),
-            self.add(1, 0),
-            self.add(1, -1),
-            self.add(-1, 1),
-            self.add(-1, 0),
-            self.add(-1, -1),
-            self.add(0, 1),
-            self.add(0, -1),
-        ]
+        Heading::iter().map(|heading| self + &heading).collect()
     }
 
     pub fn distance(&self, other: &Self) -> f64 {
@@ -129,6 +148,29 @@ impl Point {
 
     pub fn manhattan_distance(&self, other: &Self) -> i64 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+}
+
+#[derive(Debug, EnumIter)]
+pub enum Direction3d {
+    Up,
+    Down,
+    Left,
+    Right,
+    Forward,
+    Backward,
+}
+
+impl Direction3d {
+    pub fn to_point(&self) -> Point3d {
+        match self {
+            Self::Up => Point3d::new(0, 0, 1),
+            Self::Down => Point3d::new(0, 0, -1),
+            Self::Forward => Point3d::new(0, 1, 0),
+            Self::Backward => Point3d::new(0, -1, 0),
+            Self::Left => Point3d::new(-1, 0, 0),
+            Self::Right => Point3d::new(1, 0, 0),
+        }
     }
 }
 
@@ -161,27 +203,32 @@ impl ToString for Point3d {
     }
 }
 
+impl Add for &Point3d {
+    type Output = Point3d;
+
+    fn add(self, rhs: &Point3d) -> Point3d {
+        Point3d {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl Add<&Direction3d> for &Point3d {
+    type Output = Point3d;
+
+    fn add(self, rhs: &Direction3d) -> Point3d {
+        self + &rhs.to_point()
+    }
+}
+
 impl Point3d {
     pub fn new(x: i64, y: i64, z: i64) -> Self {
         Self { x, y, z }
     }
 
-    pub fn add(&self, dx: i64, dy: i64, dz: i64) -> Self {
-        Self {
-            x: self.x + dx,
-            y: self.y + dy,
-            z: self.z + dz,
-        }
-    }
-
     pub fn neighbors(&self) -> Vec<Self> {
-        vec![
-            self.add(1, 0, 0),
-            self.add(-1, 0, 0),
-            self.add(0, 1, 0),
-            self.add(0, -1, 0),
-            self.add(0, 0, 1),
-            self.add(0, 0, -1),
-        ]
+        Direction3d::iter().map(|dir| self + &dir).collect()
     }
 }

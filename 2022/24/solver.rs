@@ -23,7 +23,7 @@ struct Blizzard {
 
 impl Blizzard {
     fn next(&self, valley: &Valley) -> Self {
-        let suggested_position = self.position.step(&self.direction);
+        let suggested_position = &self.position + &self.direction;
         let next_position = if valley.valid_position(&suggested_position) {
             suggested_position
         } else {
