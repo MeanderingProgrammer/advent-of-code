@@ -1,11 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -29,8 +27,8 @@ func (r Range) length() int {
 
 func (r1 Range) overlap(r2 Range) Range {
 	return [2]int{
-		utils.Max(r1.start(), r2.start()),
-		utils.Min(r1.end(), r2.end()),
+		util.Max(r1.start(), r2.start()),
+		util.Min(r1.end(), r2.end()),
 	}
 }
 
@@ -82,8 +80,8 @@ func (bounds Bounds) area() int {
 
 func main() {
 	finalBounds := getFinalBounds()
-	answers.Part1(561032, limitedBoundsArea(finalBounds))
-	answers.Part2(1322825263376414, finalBounds.area())
+	answer.Part1(561032, limitedBoundsArea(finalBounds))
+	answer.Part2(1322825263376414, finalBounds.area())
 }
 
 func getFinalBounds() Bounds {
@@ -125,14 +123,14 @@ func getBounds() Bounds {
 			zs:    parseRange(where[2]),
 		}
 	}
-	return files.Read(toBound)
+	return file.Read(toBound)
 }
 
 func parseRange(rawRange string) Range {
-	rangePortion := parsers.SubstringAfter(rawRange, "=")
+	rangePortion := util.SubstringAfter(rawRange, "=")
 	bounds := strings.Split(rangePortion, "..")
 	return [2]int{
-		conversions.ToInt(bounds[0]),
-		conversions.ToInt(bounds[1]),
+		util.ToInt(bounds[0]),
+		util.ToInt(bounds[1]),
 	}
 }

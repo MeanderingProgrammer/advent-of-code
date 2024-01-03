@@ -1,19 +1,19 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/point"
 	"strings"
 )
 
 type Line struct {
-	p1 parsers.Point
-	p2 parsers.Point
+	p1 point.Point
+	p2 point.Point
 }
 
-func (line Line) pointsBetween(includeDiagonal bool) []parsers.Point {
-	var points []parsers.Point
+func (line Line) pointsBetween(includeDiagonal bool) []point.Point {
+	var points []point.Point
 
 	xRange := coordinateRange(line.p1.X, line.p2.X)
 	yRange := coordinateRange(line.p1.Y, line.p2.Y)
@@ -22,15 +22,15 @@ func (line Line) pointsBetween(includeDiagonal bool) []parsers.Point {
 		// Get vertical / horizontal points
 		for _, x := range xRange {
 			for _, y := range yRange {
-				point := parsers.Point{X: x, Y: y}
-				points = append(points, point)
+				p := point.Point{X: x, Y: y}
+				points = append(points, p)
 			}
 		}
 	} else if includeDiagonal {
 		// Get diagonal points if allowed
 		for i := 0; i < len(xRange); i++ {
-			point := parsers.Point{X: xRange[i], Y: yRange[i]}
-			points = append(points, point)
+			p := point.Point{X: xRange[i], Y: yRange[i]}
+			points = append(points, p)
 		}
 	}
 
@@ -53,13 +53,12 @@ func coordinateRange(v1 int, v2 int) []int {
 
 func main() {
 	lines := getLines()
-
-	answers.Part1(6666, numPointsWithOverlap(lines, false))
-	answers.Part2(19081, numPointsWithOverlap(lines, true))
+	answer.Part1(6666, numPointsWithOverlap(lines, false))
+	answer.Part2(19081, numPointsWithOverlap(lines, true))
 }
 
 func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
-	frequencies := make(map[parsers.Point]int)
+	frequencies := make(map[point.Point]int)
 	for _, line := range lines {
 		for _, point := range line.pointsBetween(includeDiagonal) {
 			frequencies[point]++
@@ -75,12 +74,11 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 }
 
 func getLines() []Line {
-	toLine := func(line string) Line {
+	return file.Read(func(line string) Line {
 		points := strings.Split(line, " -> ")
 		return Line{
-			p1: parsers.ConstructPoint(points[0]),
-			p2: parsers.ConstructPoint(points[1]),
+			p1: point.ConstructPoint(points[0]),
+			p2: point.ConstructPoint(points[1]),
 		}
-	}
-	return files.Read(toLine)
+	})
 }

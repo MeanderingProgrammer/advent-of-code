@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/graphs"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/graph"
+	"advent-of-code/commons/go/queue"
+	"advent-of-code/commons/go/util"
 	"fmt"
 	"strings"
 	"unicode"
@@ -37,7 +38,7 @@ func (path Path) add(cave Cave) Path {
 }
 
 func (path Path) contains(destination Cave) bool {
-	return utils.Contains(path, destination)
+	return util.Contains(path, destination)
 }
 
 func (path Path) containsLower() bool {
@@ -55,29 +56,29 @@ func (path Path) containsLower() bool {
 
 func main() {
 	graph := getGraph()
-	answers.Part1(3497, paths(graph, part1))
-	answers.Part2(93686, paths(graph, part2))
+	answer.Part1(3497, paths(graph, part1))
+	answer.Part2(93686, paths(graph, part2))
 }
 
-func getGraph() graphs.Graph[Cave, string] {
+func getGraph() graph.Graph[Cave, string] {
 	var pairs [][2]Cave
-	for _, creationRule := range files.ReadLines() {
+	for _, creationRule := range file.ReadLines() {
 		startEnd := strings.Split(creationRule, "-")
 		pair := [2]Cave{Cave(startEnd[0]), Cave(startEnd[1])}
 		pairs = append(pairs, pair)
 	}
-	return graphs.ConstructDirectly(pairs)
+	return graph.ConstructDirectly(pairs)
 }
 
-func paths(graph graphs.Graph[Cave, string], canGo func(Path, Cave) bool) int {
-	result := graph.Bfs(graphs.Search{
+func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
+	result := g.Bfs(graph.Search{
 		Initial: Path([]Cave{"start"}),
-		Done: func(state graphs.State) bool {
+		Done: func(state queue.State) bool {
 			return state.(Path).last() == "end"
 		},
-		NextStates: func(state graphs.State) []graphs.State {
-			nextStates := []graphs.State{}
-			for _, neighbor := range graph.Neighbors(state.(Path).last()) {
+		NextStates: func(state queue.State) []queue.State {
+			nextStates := []queue.State{}
+			for _, neighbor := range g.Neighbors(state.(Path).last()) {
 				if canGo(state.(Path), neighbor) {
 					nextStates = append(nextStates, state.(Path).add(neighbor))
 				}

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 )
 
 type Binaries []string
@@ -32,13 +32,12 @@ func (binaries Binaries) filter(position int, value string) Binaries {
 
 func main() {
 	binaries := getBinaries()
-
-	answers.Part1(4006064, calculatePowerConsumption(binaries))
-	answers.Part2(5941884, calculateLifeSupport(binaries))
+	answer.Part1(4006064, calculatePowerConsumption(binaries))
+	answer.Part2(5941884, calculateLifeSupport(binaries))
 }
 
 func getBinaries() Binaries {
-	return files.ReadLines()
+	return file.ReadLines()
 }
 
 func calculatePowerConsumption(binaries Binaries) int {
@@ -54,7 +53,7 @@ func constructedValue(binaries Binaries, mostCommon bool) int {
 		}
 		rate += value
 	}
-	return conversions.BinaryToDecimal(rate)
+	return util.BinaryToDecimal(rate)
 }
 
 func calculateLifeSupport(binaries Binaries) int {
@@ -69,7 +68,7 @@ func filteredValue(binaries Binaries, mostCommon bool) int {
 		}
 		binaries = binaries.filter(i, value)
 	}
-	return conversions.BinaryToDecimal(binaries[0])
+	return util.BinaryToDecimal(binaries[0])
 }
 
 func invertBit(value string) string {

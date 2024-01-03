@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -38,8 +38,8 @@ func (frequencies Frequencies) diff() int {
 		if most == -1 && least == -1 {
 			most, least = frequency, frequency
 		} else {
-			most = utils.Max(most, frequency)
-			least = utils.Min(least, frequency)
+			most = util.Max(most, frequency)
+			least = util.Min(least, frequency)
 		}
 	}
 	return most - least
@@ -55,8 +55,8 @@ func (template Template) frequencies() Frequencies {
 }
 
 func main() {
-	answers.Part1(2899, diffAfter(10))
-	answers.Part2(3528317079545, diffAfter(40))
+	answer.Part1(2899, diffAfter(10))
+	answer.Part2(3528317079545, diffAfter(40))
 }
 
 func diffAfter(n int) int {
@@ -68,7 +68,7 @@ func diffAfter(n int) int {
 }
 
 func getData() (Template, Rules) {
-	templateRules := files.ReadGroups()
+	templateRules := file.ReadGroups()
 
 	template := make(map[string]int)
 	for i := 0; i < len(templateRules[0])-1; i++ {

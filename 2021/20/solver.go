@@ -1,11 +1,12 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -30,15 +31,15 @@ type Bounds struct {
 	maxY int
 }
 
-func (bounds Bounds) out(point parsers.Point) bool {
-	return point.X < bounds.minX ||
-		point.X > bounds.maxX ||
-		point.Y < bounds.minY ||
-		point.Y > bounds.maxY
+func (bounds Bounds) out(p point.Point) bool {
+	return p.X < bounds.minX ||
+		p.X > bounds.maxX ||
+		p.Y < bounds.minY ||
+		p.Y > bounds.maxY
 }
 
 type Image struct {
-	parsers.Grid[string]
+	grid.Grid[string]
 	times int
 }
 
@@ -47,20 +48,20 @@ func (image Image) enhance(enhancer Enhancer) Image {
 	bounds := image.getBounds()
 	for y := bounds.minY - Boarder; y <= bounds.maxY+Boarder; y++ {
 		for x := bounds.minX - Boarder; x <= bounds.maxX+Boarder; x++ {
-			point := parsers.Point{X: x, Y: y}
-			if image.enhanceValue(point, enhancer, bounds) {
-				enhanced.Set(point, "#")
+			p := point.Point{X: x, Y: y}
+			if image.enhanceValue(p, enhancer, bounds) {
+				enhanced.Set(p, "#")
 			}
 		}
 	}
 	return enhanced
 }
 
-func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds Bounds) bool {
+func (image Image) enhanceValue(p point.Point, enhancer Enhancer, bounds Bounds) bool {
 	var indexCode strings.Builder
 	for y := -1; y <= 1; y++ {
 		for x := -1; x <= 1; x++ {
-			surrounding := point.Add(x, y)
+			surrounding := p.Add(x, y)
 			value := image.Contains(surrounding)
 			if value || (bounds.out(surrounding) && enhancer.edgeBehavior(image.times)) {
 				indexCode.WriteString("1")
@@ -69,17 +70,17 @@ func (image Image) enhanceValue(point parsers.Point, enhancer Enhancer, bounds B
 			}
 		}
 	}
-	index := conversions.BinaryToDecimal(indexCode.String())
+	index := util.BinaryToDecimal(indexCode.String())
 	return enhancer[index] == '#'
 }
 
 func (image Image) getBounds() Bounds {
 	minX, minY, maxX, maxY := 0, 0, 0, 0
-	for _, point := range image.Points() {
-		minX = utils.Min(minX, point.X)
-		maxX = utils.Max(maxX, point.X)
-		minY = utils.Min(minY, point.Y)
-		maxY = utils.Max(maxY, point.Y)
+	for _, p := range image.Points() {
+		minX = util.Min(minX, p.X)
+		maxX = util.Max(maxX, p.X)
+		minY = util.Min(minY, p.Y)
+		maxY = util.Max(maxY, p.Y)
 	}
 	return Bounds{
 		minX: minX,
@@ -90,8 +91,8 @@ func (image Image) getBounds() Bounds {
 }
 
 func main() {
-	answers.Part1(5437, litAfter(2))
-	answers.Part2(19340, litAfter(50))
+	answer.Part1(5437, litAfter(2))
+	answer.Part2(19340, litAfter(50))
 }
 
 func litAfter(times int) int {
@@ -103,16 +104,16 @@ func litAfter(times int) int {
 }
 
 func getEnhancerImage() (Enhancer, Image) {
-	enhancerImage := files.ReadGroups()
+	enhancerImage := file.ReadGroups()
 	return Enhancer(enhancerImage[0]), parseImage(enhancerImage[1])
 }
 
 func parseImage(raw string) Image {
-	grid := parsers.GridMaker[string]{
-		Rows:        parsers.Lines(raw),
-		Splitter:    parsers.Character,
+	grid := parser.GridMaker[string]{
+		Rows:        util.Lines(raw),
+		Splitter:    parser.Character,
 		Ignore:      ".",
-		Transformer: parsers.Identity,
+		Transformer: parser.Identity,
 	}.Construct()
 	return Image{
 		Grid:  grid,

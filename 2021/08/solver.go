@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"sort"
 	"strings"
 )
@@ -96,7 +96,7 @@ func (segmentEntry SegmentEntry) solve() string {
 	mapping := segmentEntry.inputDigits.getMapping()
 	outputNumber := strings.Builder{}
 	for _, digit := range segmentEntry.outputDigits {
-		outputNumber.WriteString(conversions.ToString(mapping[digit]))
+		outputNumber.WriteString(util.ToString(mapping[digit]))
 	}
 	return outputNumber.String()
 }
@@ -108,8 +108,8 @@ func main() {
 		part1 += trackPart1(outputNumber)
 		part2 += trackPart2(outputNumber)
 	}
-	answers.Part1(344, part1)
-	answers.Part2(1048410, part2)
+	answer.Part1(344, part1)
+	answer.Part2(1048410, part2)
 }
 
 func trackPart1(outputNumber string) int {
@@ -121,7 +121,7 @@ func trackPart1(outputNumber string) int {
 }
 
 func trackPart2(outputNumber string) int {
-	return conversions.ToInt(outputNumber)
+	return util.ToInt(outputNumber)
 }
 
 func getSegmentEntries() []SegmentEntry {
@@ -132,7 +132,7 @@ func getSegmentEntries() []SegmentEntry {
 			outputDigits: parseDigits(parts[1]),
 		}
 	}
-	return files.Read(toSegmentEntry)
+	return file.Read(toSegmentEntry)
 }
 
 func parseDigits(raw string) []Digit {

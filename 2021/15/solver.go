@@ -1,15 +1,18 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/graphs"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/graph"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/queue"
 	"fmt"
 )
 
 type Path struct {
-	point parsers.Point
+	point point.Point
 	value int
 }
 
@@ -21,33 +24,33 @@ func (path Path) ToString() string {
 	return fmt.Sprintf("%v", path.point)
 }
 
-func (path Path) add(graph graphs.Graph[parsers.Point, int], point parsers.Point) Path {
+func (path Path) add(graph graph.Graph[point.Point, int], p point.Point) Path {
 	return Path{
-		point: point,
-		value: path.value + graph.Value(point),
+		point: p,
+		value: path.value + graph.Value(p),
 	}
 }
 
 func main() {
-	answers.Part1(656, solve(false))
-	answers.Part2(2979, solve(true))
+	answer.Part1(656, solve(false))
+	answer.Part2(2979, solve(true))
 }
 
 func solve(wrap bool) int {
 	grid := getGrid(wrap)
-	graph := graphs.ConstructGraph(grid)
-	result := graph.Bfs(graphs.Search{
+	g := graph.ConstructGraph(grid)
+	result := g.Bfs(graph.Search{
 		Initial: Path{
-			point: parsers.Point{X: 0, Y: 0},
+			point: point.Point{X: 0, Y: 0},
 			value: 0,
 		},
-		Done: func(state graphs.State) bool {
-			return state.(Path).point == parsers.Point{X: grid.Width, Y: grid.Height}
+		Done: func(state queue.State) bool {
+			return state.(Path).point == point.Point{X: grid.Width, Y: grid.Height}
 		},
-		NextStates: func(state graphs.State) []graphs.State {
-			nextStates := []graphs.State{}
-			for _, neighbor := range graph.Neighbors(state.(Path).point) {
-				nextStates = append(nextStates, state.(Path).add(graph, neighbor))
+		NextStates: func(state queue.State) []queue.State {
+			nextStates := []queue.State{}
+			for _, neighbor := range g.Neighbors(state.(Path).point) {
+				nextStates = append(nextStates, state.(Path).add(g, neighbor))
 			}
 			return nextStates
 		},
@@ -56,12 +59,12 @@ func solve(wrap bool) int {
 	return result.Completed[0].(Path).value
 }
 
-func getGrid(wrap bool) parsers.Grid[int] {
-	grid := parsers.GridMaker[int]{
-		Rows:        files.ReadLines(),
-		Splitter:    parsers.Character,
+func getGrid(wrap bool) grid.Grid[int] {
+	grid := parser.GridMaker[int]{
+		Rows:        file.ReadLines(),
+		Splitter:    parser.Character,
 		Ignore:      "",
-		Transformer: parsers.ToInt,
+		Transformer: parser.ToInt,
 	}.Construct()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1
@@ -71,12 +74,12 @@ func getGrid(wrap bool) parsers.Grid[int] {
 				if distance == 0 {
 					continue
 				}
-				for _, point := range points {
-					newPoint := parsers.Point{
-						X: point.X + (baseSize * i),
-						Y: point.Y + (baseSize * j),
+				for _, p := range points {
+					newPoint := point.Point{
+						X: p.X + (baseSize * i),
+						Y: p.Y + (baseSize * j),
 					}
-					newValue := grid.Get(point) + distance
+					newValue := grid.Get(p) + distance
 					if newValue > 9 {
 						newValue -= 9
 					}

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"sort"
 )
 
@@ -69,7 +69,7 @@ func (systems Systems) mismatchScore() int {
 		mismatched, _ := System(system).checkSyntax()
 		return scores[mismatched].mismatch
 	}
-	return utils.Sum(utils.Map(systems, toMimatchScore))
+	return util.Sum(util.Map(systems, toMimatchScore))
 }
 
 func (systems Systems) autocompleteScore() int {
@@ -89,8 +89,8 @@ func (systems Systems) autocompleteScore() int {
 		return value > 0
 	}
 
-	scores := utils.Filter(
-		utils.Map(systems, toAutocompleteScore),
+	scores := util.Filter(
+		util.Map(systems, toAutocompleteScore),
 		nonZero,
 	)
 
@@ -100,11 +100,10 @@ func (systems Systems) autocompleteScore() int {
 
 func main() {
 	systems := getSystem()
-
-	answers.Part1(321237, systems.mismatchScore())
-	answers.Part2(2360030859, systems.autocompleteScore())
+	answer.Part1(321237, systems.mismatchScore())
+	answer.Part2(2360030859, systems.autocompleteScore())
 }
 
 func getSystem() Systems {
-	return files.ReadLines()
+	return file.ReadLines()
 }

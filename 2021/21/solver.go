@@ -1,11 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 )
 
 type Player struct {
@@ -30,7 +28,7 @@ type GameState struct {
 }
 
 func (gameState GameState) losingScore() int {
-	return utils.Min(gameState.p1.score, gameState.p2.score)
+	return util.Min(gameState.p1.score, gameState.p2.score)
 }
 
 type GameStateFrequency map[GameState]int
@@ -171,8 +169,8 @@ func (dice QuantumDice) computeStateSpace() StateSpace {
 }
 
 func main() {
-	answers.Part1(571032, part1())
-	answers.Part2(49975322685009, part2())
+	answer.Part1(571032, part1())
+	answer.Part2(49975322685009, part2())
 }
 
 func part1() int {
@@ -208,13 +206,13 @@ func play(target int, dice Dice) GameStateFrequency {
 }
 
 func getPlayers() (Player, Player) {
-	players := files.ReadLines()
+	players := file.ReadLines()
 	return parsePlayer(players[0]), parsePlayer(players[1])
 }
 
 func parsePlayer(player string) Player {
 	return Player{
-		position: conversions.ToInt(parsers.SubstringAfter(player, ": ")),
+		position: util.ToInt(util.SubstringAfter(player, ": ")),
 		score:    0,
 	}
 }

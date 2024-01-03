@@ -1,10 +1,11 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -20,13 +21,13 @@ type Fold struct {
 	amount    int
 }
 
-func (fold Fold) apply(point parsers.Point) (parsers.Point, bool) {
-	value := point.X
+func (fold Fold) apply(p point.Point) (point.Point, bool) {
+	value := p.X
 	if fold.direction == Up {
-		value = point.Y
+		value = p.Y
 	}
 	if value > fold.amount {
-		result := parsers.Point{X: point.X, Y: point.Y}
+		result := point.Point{X: p.X, Y: p.Y}
 		newValue := 2*fold.amount - value
 		if fold.direction == Up {
 			result.Y = newValue
@@ -35,35 +36,35 @@ func (fold Fold) apply(point parsers.Point) (parsers.Point, bool) {
 		}
 		return result, true
 	} else {
-		return point, false
+		return p, false
 	}
 }
 
 type PaperGrid struct {
-	parsers.Grid[string]
+	grid.Grid[string]
 }
 
-func (grid PaperGrid) apply(fold Fold) PaperGrid {
-	for _, point := range grid.Points() {
-		newPoint, moved := fold.apply(point)
+func (g PaperGrid) apply(fold Fold) PaperGrid {
+	for _, p := range g.Points() {
+		newPoint, moved := fold.apply(p)
 		if moved {
-			grid.Delete(point)
-			grid.Set(newPoint, "#")
+			g.Delete(p)
+			g.Set(newPoint, "#")
 		}
 	}
 	if fold.direction == Up {
-		grid.Height = fold.amount - 1
+		g.Height = fold.amount - 1
 	} else {
-		grid.Width = fold.amount - 1
+		g.Width = fold.amount - 1
 	}
-	return grid
+	return g
 }
 
 func main() {
 	grid, folds := getGridFolds()
 
 	grid = grid.apply(folds[0])
-	answers.Part1(737, grid.Len())
+	answer.Part1(737, grid.Len())
 
 	for _, fold := range folds[1:] {
 		grid = grid.apply(fold)
@@ -76,16 +77,16 @@ func main() {
 		"#....#..#.#..#.#..#.#..#.#....#..#.#....",
 		"####..##...##...##..#..#.#....#..#.#....",
 	}
-	answers.Part2("\n"+strings.Join(expected, "\n"), "\n"+grid.String("."))
+	answer.Part2("\n"+strings.Join(expected, "\n"), "\n"+grid.String("."))
 }
 
 func getGridFolds() (PaperGrid, []Fold) {
-	dotsInstructions := files.ReadGroups()
-	dots, instructions := parsers.Lines(dotsInstructions[0]), parsers.Lines(dotsInstructions[1])
+	dotsInstructions := file.ReadGroups()
+	dots, instructions := util.Lines(dotsInstructions[0]), util.Lines(dotsInstructions[1])
 
 	grid := PaperGrid{}
 	for _, dot := range dots {
-		point := parsers.ConstructPoint(dot)
+		point := point.ConstructPoint(dot)
 		grid.Set(point, "#")
 	}
 
@@ -99,7 +100,7 @@ func getGridFolds() (PaperGrid, []Fold) {
 
 func getInstruction(raw string) Fold {
 	parts := strings.Split(raw, "=")
-	fold := Fold{Up, conversions.ToInt(parts[1])}
+	fold := Fold{Up, util.ToInt(parts[1])}
 	if strings.HasSuffix(parts[0], "x") {
 		fold.direction = Left
 	}

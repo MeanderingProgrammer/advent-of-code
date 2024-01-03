@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/file"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
@@ -55,9 +55,9 @@ func (p *Part2) populate(passwords map[int]string, hash string) {
 }
 
 func main() {
-	doorId := files.Content()
-	answers.Part1("d4cd2ee1", getPassword(doorId, &Part1{}))
-	answers.Part2("f2c730e5", getPassword(doorId, &Part2{}))
+	doorId := file.Content()
+	answer.Part1("d4cd2ee1", getPassword(doorId, &Part1{}))
+	answer.Part2("f2c730e5", getPassword(doorId, &Part2{}))
 }
 
 func getPassword(doorId string, populator Populator) string {

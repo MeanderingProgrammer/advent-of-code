@@ -1,11 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"strings"
 )
 
@@ -63,11 +61,11 @@ func (trajectory Trajectory) overshot(targetArea TargetArea) bool {
 }
 
 func (trajectory Trajectory) maxHeight() int {
-	max := 0
+	result := 0
 	for _, position := range trajectory {
-		max = utils.Max(max, position.y)
+		result = util.Max(result, position.y)
 	}
-	return max
+	return result
 }
 
 func (targetArea TargetArea) shoot(velocity Velocity) Trajectory {
@@ -83,10 +81,9 @@ func (targetArea TargetArea) shoot(velocity Velocity) Trajectory {
 
 func main() {
 	targetArea := getData()
-
 	maxHeight, numValid := getMaxHeight(targetArea)
-	answers.Part1(4095, maxHeight)
-	answers.Part2(3773, numValid)
+	answer.Part1(4095, maxHeight)
+	answer.Part2(3773, numValid)
 }
 
 func getMaxHeight(targetArea TargetArea) (int, int) {
@@ -96,7 +93,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
 			trajectory := targetArea.shoot(Velocity{x, y})
 			if trajectory.in(targetArea) {
 				numValid++
-				maxHeight = utils.Max(maxHeight, trajectory.maxHeight())
+				maxHeight = util.Max(maxHeight, trajectory.maxHeight())
 			}
 		}
 	}
@@ -104,7 +101,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
 }
 
 func getData() TargetArea {
-	rawTargetArea := parsers.SubstringAfter(files.Content(), ": ")
+	rawTargetArea := util.SubstringAfter(file.Content(), ": ")
 	components := strings.Split(rawTargetArea, ", ")
 	return TargetArea{
 		xRange: parseRange(components[0]),
@@ -113,10 +110,10 @@ func getData() TargetArea {
 }
 
 func parseRange(raw string) [2]int {
-	values := parsers.SubstringAfter(raw, "=")
+	values := util.SubstringAfter(raw, "=")
 	minxMax := strings.Split(values, "..")
 	return [2]int{
-		conversions.ToInt(minxMax[0]),
-		conversions.ToInt(minxMax[1]),
+		util.ToInt(minxMax[0]),
+		util.ToInt(minxMax[1]),
 	}
 }

@@ -1,4 +1,4 @@
-package answers
+package answer
 
 import (
 	"fmt"

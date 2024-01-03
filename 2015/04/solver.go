@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/file"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
@@ -31,10 +31,10 @@ func (h hashSearch) getHash(i int) string {
 }
 
 func main() {
-	prefix := strings.TrimSpace(files.Content())
+	prefix := strings.TrimSpace(file.Content())
 	fiveLeading := firstIndex(prefix, 5, 1)
-	answers.Part1(346386, fiveLeading)
-	answers.Part2(9958218, firstIndex(prefix, 6, fiveLeading))
+	answer.Part1(346386, fiveLeading)
+	answer.Part2(9958218, firstIndex(prefix, 6, fiveLeading))
 }
 
 func firstIndex(prefix string, leadingZeros int, index int) int {

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
 )
 
 func main() {
-	values := files.ReadInt()
-	answers.Part1(1292, windowIncreases(values, 1))
-	answers.Part2(1262, windowIncreases(values, 3))
+	values := file.ReadInt()
+	answer.Part1(1292, windowIncreases(values, 1))
+	answer.Part2(1262, windowIncreases(values, 3))
 }
 
 func windowIncreases(values []int, windowSize int) int {

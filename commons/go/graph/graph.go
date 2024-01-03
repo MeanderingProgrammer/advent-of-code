@@ -1,19 +1,21 @@
-package graphs
+package graph
 
 import (
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/queue"
 	"fmt"
 	"strings"
 )
 
 type Graph[K comparable, V comparable] struct {
 	vertices map[K][]K
-	grid     parsers.Grid[V]
+	grid     grid.Grid[V]
 }
 
 type Seen map[string]int
 
-func (seen Seen) updateIfBest(state State) bool {
+func (seen Seen) updateIfBest(state queue.State) bool {
 	encodedState, cost := state.ToString(), state.Cost()
 	lowestCost, ok := seen[encodedState]
 	if !ok || cost < lowestCost {
@@ -25,25 +27,25 @@ func (seen Seen) updateIfBest(state State) bool {
 }
 
 type Search struct {
-	Initial    State
-	Done       func(State) bool
-	NextStates func(State) []State
+	Initial    queue.State
+	Done       func(queue.State) bool
+	NextStates func(queue.State) []queue.State
 	FirstOnly  bool
 }
 
 type SearchResult struct {
-	Completed []State
+	Completed []queue.State
 	Explored  int
 }
 
 func (graph Graph[K, V]) Bfs(search Search) SearchResult {
-	completed := []State{}
-	queue := &Queue{search.Initial}
+	completed := []queue.State{}
+	q := &queue.Queue{search.Initial}
 	explored := 0
 	seen := make(Seen)
-	for !queue.Empty() {
+	for !q.Empty() {
 		explored++
-		current := queue.Next()
+		current := q.Next()
 		if search.Done(current) {
 			completed = append(completed, current)
 			if search.FirstOnly {
@@ -52,7 +54,7 @@ func (graph Graph[K, V]) Bfs(search Search) SearchResult {
 		} else {
 			for _, state := range search.NextStates(current) {
 				if seen.updateIfBest(state) {
-					queue.Add(state)
+					q.Add(state)
 				}
 			}
 		}
@@ -63,19 +65,19 @@ func (graph Graph[K, V]) Bfs(search Search) SearchResult {
 	}
 }
 
-func (graph Graph[K, V]) Neighbors(point K) []K {
-	return graph.vertices[point]
+func (graph Graph[K, V]) Neighbors(p K) []K {
+	return graph.vertices[p]
 }
 
-func (graph Graph[K, V]) Value(point parsers.Point) V {
-	return graph.grid.Get(point)
+func (graph Graph[K, V]) Value(p point.Point) V {
+	return graph.grid.Get(p)
 }
 
-func (graph Graph[K, V]) Print(positions map[parsers.Point]V) {
+func (graph Graph[K, V]) Print(positions map[point.Point]V) {
 	fmt.Println(graph.separator())
 	for y := 0; y <= graph.grid.Height; y++ {
 		for x := 0; x <= graph.grid.Width; x++ {
-			point := parsers.Point{X: x, Y: y}
+			point := point.Point{X: x, Y: y}
 			fmt.Print(graph.getValue(positions, point))
 		}
 		fmt.Println()
@@ -87,11 +89,11 @@ func (graph Graph[K, V]) separator() string {
 	return strings.Repeat("-", graph.grid.Width+1)
 }
 
-func (graph Graph[K, V]) getValue(positions map[parsers.Point]V, point parsers.Point) interface{} {
-	if !graph.grid.Contains(point) {
+func (graph Graph[K, V]) getValue(positions map[point.Point]V, p point.Point) interface{} {
+	if !graph.grid.Contains(p) {
 		return "#"
 	} else {
-		value, exists := positions[point]
+		value, exists := positions[p]
 		if exists {
 			return value
 		} else {
@@ -100,18 +102,18 @@ func (graph Graph[K, V]) getValue(positions map[parsers.Point]V, point parsers.P
 	}
 }
 
-func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[parsers.Point, V] {
-	vertices := make(map[parsers.Point][]parsers.Point)
-	for _, point := range grid.Points() {
-		var connected []parsers.Point
-		for _, adjacent := range point.Adjacent() {
+func ConstructGraph[V comparable](grid grid.Grid[V]) Graph[point.Point, V] {
+	vertices := make(map[point.Point][]point.Point)
+	for _, p := range grid.Points() {
+		var connected []point.Point
+		for _, adjacent := range p.Adjacent() {
 			if grid.Contains(adjacent) {
 				connected = append(connected, adjacent)
 			}
 		}
-		vertices[point] = connected
+		vertices[p] = connected
 	}
-	return Graph[parsers.Point, V]{
+	return Graph[point.Point, V]{
 		vertices: vertices,
 		grid:     grid,
 	}

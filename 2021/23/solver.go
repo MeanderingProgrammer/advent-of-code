@@ -1,11 +1,13 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/graphs"
-	"advent-of-code/commons/go/parsers"
-	"advent-of-code/commons/go/utils"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/graph"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/queue"
+	"advent-of-code/commons/go/util"
 	"fmt"
 	"math"
 )
@@ -33,11 +35,11 @@ func (v Value) x() int {
 	return 3 + v.distance()*2
 }
 
-func (v Value) pathToGoal(start parsers.Point) []parsers.Point {
-	result := []parsers.Point{}
+func (v Value) pathToGoal(start point.Point) []point.Point {
+	result := []point.Point{}
 	x1, x2 := start.X, v.x()
-	for i := utils.Min(x1, x2) + 1; i < utils.Max(x1, x2); i++ {
-		result = append(result, parsers.Point{X: i, Y: 1})
+	for i := util.Min(x1, x2) + 1; i < util.Max(x1, x2); i++ {
+		result = append(result, point.Point{X: i, Y: 1})
 	}
 	return result
 }
@@ -47,11 +49,11 @@ type Character struct {
 	moved bool
 }
 
-func (character Character) atGoal(point parsers.Point) bool {
-	return character.value.x() == point.X
+func (character Character) atGoal(p point.Point) bool {
+	return character.value.x() == p.X
 }
 
-type Characters map[parsers.Point]Character
+type Characters map[point.Point]Character
 
 type BoardState struct {
 	characters Characters
@@ -105,31 +107,31 @@ func (state BoardState) apply(move Move) BoardState {
 }
 
 type Move struct {
-	start parsers.Point
-	end   parsers.Point
+	start point.Point
+	end   point.Point
 }
 
 func (move Move) distance() int {
 	start, end := move.start, move.end
-	distance := utils.Abs(start.X - end.X)
+	distance := util.Abs(start.X - end.X)
 	return distance + start.Y + end.Y - 2
 }
 
 type Board struct {
-	graph    graphs.Graph[parsers.Point, Value]
+	graph    graph.Graph[point.Point, Value]
 	roomSize int
 }
 
-func (board Board) solve(characters Characters) graphs.State {
-	result := board.graph.Bfs(graphs.Search{
+func (board Board) solve(characters Characters) queue.State {
+	result := board.graph.Bfs(graph.Search{
 		Initial: BoardState{
 			characters: characters,
 			cost:       0,
 		},
-		Done: func(state graphs.State) bool {
+		Done: func(state queue.State) bool {
 			return state.(BoardState).complete()
 		},
-		NextStates: func(state graphs.State) []graphs.State {
+		NextStates: func(state queue.State) []queue.State {
 			return board.nextStates(state.(BoardState))
 		},
 		FirstOnly: true,
@@ -137,8 +139,8 @@ func (board Board) solve(characters Characters) graphs.State {
 	return result.Completed[0]
 }
 
-func (board Board) nextStates(state BoardState) []graphs.State {
-	nextStates := []graphs.State{}
+func (board Board) nextStates(state BoardState) []queue.State {
+	nextStates := []queue.State{}
 	for start, character := range state.characters {
 		if !character.atGoal(start) || !character.moved {
 			for _, move := range board.moves(state, start) {
@@ -149,10 +151,10 @@ func (board Board) nextStates(state BoardState) []graphs.State {
 	return nextStates
 }
 
-func (board Board) moves(state BoardState, start parsers.Point) []Move {
+func (board Board) moves(state BoardState, start point.Point) []Move {
 	moves := []Move{}
-	explored := map[parsers.Point]bool{start: true}
-	toExplore := []parsers.Point{start}
+	explored := map[point.Point]bool{start: true}
+	toExplore := []point.Point{start}
 	for len(toExplore) > 0 {
 		current := toExplore[0]
 		toExplore = toExplore[1:]
@@ -193,7 +195,7 @@ func (board Board) valid(state BoardState, move Move) bool {
 				continue
 			}
 			characterOnPathGoalPath := characterOnPath.value.pathToGoal(point)
-			if utils.Contains(characterOnPathGoalPath, move.end) {
+			if util.Contains(characterOnPathGoalPath, move.end) {
 				return false
 			}
 		}
@@ -220,8 +222,8 @@ func (board Board) valid(state BoardState, move Move) bool {
 }
 
 func main() {
-	answers.Part1(18282, solve(false))
-	answers.Part2(50132, solve(true))
+	answer.Part1(18282, solve(false))
+	answer.Part2(50132, solve(true))
 }
 
 func solve(extend bool) int {
@@ -233,7 +235,7 @@ func solve(extend bool) int {
 }
 
 func getRows(extend bool) []string {
-	rows := files.ReadLines()
+	rows := file.ReadLines()
 	if extend {
 		lastRows := make([]string, 2)
 		copy(lastRows, rows[len(rows)-2:])
@@ -245,11 +247,11 @@ func getRows(extend bool) []string {
 }
 
 func getBoard(rows []string) Board {
-	grid := parsers.GridMaker[Value]{
+	grid := parser.GridMaker[Value]{
 		Rows:     rows,
-		Splitter: parsers.Character,
+		Splitter: parser.Character,
 		Ignore:   "# ",
-		Transformer: func(position parsers.Point, value string) Value {
+		Transformer: func(position point.Point, value string) Value {
 			result := Hallway
 			switch position.X {
 			case A.x():
@@ -268,24 +270,24 @@ func getBoard(rows []string) Board {
 		},
 	}.Construct()
 	return Board{
-		graph:    graphs.ConstructGraph(grid),
+		graph:    graph.ConstructGraph(grid),
 		roomSize: grid.Height - 2,
 	}
 }
 
 func getCharacters(rows []string) Characters {
-	grid := parsers.GridMaker[Value]{
+	grid := parser.GridMaker[Value]{
 		Rows:     rows,
-		Splitter: parsers.Character,
+		Splitter: parser.Character,
 		Ignore:   ".# ",
-		Transformer: func(position parsers.Point, value string) Value {
+		Transformer: func(position point.Point, value string) Value {
 			return Value(value)
 		},
 	}.Construct()
 	characters := make(Characters)
-	for _, point := range grid.Points() {
-		characters[point] = Character{
-			value: grid.Get(point),
+	for _, p := range grid.Points() {
+		characters[p] = Character{
+			value: grid.Get(p),
 			moved: false,
 		}
 	}

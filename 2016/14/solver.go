@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
+	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/file"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
@@ -65,9 +65,9 @@ func sameChar(value string) bool {
 }
 
 func main() {
-	prefix := strings.TrimSpace(files.Content())
-	answers.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
-	answers.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))
+	prefix := strings.TrimSpace(file.Content())
+	answer.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
+	answer.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))
 }
 
 func generate(search hashSearch) int {

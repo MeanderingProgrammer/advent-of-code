@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
-	"advent-of-code/commons/go/files"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 	"fmt"
 	"strings"
 )
@@ -34,13 +34,13 @@ import (
 // add z y      z += y                  z += ((z % 26) + xs[i] != in[i]) ? in[i] + ys[i] : 0
 //
 // Notes
-// - On iterations where xs[i] > 9, we cannot avoid increasing the value of z
-// - On iterations where we must increase z (xs[i] > 9) we multiply by a factor of 26
-// - There are 7 such occurrences in our input dataset
-// - We divide z by 26 based on the value of zs[i] exactly 7 times as well
-// - If we avoid the factor of 26 increase on iterations where we can, we will reduce z to 0
-// - This is done by getting z to an appropraite value such that (z % 26) + xs[i] equals our
-//   input at that iteration, also note that xs[i] on these iterations is negative
+//   - On iterations where xs[i] > 9, we cannot avoid increasing the value of z
+//   - On iterations where we must increase z (xs[i] > 9) we multiply by a factor of 26
+//   - There are 7 such occurrences in our input dataset
+//   - We divide z by 26 based on the value of zs[i] exactly 7 times as well
+//   - If we avoid the factor of 26 increase on iterations where we can, we will reduce z to 0
+//   - This is done by getting z to an appropraite value such that (z % 26) + xs[i] equals our
+//     input at that iteration, also note that xs[i] on these iterations is negative
 //
 // Solution
 // - Relies on which indexes of the input the z calculation is based on, nearest unassigned neighbor
@@ -48,15 +48,13 @@ import (
 // - group:     1   2   3   3   4   4   5   6   6   7   7   5   2   1
 func main() {
 	program := getProgram()
-
 	constrainedNumber := addConstraints(
 		group(program.nth(4)),
 		program.nth(15),
 		program.nth(5),
 	)
-
-	answers.Part1(92928914999991, constrainedNumber.bound(true))
-	answers.Part2(91811211611981, constrainedNumber.bound(false))
+	answer.Part1(92928914999991, constrainedNumber.bound(true))
+	answer.Part2(91811211611981, constrainedNumber.bound(false))
 }
 
 type ConstrainedNumber []ConstrainedPair
@@ -133,7 +131,7 @@ func (program Program) nth(n int) []int {
 	var values []int
 	for i, instruction := range program {
 		if i%18 == n {
-			values = append(values, conversions.ToInt(instruction[2]))
+			values = append(values, util.ToInt(instruction[2]))
 		}
 	}
 	return values
@@ -141,7 +139,7 @@ func (program Program) nth(n int) []int {
 
 func getProgram() Program {
 	var program []Instruction
-	for _, rawInstruction := range files.ReadLines() {
+	for _, rawInstruction := range file.ReadLines() {
 		instruction := strings.Split(rawInstruction, " ")
 		program = append(program, instruction)
 	}
@@ -151,9 +149,9 @@ func getProgram() Program {
 func parseResult(values []int) int {
 	var result strings.Builder
 	for _, value := range values {
-		result.WriteString(conversions.ToString(value))
+		result.WriteString(util.ToString(value))
 	}
-	return conversions.ToInt(result.String())
+	return util.ToInt(result.String())
 }
 
 // ================================================================================================
@@ -258,7 +256,7 @@ func (alu *ALU) get(register string) int {
 	} else if register == "z" {
 		value = alu.z
 	} else {
-		value = conversions.ToInt(register)
+		value = util.ToInt(register)
 	}
 	return value
 }
@@ -267,7 +265,7 @@ func runSlow(source int) int {
 	program := getProgram()
 	alu := ALU{}
 	provider := InputProvider{
-		source: conversions.ToString(source),
+		source: util.ToString(source),
 	}
 	return alu.runProgram(program, &provider)
 }

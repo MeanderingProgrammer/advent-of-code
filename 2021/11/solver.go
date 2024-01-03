@@ -1,73 +1,73 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/files"
-	"advent-of-code/commons/go/parsers"
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/parser"
+	"advent-of-code/commons/go/point"
 )
 
 type OctopusGrid struct {
-	parsers.Grid[int]
-	flashed map[parsers.Point]bool
+	grid.Grid[int]
+	flashed map[point.Point]bool
 }
 
-func (grid OctopusGrid) runFor(steps int) int {
+func (g OctopusGrid) runFor(steps int) int {
 	flashed := 0
 	for i := 0; i < steps; i++ {
-		flashed += grid.step()
+		flashed += g.step()
 	}
 	return flashed
 }
 
-func (grid OctopusGrid) runUntilAll() int {
-	target, steps := grid.Len(), 1
-	for grid.step() != target {
+func (g OctopusGrid) runUntilAll() int {
+	target, steps := g.Len(), 1
+	for g.step() != target {
 		steps++
 	}
 	return steps
 }
 
-func (grid OctopusGrid) step() int {
-	for _, point := range grid.Points() {
-		grid.flash(point)
+func (g OctopusGrid) step() int {
+	for _, point := range g.Points() {
+		g.flash(point)
 	}
-	flashed := len(grid.flashed)
-	for point := range grid.flashed {
-		grid.Set(point, 0)
-		delete(grid.flashed, point)
+	flashed := len(g.flashed)
+	for point := range g.flashed {
+		g.Set(point, 0)
+		delete(g.flashed, point)
 	}
 	return flashed
 }
 
-func (grid OctopusGrid) flash(point parsers.Point) {
-	if !grid.Contains(point) {
+func (g OctopusGrid) flash(p point.Point) {
+	if !g.Contains(p) {
 		return
 	}
-
-	grid.Set(point, grid.Get(point)+1)
-
-	if grid.Get(point) > 9 && !grid.flashed[point] {
-		grid.flashed[point] = true
-		for _, adjacent := range point.DiagonalAdjacent() {
-			grid.flash(adjacent)
+	g.Set(p, g.Get(p)+1)
+	if g.Get(p) > 9 && !g.flashed[p] {
+		g.flashed[p] = true
+		for _, adjacent := range p.DiagonalAdjacent() {
+			g.flash(adjacent)
 		}
 	}
 }
 
 func main() {
-	answers.Part1(1732, getGrid().runFor(100))
-	answers.Part2(290, getGrid().runUntilAll())
+	answer.Part1(1732, getGrid().runFor(100))
+	answer.Part2(290, getGrid().runUntilAll())
 }
 
 func getGrid() OctopusGrid {
-	grid := parsers.GridMaker[int]{
-		Rows:        files.ReadLines(),
-		Splitter:    parsers.Character,
+	grid := parser.GridMaker[int]{
+		Rows:        file.ReadLines(),
+		Splitter:    parser.Character,
 		Ignore:      "",
-		Transformer: parsers.ToInt,
+		Transformer: parser.ToInt,
 	}.Construct()
 	return OctopusGrid{
 		Grid:    grid,
-		flashed: make(map[parsers.Point]bool),
+		flashed: make(map[point.Point]bool),
 	}
 }
