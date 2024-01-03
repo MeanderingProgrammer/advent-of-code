@@ -36,10 +36,15 @@ These inputs end up in the `data` folder in the same structure as the solutions.
 
 For instance the input for year `2020` day `5` is file `data/2020/05/data.txt`.
 
-After cloning this repo the following commands need to be run to get the data.
+After cloning this repo the following command needs to be run to get the data.
 
 ```
-git submodule init
+git submodule update --init
+```
+
+This also means when pulling changes the `update` command must also be ran.
+
+```
 git submodule update
 ```
 
