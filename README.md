@@ -27,6 +27,15 @@ solutions from `Python` into something like `Rust` or `Go`.
 
 There is a section at the bottom of this doc tracking any remaining outliers.
 
+# Input Data
+
+The input for each puzzle is in a separate private Github repo to comply with
+the policy [here](https://adventofcode.com/about).
+
+These inputs end up in the `data` folder in the same structure as the solutions.
+
+For instance the input for year `2020` day `5` is file `data/2020/05/data.txt`.
+
 # Setup
 
 ## Install Requirements
