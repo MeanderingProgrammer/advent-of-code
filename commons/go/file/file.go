@@ -41,7 +41,7 @@ func SplitContent(splitter string) []string {
 
 func Content() string {
 	year, day := getYearDay()
-	filepath := []string{year, day, fileName()}
+	filepath := []string{"data", year, day, fileName()}
 	content, err := os.ReadFile(strings.Join(filepath, "/"))
 	util.CheckError(err)
 	return strings.ReplaceAll(string(content), "\r\n", "\n")

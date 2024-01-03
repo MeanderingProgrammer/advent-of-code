@@ -28,6 +28,7 @@ public class FileReader {
   }
 
   private Optional<Scanner> getFile() {
+    // Fix this to read from data directory
     File file = new File(String.format("%s.txt", this.fileName));
     try {
       return Optional.of(new Scanner(file));

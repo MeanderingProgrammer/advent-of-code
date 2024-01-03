@@ -61,7 +61,7 @@ pub fn read<T>(f: fn(&str) -> T) -> Vec<T> {
     let (year, day) = get_year_day();
     let args = Cli::parse();
     let file_name = if args.test { "sample.txt" } else { "data.txt" };
-    let reader = File::open(format!("{year}/{day}/{file_name}"))
+    let reader = File::open(format!("data/{year}/{day}/{file_name}"))
         .map(|file| BufReader::new(file))
         .expect(&format!("could not open '{}'", file_name));
     reader.lines().map(|line| f(&line.unwrap())).collect()
