@@ -2,7 +2,6 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
 )
@@ -93,14 +92,11 @@ func getData() ([]int, Boards) {
 func parseBoards(boards []string) Boards {
 	var result Boards
 	for _, board := range boards {
-		toInt := func(point parsers.Point, value string) int {
-			return conversions.ToInt(value)
-		}
 		grid := parsers.GridMaker[int]{
 			Rows:        parsers.Lines(board),
 			Splitter:    parsers.Field,
 			Ignore:      "",
-			Transformer: toInt,
+			Transformer: parsers.ToInt,
 		}.Construct()
 		board := Board{
 			grid:     grid,

@@ -7,11 +7,11 @@ import (
 	"fmt"
 )
 
-type Cucumber int
+type Cucumber string
 
 const (
-	East Cucumber = iota
-	South
+	East  Cucumber = ">"
+	South Cucumber = "v"
 )
 
 func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
@@ -21,7 +21,7 @@ func (cucumber Cucumber) target(start parsers.Point) parsers.Point {
 	case South:
 		return start.Add(0, 1)
 	default:
-		panic(fmt.Sprintf("Unexpected cucumber: %d", cucumber))
+		panic(fmt.Sprintf("Unexpected cucumber: %s", cucumber))
 	}
 }
 
@@ -79,21 +79,13 @@ func main() {
 }
 
 func getGrid() Grid {
-	toCucumber := func(point parsers.Point, value string) Cucumber {
-		switch value {
-		case ">":
-			return East
-		case "v":
-			return South
-		default:
-			panic(fmt.Sprintf("Unexpected value: %s", value))
-		}
-	}
 	grid := parsers.GridMaker[Cucumber]{
-		Rows:        files.ReadLines(),
-		Splitter:    parsers.Character,
-		Ignore:      ".",
-		Transformer: toCucumber,
+		Rows:     files.ReadLines(),
+		Splitter: parsers.Character,
+		Ignore:   ".",
+		Transformer: func(point parsers.Point, value string) Cucumber {
+			return Cucumber(value)
+		},
 	}.Construct()
 	return Grid{grid}
 }
