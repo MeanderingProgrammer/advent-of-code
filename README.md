@@ -207,7 +207,6 @@ a_graph \
 | 2023 | 23  | 5.531   | Ocaml    | Optimized graph, no early exit, longest path problem    |
 | 2022 | 16  | 4.603   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 3.247   | Go       | Looks like a complex path finding problem               |
-| 2023 | 16  | 3.141   | Ocaml    | Fast graph search, lots of repeated work remains        |
 | 2023 | 21  | 2.515   | Rust     | A growing set of points, gets fairly large              |
 | 2019 | 18  | 2.235   | Java     | Mostly the Java runtime for such a small execution      |
 | 2016 | 25  | 2.018   | Python   | Kinda like int-code, can probably make it faster        |
