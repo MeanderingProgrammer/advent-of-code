@@ -104,7 +104,7 @@ func ConstructGraph[V comparable](grid parsers.Grid[V]) Graph[parsers.Point, V] 
 	vertices := make(map[parsers.Point][]parsers.Point)
 	for _, point := range grid.Points() {
 		var connected []parsers.Point
-		for _, adjacent := range point.Adjacent(false) {
+		for _, adjacent := range point.Adjacent() {
 			if grid.Contains(adjacent) {
 				connected = append(connected, adjacent)
 			}

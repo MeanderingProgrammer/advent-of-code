@@ -2,7 +2,6 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
 	"advent-of-code/commons/go/utils"
@@ -39,7 +38,7 @@ func (points Points) basinSizes(grid Grid) []int {
 func basinSize(grid Grid, point parsers.Point) int {
 	basin := Points{point}
 	for i := 0; i < len(basin); i++ {
-		for _, adjacent := range basin[i].Adjacent(false) {
+		for _, adjacent := range basin[i].Adjacent() {
 			if grid.Contains(adjacent) && grid.Get(adjacent) < 9 && !basin.contains(adjacent) {
 				basin = append(basin, adjacent)
 			}
@@ -55,7 +54,7 @@ type Grid struct {
 func (grid Grid) minimums() Points {
 	isMinimum := func(point parsers.Point) bool {
 		value := grid.Get(point)
-		for _, adjacent := range point.Adjacent(false) {
+		for _, adjacent := range point.Adjacent() {
 			if grid.Contains(adjacent) && grid.Get(adjacent) <= value {
 				return false
 			}
@@ -77,14 +76,11 @@ func main() {
 }
 
 func getGrid() Grid {
-	toInt := func(point parsers.Point, value string) int {
-		return conversions.ToInt(value)
-	}
 	grid := parsers.GridMaker[int]{
 		Rows:        files.ReadLines(),
 		Splitter:    parsers.Character,
 		Ignore:      "",
-		Transformer: toInt,
+		Transformer: parsers.ToInt,
 	}.Construct()
 	return Grid{grid}
 }

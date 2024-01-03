@@ -2,7 +2,6 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/graphs"
 	"advent-of-code/commons/go/parsers"
@@ -59,12 +58,10 @@ func solve(wrap bool) int {
 
 func getGrid(wrap bool) parsers.Grid[int] {
 	grid := parsers.GridMaker[int]{
-		Rows:     files.ReadLines(),
-		Splitter: parsers.Character,
-		Ignore:   "",
-		Transformer: func(point parsers.Point, value string) int {
-			return conversions.ToInt(value)
-		},
+		Rows:        files.ReadLines(),
+		Splitter:    parsers.Character,
+		Ignore:      "",
+		Transformer: parsers.ToInt,
 	}.Construct()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1

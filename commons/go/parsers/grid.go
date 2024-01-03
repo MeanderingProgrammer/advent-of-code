@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/utils"
 	"fmt"
 	"strings"
@@ -30,23 +31,26 @@ func (p1 Point) ManhattanDistance(p2 Point) int {
 	return utils.Abs(difference.X) + utils.Abs(difference.Y)
 }
 
-func (point Point) Adjacent(includeDiagonal bool) []Point {
-	adjacent := []Point{
-		{X: point.X - 1, Y: point.Y},
-		{X: point.X + 1, Y: point.Y},
-		{X: point.X, Y: point.Y - 1},
-		{X: point.X, Y: point.Y + 1},
+func (point Point) Adjacent() []Point {
+	return []Point{
+		point.Add(-1, 0),
+		point.Add(1, 0),
+		point.Add(0, -1),
+		point.Add(0, 1),
 	}
-	if includeDiagonal {
-		diagonals := []Point{
-			{X: point.X + 1, Y: point.Y + 1},
-			{X: point.X - 1, Y: point.Y - 1},
-			{X: point.X + 1, Y: point.Y - 1},
-			{X: point.X - 1, Y: point.Y + 1},
-		}
-		adjacent = append(adjacent, diagonals...)
+}
+
+func (point Point) DiagonalAdjacent() []Point {
+	return []Point{
+		point.Add(-1, 0),
+		point.Add(1, 0),
+		point.Add(0, -1),
+		point.Add(0, 1),
+		point.Add(1, 1),
+		point.Add(-1, -1),
+		point.Add(1, -1),
+		point.Add(-1, 1),
 	}
-	return adjacent
 }
 
 func ConstructPoint(s string) Point {
@@ -134,23 +138,27 @@ const (
 func (splitter RowSplitter) get() func(string) []string {
 	switch splitter {
 	case Field:
-		return fieldSplitter
+		return func(row string) []string {
+			return strings.Fields(row)
+		}
 	case Character:
-		return characterSplitter
+		return func(row string) []string {
+			return strings.Split(row, "")
+		}
 	default:
 		panic(fmt.Sprintf("Unknown splitter: %d", splitter))
 	}
 }
 
-func fieldSplitter(row string) []string {
-	return strings.Fields(row)
-}
-
-func characterSplitter(row string) []string {
-	return strings.Split(row, "")
-}
-
 type ValueParser[T comparable] func(Point, string) T
+
+func Identity(point Point, value string) string {
+	return value
+}
+
+func ToInt(point Point, value string) int {
+	return conversions.ToInt(value)
+}
 
 type GridMaker[T comparable] struct {
 	Rows        []string

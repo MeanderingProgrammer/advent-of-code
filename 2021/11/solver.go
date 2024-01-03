@@ -2,7 +2,6 @@ package main
 
 import (
 	"advent-of-code/commons/go/answers"
-	"advent-of-code/commons/go/conversions"
 	"advent-of-code/commons/go/files"
 	"advent-of-code/commons/go/parsers"
 )
@@ -49,7 +48,7 @@ func (grid OctopusGrid) flash(point parsers.Point) {
 
 	if grid.Get(point) > 9 && !grid.flashed[point] {
 		grid.flashed[point] = true
-		for _, adjacent := range point.Adjacent(true) {
+		for _, adjacent := range point.DiagonalAdjacent() {
 			grid.flash(adjacent)
 		}
 	}
@@ -61,14 +60,11 @@ func main() {
 }
 
 func getGrid() OctopusGrid {
-	toInt := func(point parsers.Point, value string) int {
-		return conversions.ToInt(value)
-	}
 	grid := parsers.GridMaker[int]{
 		Rows:        files.ReadLines(),
 		Splitter:    parsers.Character,
 		Ignore:      "",
-		Transformer: toInt,
+		Transformer: parsers.ToInt,
 	}.Construct()
 	return OctopusGrid{
 		Grid:    grid,
