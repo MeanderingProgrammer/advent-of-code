@@ -241,8 +241,8 @@ a_graph \
 | 2021 | 12  | 1.490   | Go       | Path finding problem, might be some room to improve     |
 | 2022 | 15  | 1.483   | Rust     | Dealing with large space, already in Rust               |
 | 2016 | 5   | 1.471   | Go       | Final md5 hash that isn't running under 1 second        |
-| 2019 | 25  | 1.419   | Rust     | Mostly spends time permuting through the items          |
 | 2018 | 15  | 1.358   | Rust     | Complex game state with path finding between characters |
+| 2019 | 25  | 1.311   | Rust     | Mostly spends time permuting through the items          |
 | 2020 | 15  | 1.249   | Rust     | Even in Rust iterating to 30,000,000 takes a bit        |
 | 2018 | 24  | 1.153   | Python   | Complex game, fairly optimized in Python                |
 | 2019 | 20  | 1.132   | Java     | Mostly the Java runtime for such a small execution      |
