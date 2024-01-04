@@ -1,12 +1,13 @@
 import subprocess
 
 
-def execute(command: list[str]) -> None:
+def execute(command: list[str]) -> str:
     if len(command) == 0:
-        return None
-    result = subprocess.run(command, stderr=subprocess.PIPE)
+        return ""
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode != 0:
         error_message = result.stderr.decode()
         print(error_message)
         exit(1)
-    return None
+    else:
+        return result.stdout.decode()
