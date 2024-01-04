@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     values = Parser().entries()
     index = get_index(int(values[-3][:-1]), int(values[-1][:-1]))

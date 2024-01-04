@@ -41,6 +41,7 @@ class Value:
             return int(variable)
 
 
+@answer.timer
 def main() -> None:
     first = evaluate(None)
     answer.part1(3176, first)

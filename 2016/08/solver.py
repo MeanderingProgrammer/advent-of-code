@@ -36,6 +36,7 @@ class Operation:
             raise Exception("Unknwon operation: {}".format(self.value))
 
 
+@answer.timer
 def main() -> None:
     w, h = 50, 6
     display = create_display(w, h)

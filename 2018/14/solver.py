@@ -30,6 +30,7 @@ class Recipes:
         return (previous + self.scores[previous] + 1) % len(self.scores)
 
 
+@answer.timer
 def main() -> None:
     goal = Parser().integer()
     sequence = Recipes(goal).evolve()

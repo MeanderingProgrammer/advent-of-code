@@ -22,6 +22,7 @@ class Claim:
         return points
 
 
+@answer.timer
 def main() -> None:
     grid: dict[Point, list[int]] = get_overlap_grid()
 

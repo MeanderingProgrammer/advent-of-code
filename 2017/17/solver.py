@@ -18,6 +18,7 @@ class Lock:
         return self.q[index + 1]
 
 
+@answer.timer
 def main() -> None:
     answer.part1(996, run_lock_after(2_017, 2_017))
     answer.part2(1898341, run_lock_after(50_000_000, 0))

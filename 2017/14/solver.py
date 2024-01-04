@@ -50,6 +50,7 @@ class Knot:
         return hex(hashed)[2:].rjust(2, "0")
 
 
+@answer.timer
 def main() -> None:
     points = enabled_points(Parser(strip=True).string())
     answer.part1(8190, len(points))

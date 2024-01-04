@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     starting_row = [v == "." for v in Parser(strip=True).string()]
     answer.part1(2013, total_safe(starting_row, 40))

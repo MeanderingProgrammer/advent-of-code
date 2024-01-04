@@ -80,6 +80,7 @@ class SeatingChart:
         return sum([seat == Seat.OCCUPIED for seat in self.chart.values()])
 
 
+@answer.timer
 def main() -> None:
     answer.part1(2386, run_until_stable(False))
     answer.part2(2091, run_until_stable(True))

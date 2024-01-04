@@ -14,6 +14,7 @@ class Triangle:
         return (sides[0] + sides[1]) > sides[2]
 
 
+@answer.timer
 def main() -> None:
     answer.part1(862, num_valid(vertically()))
     answer.part2(1577, num_valid(horizontally()))

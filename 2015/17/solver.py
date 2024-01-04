@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     combinations = get_combinations(Parser().int_lines(), 150)
     answer.part1(1304, len(combinations))

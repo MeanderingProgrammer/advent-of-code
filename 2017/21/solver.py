@@ -48,6 +48,7 @@ class Pattern:
         return permutations
 
 
+@answer.timer
 def main() -> None:
     patterns = [Pattern(line) for line in Parser().lines()]
     answer.part1(188, run_iterations(patterns, 5))

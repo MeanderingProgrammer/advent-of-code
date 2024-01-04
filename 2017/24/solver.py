@@ -30,6 +30,7 @@ class BridgeBuilder:
             yield from self.generate(new_bridge)
 
 
+@answer.timer
 def main() -> None:
     bridges = get_bridge_builder().build()
     answer.part1(1656, strongest(bridges))

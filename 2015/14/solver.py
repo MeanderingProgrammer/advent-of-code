@@ -15,6 +15,7 @@ class Reindeer:
         return self.speed * ((complete * self.time) + min(remainder, self.time))
 
 
+@answer.timer
 def main() -> None:
     reindeers = get_reindeers()
     answer.part1(2655, max(distances_after(reindeers, 2_503)))

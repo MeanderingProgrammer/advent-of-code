@@ -63,6 +63,7 @@ class Word:
         return False
 
 
+@answer.timer
 def main() -> None:
     words = [Word(line) for line in Parser().lines()]
     answer.part1(238, total_nice_words(words, False))

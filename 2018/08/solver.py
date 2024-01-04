@@ -37,6 +37,7 @@ class Node:
         return 2 + sum([len(child) for child in self.children]) + len(self.metadata)
 
 
+@answer.timer
 def main() -> None:
     tree = Node(Parser().int_entries())
     answer.part1(42472, tree.sum_metadata())

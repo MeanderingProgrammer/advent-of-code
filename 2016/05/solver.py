@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     door_id = Parser().string()
     answer.part1("d4cd2ee1", generate_password(door_id, populate_v1))

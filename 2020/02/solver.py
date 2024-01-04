@@ -21,6 +21,7 @@ class PasswordEntry:
         return (letter1 == self.letter) != (letter2 == self.letter)
 
 
+@answer.timer
 def main() -> None:
     passwords = get_passwords()
     answer.part1(536, sum([password.valid_v1() for password in passwords]))

@@ -42,6 +42,7 @@ class Ticket:
         return any([rule.matches(value) for rule in rules])
 
 
+@answer.timer
 def main() -> None:
     groups = Parser().line_groups()
     rules = list(map(parse_rule, groups[0]))

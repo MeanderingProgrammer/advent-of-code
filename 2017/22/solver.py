@@ -39,6 +39,7 @@ class Virus:
         return values[len(values) // 2]
 
 
+@answer.timer
 def main() -> None:
     simplified_state_change = {CLEAN: INFECTED, INFECTED: CLEAN}
     answer.part1(5575, run(10_000, simplified_state_change))

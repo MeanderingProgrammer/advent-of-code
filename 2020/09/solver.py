@@ -35,6 +35,7 @@ class MaskingInput:
         raise Exception("Failed")
 
 
+@answer.timer
 def main() -> None:
     masking = MaskingInput(data=Parser().int_lines(), preamble_length=25)
     invalid_number = masking.first_invalid()

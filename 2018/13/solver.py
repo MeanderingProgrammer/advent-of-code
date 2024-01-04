@@ -111,6 +111,7 @@ class CartSystem:
         return [cart for cart in self.carts if cart.position == position]
 
 
+@answer.timer
 def main() -> None:
     system = run_system()
     answer.part1(Point(86, 118), system.crash_positions[0])

@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     prefix = Parser(strip=True).string()
     five_leading_0s = first_index(prefix, 5, 1)

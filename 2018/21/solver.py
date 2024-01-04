@@ -1,6 +1,7 @@
 from aoc import answer
 
 
+@answer.timer
 def main() -> None:
     halt_values = run()
     answer.part1(6619857, halt_values[0])

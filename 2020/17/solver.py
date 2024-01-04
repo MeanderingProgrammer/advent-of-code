@@ -60,6 +60,7 @@ class Grid:
         return sum([status.active for status in self.grid.values()])
 
 
+@answer.timer
 def main() -> None:
     answer.part1(284, simulate(3))
     answer.part2(2240, simulate(4))

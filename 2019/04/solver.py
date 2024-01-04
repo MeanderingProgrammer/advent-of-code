@@ -35,6 +35,7 @@ class Password:
         return end - start
 
 
+@answer.timer
 def main() -> None:
     start, end = Parser(strip=True).string().split("-")
     passwords = [Password(str(i)) for i in range(int(start), int(end) + 1)]

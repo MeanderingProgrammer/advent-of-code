@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(373160, run(lambda v: v + 1))
     answer.part2(26395586, run(lambda v: v - 1 if v >= 3 else v + 1))

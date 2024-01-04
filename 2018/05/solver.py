@@ -31,6 +31,7 @@ class Polymer:
         return type(self)([unit for unit in self.units if unit.lower() != unit_type])
 
 
+@answer.timer
 def main() -> None:
     polymer = Polymer([value for value in Parser().string()])
     answer.part1(11242, solve_part_1(polymer))

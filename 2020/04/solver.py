@@ -73,6 +73,7 @@ class Passport:
         return True
 
 
+@answer.timer
 def main() -> None:
     passports = get_passports()
     answer.part1(200, sum([passport.validate(False) for passport in passports]))

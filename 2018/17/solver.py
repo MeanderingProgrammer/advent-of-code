@@ -61,6 +61,7 @@ class GroundReservoir:
         return point[1] >= min_value and point[1] <= self.max_y
 
 
+@answer.timer
 def main() -> None:
     grid = get_grid()
     grid[(500, 0)] = "."

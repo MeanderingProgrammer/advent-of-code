@@ -54,6 +54,7 @@ class PointGrid:
         return sum(contained)
 
 
+@answer.timer
 def main() -> None:
     point_grid = get_point_grid()
     answer.part1(3251, point_grid.largest_finite())

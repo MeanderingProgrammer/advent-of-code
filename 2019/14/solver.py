@@ -54,6 +54,7 @@ class Reactions:
         raise Exception("Failed")
 
 
+@answer.timer
 def main() -> None:
     reactions = get_reactions()
     answer.part1(1967319, reactions.ore_for_fuel(1))

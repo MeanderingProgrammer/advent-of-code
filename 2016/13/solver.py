@@ -29,6 +29,7 @@ class Maze:
         return num_ones % 2 == 1
 
 
+@answer.timer
 def main() -> None:
     maze = Maze(grid=Grid(), favorite_number=Parser().integer())
     start, goal = Point(1, 1), Point(31, 39)

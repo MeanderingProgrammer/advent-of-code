@@ -47,6 +47,7 @@ class Grid:
         return result
 
 
+@answer.timer
 def main() -> None:
     distances = get_grid().compute_distances()
     answer.part1(498, traverse(distances, False))

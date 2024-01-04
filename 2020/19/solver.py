@@ -48,6 +48,7 @@ class Rules:
         return len(value) in self.rules[0].matches(self.rules, value, 0)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(198, total_matches(False))
     answer.part2(372, total_matches(True))

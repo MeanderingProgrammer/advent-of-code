@@ -59,6 +59,7 @@ class GuardEvents:
         return minute_frequencies
 
 
+@answer.timer
 def main() -> None:
     guard_events = get_guard_events()
     answer.part1(48680, solve_strategy_1(guard_events))

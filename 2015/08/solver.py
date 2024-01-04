@@ -34,6 +34,7 @@ class String:
         return len(result)
 
 
+@answer.timer
 def main() -> None:
     strings: list[String] = [String(line) for line in Parser().lines()]
     total = sum([s.total() for s in strings])

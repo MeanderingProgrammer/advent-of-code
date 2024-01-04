@@ -127,6 +127,7 @@ class Game:
         return distances
 
 
+@answer.timer
 def main() -> None:
     data = Parser().nested_lines()
     answer.part1(214731, play_game(data, False))

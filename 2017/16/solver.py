@@ -25,6 +25,7 @@ class Dance:
         return "".join(self.dancers)
 
 
+@answer.timer
 def main() -> None:
     pattern = get_pattern()
     answer.part1("eojfmbpkldghncia", pattern[1])

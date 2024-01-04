@@ -59,6 +59,7 @@ class Grid:
         return angles
 
 
+@answer.timer
 def main() -> None:
     grid = Grid(Parser().lines())
     asteroid, count = grid.get_most_seen()

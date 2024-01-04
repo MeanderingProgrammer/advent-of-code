@@ -48,6 +48,7 @@ class Symbol:
         return p1.number * p2.number
 
 
+@answer.timer
 def main() -> None:
     lines: list[str] = Parser(strip=True).lines()
     parts: list[Part] = get_parts(lines)

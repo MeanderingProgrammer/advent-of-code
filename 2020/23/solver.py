@@ -44,6 +44,7 @@ class Cups:
         return self.cups[1] * self.cups[self.cups[1]]
 
 
+@answer.timer
 def main() -> None:
     answer.part1("45798623", run(0, 100).part_1())
     answer.part2(235551949822, run(1_000_000, 10_000_000).part_2())

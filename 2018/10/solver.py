@@ -36,6 +36,7 @@ class Particles:
         return grid
 
 
+@answer.timer
 def main() -> None:
     particles = get_particles()
     time = min_area(particles)

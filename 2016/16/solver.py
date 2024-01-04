@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1("10010101010011101", fill_disk(272))
     answer.part2("01100111101101111", fill_disk(35_651_584))

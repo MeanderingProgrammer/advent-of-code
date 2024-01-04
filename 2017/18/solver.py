@@ -88,6 +88,7 @@ class Instruction:
             raise Exception(f"Unknown operation: {self.op}")
 
 
+@answer.timer
 def main() -> None:
     answer.part1(9423, run_1_computers())
     answer.part2(7620, run_2_computers())

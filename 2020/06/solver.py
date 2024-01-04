@@ -21,6 +21,7 @@ class BoardingGroup:
         return len(responses)
 
 
+@answer.timer
 def main() -> None:
     groups = [BoardingGroup(group) for group in Parser().line_groups()]
     answer.part1(6782, sum([group.any_positive() for group in groups]))

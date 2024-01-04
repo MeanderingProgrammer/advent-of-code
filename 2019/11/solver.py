@@ -53,6 +53,7 @@ class PaintBot(Bus):
         return grid
 
 
+@answer.timer
 def main() -> None:
     answer.part1(1909, len(run(0).grid))
     expected = [

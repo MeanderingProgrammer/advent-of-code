@@ -32,6 +32,7 @@ class Particle:
         self.pos = add(self.pos, self.vel)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(161, run_simulation(False)[0].id)
     answer.part2(438, len(run_simulation(True)))

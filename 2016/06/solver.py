@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1("liwvqppc", error_correct_message(-1))
     answer.part2("caqfbzlh", error_correct_message(0))

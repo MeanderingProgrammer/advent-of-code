@@ -24,6 +24,7 @@ Point = tuple[int, int]
 Nodes = dict[Point, Node]
 
 
+@answer.timer
 def main() -> None:
     nodes = get_nodes()
     answer.part1(910, viable_connections(nodes))

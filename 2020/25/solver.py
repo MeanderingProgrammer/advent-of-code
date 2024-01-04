@@ -26,6 +26,7 @@ class Transformer:
         return (value * self.subject) % 20201227
 
 
+@answer.timer
 def main() -> None:
     card, door = Parser().int_lines()
     loop_size = Transformer(7).get_loop_size(card)

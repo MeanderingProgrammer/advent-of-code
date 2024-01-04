@@ -20,6 +20,7 @@ class NanoBot:
         return len(self.pos)
 
 
+@answer.timer
 def main() -> None:
     bots = get_bots()
     bots.sort(key=lambda bot: bot.r)

@@ -20,6 +20,7 @@ class Rule:
         return before + after.replace(self.start, self.end, 1)
 
 
+@answer.timer
 def main() -> None:
     groups = Parser().line_groups()
     rules = get_rules(groups[0])

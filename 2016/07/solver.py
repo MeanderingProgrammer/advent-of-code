@@ -40,6 +40,7 @@ class IpAddress:
         return result
 
 
+@answer.timer
 def main() -> None:
     ips = get_ip_addresses()
     answer.part1(118, sum([ip.tls() for ip in ips]))

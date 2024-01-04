@@ -105,6 +105,7 @@ class State:
         return len(self.get(3)) < len(o.get(3))
 
 
+@answer.timer
 def main() -> None:
     answer.part1(37, count_steps([]))
     additional_items = [

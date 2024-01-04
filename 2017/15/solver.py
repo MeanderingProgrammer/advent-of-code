@@ -21,6 +21,7 @@ class Generator:
         self.value %= 2_147_483_647
 
 
+@answer.timer
 def main() -> None:
     answer.part1(592, matches(40_000_000, False))
     answer.part2(320, matches(5_000_000, True))

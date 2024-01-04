@@ -105,6 +105,7 @@ class Graph:
         return duration
 
 
+@answer.timer
 def main() -> None:
     graph = get_graph()
     answer.part1("LAPFCRGHVZOTKWENBXIMSUDJQY", "".join(graph.topo_sort()))

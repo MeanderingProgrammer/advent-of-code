@@ -53,6 +53,7 @@ class Tester:
         return self.test(edge) == 1
 
 
+@answer.timer
 def main() -> None:
     tester = Tester(memory=Parser().int_csv(), beam_starts=dict())
     answer.part1(160, affected_points(tester, 50))
