@@ -1,4 +1,4 @@
-from language.golang import Go
+from language.go import Go
 from language.java import Java
 from language.language import Language
 from language.ocaml import Ocaml
