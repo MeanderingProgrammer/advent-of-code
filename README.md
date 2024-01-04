@@ -239,7 +239,7 @@ a_graph \
 | 2019 | 23  | 1.583   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2016 | 14  | 1.391   | Go       | Already batched implementation of md5                   |
 | 2019 | 18  | 1.245   | Java     | Can likely minimize state to make lookups faster        |
-| 2016 | 5   | 1.220   | Go       | Final md5 hash that isn't running under 1 second        |
+| 2016 | 5   | 1.220   | Go       | Already batched implementation of md5                   |
 | 2022 | 15  | 1.196   | Rust     | Dealing with large space                                |
 | 2019 | 25  | 1.191   | Rust     | Mostly spends time permuting through the items          |
 | 2018 | 15  | 1.187   | Rust     | Complex game state with path finding between characters |
