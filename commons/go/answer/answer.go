@@ -2,7 +2,15 @@ package answer
 
 import (
 	"fmt"
+	"time"
 )
+
+func Timer(solution func()) {
+	start := time.Now().UnixNano()
+	solution()
+	end := time.Now().UnixNano()
+	fmt.Println(fmt.Sprintf("Runtime (ns): %d", end-start))
+}
 
 func Part1[T comparable](expected, result T) {
 	part(1, expected, result)

@@ -18,9 +18,11 @@ let winsorize values =
   in
   f [] values
 
-let () =
+let solution () =
   let values = Reader.read_ints () in
   let part1 = increases values in
   let part2 = increases (List.rev (winsorize values)) in
   Answer.part1 1292 part1 string_of_int;
   Answer.part2 1262 part2 string_of_int
+
+let () = Answer.timer solution

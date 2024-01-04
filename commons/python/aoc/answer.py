@@ -1,3 +1,17 @@
+import time
+from typing import Callable
+
+
+def timer(solution: Callable[[], None]) -> Callable[[], None]:
+    def wrapper() -> None:
+        start = time.time_ns()
+        solution()
+        end = time.time_ns()
+        print(f"Runtime (ns): {end - start}")
+
+    return wrapper
+
+
 def part1[T](expected: T, result: T) -> None:
     part(1, expected, result)
 
