@@ -2,8 +2,8 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
+use fxhash::FxHashMap;
 use priority_queue::DoublePriorityQueue;
-use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Team {
@@ -27,7 +27,7 @@ enum GameStatus {
 
 #[derive(Debug)]
 struct Game {
-    characters: HashMap<Point, Character>,
+    characters: FxHashMap<Point, Character>,
     open_paths: Vec<Point>,
     until_elf_death: bool,
 }
@@ -159,11 +159,11 @@ impl Game {
         }
     }
 
-    fn distances(&self, start: &Point) -> HashMap<Point, (u16, Point)> {
+    fn distances(&self, start: &Point) -> FxHashMap<Point, (u16, Point)> {
         let occupied = self.positions();
         let mut queue = DoublePriorityQueue::new();
         queue.push_decrease(start.clone(), (0, start.clone()));
-        let mut distances = HashMap::new();
+        let mut distances = FxHashMap::default();
         while !queue.is_empty() {
             let (position, (length, parent)) = queue.pop_min().unwrap();
             if !distances.contains_key(&position) {
@@ -209,7 +209,7 @@ fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
     }
     let grid = reader::read_grid(|ch| Some(ch));
     let mut game = Game {
-        characters: HashMap::new(),
+        characters: FxHashMap::default(),
         open_paths: from_grid(&grid, '.'),
         until_elf_death,
     };

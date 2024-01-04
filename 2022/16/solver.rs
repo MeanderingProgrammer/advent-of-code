@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
+use fxhash::FxHashMap;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -11,7 +12,7 @@ use nom::{
 };
 use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
-use std::collections::{BTreeSet, HashMap};
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct IndividualState {
@@ -42,8 +43,8 @@ impl FullState {
 
 #[derive(Debug)]
 struct Cave {
-    graph: HashMap<String, Vec<(String, u16)>>,
-    valve_to_flow: HashMap<String, u16>,
+    graph: FxHashMap<String, Vec<(String, u16)>>,
+    valve_to_flow: FxHashMap<String, u16>,
 }
 
 impl Cave {
@@ -202,7 +203,7 @@ fn create_cave(valves: &Vec<Valve>) -> Cave {
     // Use a fast algorithm to get distances between all pairs
     let all_distances = floyd_warshall(&base_graph, |_| 1).unwrap();
     // Create a graph weighted by distance for all important valves
-    let mut graph: HashMap<String, Vec<(String, u16)>> = HashMap::new();
+    let mut graph: FxHashMap<String, Vec<(String, u16)>> = FxHashMap::default();
     for v1 in valve_to_flow.keys() {
         for v2 in valve_to_flow.keys() {
             if v1 != v2 {
@@ -220,8 +221,8 @@ fn create_cave(valves: &Vec<Valve>) -> Cave {
     }
 }
 
-fn get_valve_to_flow(valves: &Vec<Valve>) -> HashMap<String, u16> {
-    let mut valve_to_flow = HashMap::new();
+fn get_valve_to_flow(valves: &Vec<Valve>) -> FxHashMap<String, u16> {
+    let mut valve_to_flow = FxHashMap::default();
     valves
         .iter()
         // Only some of the valves actually matter, in particular the ones with some flow rate + start
