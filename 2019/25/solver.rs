@@ -1,8 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::reader;
+use fxhash::{FxHashMap, FxHashSet};
 use itertools::{Itertools, Permutations};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::VecDeque;
 use std::str::FromStr;
 use std::vec::IntoIter;
 
@@ -95,13 +96,13 @@ impl FromStr for View {
 
 #[derive(Debug)]
 struct Graph {
-    graph: HashMap<String, HashSet<Direction>>,
+    graph: FxHashMap<String, FxHashSet<Direction>>,
 }
 
 impl Graph {
     fn add_node(&mut self, name: &str) {
         if !self.graph.contains_key(name) {
-            self.graph.insert(name.to_string(), HashSet::new());
+            self.graph.insert(name.to_string(), FxHashSet::default());
         }
     }
 
@@ -182,7 +183,7 @@ impl DroidBus {
             commands: VecDeque::new(),
             state: State::EXPLORING,
             grid: Graph {
-                graph: HashMap::new(),
+                graph: FxHashMap::default(),
             },
             previous: None,
             history: Vec::new(),
