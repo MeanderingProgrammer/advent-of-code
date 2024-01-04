@@ -14,6 +14,10 @@ class Generator:
     puzzle: bool
 
     def run(self) -> None:
+        self.__setup_language()
+        self.__setup_data_files()
+
+    def __setup_language(self) -> None:
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         # Copy over language template if not already present
@@ -23,11 +27,6 @@ class Generator:
         else:
             self.__copy_template_files()
             self.language.template_processing(self.day)
-        data_created = self.__pull_aoc_file("-I -i", "data.txt")
-        if data_created:
-            self.__create_sample_file()
-        if self.puzzle:
-            self.__pull_aoc_file("-P -p", "puzzle.md")
 
     def __copy_template_files(self) -> None:
         template_directory = Path(f"scripts/templates/{self.language.name}")
@@ -44,8 +43,18 @@ class Generator:
                     print(f"Copying {template_file} to {destination}")
                     shutil.copy(template_file, destination)
 
-    def __pull_aoc_file(self, flags: str, file_name: str) -> bool:
-        file_path = self.day.dir().joinpath(file_name)
+    def __setup_data_files(self) -> None:
+        # Create data directory, okay if it already exists
+        data_dir = Path("data").joinpath(self.day.dir())
+        data_dir.mkdir(parents=True, exist_ok=True)
+        # Download the necessary files
+        data_created = self.__pull_aoc_file("-I -i", data_dir.joinpath("data.txt"))
+        if data_created:
+            Generator.__create_empty_file(data_dir.joinpath("sample.txt"))
+        if self.puzzle:
+            self.__pull_aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
+
+    def __pull_aoc_file(self, flags: str, file_path: Path) -> bool:
         if file_path.exists():
             print(f"{file_path} already exists, leaving as is")
             return False
@@ -62,12 +71,12 @@ class Generator:
             ]
             os.system(" ".join(download_command))
         else:
-            print(f"Creating empty {file_path} since aoc-cli is not setup")
-            file_path.touch()
+            print("aoc-cli is not setup")
+            Generator.__create_empty_file(file_path)
         return True
 
-    def __create_sample_file(self) -> None:
-        sample_path = self.day.dir().joinpath("sample.txt")
-        if not sample_path.exists():
-            print(f"Creating empty {sample_path}")
-            sample_path.touch()
+    @staticmethod
+    def __create_empty_file(file_path: Path) -> None:
+        if not file_path.exists():
+            print(f"Creating empty {file_path}")
+            file_path.touch()
