@@ -87,6 +87,10 @@ impl PowerGrid {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let values = reader::read_int();
     let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);

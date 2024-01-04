@@ -127,8 +127,10 @@ let until_rx_high (modules : module_map) : int =
   let periods = List.map ~f:(until_high rx_input) main_inputs in
   Util.multiply periods
 
-let () =
+let solution () =
   let part1 = run_for (get_modules ()) 1_000 in
   let part2 = until_rx_high (get_modules ()) in
   Answer.part1 818649769 part1 string_of_int;
   Answer.part2 246313604784977 part2 string_of_int
+
+let () = Answer.timer solution

@@ -47,6 +47,10 @@ import (
 // - zs:        1   1   1   26  1   26  1   1   26  1   26  26  26  26
 // - group:     1   2   3   3   4   4   5   6   6   7   7   5   2   1
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	program := getProgram()
 	constrainedNumber := addConstraints(
 		group(program.nth(4)),

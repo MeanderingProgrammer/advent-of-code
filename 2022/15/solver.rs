@@ -140,6 +140,10 @@ impl CoverageZone {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let coverage = reader::read(|line| CoverageZone::from_str(line).unwrap().1);
     answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));

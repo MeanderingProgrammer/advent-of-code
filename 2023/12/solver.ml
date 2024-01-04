@@ -65,10 +65,12 @@ let count_unfolded (r : Row.t) =
   let groups = repeat r.groups 5 in
   count springs groups (Hashtbl.create (module Row))
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let rows = List.map ~f:parse_row values in
   let part1 = Util.sum (List.map ~f:count_folded rows) in
   let part2 = Util.sum (List.map ~f:count_unfolded rows) in
   Answer.part1 8075 part1 string_of_int;
   Answer.part2 4232520187524 part2 string_of_int
+
+let () = Answer.timer solution

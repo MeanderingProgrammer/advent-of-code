@@ -29,7 +29,7 @@ let get_missing last numbers =
   in
   Util.sum values
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let all_numbers = List.map ~f:parse_numbers values in
   let missing_last = List.map ~f:(get_missing true) all_numbers in
@@ -38,3 +38,5 @@ let () =
   let part2 = Util.sum missing_first in
   Answer.part1 1916822650 part1 string_of_int;
   Answer.part2 966 part2 string_of_int
+
+let () = Answer.timer solution

@@ -35,6 +35,10 @@ impl Backpack {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let backpacks = reader::read(|line| Backpack::new(line));
 
     let p1_items = backpacks.iter().map(|backpack| backpack.shared());

@@ -51,6 +51,10 @@ impl SandFlow {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(610, fill(false));
     answer::part2(27194, fill(true));
 }

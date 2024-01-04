@@ -147,7 +147,7 @@ let search (graph : graph) (start : Point.t) (target : Point.t)
   in
   run [ { node = { last = start; path = [ start ] }; weight = 0 } ] 0
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let start : Point.t = { x = 1; y = 0 } in
   let start_path = { traversed = [ (DOWN, start) ]; uphill = false } in
@@ -159,3 +159,5 @@ let () =
   let part2 = search false in
   Answer.part1 2154 part1 string_of_int;
   Answer.part2 6654 part2 string_of_int
+
+let () = Answer.timer solution

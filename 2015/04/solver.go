@@ -31,6 +31,10 @@ func (h hashSearch) getHash(i int) string {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	prefix := strings.TrimSpace(file.Content())
 	fiveLeading := firstIndex(prefix, 5, 1)
 	answer.Part1(346386, fiveLeading)

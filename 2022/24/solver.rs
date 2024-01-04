@@ -145,6 +145,10 @@ impl Valley {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut valley = Valley::new(reader::read_grid(|ch| match ch {
         '<' | '^' | '>' | 'v' | '.' => Some(ch),
         _ => None,

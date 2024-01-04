@@ -99,6 +99,10 @@ func (systems Systems) autocompleteScore() int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	systems := getSystem()
 	answer.Part1(321237, systems.mismatchScore())
 	answer.Part2(2360030859, systems.autocompleteScore())

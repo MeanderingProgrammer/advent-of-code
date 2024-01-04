@@ -62,6 +62,10 @@ func (g Grid) minimums() Points {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	grid := getGrid()
 
 	minimums := grid.minimums()

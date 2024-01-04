@@ -28,6 +28,10 @@ impl People {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let graph = get_graph();
     answer::part1(709, max_score(&graph, false));
     answer::part2(668, max_score(&graph, true));

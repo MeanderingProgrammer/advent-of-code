@@ -53,6 +53,10 @@ impl FileSystem {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     // Heavily inspired by https://fasterthanli.me/series/advent-of-code-2022/part-7
     let fs = get_file_system();
     let directories = fs.directories();

@@ -77,6 +77,10 @@ func (packet Packet) calculateSubPacket(index int) int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	packets, _ := parsePackets(getData(), -1)
 	packet := packets[0]
 	answer.Part1(929, packet.versionSum())

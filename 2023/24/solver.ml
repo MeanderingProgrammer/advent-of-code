@@ -89,7 +89,7 @@ let gaussian_elimination (matrix : float list array) : int list =
   let result = Array.map ~f:(fun row -> List.last_exn row) matrix in
   Array.to_list (Array.map ~f:int_of_float result)
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let stones = List.map ~f:parse_stone values in
   let between = Float.between ~low:200000000000000. ~high:400000000000000. in
@@ -101,3 +101,5 @@ let () =
   let part2 = x + y + z in
   Answer.part1 14672 part1 string_of_int;
   Answer.part2 646810057104753 part2 string_of_int
+
+let () = Answer.timer solution

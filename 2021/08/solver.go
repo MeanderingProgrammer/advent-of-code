@@ -102,6 +102,10 @@ func (segmentEntry SegmentEntry) solve() string {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	part1, part2 := 0, 0
 	for _, segmentEntry := range getSegmentEntries() {
 		outputNumber := segmentEntry.solve()

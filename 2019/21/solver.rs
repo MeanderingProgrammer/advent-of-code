@@ -38,6 +38,10 @@ impl Bus for JumpDroid {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(
         19357761,
         run_droid(vec![

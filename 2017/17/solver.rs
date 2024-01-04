@@ -19,6 +19,10 @@ impl LockIndex {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let step_size = reader::read_int()[0] as usize;
     answer::part1(996, after_last(step_size, 2_017));
     answer::part2(1898341, after_zero(step_size, 50_000_000));

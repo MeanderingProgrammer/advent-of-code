@@ -2,6 +2,10 @@ use aoc_lib::answer;
 use aoc_lib::reader;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(373160, run(|v| v + 1));
     answer::part2(26395586, run(|v| if v >= 3 { v - 1 } else { v + 1 }));
 }

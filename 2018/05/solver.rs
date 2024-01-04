@@ -45,6 +45,10 @@ impl Polymer {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut polymer = Polymer {
         units: reader::read_chars(),
     };

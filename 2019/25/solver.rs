@@ -288,6 +288,10 @@ impl Bus for DroidBus {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut computer = Computer::new(DroidBus::new(), reader::read_csv());
     computer.run();
     answer::part1(2622472, computer.bus.get_key());

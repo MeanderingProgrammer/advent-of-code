@@ -33,6 +33,10 @@ impl FromStr for Motion {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let motions: Vec<Motion> = reader::read(|line| line.parse().unwrap());
     answer::part1(6563, follow_trail(&motions, 2));
     answer::part2(2653, follow_trail(&motions, 10));

@@ -90,6 +90,10 @@ impl PointGrid {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let points: Vec<Point> = reader::read(|line| line.parse().unwrap());
     let point_grid = PointGrid::new(points);
     answer::part1(3251, point_grid.largest_finite());

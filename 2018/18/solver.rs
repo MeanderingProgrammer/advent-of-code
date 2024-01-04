@@ -81,6 +81,10 @@ impl Landscape {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(515496, run(10));
     answer::part2(233058, run(1_000_000_000));
 }

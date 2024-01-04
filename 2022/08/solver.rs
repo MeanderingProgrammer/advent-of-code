@@ -4,6 +4,10 @@ use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = reader::read_grid(|ch| Some(ch.to_digit(10).unwrap() as i64));
     let result: Vec<(i64, bool)> = grid
         .points()

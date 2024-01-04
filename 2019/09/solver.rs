@@ -23,6 +23,10 @@ impl Bus for BoostProgram {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(3512778005, run(1));
     answer::part2(35920, run(2));
 }

@@ -190,6 +190,10 @@ impl State {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let bps: Vec<Blueprint> = reader::read(|line| line.parse().unwrap());
     answer::part1(1599, bps.iter().map(|bp| bp.simulate(24) * bp.id).sum());
     answer::part2(

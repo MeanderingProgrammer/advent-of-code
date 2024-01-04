@@ -52,6 +52,10 @@ func coordinateRange(v1 int, v2 int) []int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	lines := getLines()
 	answer.Part1(6666, numPointsWithOverlap(lines, false))
 	answer.Part2(19081, numPointsWithOverlap(lines, true))

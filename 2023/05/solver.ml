@@ -66,7 +66,7 @@ let rec get_seeds seeds =
       { first; last = first + length - 1; offset = 0 } :: get_seeds xs
   | _ -> []
 
-let () =
+let solution () =
   let groups = Reader.read_groups () in
   let seeds = parse_seeds (List.hd_exn (List.hd_exn groups)) in
   let offsets = parse_offsets (List.tl_exn groups) in
@@ -74,3 +74,5 @@ let () =
   let part2 = (apply offsets) (get_seeds seeds) in
   Answer.part1 621354867 part1 string_of_int;
   Answer.part2 15880236 part2 string_of_int
+
+let () = Answer.timer solution

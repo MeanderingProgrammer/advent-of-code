@@ -59,7 +59,7 @@ let focussing_power i box =
   let partial = Util.sum values in
   (i + 1) * partial
 
-let () =
+let solution () =
   let data = Reader.read () in
   let values = String.split ~on:',' (String.strip data) in
   let part1 = Util.sum (List.map ~f:hash values) in
@@ -71,3 +71,5 @@ let () =
   in
   Answer.part1 514281 part1 string_of_int;
   Answer.part2 244199 part2 string_of_int
+
+let () = Answer.timer solution

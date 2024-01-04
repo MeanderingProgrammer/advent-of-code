@@ -56,6 +56,10 @@ impl Animator {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = reader::read_grid(|ch| Some(ch));
     answer::part1(1061, run(&grid, false));
     answer::part2(1006, run(&grid, true));

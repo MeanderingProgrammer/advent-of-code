@@ -102,6 +102,10 @@ impl SeatingChart {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(2386, run_until_stable(false));
     answer::part2(2091, run_until_stable(true));
 }

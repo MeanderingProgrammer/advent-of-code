@@ -22,6 +22,10 @@ impl FromStr for Instruction {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let instructions = reader::read(|line| line.parse::<Instruction>().unwrap());
     let cycles = get_cycles(instructions);
 

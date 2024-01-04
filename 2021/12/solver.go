@@ -55,6 +55,10 @@ func (path Path) containsLower() bool {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	graph := getGraph()
 	answer.Part1(3497, paths(graph, part1))
 	answer.Part2(93686, paths(graph, part2))

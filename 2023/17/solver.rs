@@ -103,6 +103,10 @@ impl Search {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = reader::read_grid(|ch| ch.to_digit(10));
     let bounds = grid.bounds(0);
     let search = Search {

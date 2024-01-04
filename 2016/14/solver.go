@@ -65,6 +65,10 @@ func sameChar(value string) bool {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	prefix := strings.TrimSpace(file.Content())
 	answer.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
 	answer.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))

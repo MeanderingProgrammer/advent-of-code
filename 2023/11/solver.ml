@@ -42,7 +42,7 @@ let rec get_distances universe points multiplier =
 let sum_distances universe points multiplier =
   Util.sum (get_distances universe points multiplier)
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let grid = Hashtbl.filter ~f:(Char.equal '#') grid in
   let max = Grid.max grid in
@@ -57,3 +57,5 @@ let () =
   let part2 = sum_distances universe grid 1_000_000 in
   Answer.part1 9550717 part1 string_of_int;
   Answer.part2 648458253817 part2 string_of_int
+
+let () = Answer.timer solution

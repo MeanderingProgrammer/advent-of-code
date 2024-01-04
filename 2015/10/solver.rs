@@ -30,6 +30,10 @@ impl Game {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut game = Game {
         value: reader::read_chars()
             .into_iter()

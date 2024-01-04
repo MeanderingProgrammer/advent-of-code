@@ -55,6 +55,10 @@ func (g OctopusGrid) flash(p point.Point) {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(1732, getGrid().runFor(100))
 	answer.Part2(290, getGrid().runUntilAll())
 }

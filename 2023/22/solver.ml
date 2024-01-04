@@ -99,7 +99,7 @@ let fall_count (settled : grid) (bricks : brick list) (b : brick) : int =
   in
   helper (Hashtbl.create (module Int)) b
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let bricks = List.mapi ~f:parse_brick values in
   let bricks = List.sort ~compare:by_lowest bricks in
@@ -111,3 +111,5 @@ let () =
   let part2 = Util.sum fall_counts in
   Answer.part1 519 part1 string_of_int;
   Answer.part2 109531 part2 string_of_int
+
+let () = Answer.timer solution

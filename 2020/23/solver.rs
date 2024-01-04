@@ -67,6 +67,10 @@ impl Cups {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1("45798623", &run(0, 100).part_1());
     answer::part2(235551949822, run(1_000_000, 10_000_000).part_2());
 }

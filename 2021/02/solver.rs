@@ -37,6 +37,10 @@ impl Instruction {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let instructions = reader::read(|line| Instruction::from_str(line));
 
     let mut p = Point3d::default();

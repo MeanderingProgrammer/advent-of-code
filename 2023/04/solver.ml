@@ -41,7 +41,7 @@ let rec winnings i matches counts =
       winnings (i + 1) xs (update_counts counts (i + 1) (i + x) count)
   | [] -> counts
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let cards = List.map ~f:parse_card values in
   let matches = List.map ~f:card_match_count cards in
@@ -51,3 +51,5 @@ let () =
   let part2 = Util.sum counts in
   Answer.part1 18619 part1 string_of_int;
   Answer.part2 8063216 part2 string_of_int
+
+let () = Answer.timer solution

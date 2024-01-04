@@ -94,10 +94,12 @@ let total_winnings hands wild_joker =
   let ordered = List.sort ~compare hands in
   Util.sum (List.mapi ~f:winnings ordered)
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let hands = List.map ~f:parse_hand values in
   let part1 = total_winnings hands false in
   let part2 = total_winnings hands true in
   Answer.part1 248105065 part1 string_of_int;
   Answer.part2 249515436 part2 string_of_int
+
+let () = Answer.timer solution

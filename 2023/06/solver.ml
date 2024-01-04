@@ -22,7 +22,7 @@ let join values =
   let string_values = List.map ~f:string_of_int values in
   int_of_string (String.concat ~sep:"" string_values)
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let times = parse_values (List.nth_exn values 0) in
   let distances = parse_values (List.nth_exn values 1) in
@@ -32,3 +32,5 @@ let () =
   let part2 = count_variants (join times, join distances) in
   Answer.part1 140220 part1 string_of_int;
   Answer.part2 39570185 part2 string_of_int
+
+let () = Answer.timer solution

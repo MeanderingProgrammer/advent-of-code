@@ -124,6 +124,10 @@ struct ItemMove {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(56350, monkey_business(20, true));
     answer::part2(13954061248, monkey_business(10_000, false));
 }

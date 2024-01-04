@@ -2,6 +2,10 @@ use aoc_lib::answer;
 use aoc_lib::reader;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1("10010101010011101", &fill_disk(272));
     answer::part2("01100111101101111", &fill_disk(35_651_584));
 }

@@ -125,6 +125,10 @@ impl System {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let system = System {
         bodies: reader::read(|line| line.parse().unwrap()),
     };

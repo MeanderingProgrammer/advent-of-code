@@ -58,6 +58,10 @@ impl BridgeBuilder {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut components: HashMap<u8, Vec<u8>> = HashMap::new();
     reader::read_lines().iter().for_each(|line| {
         let (p1, p2) = line.split_once("/").unwrap();

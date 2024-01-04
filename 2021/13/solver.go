@@ -61,6 +61,10 @@ func (g PaperGrid) apply(fold Fold) PaperGrid {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	grid, folds := getGridFolds()
 
 	grid = grid.apply(folds[0])

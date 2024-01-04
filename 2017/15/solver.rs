@@ -32,12 +32,17 @@ impl Generator {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(592, matches(40_000_000, false));
     answer::part2(320, matches(5_000_000, true));
 }
 
 fn matches(n: i64, wait_mult: bool) -> u64 {
-    let generators: Vec<u64> = reader::read(|line| line.rsplit(" ").next().unwrap().parse().unwrap());
+    let generators: Vec<u64> =
+        reader::read(|line| line.rsplit(" ").next().unwrap().parse().unwrap());
     let mut gen_a = Generator::new(generators[0], 16_807, 4);
     let mut gen_b = Generator::new(generators[1], 48_271, 8);
     let mut count = 0;

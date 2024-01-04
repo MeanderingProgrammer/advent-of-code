@@ -31,6 +31,10 @@ func (binaries Binaries) filter(position int, value string) Binaries {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	binaries := getBinaries()
 	answer.Part1(4006064, calculatePowerConsumption(binaries))
 	answer.Part2(5941884, calculateLifeSupport(binaries))

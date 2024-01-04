@@ -30,6 +30,10 @@ func (school School) totalFish() int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(345793, fishAfter(80))
 	answer.Part2(1572643095893, fishAfter(256))
 }

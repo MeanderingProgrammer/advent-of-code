@@ -73,7 +73,7 @@ let create_states (coords : int list) (direction : Direction.t)
     ~f:(fun (coord : int) : State.t -> { position = f coord; direction })
     coords
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let start : State.t = { position = { x = 0; y = 0 }; direction = RIGHT } in
   let part1 = energized grid start in
@@ -88,3 +88,5 @@ let () =
   let part2 = Util.max (List.map ~f:(energized grid) states) in
   Answer.part1 8901 part1 string_of_int;
   Answer.part2 9064 part2 string_of_int
+
+let () = Answer.timer solution

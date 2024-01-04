@@ -68,7 +68,7 @@ let calculate_area (plans : plan list) : int =
   let edges = start :: plan_edges start plans in
   shoelace edges
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let direct = List.map ~f:parse_direct values in
   let color = List.map ~f:parse_color values in
@@ -76,3 +76,5 @@ let () =
   let part2 = calculate_area color in
   Answer.part1 48795 part1 string_of_int;
   Answer.part2 40654918441248 part2 string_of_int
+
+let () = Answer.timer solution

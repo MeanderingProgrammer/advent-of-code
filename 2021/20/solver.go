@@ -91,6 +91,10 @@ func (image Image) getBounds() Bounds {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(5437, litAfter(2))
 	answer.Part2(19340, litAfter(50))
 }

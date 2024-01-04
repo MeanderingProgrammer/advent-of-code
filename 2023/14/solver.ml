@@ -72,7 +72,7 @@ let rec until_repeat grid max_y seen =
       let pattern = List.map ~f:(fun (_, x) -> x) pattern in
       (preamble, pattern)
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let max_y = (Grid.max grid).y + 1 in
 
@@ -90,3 +90,5 @@ let () =
   let part2 = List.nth_exn pattern pattern_index in
   Answer.part1 109654 part1 string_of_int;
   Answer.part2 94876 part2 string_of_int
+
+let () = Answer.timer solution

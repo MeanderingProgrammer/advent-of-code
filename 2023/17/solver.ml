@@ -82,10 +82,12 @@ let dijkstra (grid : Grid.t) (start : Point.t) (target : Point.t)
   in
   run ()
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let path_finder = dijkstra grid { x = 0; y = 0 } (Grid.max grid) in
   let part1 = path_finder 1 3 in
   let part2 = path_finder 4 10 in
   Answer.part1 694 part1 string_of_int;
   Answer.part2 829 part2 string_of_int
+
+let () = Answer.timer solution
