@@ -15,4 +15,4 @@
  (name advent_of_code)
  (synopsis "Public Repo for Advent of Code Solutions")
  (description "Public Repo for Advent of Code Solutions")
- (depends ocaml dune))
+ (depends ocaml dune core_kernel ppx_jane))

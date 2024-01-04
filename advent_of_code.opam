@@ -9,6 +9,8 @@ bug-reports: "https://github.com/MeanderingProgrammer/advent-of-code/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.11"}
+  "core_kernel"
+  "ppx_jane"
   "odoc" {with-doc}
 ]
 build: [
