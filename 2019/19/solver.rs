@@ -67,6 +67,10 @@ impl Tester {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let mut tester = Tester {
         memory: reader::read_csv(),
         beam_starts: HashMap::new(),

@@ -70,6 +70,10 @@ impl Virus {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let simplified = HashMap::from([
         (State::CLEAN, State::INFECTED),
         (State::INFECTED, State::CLEAN),

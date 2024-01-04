@@ -32,6 +32,10 @@ func (path Path) add(graph graph.Graph[point.Point, int], p point.Point) Path {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(656, solve(false))
 	answer.Part2(2979, solve(true))
 }

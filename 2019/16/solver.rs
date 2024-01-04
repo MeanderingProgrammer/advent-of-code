@@ -53,6 +53,10 @@ impl Transmission {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(77038830, apply_fft(1, false));
     answer::part2(28135104, apply_fft(10_000, true));
 }

@@ -39,7 +39,7 @@ let rec follow_until i target directions network location =
 let is_zzz s = String.equal s "ZZZ"
 let ends ch s = String.is_suffix ~suffix:ch s
 
-let () =
+let solution () =
   let groups = Reader.read_groups () in
   let directions = List.nth_exn (List.nth_exn groups 0) 0 |> String.to_list in
   let network = List.map ~f:parse_node (List.nth_exn groups 1) in
@@ -52,3 +52,5 @@ let () =
   let part2 = Math.lcm loops in
   Answer.part1 24253 part1 string_of_int;
   Answer.part2 12357789728873 part2 string_of_int
+
+let () = Answer.timer solution

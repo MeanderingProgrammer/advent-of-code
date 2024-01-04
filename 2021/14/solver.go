@@ -55,6 +55,10 @@ func (template Template) frequencies() Frequencies {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(2899, diffAfter(10))
 	answer.Part2(3528317079545, diffAfter(40))
 }

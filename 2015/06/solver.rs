@@ -86,6 +86,10 @@ impl Direction {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let directions = reader::read(|line| Direction::from_str(line).unwrap().1);
     answer::part1(400410, apply_all(&directions, Action::single));
     answer::part2(15343601, apply_all(&directions, Action::dimable));

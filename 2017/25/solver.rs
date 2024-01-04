@@ -133,6 +133,10 @@ impl TuringMachine {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let groups = reader::read_full_groups();
 
     let (start_state, steps) = get_state(&groups[0]).unwrap().1;

@@ -55,6 +55,10 @@ func (p *Part2) populate(passwords map[int]string, hash string) {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	doorId := file.Content()
 	answer.Part1("d4cd2ee1", getPassword(doorId, &Part1{}))
 	answer.Part2("f2c730e5", getPassword(doorId, &Part2{}))

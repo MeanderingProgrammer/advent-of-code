@@ -27,7 +27,7 @@ let rec score mapping values result =
       score mapping xs (current + result)
   | _ -> result
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let digit_mapping =
     [
@@ -60,3 +60,5 @@ let () =
   let part2 = score (word_mapping @ digit_mapping) values 0 in
   Answer.part1 55538 part1 string_of_int;
   Answer.part2 54875 part2 string_of_int
+
+let () = Answer.timer solution

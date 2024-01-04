@@ -29,9 +29,11 @@ let run values sections =
   let sorted_entanglements = List.sort ~compare entanglements in
   List.hd_exn sorted_entanglements
 
-let () =
+let solution () =
   let values = Reader.read_ints () in
   let part1 = run values 3 in
   let part2 = run values 4 in
   Answer.part1 10439961859 part1 string_of_int;
   Answer.part2 72050269 part2 string_of_int
+
+let () = Answer.timer solution

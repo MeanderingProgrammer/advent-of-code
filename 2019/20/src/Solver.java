@@ -5,9 +5,11 @@ import maze.Maze;
 public class Solver {
 
   public static void main(String[] args) {
-    FileReader fileReader = new FileReader(args);
-    Maze maze = new Maze(fileReader.read());
+    Answer.timer(() -> solution(args));
+  }
 
+  private static void solution(String[] args) {
+    Maze maze = new Maze(new FileReader(args).read());
     Answer.part1(628, solve(maze, false));
     Answer.part2(7506, solve(maze, true));
   }

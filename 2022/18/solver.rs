@@ -75,6 +75,10 @@ impl Grid {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = get_grid();
     let boundary = grid.fill();
     answer::part1(4288, grid.surface_area(|point| grid.missing(point)));

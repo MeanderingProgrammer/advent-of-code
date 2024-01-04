@@ -80,8 +80,11 @@ func (board Board) score() int {
 }
 
 func main() {
-	order, boards := getData()
+	answer.Timer(solution)
+}
 
+func solution() {
+	order, boards := getData()
 	scores := boards.runToComplete(order)
 	answer.Part1(44088, scores[0])
 	answer.Part2(23670, scores[len(scores)-1])

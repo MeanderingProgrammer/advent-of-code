@@ -64,7 +64,7 @@ let min_set_power game =
   let result = min_set [] game.ball_sets in
   get_ball "red" result * get_ball "blue" result * get_ball "green" result
 
-let () =
+let solution () =
   let values = Reader.read_lines () in
   let games = List.map ~f:parse_game values in
   let balls = [ ("red", 12); ("green", 13); ("blue", 14) ] in
@@ -73,3 +73,5 @@ let () =
   let part2 = Util.sum (List.map ~f:min_set_power games) in
   Answer.part1 2348 part1 string_of_int;
   Answer.part2 76008 part2 string_of_int
+
+let () = Answer.timer solution

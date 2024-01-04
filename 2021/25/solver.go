@@ -77,6 +77,10 @@ func (grid Grid) move(toMove Cucumber) bool {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(492, getGrid().untilStop())
 }
 

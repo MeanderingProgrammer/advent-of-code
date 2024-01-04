@@ -79,6 +79,10 @@ func (bounds Bounds) area() int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	finalBounds := getFinalBounds()
 	answer.Part1(561032, limitedBoundsArea(finalBounds))
 	answer.Part2(1322825263376414, finalBounds.area())

@@ -184,6 +184,10 @@ impl Game {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(214731, play_game(false));
     answer::part2(53222, play_game(true));
 }

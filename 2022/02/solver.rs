@@ -121,6 +121,10 @@ impl Round {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let rounds = reader::read(|line| line.parse::<Round>().unwrap());
     answer::part1(9651, rounds.iter().map(|round| round.score_play()).sum());
     answer::part2(10560, rounds.iter().map(|round| round.score_result()).sum());

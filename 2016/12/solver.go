@@ -79,6 +79,10 @@ func (i *Jump) run(computer *Computer) int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	instructions := file.Read(parseInstruction)
 	answer.Part1(318117, run(instructions, false))
 	answer.Part2(9227771, run(instructions, true))

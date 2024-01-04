@@ -225,6 +225,10 @@ impl State {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let (cube, instructions) = get_input();
     answer::part1(
         3590,

@@ -185,6 +185,10 @@ impl Valve {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let valves = reader::read(|line| Valve::from_str(line).unwrap().1);
     let cave = create_cave(&valves);
     answer::part1(1873, cave.traverse(30, 1));

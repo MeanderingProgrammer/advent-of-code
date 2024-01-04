@@ -45,7 +45,7 @@ let solve_quadratic (f : int array) (n : int) : int =
   let c = f.(0) in
   (a * n * n) + (b * n) + c
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let len = (Grid.max grid).x + 1 in
 
@@ -63,3 +63,5 @@ let () =
 
   Answer.part1 3847 part1 string_of_int;
   Answer.part2 637537341306357 part2 string_of_int
+
+let () = Answer.timer solution

@@ -157,6 +157,10 @@ func (number *SnailNumber) magnitude() int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	numbers := file.ReadLines()
 	answer.Part1(3892, sumAll(numbers))
 	answer.Part2(4909, sumAny(numbers))

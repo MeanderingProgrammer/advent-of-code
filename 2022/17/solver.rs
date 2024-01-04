@@ -58,6 +58,10 @@ impl FallingShape {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let jets = reader::read_chars();
 
     let shapes = vec![

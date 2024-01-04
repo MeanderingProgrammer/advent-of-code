@@ -85,6 +85,10 @@ fn create_states<'a, F: Fn(i64) -> Point + 'a>(
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = reader::read_grid(|ch| Some(ch));
 
     let part1 = energized(&grid, State::new(Point::default(), Direction::Right));

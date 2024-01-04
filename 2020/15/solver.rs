@@ -29,6 +29,10 @@ impl Stats {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let values = reader::read_csv()
         .into_iter()
         .map(|value| value as usize)

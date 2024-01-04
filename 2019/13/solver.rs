@@ -58,6 +58,10 @@ impl Bus for Game {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(363, play_game(false));
     answer::part2(17159, play_game(true));
 }

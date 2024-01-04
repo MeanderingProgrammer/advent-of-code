@@ -82,7 +82,7 @@ let contained (grid : Grid.t) (points : Types.PointSet.t) : int =
   in
   List.count ~f:(point_contained wall_counts) possible
 
-let () =
+let solution () =
   let grid = Reader.read_grid () in
   let start = Grid.find_value grid 'S' in
   Hashtbl.set grid ~key:start ~data:'F';
@@ -91,3 +91,5 @@ let () =
   let part2 = contained grid points in
   Answer.part1 6690 part1 string_of_int;
   Answer.part2 525 part2 string_of_int
+
+let () = Answer.timer solution

@@ -169,6 +169,10 @@ func (dice QuantumDice) computeStateSpace() StateSpace {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(571032, part1())
 	answer.Part2(49975322685009, part2())
 }

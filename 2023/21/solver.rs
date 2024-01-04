@@ -45,6 +45,10 @@ impl Garden {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let grid = reader::read_grid(|ch| Some(ch));
     let garden = Garden::new(grid);
 

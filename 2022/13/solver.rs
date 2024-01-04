@@ -42,6 +42,10 @@ impl PacketData {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let packets: Vec<PacketData> = reader::read_lines()
         .iter()
         .filter(|line| !line.is_empty())

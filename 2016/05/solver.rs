@@ -28,9 +28,7 @@ impl Password {
     }
 
     fn to_string(&self) -> String {
-        self.state.iter()
-            .map(|ch| ch.unwrap())
-            .collect()
+        self.state.iter().map(|ch| ch.unwrap()).collect()
     }
 }
 
@@ -62,6 +60,10 @@ impl PasswordPopulator for Part2 {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let lines = reader::read_lines();
     let door_id = &lines[0];
 

@@ -61,6 +61,10 @@ impl Assignment {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let assignments = reader::read(|line| line.parse::<Assignment>().unwrap());
     answer::part1(532, get_count(&assignments, Assignment::full_overlap));
     answer::part2(854, get_count(&assignments, Assignment::any_overlap));

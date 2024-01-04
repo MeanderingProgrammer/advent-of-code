@@ -44,6 +44,10 @@ impl Instruction {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let groups = reader::read_group_lines();
 
     let arrangement = get_arrangement(&groups[0]);

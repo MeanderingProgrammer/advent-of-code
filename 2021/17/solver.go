@@ -80,6 +80,10 @@ func (targetArea TargetArea) shoot(velocity Velocity) Trajectory {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	targetArea := getData()
 	maxHeight, numValid := getMaxHeight(targetArea)
 	answer.Part1(4095, maxHeight)

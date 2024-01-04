@@ -66,10 +66,12 @@ let node_sizes (g : graph) : int list =
   in
   List.map ~f:node_size (Hashtbl.keys g)
 
-let () =
+let solution () =
   let graph : graph = Hashtbl.create (module String) in
   let values = Reader.read_lines () in
   List.iter ~f:(add_edges graph) values;
   let graph = until_cut_size graph 3 in
   let part1 = Util.multiply (node_sizes graph) in
   Answer.part1 567606 part1 string_of_int
+
+let () = Answer.timer solution

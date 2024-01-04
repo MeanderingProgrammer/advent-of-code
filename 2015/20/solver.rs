@@ -3,6 +3,10 @@ use aoc_lib::reader;
 use std::cmp::min;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let goal = reader::read_int()[0] as usize;
     answer::part1(665280, find_first(goal, false));
     answer::part2(705600, find_first(goal, true));

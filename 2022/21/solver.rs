@@ -63,6 +63,10 @@ impl Monkeys {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let monkeys = Monkeys::new(reader::read_lines());
     answer::part1(81075092088442, evaluate(&monkeys, "root"));
     answer::part2(3349136384441, evaluate_human(&monkeys));

@@ -3,6 +3,10 @@ use aoc_lib::int_code::{Computer, NoopBus};
 use aoc_lib::reader;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(6627023, run(12, 2));
     answer::part1(4019, get_goal().unwrap());
 }

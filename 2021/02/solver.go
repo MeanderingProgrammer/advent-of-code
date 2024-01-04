@@ -41,6 +41,10 @@ func (instructions Instructions) follow(f func(*Position, int, Direction)) int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	instructions := getInstructions()
 	answer.Part1(1459206, instructions.follow(part1))
 	answer.Part2(1320534480, instructions.follow(part2))

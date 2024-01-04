@@ -8,6 +8,10 @@ struct SequenceEntry {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     answer::part1(3466, decrypt(1, 1));
     answer::part2(9995532008348, decrypt(811_589_153, 10));
 }

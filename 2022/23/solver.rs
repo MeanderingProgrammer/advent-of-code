@@ -117,6 +117,10 @@ impl Elves {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let (empty_tiles, total_rounds) = simulate_until_end();
     answer::part1(4070, empty_tiles);
     answer::part2(881, total_rounds);

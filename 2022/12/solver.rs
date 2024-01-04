@@ -6,6 +6,10 @@ use priority_queue::PriorityQueue;
 use std::collections::HashSet;
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let (grid, start, end) = get_graph();
     answer::part1(472, bfs(&grid, &start, &end).unwrap());
     answer::part2(465, shortest_bfs(&grid, &end).unwrap());

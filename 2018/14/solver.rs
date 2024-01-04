@@ -58,6 +58,10 @@ impl Recipes {
 }
 
 fn main() {
+    answer::timer(solution);
+}
+
+fn solution() {
     let goal = reader::read_int()[0] as usize;
     let mut recipes = Recipes::new(goal);
     let sequence = recipes.evolve();

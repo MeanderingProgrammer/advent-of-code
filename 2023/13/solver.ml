@@ -43,10 +43,12 @@ let reflections (target : int) (grid : Grid.t) : int =
   in
   sum valid_xs 1 + sum valid_ys 100
 
-let () =
+let solution () =
   let groups = Reader.read_groups () in
   let grids = List.map ~f:Grid.parse_grid groups in
   let part1 = Util.sum (List.map ~f:(reflections 0) grids) in
   let part2 = Util.sum (List.map ~f:(reflections 1) grids) in
   Answer.part1 30487 part1 string_of_int;
   Answer.part2 31954 part2 string_of_int
+
+let () = Answer.timer solution

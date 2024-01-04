@@ -29,6 +29,10 @@ func (positions Positions) cost(f func(int) int, targetPosition int) int {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	positions := getPositions()
 	answer.Part1(352331, positions.minimize(linear))
 	answer.Part2(99266250, positions.minimize(exponential))

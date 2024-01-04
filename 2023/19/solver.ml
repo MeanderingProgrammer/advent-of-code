@@ -122,7 +122,7 @@ let rec split_ranges (rules : rule list) (pending : (string * part_range) list)
           let pending = find_overlap p workflows in
           split_ranges rules (pending @ xs))
 
-let () =
+let solution () =
   let groups = Reader.read_groups () in
   let rules = List.map ~f:parse_rule (List.nth_exn groups 0) in
   let parts = List.map ~f:parse_part (List.nth_exn groups 1) in
@@ -138,3 +138,5 @@ let () =
   let part2 = Util.sum (List.map ~f:combinations ranges) in
   Answer.part1 409898 part1 string_of_int;
   Answer.part2 113057405770956 part2 string_of_int
+
+let () = Answer.timer solution

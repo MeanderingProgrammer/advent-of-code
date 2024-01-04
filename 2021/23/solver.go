@@ -222,6 +222,10 @@ func (board Board) valid(state BoardState, move Move) bool {
 }
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	answer.Part1(18282, solve(false))
 	answer.Part2(50132, solve(true))
 }
