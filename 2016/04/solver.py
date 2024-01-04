@@ -31,6 +31,7 @@ class Room:
         return "".join(decrypted)
 
 
+@answer.timer
 def main() -> None:
     rooms = [room for room in get_rooms() if room.valid()]
     answer.part1(278221, sum([room.sector_id for room in rooms]))

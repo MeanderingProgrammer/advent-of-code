@@ -11,6 +11,7 @@ class BoardingPass:
         return (self.row * 8) + self.seat
 
 
+@answer.timer
 def main() -> None:
     data = sorted(process())
     answer.part1(919, data[-1])

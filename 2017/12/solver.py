@@ -5,6 +5,7 @@ from aoc import answer, search
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     graph = get_graph()
     connected_to_0 = search.connected(graph, "0")

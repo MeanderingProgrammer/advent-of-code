@@ -83,6 +83,7 @@ class Node(Bus):
             self.network.send_packet(packet)
 
 
+@answer.timer
 def main() -> None:
     network = Network(Parser().int_csv())
     history = network.run_until_repeat()

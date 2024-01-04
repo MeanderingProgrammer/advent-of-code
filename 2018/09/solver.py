@@ -33,6 +33,7 @@ class Game:
         return max([player.score for player in self.players])
 
 
+@answer.timer
 def main() -> None:
     values = Parser().entries()
     num_players, highest_value = int(values[0]), int(values[-2])

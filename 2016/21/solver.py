@@ -99,6 +99,7 @@ class Scrambler:
         return "".join(self.value)
 
 
+@answer.timer
 def main() -> None:
     lines = Parser().lines()
     answer.part1("bdfhgeca", scramble(lines, "abcdefgh"))

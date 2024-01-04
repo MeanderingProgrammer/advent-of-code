@@ -48,6 +48,7 @@ class Group:
         return score
 
 
+@answer.timer
 def main() -> None:
     group = Group(Parser().string())
     answer.part1(15922, group.score())

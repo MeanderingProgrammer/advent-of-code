@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     num_elves = Parser().integer()
     answer.part1(1834903, solve_by_pattern(num_elves, True))

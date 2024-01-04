@@ -66,6 +66,7 @@ class Layout:
         return len(self.grid)
 
 
+@answer.timer
 def main() -> None:
     grid: set[Location] = set()
     for point, value in Parser().as_grid().items():

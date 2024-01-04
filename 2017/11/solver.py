@@ -12,6 +12,7 @@ DIRECTIONS: dict[str, Point] = dict(
 )
 
 
+@answer.timer
 def main() -> None:
     positions = move_to_end(Parser().csv())
     steps_required: list[int] = [steps(position) for position in positions]

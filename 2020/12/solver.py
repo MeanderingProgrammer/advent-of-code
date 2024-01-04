@@ -62,6 +62,7 @@ class Ship:
         )
 
 
+@answer.timer
 def main() -> None:
     answer.part1(362, move_ship(True))
     answer.part2(29895, move_ship(False))

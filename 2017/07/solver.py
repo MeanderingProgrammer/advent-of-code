@@ -66,6 +66,7 @@ class Graph:
         raise Exception("Failed")
 
 
+@answer.timer
 def main() -> None:
     graph = get_graph()
     top_most = graph.top_most()

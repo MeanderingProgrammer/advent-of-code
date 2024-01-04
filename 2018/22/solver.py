@@ -58,6 +58,7 @@ class Region:
 Grid = dict[Point, Region]
 
 
+@answer.timer
 def main() -> None:
     lines = Parser().lines()
     parts = lines[1].split()[-1].split(",")

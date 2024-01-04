@@ -44,6 +44,7 @@ class Knot:
         return hex_value if len(hex_value) == 2 else "0" + hex_value
 
 
+@answer.timer
 def main() -> None:
     knot = run_knot(False, [], 1)
     answer.part1(38415, knot.score())

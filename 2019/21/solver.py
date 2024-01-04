@@ -38,6 +38,7 @@ class JumpDroid(Bus):
         return program
 
 
+@answer.timer
 def main() -> None:
     answer.part1(
         19357761,

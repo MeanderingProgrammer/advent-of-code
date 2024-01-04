@@ -50,6 +50,7 @@ class TuringMachine:
         return sum([value for _, value in self.tape.items()])
 
 
+@answer.timer
 def main() -> None:
     state, rules = get_state_rules()
     machine = TuringMachine(state[0], rules)

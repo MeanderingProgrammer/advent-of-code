@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     frequencies = Parser().int_lines()
     answer.part1(540, sum(frequencies))

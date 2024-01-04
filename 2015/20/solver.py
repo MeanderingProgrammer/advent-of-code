@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     goal = Parser().integer()
     answer.part1(665280, find_first(goal, False))

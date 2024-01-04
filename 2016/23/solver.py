@@ -5,6 +5,7 @@ from aoc.computer import Computer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(11662, run(7))
     # Ends up simplifying to n! + 77*86

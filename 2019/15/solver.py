@@ -89,6 +89,7 @@ class Traverser:
         return [location for location, value in self.grid.items() if value == EMPTY]
 
 
+@answer.timer
 def main() -> None:
     droid = RepairDroid()
     Computer(bus=droid, memory=Parser().int_csv()).run()

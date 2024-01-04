@@ -16,6 +16,7 @@ class Module:
             return fuel + Module(fuel).fuel(True) if fuel > 0 else 0
 
 
+@answer.timer
 def main() -> None:
     answer.part1(3393938, get_fuel(False))
     answer.part2(5088037, get_fuel(True))

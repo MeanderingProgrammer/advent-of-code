@@ -42,6 +42,7 @@ class Landscape:
         return sum([resource == goal for _, resource in self.grid.items()])
 
 
+@answer.timer
 def main() -> None:
     answer.part1(515496, run_for(10))
     answer.part2(233058, run_for(1_000_000_000))

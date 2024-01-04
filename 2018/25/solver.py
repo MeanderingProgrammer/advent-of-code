@@ -24,6 +24,7 @@ class Constallation:
         return False
 
 
+@answer.timer
 def main() -> None:
     constallations: list[Constallation] = []
     for point in get_points():

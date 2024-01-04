@@ -18,6 +18,7 @@ class Stats:
         self.new = turn
 
 
+@answer.timer
 def main() -> None:
     values = Parser().int_csv()
     answer.part1(240, run(values, 2_020))

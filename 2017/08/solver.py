@@ -52,6 +52,7 @@ class Instruction:
             self.modifier(registers)
 
 
+@answer.timer
 def main() -> None:
     registers: Registers = defaultdict(int)
     maxes: list[int] = []

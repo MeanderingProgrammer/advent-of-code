@@ -18,6 +18,7 @@ class Game:
         self.value = next_value
 
 
+@answer.timer
 def main() -> None:
     game = Game(Parser(strip=True).int_string())
     answer.part1(360154, run(game, 40))

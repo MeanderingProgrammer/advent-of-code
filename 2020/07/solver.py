@@ -35,6 +35,7 @@ class RuleGraph:
         return result
 
 
+@answer.timer
 def main() -> None:
     graph = get_rule_graph()
     answer.part1(172, get_connected_to(graph, "shiny gold"))

@@ -37,6 +37,7 @@ class Direction:
         return (int(values[0]), int(values[1]))
 
 
+@answer.timer
 def main() -> None:
     directions = [Direction(line) for line in Parser().lines()]
     answer.part1(400410, apply_all(directions, SINGLE))

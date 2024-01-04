@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(47623, calculate_checksum(checksum_v1))
     answer.part2(312, calculate_checksum(checksum_v2))

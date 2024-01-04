@@ -65,6 +65,7 @@ class Computer:
         raise Exception("Failed")
 
 
+@answer.timer
 def main() -> None:
     computer = get_computer()
     answer.part1(1744, computer.execute()[1])

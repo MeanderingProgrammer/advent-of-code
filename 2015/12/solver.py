@@ -5,6 +5,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(111754, get_total(False))
     answer.part2(65402, get_total(True))

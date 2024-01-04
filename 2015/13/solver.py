@@ -21,6 +21,7 @@ class People:
         return self.people[i % len(self.people)]
 
 
+@answer.timer
 def main() -> None:
     graph = get_graph()
     answer.part1(709, max_score(graph, False))

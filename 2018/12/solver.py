@@ -54,6 +54,7 @@ class State:
         return sum([i for i, value in self.state.items() if value == "#"])
 
 
+@answer.timer
 def main() -> None:
     answer.part1(1816, run_for(20))
     answer.part2(399999999957, solve_known(50_000_000_000))

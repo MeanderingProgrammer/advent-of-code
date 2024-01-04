@@ -24,6 +24,7 @@ class BasicProgram(Bus):
         self.diagnostic_code = value
 
 
+@answer.timer
 def main() -> None:
     answer.part1(12234644, run_program(1))
     answer.part2(3508186, run_program(5))

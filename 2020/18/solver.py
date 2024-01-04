@@ -36,6 +36,7 @@ class Expression:
         return self.evaluate(addition)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(69490582260, sum_expressions(False))
     answer.part2(362464596624526, sum_expressions(True))

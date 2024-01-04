@@ -204,6 +204,7 @@ class VacuumDroid(Bus):
         self.instructions.append(10)
 
 
+@answer.timer
 def main() -> None:
     droid = VacuumDroid(current=(0, 0))
     answer.part1(9876, total_alignment(droid))

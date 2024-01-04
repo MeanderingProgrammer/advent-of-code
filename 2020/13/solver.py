@@ -17,6 +17,7 @@ class Bus:
         return time_to_wait % self.interval
 
 
+@answer.timer
 def main() -> None:
     raw_arrival, raw_buses = Parser().lines()
     arrival, buses = int(raw_arrival), get_buses(raw_buses)

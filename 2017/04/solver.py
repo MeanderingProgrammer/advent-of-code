@@ -24,6 +24,7 @@ class Password:
         return frozenset(anagram.items())
 
 
+@answer.timer
 def main() -> None:
     answer.part1(466, count_valid(False))
     answer.part2(251, count_valid(True))

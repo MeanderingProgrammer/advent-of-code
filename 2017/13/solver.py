@@ -17,6 +17,7 @@ class Scanner:
         return self.layer * self.layer_range
 
 
+@answer.timer
 def main() -> None:
     scanners = get_scanners()
     answer.part1(632, trip_severity(scanners))

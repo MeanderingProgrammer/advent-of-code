@@ -144,6 +144,7 @@ class SampleInstruction:
         return meets
 
 
+@answer.timer
 def main() -> None:
     groups = Parser().line_groups()
     mapping, many_behaviors = get_mapping(groups[:-2])

@@ -27,6 +27,7 @@ def adjacent(p: Point) -> list[Point]:
     return [add(p, direction) for direction in all_directions]
 
 
+@answer.timer
 def main() -> None:
     goal = Parser().integer()
     answer.part1(419, build_grid(goal, part1)[0])

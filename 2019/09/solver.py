@@ -24,6 +24,7 @@ class BoostProgram(Bus):
         self.output = value
 
 
+@answer.timer
 def main() -> None:
     answer.part1(3512778005, run(1))
     answer.part2(35920, run(2))

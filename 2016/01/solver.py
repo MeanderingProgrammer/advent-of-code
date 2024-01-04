@@ -5,6 +5,7 @@ from aoc.parser import Parser
 DIRECTIONS: list[Point] = [Point(0, 1), Point(1, 0), Point(0, -1), Point(-1, 0)]
 
 
+@answer.timer
 def main() -> None:
     visited = traverse()
     answer.part1(252, len(visited[-1]))

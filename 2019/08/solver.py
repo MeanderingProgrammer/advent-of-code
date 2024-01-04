@@ -38,6 +38,7 @@ class LayeredImage:
         return "." if pixel == 0 else "#"
 
 
+@answer.timer
 def main() -> None:
     image = get_image(25, 6)
     layer = image.get_fewest()

@@ -33,6 +33,7 @@ class Compressed:
         return end, int(length), int(times)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(102239, decompress(False))
     answer.part2(10780403063, decompress(True))

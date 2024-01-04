@@ -5,6 +5,7 @@ from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(6627023, run(12, 2))
     answer.part2(4019, get_goal())

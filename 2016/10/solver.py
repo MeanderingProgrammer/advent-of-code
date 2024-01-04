@@ -46,6 +46,7 @@ class Bot:
         return True
 
 
+@answer.timer
 def main() -> None:
     initial_values, bots = get_data()
     outputs = defaultdict(list)

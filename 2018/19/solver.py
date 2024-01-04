@@ -1,6 +1,7 @@
 from aoc import answer
 
 
+@answer.timer
 def main() -> None:
     answer.part1(993, factor_sum(961))
     answer.part2(10708912, factor_sum(10_551_361))

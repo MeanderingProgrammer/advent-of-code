@@ -61,6 +61,7 @@ class PowerGrid:
         return power_level - 5
 
 
+@answer.timer
 def main() -> None:
     power_grid = PowerGrid(Parser().integer(), 300)
     power_grid.initialize()

@@ -38,6 +38,7 @@ class Orbits:
         return count
 
 
+@answer.timer
 def main() -> None:
     orbits = get_orbits()
     answer.part1(358244, len(orbits))

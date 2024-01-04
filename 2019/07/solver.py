@@ -35,6 +35,7 @@ class Amplifier(Bus):
         self.outputs.append(value)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(38834, run_permutations([0, 1, 2, 3, 4], False))
     answer.part2(69113332, run_permutations([5, 6, 7, 8, 9], True))

@@ -39,6 +39,7 @@ class Game(Bus):
             self.tile_buffer = []
 
 
+@answer.timer
 def main() -> None:
     answer.part1(363, play_game(False))
     answer.part2(17159, play_game(True))

@@ -64,6 +64,7 @@ class Character:
         opponent.hp -= max(damage, 1)
 
 
+@answer.timer
 def main() -> None:
     groups = Parser().line_groups()
     inventory = Inventory(

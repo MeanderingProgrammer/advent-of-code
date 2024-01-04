@@ -190,6 +190,7 @@ class SearchImage:
         return positive_points
 
 
+@answer.timer
 def main() -> None:
     board = PuzzleBoard(board=dict())
     solve_board(board)

@@ -35,6 +35,7 @@ class Match:
         return True
 
 
+@answer.timer
 def main() -> None:
     groups = Parser().line_groups()
     match, aunts = get_match(groups[0]), get_aunts(groups[1])

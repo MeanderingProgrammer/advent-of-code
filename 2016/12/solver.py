@@ -3,6 +3,7 @@ from aoc.computer import Computer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     answer.part1(318117, run(0))
     answer.part2(9227771, run(1))

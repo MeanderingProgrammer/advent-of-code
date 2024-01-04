@@ -69,6 +69,7 @@ class Game:
             return True
 
 
+@answer.timer
 def main() -> None:
     answer.part1(32102, run_game(False))
     answer.part2(34173, run_game(True))

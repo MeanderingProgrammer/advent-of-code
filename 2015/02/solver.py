@@ -22,6 +22,7 @@ class Box:
         return perimeter + volume
 
 
+@answer.timer
 def main() -> None:
     paper, ribbon = [], []
     for line in Parser().lines():

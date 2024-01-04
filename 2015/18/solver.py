@@ -58,6 +58,7 @@ class Animator:
         return len(self.on)
 
 
+@answer.timer
 def main() -> None:
     grid = Parser().as_grid()
     answer.part1(1061, run(grid, False))

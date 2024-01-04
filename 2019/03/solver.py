@@ -25,6 +25,7 @@ class Path:
         return self.step_counts[location]
 
 
+@answer.timer
 def main() -> None:
     data = Parser().lines()
     p1, p2 = create_path(data[0]), create_path(data[1])

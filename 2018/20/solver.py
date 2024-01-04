@@ -48,6 +48,7 @@ class Regex:
         return sum([value >= min_value for value in self.distances.values()])
 
 
+@answer.timer
 def main() -> None:
     regex = Regex(
         expression=Parser().string()[1:-1],

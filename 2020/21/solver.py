@@ -47,6 +47,7 @@ class Foods:
         return sum([ingredient in food.ingredients for food in self.foods])
 
 
+@answer.timer
 def main() -> None:
     foods = get_foods()
     answer.part1(1679, non_allergens(foods))

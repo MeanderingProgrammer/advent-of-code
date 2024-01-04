@@ -5,6 +5,7 @@ from aoc.parser import Parser
 DIRECTIONS = {"^": Point(0, 1), "v": Point(0, -1), "<": Point(-1, 0), ">": Point(1, 0)}
 
 
+@answer.timer
 def main() -> None:
     answer.part1(2081, run(1))
     answer.part2(2341, run(2))

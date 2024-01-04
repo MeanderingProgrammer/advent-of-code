@@ -13,6 +13,7 @@ DIRECTIONS: list[tuple[Point, str]] = [
 ]
 
 
+@answer.timer
 def main() -> None:
     code = Parser(strip=True).string()
     paths = search.bfs_paths(((-3, 3), code), (0, 0), get_adjacent)

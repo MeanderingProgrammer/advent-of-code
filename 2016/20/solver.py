@@ -23,6 +23,7 @@ class DataRange:
         return type(self)(min(starts), max(ends))
 
 
+@answer.timer
 def main() -> None:
     data_ranges = get_data_ranges()
     data_ranges = combine_all(data_ranges)

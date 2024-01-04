@@ -36,6 +36,7 @@ class Transmission:
         return int(as_string)
 
 
+@answer.timer
 def main() -> None:
     answer.part1(77038830, apply_fft(1, False))
     answer.part2(28135104, apply_fft(10_000, True))

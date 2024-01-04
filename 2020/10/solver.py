@@ -27,6 +27,7 @@ class Adapters:
         )
 
 
+@answer.timer
 def main() -> None:
     adapters = get_adapters()
     chains = adapters.chains()

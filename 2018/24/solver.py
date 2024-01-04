@@ -116,6 +116,7 @@ class Battle:
         return sum([group.units for group in self.groups])
 
 
+@answer.timer
 def main() -> None:
     answer.part1(16086, solve_part_1())
     answer.part2(3957, solve_part_2())

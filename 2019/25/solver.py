@@ -202,6 +202,7 @@ class DroidBus(Bus):
         self.commands.extend(program)
 
 
+@answer.timer
 def main() -> None:
     droid = DroidBus()
     computer = Computer(bus=droid, memory=Parser().int_csv())

@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     board = Parser().lines()
 

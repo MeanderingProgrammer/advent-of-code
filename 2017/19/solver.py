@@ -58,6 +58,7 @@ class Traverser:
         return len(self.seen)
 
 
+@answer.timer
 def main() -> None:
     traverser = Traverser(get_grid())
     traverser.traverse()

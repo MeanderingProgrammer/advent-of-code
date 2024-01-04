@@ -10,6 +10,7 @@ CONTROLS: dict[str, Point] = dict(
 )
 
 
+@answer.timer
 def main() -> None:
     answer.part1("47978", get_code([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
     answer.part2(

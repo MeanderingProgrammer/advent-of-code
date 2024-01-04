@@ -12,6 +12,7 @@ class HashInfo:
     cinqs: list[str]
 
 
+@answer.timer
 def main() -> None:
     prefix = Parser(strip=True).string()
     answer.part1(15168, generate(prefix, 1))

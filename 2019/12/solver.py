@@ -70,6 +70,7 @@ class System:
         return [body.extract(extractor) for body in self.bodies]
 
 
+@answer.timer
 def main() -> None:
     answer.part1(5350, run_for(1_000))
     answer.part2(467034091553512, get_system_period())

@@ -48,6 +48,7 @@ class Recipe:
         return score, calories
 
 
+@answer.timer
 def main() -> None:
     recipe = Recipe(get_ingredients(), 100)
     answer.part1(18965440, recipe.best_score())

@@ -4,6 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     box_ids = Parser().lines()
     contain_2 = count_contain_exactly(box_ids, 2)

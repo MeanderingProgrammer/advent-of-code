@@ -71,6 +71,7 @@ class Floor:
         return sum([not tile for tile in self.floor.values()])
 
 
+@answer.timer
 def main() -> None:
     floor = Floor(floor={(0, 0): True})
     paths = [Path(line) for line in Parser().lines()]

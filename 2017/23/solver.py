@@ -49,6 +49,7 @@ class Intstruction:
             raise Exception(f"Unknown operation: {self.op}")
 
 
+@answer.timer
 def main() -> None:
     answer.part1(9409, run_computer())
     answer.part2(913, count_non_primes(109_900, 126_900, 17))

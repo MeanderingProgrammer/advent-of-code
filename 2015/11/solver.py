@@ -68,6 +68,7 @@ class PasswordGenerator:
         return ord(character) - ord("a")
 
 
+@answer.timer
 def main() -> None:
     value = Parser(strip=True).string()
     generator = PasswordGenerator(value)

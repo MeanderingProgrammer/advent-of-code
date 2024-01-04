@@ -45,6 +45,7 @@ class Organizer:
         return result
 
 
+@answer.timer
 def main() -> None:
     organizer = Organizer(weights=Parser().int_lines())
     answer.part1(10439961859, organizer.run(3))

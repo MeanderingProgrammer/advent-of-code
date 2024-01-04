@@ -129,6 +129,7 @@ class Game:
         return player, enemy, active_spells
 
 
+@answer.timer
 def main() -> None:
     lines = Parser().lines()
     hp, attack = int(lines[0].split()[-1]), int(lines[1].split()[-1])

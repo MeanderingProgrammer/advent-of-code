@@ -65,6 +65,7 @@ class Processor:
             raise Exception(f"Unknown processor = {self.line}")
 
 
+@answer.timer
 def main() -> None:
     # I have no idea how this one works, I definitely took it off the Reddits
     answer.part1(4684, process_deck(10_007).index_of(2019, 1))

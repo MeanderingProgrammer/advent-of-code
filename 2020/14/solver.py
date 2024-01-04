@@ -65,6 +65,7 @@ class Computer:
         return bin(value)[2:].zfill(len(self.mask))
 
 
+@answer.timer
 def main() -> None:
     answer.part1(10035335144067, run_computer(1))
     answer.part2(3817372618036, run_computer(2))
