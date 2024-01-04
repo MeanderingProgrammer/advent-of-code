@@ -1,49 +1,46 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
-use aoc_lib::point::Point;
 use aoc_lib::reader;
-use std::collections::HashSet;
+use fxhash::FxHashSet;
+
+type Point = (i16, i16);
 
 #[derive(Debug)]
 struct Garden {
     start: Point,
-    walls: HashSet<Point>,
-    len: i64,
+    walls: FxHashSet<Point>,
+    len: i16,
 }
 
 impl Garden {
     fn new(grid: Grid<char>) -> Self {
         let starts = grid.points_with_value('S');
         Self {
-            start: starts[0].clone(),
+            start: (starts[0].x as i16, starts[0].y as i16),
             walls: grid
                 .points_with_value('#')
                 .into_iter()
-                .map(|point| point.clone())
+                .map(|point| (point.x as i16, point.y as i16))
                 .collect(),
-            len: grid.bounds(0).upper.x + 1,
+            len: (grid.bounds(0).upper.x as i16) + 1,
         }
     }
 
-    fn not_wall(&self, point: &Point) -> bool {
-        let (x, y) = (point.x.rem_euclid(self.len), point.y.rem_euclid(self.len));
-        !self.walls.contains(&Point::new(x, y))
-    }
-
-    fn step_n(&self, current: HashSet<Point>, n: i64) -> (i64, HashSet<Point>) {
+    fn step_n(&self, current: FxHashSet<Point>, n: i16) -> (i64, FxHashSet<Point>) {
         let mut result = current;
         for _ in 0..n {
             result = result
                 .into_iter()
-                .flat_map(|point| {
-                    point
-                        .neighbors()
-                        .into_iter()
-                        .filter(|point| self.not_wall(point))
-                })
+                .flat_map(|(x, y)| [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)])
+                .filter(|point| !self.is_wall(point))
                 .collect();
         }
         (result.len() as i64, result)
+    }
+
+    fn is_wall(&self, (x, y): &Point) -> bool {
+        let (x, y) = (x.rem_euclid(self.len), y.rem_euclid(self.len));
+        self.walls.contains(&(x, y))
     }
 }
 
@@ -51,7 +48,7 @@ fn main() {
     let grid = reader::read_grid(|ch| Some(ch));
     let garden = Garden::new(grid);
 
-    let mut points: HashSet<Point> = HashSet::new();
+    let mut points: FxHashSet<Point> = FxHashSet::default();
     points.insert(garden.start.clone());
     let (part1, points) = garden.step_n(points, 64);
 
@@ -60,7 +57,7 @@ fn main() {
     let (f0, points) = garden.step_n(points, 1);
     let (f1, points) = garden.step_n(points, garden.len);
     let (f2, _) = garden.step_n(points, garden.len);
-    let n = (26501365 - 65) / garden.len;
+    let n = (26501365 - 65) / (garden.len as i64);
     let part2 = solve_quadratic([f0, f1, f2], n);
 
     answer::part1(3847, part1);
