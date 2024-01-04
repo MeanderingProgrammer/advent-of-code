@@ -231,19 +231,16 @@ a_graph \
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
 | 2023 | 23  | 5.531   | Ocaml    | Optimized graph, no early exit, longest path problem    |
 | 2022 | 16  | 4.359   | Rust     | Path finding with multiple agents is fairly optimized   |
-| 2021 | 23  | 3.247   | Go       | Looks like a complex path finding problem               |
-| 2019 | 18  | 2.235   | Java     | Mostly the Java runtime for such a small execution      |
-| 2016 | 25  | 2.018   | Python   | Kinda like int-code, can probably make it faster        |
+| 2021 | 23  | 2.871   | Go       | Looks like a complex path finding problem               |
+| 2016 | 25  | 2.298   | Python   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | Python   | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
-| 2016 | 14  | 1.664   | Go       | Already batched implementation of md5                   |
-| 2019 | 23  | 1.621   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
-| 2021 | 12  | 1.490   | Go       | Path finding problem, might be some room to improve     |
-| 2022 | 15  | 1.483   | Rust     | Dealing with large space, already in Rust               |
-| 2016 | 5   | 1.471   | Go       | Final md5 hash that isn't running under 1 second        |
-| 2018 | 15  | 1.358   | Rust     | Complex game state with path finding between characters |
-| 2019 | 25  | 1.311   | Rust     | Mostly spends time permuting through the items          |
-| 2020 | 15  | 1.249   | Rust     | Even in Rust iterating to 30,000,000 takes a bit        |
-| 2018 | 24  | 1.153   | Python   | Complex game, fairly optimized in Python                |
-| 2019 | 20  | 1.132   | Java     | Mostly the Java runtime for such a small execution      |
-| 2023 | 21  | 1.107   | Rust     | A growing set of points, gets fairly large              |
+| 2019 | 23  | 1.583   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
+| 2016 | 14  | 1.391   | Go       | Already batched implementation of md5                   |
+| 2019 | 18  | 1.245   | Java     | Can likely minimize state to make lookups faster        |
+| 2016 | 5   | 1.220   | Go       | Final md5 hash that isn't running under 1 second        |
+| 2022 | 15  | 1.196   | Rust     | Dealing with large space                                |
+| 2019 | 25  | 1.191   | Rust     | Mostly spends time permuting through the items          |
+| 2018 | 15  | 1.187   | Rust     | Complex game state with path finding between characters |
+| 2018 | 24  | 1.186   | Python   | Complex game, fairly optimized in Python                |
+| 2021 | 12  | 1.102   | Go       | Path finding problem, might be some room to improve     |
