@@ -27,7 +27,7 @@ class FigureSaver:
         else:
             if fig_type == FigType.MATPLOTLIB:
                 self.save_matplotlib(fig, legend, fig_path)
-            if fig_type == FigType.PLOTLY:
+            elif fig_type == FigType.PLOTLY:
                 self.save_plotly(fig, fig_path)
             else:
                 raise Exception(f"Unhandled figure type: {fig_type}")
