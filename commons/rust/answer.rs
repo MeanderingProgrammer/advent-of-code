@@ -1,5 +1,12 @@
 use std::cmp::PartialEq;
 use std::fmt::Debug;
+use std::time::Instant;
+
+pub fn timer(solution: fn() -> ()) {
+    let start = Instant::now();
+    solution();
+    println!("Runtime (ns): {}", start.elapsed().as_nanos());
+}
 
 pub trait Solution: Debug + PartialEq + ToString {}
 impl<T: Debug + PartialEq + ToString> Solution for T {}

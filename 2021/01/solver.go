@@ -6,6 +6,10 @@ import (
 )
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	values := file.ReadInt()
 	answer.Part1(1292, windowIncreases(values, 1))
 	answer.Part2(1262, windowIncreases(values, 3))

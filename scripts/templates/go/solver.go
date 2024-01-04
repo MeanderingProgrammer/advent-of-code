@@ -7,6 +7,10 @@ import (
 )
 
 func main() {
+	answer.Timer(solution)
+}
+
+func solution() {
 	data := file.ReadLines()
 	fmt.Println(data)
 	answer.Part1(1, 1)

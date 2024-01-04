@@ -2,6 +2,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
+@answer.timer
 def main() -> None:
     values = Parser().int_lines()
     answer.part1(1292, window_increases(values, 1))

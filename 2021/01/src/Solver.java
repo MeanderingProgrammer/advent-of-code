@@ -5,6 +5,10 @@ import lib.FileReader;
 public class Solver {
 
   public static void main(String[] args) {
+    Answer.timer(() -> solution(args));
+  }
+
+  private static void solution(String[] args) {
     var values = new FileReader(args).read(Integer::parseInt);
     Answer.part1(1292, windowIncreases(values, 1));
     Answer.part2(1262, windowIncreases(values, 3));
