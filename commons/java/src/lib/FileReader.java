@@ -1,7 +1,8 @@
 package lib;
 
-import java.io.File;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.List;
 import java.util.function.Function;
 import lombok.SneakyThrows;
 import org.apache.commons.cli.*;
@@ -23,25 +24,20 @@ public class FileReader {
   }
 
   public <T> List<T> read(Function<String, T> f) {
-    var lines = getFile().map(FileReader::readFromScanner).orElse(List.of());
-    return lines.stream().map(f).toList();
+    return getLines().stream().map(f).toList();
   }
 
-  private Optional<Scanner> getFile() {
-    // Fix this to read from data directory
-    File file = new File(String.format("%s.txt", this.fileName));
-    try {
-      return Optional.of(new Scanner(file));
-    } catch (Exception e) {
-      return Optional.empty();
-    }
+  @SneakyThrows
+  private List<String> getLines() {
+    return Files.readAllLines(getFilePath(), StandardCharsets.UTF_8);
   }
 
-  private static List<String> readFromScanner(Scanner scanner) {
-    List<String> result = new ArrayList<>();
-    while (scanner.hasNextLine()) {
-      result.add(scanner.nextLine());
-    }
-    return result;
+  private Path getFilePath() {
+    var project = Paths.get("").toAbsolutePath();
+    var day = project.getFileName();
+    var year = project.getParent().getFileName();
+    var root = project.getParent().getParent();
+    var fileName = String.format("%s.txt", this.fileName);
+    return root.resolve("data").resolve(year).resolve(day).resolve(fileName);
   }
 }
