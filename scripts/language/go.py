@@ -7,7 +7,7 @@ from pojo.day import Day
 
 @dataclass(kw_only=True, init=False)
 class Go(Language):
-    name: str = field(default="golang", repr=False)
+    name: str = field(default="go", repr=False)
     solution_file: str = field(default="solver.go", repr=False)
 
     @override

@@ -11,7 +11,7 @@ def test_run_int_code() -> None:
 
 def test_run_go_batches() -> None:
     for year, day in [(15, 4), (16, 5), (16, 14)]:
-        run_script(["-y", str(year), "-d", str(day), "-l", "golang"])
+        run_script(["-y", str(year), "-d", str(day), "-l", "go"])
 
 
 def run_script(args: list[str]) -> None:
