@@ -221,6 +221,10 @@ a_graph \
 | archive       | `-a` | Archive existing graphs                 | `False` | `-a`    |
 | info          | `-i` | Outputs whether graphs would be arhived | `False` | `-i`    |
 
+# Runtimes
+
+![Runtimes](images/year_percentage.png)
+
 # Take over 1 second on M2 Mac
 
 | Year | Day | Runtime | Language | Notes                                                   |
