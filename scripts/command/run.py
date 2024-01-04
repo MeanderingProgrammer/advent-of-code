@@ -1,4 +1,5 @@
 import json
+import re
 import time
 from dataclasses import dataclass
 
@@ -48,11 +49,17 @@ class Runner:
 
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")
-        start = time.time()
-        execute(language.run_command(day, self.run_args))
-        runtime = time.time() - start
-        print(f"Runtime: {runtime:.3f} seconds")
+        result = execute(language.run_command(day, self.run_args))
+        print(result)
+        runtime = Runner.__parse_runtime_seconds(result)
         return RuntimeInfo(day, language.name, runtime)
+
+    @staticmethod
+    def __parse_runtime_seconds(result: str) -> float:
+        matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
+        assert len(matches) == 1, "Could not find runtime in output"
+        runtime_ns = float(matches[0])
+        return runtime_ns / 1_000_000_000
 
     def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
         if not self.save:
