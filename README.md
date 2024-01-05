@@ -242,5 +242,4 @@ a_graph \
 | 2022 | 15  | 1.196   | Rust     | Dealing with large space                                |
 | 2019 | 25  | 1.191   | Rust     | Mostly spends time permuting through the items          |
 | 2018 | 15  | 1.187   | Rust     | Complex game state with path finding between characters |
-| 2018 | 24  | 1.186   | Python   | Complex game, fairly optimized in Python                |
 | 2016 | 11  | 1.012   | Python   | That chips and generator problem                        |
