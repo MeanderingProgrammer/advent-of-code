@@ -1,9 +1,8 @@
 open Aoc
 open Core
 
-type step = Direction.t * Point.t
-type option = step * bool
-type path = { traversed : step list; uphill : bool }
+type step = { direction : Direction.t; point : Point.t }
+type path = { steps : step list; uphill : bool }
 
 type edge = {
   direction : Direction.t;
@@ -16,37 +15,41 @@ type graph = (Point.t, edge list) Hashtbl.t
 
 let path_equal (p1 : path) (p2 : path) : bool =
   let step_equal (s1 : step) (s2 : step) : bool =
-    Point.equal (snd s1) (snd s2)
+    Point.equal s1.point s2.point
   in
-  List.equal step_equal p1.traversed p2.traversed
+  List.equal step_equal p1.steps p2.steps
 
 let valid_space (grid : Grid.t) (s : step) : bool =
-  match Hashtbl.find grid (snd s) with
+  match Hashtbl.find grid s.point with
   | None -> false
   | Some ch -> not (Char.equal '#' ch)
 
 let unseen (path : path) (s : step) : bool =
-  let path = snd (List.unzip path.traversed) in
-  not (List.mem ~equal:Point.equal path (snd s))
+  let points = List.map ~f:(fun s -> s.point) path.steps in
+  not (List.mem ~equal:Point.equal points s.point)
 
 let goes_uphill (previous : char) (s : step) : bool =
   match previous with
-  | '^' -> not (Direction.equal UP (fst s))
-  | 'v' -> not (Direction.equal DOWN (fst s))
-  | '<' -> not (Direction.equal LEFT (fst s))
-  | '>' -> not (Direction.equal RIGHT (fst s))
+  | '^' -> not (Direction.equal UP s.direction)
+  | 'v' -> not (Direction.equal DOWN s.direction)
+  | '<' -> not (Direction.equal LEFT s.direction)
+  | '>' -> not (Direction.equal RIGHT s.direction)
   | _ -> false
 
-let neighbors (grid : Grid.t) (path : path) : option list =
-  let current = snd (List.hd_exn path.traversed) in
+let neighbors (grid : Grid.t) (path : path) : (step * bool) list =
+  let current = (List.hd_exn path.steps).point in
   (* Continue path in all directions from last point on our path *)
   let result = Point.adjacent current in
+  let result =
+    List.map ~f:(fun (direction, point) -> { direction; point }) result
+  in
   (* Remove anything that's off the grid or goes into a forest *)
   let result = List.filter ~f:(valid_space grid) result in
   (* Remove direction going back the way we traveled if there's at most one other option *)
   let result =
-    if List.length result > 2 then result
-    else List.filter ~f:(unseen path) result
+    match List.length result > 2 with
+    | true -> result
+    | false -> List.filter ~f:(unseen path) result
   in
   (* Add information about whether the step went uphill *)
   let location = Hashtbl.find_exn grid current in
@@ -54,7 +57,7 @@ let neighbors (grid : Grid.t) (path : path) : option list =
 
 (* Lots of this grid is single option moves, this method attemps to *)
 (* collapse all of this information into a dense representation *)
-let rec collapse (grid : Grid.t) (graph : graph) (paths : path list) : graph =
+let rec collapse (graph : graph) (grid : Grid.t) (paths : path list) : graph =
   match paths with
   | [] -> graph
   | x :: xs -> (
@@ -62,20 +65,18 @@ let rec collapse (grid : Grid.t) (graph : graph) (paths : path list) : graph =
       match List.length options with
       | 1 ->
           let step, uphill = List.hd_exn options in
-          let path =
-            { traversed = step :: x.traversed; uphill = uphill || x.uphill }
-          in
-          collapse grid graph (path :: xs)
+          let path = { steps = step :: x.steps; uphill = uphill || x.uphill } in
+          collapse graph grid (path :: xs)
       | _ ->
-          let traversed = List.rev x.traversed in
-          let src = snd (List.hd_exn traversed) in
-          let dst = List.last_exn traversed in
+          let steps = List.rev x.steps in
+          let src = (List.hd_exn steps).point in
+          let dst = List.last_exn steps in
           (* Add current edge to the graph *)
           let edge =
             {
-              direction = fst (List.nth_exn traversed 1);
-              dst = snd dst;
-              length = List.length traversed - 1;
+              direction = (List.nth_exn steps 1).direction;
+              dst = dst.point;
+              length = List.length steps - 1;
               uphill = x.uphill;
             }
           in
@@ -87,19 +88,19 @@ let rec collapse (grid : Grid.t) (graph : graph) (paths : path list) : graph =
           Hashtbl.set graph ~key:src ~data:edges;
           (* Check existing edges from the destination to avoid re-exploring options *)
           let explored =
-            match Hashtbl.find graph (snd dst) with
+            match Hashtbl.find graph dst.point with
             | None -> []
             | Some es -> List.map ~f:(fun e -> e.direction) es
           in
           let options =
             List.filter
               ~f:(fun o ->
-                not (List.mem ~equal:Direction.equal explored (fst (fst o))))
+                not (List.mem ~equal:Direction.equal explored (fst o).direction))
               options
           in
           let options =
             List.map
-              ~f:(fun o -> { traversed = [ fst o; dst ]; uphill = snd o })
+              ~f:(fun o -> { steps = [ fst o; dst ]; uphill = snd o })
               options
           in
           let options =
@@ -107,16 +108,23 @@ let rec collapse (grid : Grid.t) (graph : graph) (paths : path list) : graph =
               ~f:(fun o -> not (List.mem ~equal:path_equal xs o))
               options
           in
-          collapse grid graph (xs @ options))
+          collapse graph grid (xs @ options))
 
 type node = { last : Point.t; path : Point.t list }
 type state = { node : node; weight : int }
 
 let neighbors (graph : graph) (slippery : bool) (n : node) :
     (Point.t * int) list =
-  let edges = Hashtbl.find_exn graph n.last in
+  let result = Hashtbl.find_exn graph n.last in
+  (* Add the insight about not going up along edges, good description: *)
+  (* https://www.reddit.com/r/adventofcode/comments/18oy4pc/comment/kfyvp2g *)
   let result =
-    if slippery then List.filter ~f:(fun e -> not e.uphill) edges else edges
+    if Int.equal 3 (List.length result) then
+      List.filter ~f:(fun e -> not (Direction.equal e.direction UP)) result
+    else result
+  in
+  let result =
+    if slippery then List.filter ~f:(fun e -> not e.uphill) result else result
   in
   let result =
     List.filter
@@ -149,12 +157,14 @@ let search (graph : graph) (start : Point.t) (target : Point.t)
 
 let solution () =
   let grid = Reader.read_grid () in
-  let start : Point.t = { x = 1; y = 0 } in
-  let start_path = { traversed = [ (DOWN, start) ]; uphill = false } in
-  let graph = collapse grid (Hashtbl.create (module Point)) [ start_path ] in
-  let max = Grid.max grid in
-  let search = search graph start { max with x = max.x - 1 } in
+  let start = Point.move (Grid.min grid) RIGHT 1 in
+  let target = Point.move (Grid.max grid) LEFT 1 in
 
+  let graph = Hashtbl.create (module Point) in
+  let steps = [ { direction = DOWN; point = start } ] in
+  let graph = collapse graph grid [ { steps; uphill = false } ] in
+
+  let search = search graph start target in
   let part1 = search true in
   let part2 = search false in
   Answer.part1 2154 part1 string_of_int;
