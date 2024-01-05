@@ -50,6 +50,10 @@ func (p Point) DiagonalAdjacent() []Point {
 	}
 }
 
+func (p Point) Hash(width int) int {
+	return p.Y*width + p.X
+}
+
 func ConstructPoint(s string) Point {
 	coords := util.IntCsv(s)
 	return Point{
