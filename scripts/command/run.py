@@ -50,7 +50,6 @@ class Runner:
     def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
         print(f"Running year {day.year} day {day.day} with {language.name}")
         result = execute(language.run_command(day, self.run_args))
-        print(result)
         runtime = Runner.__parse_runtime_seconds(result)
         return RuntimeInfo(day, language.name, runtime)
 
