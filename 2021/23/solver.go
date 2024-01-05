@@ -7,9 +7,9 @@ import (
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
-	"fmt"
 	"hash/fnv"
 	"math"
+	"sort"
 )
 
 type Value string
@@ -22,6 +22,20 @@ const (
 	C       Value = "C"
 	D       Value = "D"
 )
+
+func (v Value) toByte() byte {
+	if v == A {
+		return 0
+	} else if v == B {
+		return 1
+	} else if v == C {
+		return 2
+	} else if v == D {
+		return 3
+	} else {
+		return 4
+	}
+}
 
 func (v Value) distance() int {
 	return int(v[0] - 'A')
@@ -49,8 +63,17 @@ type Character struct {
 	moved bool
 }
 
-func (character Character) atGoal(p point.Point) bool {
-	return character.value.x() == p.X
+func (c Character) atGoal(p point.Point) bool {
+	return c.value.x() == p.X
+}
+
+func (c Character) toByte() byte {
+	value := c.value.toByte() * 2
+	if c.moved {
+		return value + 1
+	} else {
+		return value
+	}
 }
 
 type Characters map[point.Point]Character
@@ -58,6 +81,7 @@ type Characters map[point.Point]Character
 type BoardState struct {
 	characters Characters
 	cost       int
+	width      int
 }
 
 func (state BoardState) Cost() int {
@@ -65,18 +89,21 @@ func (state BoardState) Cost() int {
 }
 
 func (state BoardState) Hash() uint64 {
+	points := make([]point.Point, len(state.characters))
+	i := 0
+	for point := range state.characters {
+		points[i] = point
+		i++
+	}
+	sort.Slice(points, func(i, j int) bool {
+		return points[i].Hash(state.width) < points[j].Hash(state.width)
+	})
 	h := fnv.New64()
-	// for point, character := range state.characters {
-	// 	h.Write([]byte(util.ToString(point.X)))
-	// 	h.Write([]byte(util.ToString(point.Y)))
-	// 	h.Write([]byte(character.value))
-	// 	if character.moved {
-	// 		h.Write([]byte{1})
-	// 	} else {
-	// 		h.Write([]byte{0})
-	// 	}
-	// }
-	h.Write([]byte(fmt.Sprintf("%v", state.characters)))
+	for _, point := range points {
+		character := state.characters[point]
+		h.Write([]byte(util.ToString(point.Hash(state.width))))
+		h.Write([]byte{character.toByte()})
+	}
 	return h.Sum64()
 }
 
@@ -115,6 +142,7 @@ func (state BoardState) apply(move Move) BoardState {
 	return BoardState{
 		characters: updated,
 		cost:       state.cost + cost*move.distance(),
+		width:      state.width,
 	}
 }
 
@@ -132,6 +160,7 @@ func (move Move) distance() int {
 type Board struct {
 	graph    graph.Graph[point.Point, Value]
 	roomSize int
+	width    int
 }
 
 func (board Board) solve(characters Characters) BoardState {
@@ -139,6 +168,7 @@ func (board Board) solve(characters Characters) BoardState {
 		Initial: BoardState{
 			characters: characters,
 			cost:       0,
+			width:      board.width,
 		},
 		Done: func(state BoardState) bool {
 			return state.complete()
@@ -288,6 +318,7 @@ func getBoard(rows []string) Board {
 	return Board{
 		graph:    graph.ConstructGraph(grid),
 		roomSize: grid.Height - 2,
+		width:    grid.Width,
 	}
 }
 

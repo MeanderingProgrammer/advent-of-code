@@ -7,13 +7,12 @@ import (
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/util"
-	"hash/fnv"
 )
 
 type Path struct {
 	point point.Point
 	value int
+	width int
 }
 
 func (path Path) Cost() int {
@@ -21,16 +20,14 @@ func (path Path) Cost() int {
 }
 
 func (path Path) Hash() uint64 {
-	h := fnv.New64()
-	h.Write([]byte(util.ToString(path.point.X)))
-	h.Write([]byte(util.ToString(path.point.Y)))
-	return h.Sum64()
+	return uint64(path.point.Hash(path.width))
 }
 
 func (path Path) add(graph graph.Graph[point.Point, int], p point.Point) Path {
 	return Path{
 		point: p,
 		value: path.value + graph.Value(p),
+		width: path.width,
 	}
 }
 
@@ -50,6 +47,7 @@ func solve(wrap bool) int {
 		Initial: Path{
 			point: point.Point{X: 0, Y: 0},
 			value: 0,
+			width: grid.Width,
 		},
 		Done: func(state Path) bool {
 			return state.point == point.Point{X: grid.Width, Y: grid.Height}
