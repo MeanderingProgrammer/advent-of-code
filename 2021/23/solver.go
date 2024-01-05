@@ -6,7 +6,6 @@ import (
 	"advent-of-code/commons/go/graph"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/queue"
 	"advent-of-code/commons/go/util"
 	"fmt"
 	"math"
@@ -122,25 +121,25 @@ type Board struct {
 	roomSize int
 }
 
-func (board Board) solve(characters Characters) queue.State {
-	result := board.graph.Bfs(graph.Search{
+func (board Board) solve(characters Characters) BoardState {
+	result := graph.Search[BoardState]{
 		Initial: BoardState{
 			characters: characters,
 			cost:       0,
 		},
-		Done: func(state queue.State) bool {
-			return state.(BoardState).complete()
+		Done: func(state BoardState) bool {
+			return state.complete()
 		},
-		NextStates: func(state queue.State) []queue.State {
-			return board.nextStates(state.(BoardState))
+		NextStates: func(state BoardState) []BoardState {
+			return board.nextStates(state)
 		},
 		FirstOnly: true,
-	})
+	}.Bfs()
 	return result.Completed[0]
 }
 
-func (board Board) nextStates(state BoardState) []queue.State {
-	nextStates := []queue.State{}
+func (board Board) nextStates(state BoardState) []BoardState {
+	nextStates := []BoardState{}
 	for start, character := range state.characters {
 		if !character.atGoal(start) || !character.moved {
 			for _, move := range board.moves(state, start) {
@@ -235,7 +234,7 @@ func solve(extend bool) int {
 	board := getBoard(rows)
 	characters := getCharacters(rows)
 	endState := board.solve(characters)
-	return endState.(BoardState).cost
+	return endState.cost
 }
 
 func getRows(extend bool) []string {
