@@ -9,43 +9,43 @@ type State interface {
 	ToString() string
 }
 
-type Queue []State
+type Queue[T State] []T
 
 // Methods needed by container/heap module
 
-func (q Queue) Len() int {
+func (q Queue[T]) Len() int {
 	return len(q)
 }
 
-func (q Queue) Less(i, j int) bool {
+func (q Queue[T]) Less(i, j int) bool {
 	return q[i].Cost() < q[j].Cost()
 }
 
-func (q Queue) Swap(i, j int) {
+func (q Queue[T]) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
-func (q *Queue) Pop() interface{} {
+func (q *Queue[T]) Pop() interface{} {
 	length := len(*q)
 	result := (*q)[length-1]
 	*q = (*q)[:length-1]
 	return result
 }
 
-func (q *Queue) Push(state interface{}) {
-	*q = append(*q, state.(State))
+func (q *Queue[T]) Push(state any) {
+	*q = append(*q, state.(T))
 }
 
 // Methods that we actually interact with
 
-func (q *Queue) Add(state State) {
+func (q *Queue[T]) Add(state T) {
 	heap.Push(q, state)
 }
 
-func (q *Queue) Next() State {
-	return heap.Pop(q).(State)
+func (q *Queue[T]) Next() T {
+	return heap.Pop(q).(T)
 }
 
-func (q Queue) Empty() bool {
+func (q Queue[T]) Empty() bool {
 	return q.Len() == 0
 }

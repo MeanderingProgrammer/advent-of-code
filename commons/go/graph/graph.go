@@ -26,21 +26,21 @@ func (seen Seen) updateIfBest(state queue.State) bool {
 	}
 }
 
-type Search struct {
-	Initial    queue.State
-	Done       func(queue.State) bool
-	NextStates func(queue.State) []queue.State
+type Search[T queue.State] struct {
+	Initial    T
+	Done       func(T) bool
+	NextStates func(T) []T
 	FirstOnly  bool
 }
 
-type SearchResult struct {
-	Completed []queue.State
+type SearchResult[T queue.State] struct {
+	Completed []T
 	Explored  int
 }
 
-func (graph Graph[K, V]) Bfs(search Search) SearchResult {
-	completed := []queue.State{}
-	q := &queue.Queue{search.Initial}
+func (search Search[T]) Bfs() SearchResult[T] {
+	completed := []T{}
+	q := &queue.Queue[T]{search.Initial}
 	explored := 0
 	seen := make(Seen)
 	for !q.Empty() {
@@ -59,7 +59,7 @@ func (graph Graph[K, V]) Bfs(search Search) SearchResult {
 			}
 		}
 	}
-	return SearchResult{
+	return SearchResult[T]{
 		Completed: completed,
 		Explored:  explored,
 	}

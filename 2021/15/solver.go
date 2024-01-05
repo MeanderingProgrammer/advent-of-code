@@ -7,7 +7,6 @@ import (
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/queue"
 	"fmt"
 )
 
@@ -43,24 +42,24 @@ func solution() {
 func solve(wrap bool) int {
 	grid := getGrid(wrap)
 	g := graph.ConstructGraph(grid)
-	result := g.Bfs(graph.Search{
+	result := graph.Search[Path]{
 		Initial: Path{
 			point: point.Point{X: 0, Y: 0},
 			value: 0,
 		},
-		Done: func(state queue.State) bool {
-			return state.(Path).point == point.Point{X: grid.Width, Y: grid.Height}
+		Done: func(state Path) bool {
+			return state.point == point.Point{X: grid.Width, Y: grid.Height}
 		},
-		NextStates: func(state queue.State) []queue.State {
-			nextStates := []queue.State{}
-			for _, neighbor := range g.Neighbors(state.(Path).point) {
-				nextStates = append(nextStates, state.(Path).add(g, neighbor))
+		NextStates: func(state Path) []Path {
+			nextStates := []Path{}
+			for _, neighbor := range g.Neighbors(state.point) {
+				nextStates = append(nextStates, state.add(g, neighbor))
 			}
 			return nextStates
 		},
 		FirstOnly: true,
-	})
-	return result.Completed[0].(Path).value
+	}.Bfs()
+	return result.Completed[0].value
 }
 
 func getGrid(wrap bool) grid.Grid[int] {

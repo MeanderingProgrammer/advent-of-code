@@ -4,7 +4,6 @@ import (
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/graph"
-	"advent-of-code/commons/go/queue"
 	"advent-of-code/commons/go/util"
 	"fmt"
 	"strings"
@@ -75,22 +74,22 @@ func getGraph() graph.Graph[Cave, string] {
 }
 
 func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
-	result := g.Bfs(graph.Search{
+	result := graph.Search[Path]{
 		Initial: Path([]Cave{"start"}),
-		Done: func(state queue.State) bool {
-			return state.(Path).last() == "end"
+		Done: func(state Path) bool {
+			return state.last() == "end"
 		},
-		NextStates: func(state queue.State) []queue.State {
-			nextStates := []queue.State{}
-			for _, neighbor := range g.Neighbors(state.(Path).last()) {
-				if canGo(state.(Path), neighbor) {
-					nextStates = append(nextStates, state.(Path).add(neighbor))
+		NextStates: func(state Path) []Path {
+			nextStates := []Path{}
+			for _, neighbor := range g.Neighbors(state.last()) {
+				if canGo(state, neighbor) {
+					nextStates = append(nextStates, state.add(neighbor))
 				}
 			}
 			return nextStates
 		},
 		FirstOnly: false,
-	})
+	}.Bfs()
 	return len(result.Completed)
 }
 
