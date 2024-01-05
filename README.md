@@ -230,7 +230,6 @@ a_graph \
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
 | 2016 | 25  | 2.298   | Python   | Kinda like int-code, can probably make it faster        |
-| 2016 | 11  | 2.009   | Python   | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
 | 2023 | 25  | 1.902   | Ocaml    | Uses Karger algorithm which has randomness, time varies |
 | 2021 | 23  | 1.856   | Go       | Looks like a complex path finding problem               |
@@ -243,3 +242,4 @@ a_graph \
 | 2019 | 25  | 1.191   | Rust     | Mostly spends time permuting through the items          |
 | 2018 | 15  | 1.187   | Rust     | Complex game state with path finding between characters |
 | 2018 | 24  | 1.186   | Python   | Complex game, fairly optimized in Python                |
+| 2016 | 11  | 1.012   | Python   | That chips and generator problem                        |
