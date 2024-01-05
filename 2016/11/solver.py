@@ -1,53 +1,36 @@
 import itertools
 from dataclasses import dataclass
-from enum import Enum
 from typing import Optional, Self
 
 from aoc import answer, search
 from aoc.parser import Parser
 
-
-class ItemType(Enum):
-    CHIP = 1
-    GENERATOR = 2
+type Item = tuple[str, bool]
 
 
-@dataclass(frozen=True)
-class Item:
-    element: str
-    item_type: ItemType
-
-    def generator(self) -> Self:
-        if self.item_type == ItemType.GENERATOR:
-            raise Exception("Cannot get generator for a generator")
-        return type(self)(self.element, ItemType.GENERATOR)
+def to_generator(item: Item) -> Item:
+    assert item[1], "Can only get generator for a chip"
+    return (item[0], False)
 
 
+@dataclass
 class State:
-    def __init__(self):
-        # 4 floors with nothing on at first
-        self.state: dict[int, set[Item]] = {i: set() for i in range(4)}
-        self.hashed = None
-        self.equalized = None
-
-    def add(self, floor: int, item: Item) -> None:
-        self.state[floor].add(item)
-
-    def get(self, floor: int) -> set[Item]:
-        return self.state[floor]
+    state: list[set[Item]]
+    hashed: Optional[int] = None
+    equalized: Optional[list[set[str]]] = None
 
     def total_below(self, floor: int) -> int:
         return sum([len(self.state[level]) for level in range(floor)])
 
-    def move(self, new_level: int, items_to_move: list[Item]) -> Self:
-        new_state = type(self)()
-        for floor, items in self.state.items():
+    def move(self, new_level: int, items_to_move: tuple[Item, ...]) -> Self:
+        new_state: list[set[Item]] = [set() for _ in range(4)]
+        for floor, items in enumerate(self.state):
             for item in items:
                 if item not in items_to_move:
-                    new_state.add(floor, item)
+                    new_state[floor].add(item)
         for item in items_to_move:
-            new_state.add(new_level, item)
-        return new_state
+            new_state[new_level].add(item)
+        return type(self)(state=new_state)
 
     def is_legal(self, floors: list[int]) -> bool:
         for floor in floors:
@@ -56,53 +39,50 @@ class State:
         return True
 
     def contains_unpaired_chip(self, floor: int) -> bool:
-        items = self.get(floor)
-        chips = [item for item in items if item.item_type == ItemType.CHIP]
-        generators = [item for item in items if item.item_type == ItemType.GENERATOR]
+        items = self.state[floor]
+        chips = [item for item in items if item[1]]
+        generators = [item for item in items if not item[1]]
         if len(chips) == 0 or len(generators) == 0:
             return False
         for chip in chips:
-            if chip.generator() not in generators:
+            if to_generator(chip) not in generators:
                 return True
         return False
 
     def _get_floor(self, target: Item) -> int:
-        for i, items in self.state.items():
+        for i, items in enumerate(self.state):
             for item in items:
                 if item == target:
                     return i
         raise Exception(f"Could not find item: {target}")
 
-    def _equalize(self) -> dict[int, set[str]]:
+    def _equalize(self) -> list[set[str]]:
         if self.equalized is None:
-            result: dict[int, set[str]] = {i: set() for i in range(4)}
+            result: list[set[str]] = [set() for _ in range(4)]
             item_index = 0
-            for floor, items in self.state.items():
+            for floor, items in enumerate(self.state):
                 for item in items:
-                    if item.item_type == ItemType.CHIP:
+                    if item[1]:
                         result[floor].add(f"{item_index}C")
-                        generator_floor = self._get_floor(item.generator())
+                        generator_floor = self._get_floor(to_generator(item))
                         result[generator_floor].add(f"{item_index}G")
                         item_index += 1
             self.equalized = result
         return self.equalized
 
-    def __eq__(self, o: Self) -> bool:
+    def __eq__(self, o) -> bool:
         return self._equalize() == o._equalize()
-
-    def _freeze(self):
-        result = []
-        for floor, items in self._equalize().items():
-            result.append((floor, frozenset(items)))
-        return frozenset(result)
 
     def __hash__(self) -> int:
         if self.hashed is None:
-            self.hashed = hash(self._freeze())
+            result = []
+            for items in self._equalize():
+                result.append(frozenset(items))
+            self.hashed = hash(frozenset(result))
         return self.hashed
 
     def __lt__(self, o: Self) -> bool:
-        return len(self.get(3)) < len(o.get(3))
+        return len(self.state[3]) < len(o.state[3])
 
 
 @answer.timer
@@ -118,48 +98,48 @@ def main() -> None:
 
 
 def count_steps(additional_items: list[str]) -> Optional[int]:
-    start_state = get_start_state(additional_items)
-    end_state = get_end_state(start_state)
-    return search.bfs((0, start_state), (3, end_state), get_adjacent)
+    start = get_start_state(additional_items)
+    end = get_end_state(start)
+    return search.bfs((0, start), (3, end), get_adjacent)
 
 
 def get_start_state(additional_items: list[str]) -> State:
-    state = State()
-    for i, line in enumerate(Parser().lines()):
-        # Remove period, pull the component string and split them
-        components = line[:-1].split(" contains ")[1].split(", ")
-        if i == 0:
-            components += additional_items
-        for component in components:
-            # Example: and a plutonium-compatible microchip
-            component_parts = component.split()
-            raw_element, raw_item_type = component_parts[-2], component_parts[-1]
-            element = raw_element.split("-")[0]
-            if raw_item_type == "microchip":
-                item_type = ItemType.CHIP
-            elif raw_item_type == "generator":
-                item_type = ItemType.GENERATOR
-            else:
-                item_type = None
-            if item_type is not None:
-                item = Item(element, item_type)
-                state.add(i, item)
-    return state
+    def parse_items(line: str, add_additional: bool) -> set[Item]:
+        # The first floor contains a plutonium generator, and a plutonium-compatible microchip.
+        # ["a plutonium generator", "and a plutonium-compatible microchip"]
+        items = line[:-1].split(" contains ")[1].split(", ")
+        if add_additional:
+            items += additional_items
+        result: set[Item] = set()
+        for raw_item in items:
+            parts = raw_item.split()
+            item: Item = (
+                parts[-2].split("-")[0],
+                parts[-1] == "microchip",
+            )
+            result.add(item)
+        return result
+
+    state: list[set[Item]] = []
+    # Remove: The fourth floor contains nothing relevant.
+    for i, line in enumerate(Parser().lines()[:-1]):
+        items = parse_items(line, i == 0)
+        state.append(items)
+    state.append(set())
+    return State(state=state)
 
 
 def get_end_state(start: State) -> State:
-    state = State()
-    for items in start.state.values():
-        for item in items:
-            state.add(3, item)
-    return state
+    state: list[set[Item]] = [set() for _ in range(4)]
+    for items in start.state:
+        state[3].update(items)
+    return State(state=state)
 
 
 def get_adjacent(item: tuple[int, State]) -> list[tuple[int, State]]:
     level, state = item
-    options = pair(state.get(level))
-
-    adjacent = []
+    options = get_options(state.state[level])
+    adjacent: list[tuple[int, State]] = []
     for legal_state in get_legal(level, state, options, False):
         adjacent.append((level - 1, legal_state))
     for legal_state in get_legal(level, state, options, True):
@@ -167,69 +147,61 @@ def get_adjacent(item: tuple[int, State]) -> list[tuple[int, State]]:
     return adjacent
 
 
-def pair(items: set[Item]) -> list[list[Item]]:
-    result = []
-
+def get_options(items: set[Item]) -> list[tuple[Item, ...]]:
+    result: list[tuple[Item, ...]] = []
     # Any singular item
     for item in items:
-        result.append([item])
-
+        result.append((item,))
     # Any pair of microcips
-    chips = [item for item in items if item.item_type == ItemType.CHIP]
+    chips = [item for item in items if item[1]]
     for pair in itertools.combinations(chips, 2):
-        result.append(list(pair))
-
+        result.append(pair)
     # Any pair of generators
-    generators = [item for item in items if item.item_type == ItemType.GENERATOR]
+    generators = [item for item in items if not item[1]]
     for pair in itertools.combinations(generators, 2):
-        result.append(list(pair))
-
+        result.append(pair)
     # Some pair of matching chip and generator, all are equivalent
     matching_pair = get_matching_pair(chips, generators)
     if matching_pair is not None:
         result.append(matching_pair)
-
     return result
 
 
 def get_matching_pair(
     chips: list[Item], generators: list[Item]
-) -> Optional[list[Item]]:
+) -> Optional[tuple[Item, ...]]:
     for chip in chips:
         for generator in generators:
-            if chip.element == generator.element:
-                return [chip, generator]
+            if chip[0] == generator[0]:
+                return (chip, generator)
     return None
 
 
 def get_legal(
-    start_level: int, state: State, options: list[list[Item]], up: bool
+    start_level: int, state: State, options: list[tuple[Item, ...]], up: bool
 ) -> set[State]:
-    legal = set()
-
     new_level = start_level + 1 if up else start_level - 1
     if new_level < 0 or new_level > 3:
-        return legal
+        return set()
 
     # If we are going down but there is nothing below there is no point in moving things down
     if not up and state.total_below(start_level) == 0:
-        return legal
+        return set()
 
-    carry_1_options = [option for option in options if len(option) == 1]
-    carry_2_options = [option for option in options if len(option) == 2]
-
+    carry_1 = [option for option in options if len(option) == 1]
+    carry_2 = [option for option in options if len(option) == 2]
     if up:
         # If we're going upstairs and can carry 2 things don't bother carrying one
-        options = carry_2_options if len(carry_2_options) > 0 else carry_1_options
+        options = carry_2 if len(carry_2) > 0 else carry_1
     else:
         # If we're going downstairs and can carry 1 thing don't bother carrying two
-        options = carry_1_options if len(carry_1_options) > 0 else carry_2_options
+        options = carry_1 if len(carry_1) > 0 else carry_2
 
+    legal: set[State] = set()
     for option in options:
         new_state = state.move(new_level, option)
         if new_state.is_legal([start_level, new_level]):
             legal.add(new_state)
-
     return legal
 
 
