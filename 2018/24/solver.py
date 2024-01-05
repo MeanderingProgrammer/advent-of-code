@@ -1,25 +1,19 @@
 import re
 from dataclasses import dataclass
-from enum import Enum, auto
 from typing import Optional, Self
 
 from aoc import answer
 from aoc.parser import Parser
 
 
-class Category(Enum):
-    IMMUNE = auto()
-    INFECTION = auto()
-
-
 @dataclass
 class Group:
     id: int
-    category: Category
+    is_immune: bool
     units: int
     hp: int
-    weaknesses: list[str]
-    immunities: list[str]
+    weaknesses: tuple[str, ...]
+    immunities: tuple[str, ...]
     damage: int
     damage_type: str
     initiative: int
@@ -44,7 +38,7 @@ class Group:
     def hit(self, damage: int) -> None:
         self.units -= damage // self.hp
 
-    def __eq__(self, o: Optional[Self]) -> bool:
+    def __eq__(self, o) -> bool:
         return o is not None and self.id == o.id
 
 
@@ -84,12 +78,7 @@ class Battle:
         return assignments
 
     def get_target(self, group: Group, targets: list[Group]) -> Optional[Group]:
-        opponents = {
-            Category.IMMUNE: Category.INFECTION,
-            Category.INFECTION: Category.IMMUNE,
-        }[group.category]
-
-        options = self.get_category(opponents)
+        options = self.get_category(not group.is_immune)
         options = [option for option in options if option not in targets]
         options.sort(
             key=lambda option: (
@@ -105,12 +94,12 @@ class Battle:
             return None if group.calculate_damage(options[0]) == 0 else options[0]
 
     def immune_won(self) -> bool:
-        immune = self.get_category(Category.IMMUNE)
-        infection = self.get_category(Category.INFECTION)
+        immune = self.get_category(True)
+        infection = self.get_category(False)
         return len(immune) > 0 and len(infection) == 0
 
-    def get_category(self, category: Category) -> list[Group]:
-        return [group for group in self.groups if group.category == category]
+    def get_category(self, immune: bool) -> list[Group]:
+        return [group for group in self.groups if group.is_immune == immune]
 
     def winning_units(self) -> int:
         return sum([group.units for group in self.groups])
@@ -139,21 +128,21 @@ def solve_part_2() -> int:
 
 
 def get_battle(immune_boost: int) -> Battle:
-    def parse_group(id: int, category: Category, raw: str, boost: int) -> Group:
-        traits: dict[str, list[str]] = dict()
+    def parse_group(id: int, immune: bool, raw: str, boost: int) -> Group:
+        traits: dict[str, tuple[str, ...]] = dict()
         match = re.search(r"\((.*)\)", raw)
         if match is not None:
             for raw_trait in match.group(1).split("; "):
                 trait_type, trait_values = raw_trait.split(" to ")
-                traits[trait_type] = trait_values.split(", ")
+                traits[trait_type] = tuple(trait_values.split(", "))
         parts = raw.split()
         return Group(
             id=id,
-            category=category,
+            is_immune=immune,
             units=int(parts[0]),
             hp=int(parts[4]),
-            weaknesses=traits.get("weak", []),
-            immunities=traits.get("immune", []),
+            weaknesses=traits.get("weak", ()),
+            immunities=traits.get("immune", ()),
             damage=int(parts[-6]) + boost,
             damage_type=parts[-5],
             initiative=int(parts[-1]),
@@ -162,10 +151,10 @@ def get_battle(immune_boost: int) -> Battle:
     immune, infection = Parser().line_groups()
     id, groups = 0, []
     for value in immune[1:]:
-        groups.append(parse_group(id, Category.IMMUNE, value, immune_boost))
+        groups.append(parse_group(id, True, value, immune_boost))
         id += 1
     for value in infection[1:]:
-        groups.append(parse_group(id, Category.INFECTION, value, 0))
+        groups.append(parse_group(id, False, value, 0))
         id += 1
     return Battle(groups)
 
