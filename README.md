@@ -27,6 +27,8 @@ solutions from `Python` into something like `Rust` or `Go`.
 
 There is a section at the bottom of this doc tracking any remaining outliers.
 
+Currently no solution takes longer than 2 seconds to run, woo!
+
 # Input Data
 
 The input for each puzzle is in a separate private Github repo to comply with
