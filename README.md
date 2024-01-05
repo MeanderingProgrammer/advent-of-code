@@ -229,7 +229,6 @@ a_graph \
 
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
-| 2016 | 25  | 2.298   | Python   | Kinda like int-code, can probably make it faster        |
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
 | 2023 | 25  | 1.902   | Ocaml    | Uses Karger algorithm which has randomness, time varies |
 | 2021 | 23  | 1.856   | Go       | Looks like a complex path finding problem               |
