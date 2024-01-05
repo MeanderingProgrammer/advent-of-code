@@ -13,13 +13,13 @@ type Graph[K comparable, V comparable] struct {
 	grid     grid.Grid[V]
 }
 
-type Seen map[string]int
+type Seen map[uint64]int
 
 func (seen Seen) updateIfBest(state queue.State) bool {
-	encodedState, cost := state.ToString(), state.Cost()
-	lowestCost, ok := seen[encodedState]
+	hashState, cost := state.Hash(), state.Cost()
+	lowestCost, ok := seen[hashState]
 	if !ok || cost < lowestCost {
-		seen[encodedState] = cost
+		seen[hashState] = cost
 		return true
 	} else {
 		return false

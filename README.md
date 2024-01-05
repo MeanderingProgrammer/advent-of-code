@@ -243,4 +243,3 @@ a_graph \
 | 2019 | 25  | 1.191   | Rust     | Mostly spends time permuting through the items          |
 | 2018 | 15  | 1.187   | Rust     | Complex game state with path finding between characters |
 | 2018 | 24  | 1.186   | Python   | Complex game, fairly optimized in Python                |
-| 2021 | 12  | 1.102   | Go       | Path finding problem, might be some room to improve     |

@@ -7,7 +7,8 @@ import (
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
-	"fmt"
+	"advent-of-code/commons/go/util"
+	"hash/fnv"
 )
 
 type Path struct {
@@ -19,8 +20,11 @@ func (path Path) Cost() int {
 	return path.value
 }
 
-func (path Path) ToString() string {
-	return fmt.Sprintf("%v", path.point)
+func (path Path) Hash() uint64 {
+	h := fnv.New64()
+	h.Write([]byte(util.ToString(path.point.X)))
+	h.Write([]byte(util.ToString(path.point.Y)))
+	return h.Sum64()
 }
 
 func (path Path) add(graph graph.Graph[point.Point, int], p point.Point) Path {

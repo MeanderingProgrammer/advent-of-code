@@ -5,7 +5,7 @@ import (
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/graph"
 	"advent-of-code/commons/go/util"
-	"fmt"
+	"hash/fnv"
 	"strings"
 	"unicode"
 )
@@ -22,8 +22,12 @@ func (path Path) Cost() int {
 	return len(path)
 }
 
-func (path Path) ToString() string {
-	return fmt.Sprintf("%v", path)
+func (path Path) Hash() uint64 {
+	h := fnv.New64()
+	for _, cave := range path {
+		h.Write([]byte(cave))
+	}
+	return h.Sum64()
 }
 
 func (path Path) last() Cave {

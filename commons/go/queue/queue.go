@@ -6,7 +6,7 @@ import (
 
 type State interface {
 	Cost() int
-	ToString() string
+	Hash() uint64
 }
 
 type Queue[T State] []T
