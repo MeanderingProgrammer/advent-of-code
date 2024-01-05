@@ -8,6 +8,7 @@ import (
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
 	"fmt"
+	"hash/fnv"
 	"math"
 )
 
@@ -63,8 +64,20 @@ func (state BoardState) Cost() int {
 	return state.cost
 }
 
-func (state BoardState) ToString() string {
-	return fmt.Sprintf("%v", state.characters)
+func (state BoardState) Hash() uint64 {
+	h := fnv.New64()
+	// for point, character := range state.characters {
+	// 	h.Write([]byte(util.ToString(point.X)))
+	// 	h.Write([]byte(util.ToString(point.Y)))
+	// 	h.Write([]byte(character.value))
+	// 	if character.moved {
+	// 		h.Write([]byte{1})
+	// 	} else {
+	// 		h.Write([]byte{0})
+	// 	}
+	// }
+	h.Write([]byte(fmt.Sprintf("%v", state.characters)))
+	return h.Sum64()
 }
 
 func (state BoardState) complete() bool {
