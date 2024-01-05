@@ -229,7 +229,7 @@ class Instruction:
 
 class Bus(abc.ABC):
     @abc.abstractmethod
-    def active() -> bool:
+    def active(self) -> bool:
         pass
 
     @abc.abstractmethod
