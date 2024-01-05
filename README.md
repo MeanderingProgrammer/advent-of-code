@@ -229,12 +229,12 @@ a_graph \
 
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
-| 2022 | 16  | 4.359   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 2.871   | Go       | Looks like a complex path finding problem               |
 | 2016 | 25  | 2.298   | Python   | Kinda like int-code, can probably make it faster        |
 | 2016 | 11  | 2.009   | Python   | That chips and generator problem, not fun               |
 | 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
 | 2023 | 25  | 1.902   | Ocaml    | Uses Karger algorithm which has randomness, time varies |
+| 2022 | 16  | 1.723   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2019 | 23  | 1.583   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2016 | 14  | 1.391   | Go       | Already batched implementation of md5                   |
 | 2019 | 18  | 1.245   | Java     | Can likely minimize state to make lookups faster        |
