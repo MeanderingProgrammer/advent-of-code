@@ -9,38 +9,38 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Node {
 
-  char value;
-  Set<Path> paths;
+    char value;
+    Set<Path> paths;
 
-  public Node(char value) {
-    this.value = value;
-    this.paths = new HashSet<>();
-  }
-
-  public char asKey() {
-    if (!isDoor()) {
-      throw new IllegalArgumentException("Why you asking for the key of a non-door");
+    public Node(char value) {
+        this.value = value;
+        this.paths = new HashSet<>();
     }
-    return Character.toLowerCase(value);
-  }
 
-  public boolean shouldGo(Path newPath) {
-    return paths.stream().allMatch(path -> path.hasPotential(newPath));
-  }
+    public char asKey() {
+        if (!isDoor()) {
+            throw new IllegalArgumentException("Why you asking for the key of a non-door");
+        }
+        return Character.toLowerCase(value);
+    }
 
-  public void addPath(Path newPath) {
-    paths.add(newPath);
-  }
+    public boolean shouldGo(Path newPath) {
+        return paths.stream().allMatch(path -> path.hasPotential(newPath));
+    }
 
-  public boolean isKey() {
-    return Character.isLowerCase(value);
-  }
+    public void addPath(Path newPath) {
+        paths.add(newPath);
+    }
 
-  public boolean isDoor() {
-    return Character.isUpperCase(value);
-  }
+    public boolean isKey() {
+        return Character.isLowerCase(value);
+    }
 
-  public boolean isStart() {
-    return '@' == value;
-  }
+    public boolean isDoor() {
+        return Character.isUpperCase(value);
+    }
+
+    public boolean isStart() {
+        return '@' == value;
+    }
 }
