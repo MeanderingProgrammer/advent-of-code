@@ -18,11 +18,13 @@ class LanguageRunner:
     name: str
     command: list[str]
 
-    def key(self) -> str:
-        return f"{self.day.year}/{self.day.day} - {self.name}"
-
-    def value(self) -> str:
-        return " ".join(self.command)
+    def as_dict(self) -> dict:
+        return dict(
+            year=self.day.year,
+            day=self.day.day,
+            name=self.name,
+            command=" ".join(self.command),
+        )
 
     def execute(self) -> RuntimeInfo:
         print(f"Running year {self.day.year} day {self.day.day} with {self.name}")
@@ -48,7 +50,11 @@ class Runner(Command):
 
     @override
     def info(self) -> dict:
-        return {runner.key(): runner.value() for runner in self.__language_runners()}
+        return dict(
+            executions=[runner.as_dict() for runner in self.__language_runners()],
+            slow=self.slow,
+            save=self.save,
+        )
 
     @override
     def run(self) -> None:
