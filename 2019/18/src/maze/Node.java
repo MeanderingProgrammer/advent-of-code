@@ -24,12 +24,34 @@ public class Node {
         return Character.toLowerCase(value);
     }
 
-    public boolean shouldGo(Path newPath) {
-        return paths.stream().allMatch(path -> path.hasPotential(newPath));
+    public boolean addPath(Path newPath) {
+        if (shouldGo(newPath)) {
+            paths.add(newPath);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public void addPath(Path newPath) {
-        paths.add(newPath);
+    private boolean shouldGo(Path newPath) {
+        var remove = new ArrayList<>();
+        var result = paths.stream()
+            // Get all existing paths we have to the same key
+            .filter(path -> path.value() == newPath.value())
+            .allMatch(path -> {
+                if (newPath.distance() < path.distance()) {
+                    // New path does not require any more keys than the existing path
+                    if (path.needed().containsAll(newPath.needed())) {
+                        remove.add(path);
+                    }
+                    return true;
+                } else {
+                    // New path does not require every key required by the existing path
+                    return !newPath.needed().containsAll(path.needed());
+                }
+            });
+        remove.forEach(this.paths::remove);
+        return result;
     }
 
     public boolean isKey() {
