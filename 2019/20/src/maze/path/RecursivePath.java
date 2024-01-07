@@ -10,8 +10,6 @@ import maze.Node;
  */
 public class RecursivePath extends Path {
 
-    private static final Set<String> END_POINTS = Set.of("AA", "ZZ");
-
     public RecursivePath(Node start) {
         super(start);
     }
@@ -49,6 +47,7 @@ public class RecursivePath extends Path {
     }
 
     private static boolean isEnd(Node node) {
-        return END_POINTS.contains(node.label());
+        Set<String> endPoints = Set.of("AA", "ZZ");
+        return endPoints.contains(node.label());
     }
 }

@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class MazeParser {
 
-    private static final Set<Character> NON_LABEL_CHARACTERS = Set.of('#', '.', ' ');
-
     List<String> maze;
     int mazeSize;
 
@@ -109,10 +107,10 @@ public class MazeParser {
         public Optional<String> getLabel(String s) {
             char first = s.charAt(index);
             char second = s.charAt(index + 1);
-            if (NON_LABEL_CHARACTERS.contains(first) || NON_LABEL_CHARACTERS.contains(second)) {
-                return Optional.empty();
-            } else {
+            if (Character.isAlphabetic(first) && Character.isAlphabetic(second)) {
                 return Optional.of(String.valueOf(first) + second);
+            } else {
+                return Optional.empty();
             }
         }
 
