@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Node {
 
-  private static final Character STARTING_POINT = '@';
-
   char value;
   Set<Path> paths;
 
@@ -42,7 +40,7 @@ public class Node {
     return Character.isUpperCase(value);
   }
 
-  public boolean isStartingPoint() {
-    return STARTING_POINT == value;
+  public boolean isStart() {
+    return '@' == value;
   }
 }

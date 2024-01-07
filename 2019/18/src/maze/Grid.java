@@ -9,17 +9,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Grid {
 
-  private static final char WALL = '#';
-
   Map<Position, Node> grid;
-  @Getter List<Position> keyPositions;
-  @Getter Position startingPosition;
+  @Getter List<Position> keys;
+  @Getter Position start;
 
-  public Grid(List<String> maze, Position startingPosition) {
+  public Grid(List<String> maze, Position start) {
     this.grid = initializeGrid(maze);
-    this.keyPositions = computeKeyPositions();
-    this.startingPosition =
-        Optional.ofNullable(startingPosition).orElseGet(this::computeStartingPosition);
+    this.keys = computeKeys();
+    this.start = Optional.ofNullable(start).orElseGet(this::computeStart);
   }
 
   public Grid(List<String> maze) {
@@ -35,7 +32,7 @@ public class Grid {
   }
 
   public int totalKeys() {
-    return keyPositions.size();
+    return keys.size();
   }
 
   private static Map<Position, Node> initializeGrid(List<String> maze) {
@@ -44,7 +41,7 @@ public class Grid {
       String row = maze.get(y);
       for (int x = 0; x < row.length(); x++) {
         char ch = row.charAt(x);
-        if (ch != WALL) {
+        if (ch != '#') {
           grid.put(new Position(x, y), new Node(ch));
         }
       }
@@ -52,16 +49,16 @@ public class Grid {
     return grid;
   }
 
-  private List<Position> computeKeyPositions() {
+  private List<Position> computeKeys() {
     return grid.entrySet().stream()
         .filter(entry -> entry.getValue().isKey())
         .map(Map.Entry::getKey)
         .toList();
   }
 
-  private Position computeStartingPosition() {
+  private Position computeStart() {
     return grid.entrySet().stream()
-        .filter(entry -> entry.getValue().isStartingPoint())
+        .filter(entry -> entry.getValue().isStart())
         .map(Map.Entry::getKey)
         .findFirst()
         .orElseThrow(IllegalArgumentException::new);
