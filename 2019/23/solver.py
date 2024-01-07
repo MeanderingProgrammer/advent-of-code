@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, override
 
 from aoc import answer
@@ -16,7 +16,10 @@ class Packet:
 class Network:
     def __init__(self, memory: list[int]):
         self.nat: Optional[Packet] = None
-        self.network: list[Node] = [Node(list(memory), i, self) for i in range(50)]
+        self.network: list[Node] = [
+            Node(Computer(bus=NodeBus(network=self, packets=[i]), memory=list(memory)))
+            for i in range(50)
+        ]
         [node.run() for node in self.network]
 
     def run_until_repeat(self) -> list[int]:
@@ -45,22 +48,26 @@ class Network:
         node.run()
 
 
-class Node(Bus):
-    def __init__(self, memory: list[int], address: int, network: Network):
-        self.computer: Computer = Computer(bus=self, memory=memory)
-        self.network: Network = network
-        self.packets: list[int] = [address]
-        self.running: bool = True
-        self.buffer: list[int] = []
+@dataclass(frozen=True)
+class Node:
+    computer: Computer
 
     def run(self) -> bool:
-        self.running = True
+        self.computer.bus.running = True
         self.computer.run()
-        return self.running
+        return self.computer.bus.active()
 
     def send_packet(self, packet: Packet) -> None:
-        self.packets.append(packet.x)
-        self.packets.append(packet.y)
+        self.computer.bus.packets.append(packet.x)
+        self.computer.bus.packets.append(packet.y)
+
+
+@dataclass
+class NodeBus(Bus):
+    network: Network
+    packets: list[int]
+    running: bool = True
+    buffer: list[int] = field(default_factory=list)
 
     @override
     def active(self) -> bool:
@@ -78,9 +85,9 @@ class Node(Bus):
     def add_output(self, value: int) -> None:
         self.buffer.append(value)
         if len(self.buffer) == 3:
-            packet = Packet(dest=self.buffer[0], x=self.buffer[1], y=self.buffer[2])
+            dest, x, y = self.buffer
             self.buffer.clear()
-            self.network.send_packet(packet)
+            self.network.send_packet(Packet(dest=dest, x=x, y=y))
 
 
 @answer.timer

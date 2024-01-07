@@ -1,8 +1,22 @@
-from typing import Optional
+from typing import Optional, override
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
+
+
+class NoopBus(Bus):
+    @override
+    def active(self) -> bool:
+        return True
+
+    @override
+    def get_input(self) -> int:
+        return 0
+
+    @override
+    def add_output(self, value: int) -> None:
+        pass
 
 
 @answer.timer
@@ -15,7 +29,7 @@ def run(v1: int, v2: int) -> int:
     memory = Parser().int_csv()
     memory[1] = v1
     memory[2] = v2
-    computer = Computer(None, memory)
+    computer = Computer(NoopBus(), memory)
     computer.run()
     return memory[0]
 
