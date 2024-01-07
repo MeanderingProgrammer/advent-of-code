@@ -267,9 +267,9 @@ fn main() {
 fn solution() {
     let droid = VacuumDroid::default();
     let mut droid = run_droid(droid, false);
-    answer::part1(9876, droid.dust_collect());
     droid.create_path();
     let droid = run_droid(droid, true);
+    answer::part1(9876, droid.dust_collect());
     answer::part2(1234055, droid.value.unwrap());
 }
 
