@@ -8,7 +8,7 @@ class Parameter:
     value: int
     mode: int
 
-    def get(self, computer):
+    def get(self, computer: "Computer"):
         if self.mode in [0, 2]:
             return computer.memory[self.get_position(computer)]
         elif self.mode == 1:
@@ -16,10 +16,10 @@ class Parameter:
         else:
             raise Exception(f"Unknown parameter mode: {self.mode}")
 
-    def set(self, computer, value):
+    def set(self, computer: "Computer", value):
         computer.memory[self.get_position(computer)] = value
 
-    def get_position(self, computer):
+    def get_position(self, computer: "Computer"):
         if self.mode == 0:
             position = self.value
         elif self.mode == 2:
@@ -54,7 +54,7 @@ class Math:
     def set_params(self, v1: Parameter, v2: Parameter, v3: Parameter) -> None:
         self.v1, self.v2, self.v3 = v1, v2, v3
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None and self.v2 is not None and self.v3 is not None
         result = self.f(self.v1.get(computer), self.v2.get(computer))
         self.v3.set(computer, result)
@@ -80,7 +80,7 @@ class Store:
     def set_params(self, v1: Parameter) -> None:
         self.v1 = v1
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None
         self.v1.set(computer, computer.bus.get_input())
 
@@ -95,7 +95,7 @@ class Load:
     def set_params(self, v1: Parameter) -> None:
         self.v1 = v1
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None
         result = self.v1.get(computer)
         computer.bus.add_output(result)
@@ -113,7 +113,7 @@ class Jump:
     def set_params(self, v1: Parameter, v2: Parameter) -> None:
         self.v1, self.v2 = v1, v2
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None and self.v2 is not None
         if self.f(self.v1.get(computer)):
             return self.v2.get(computer)
@@ -142,7 +142,7 @@ class Equality:
     def set_params(self, v1: Parameter, v2: Parameter, v3: Parameter) -> None:
         self.v1, self.v2, self.v3 = v1, v2, v3
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None and self.v2 is not None and self.v3 is not None
         is_true = self.f(self.v1.get(computer), self.v2.get(computer))
         result = 1 if is_true else 0
@@ -169,7 +169,7 @@ class BaseAdjuster:
     def set_params(self, v1: Parameter) -> None:
         self.v1 = v1
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         assert self.v1 is not None
         return computer.base + self.v1.get(computer)
 
@@ -220,7 +220,7 @@ class Instruction:
     def base_adjuster(self):
         return isinstance(self.instruction, BaseAdjuster)
 
-    def process(self, computer):
+    def process(self, computer: "Computer"):
         return self.instruction.process(computer)
 
     def __len__(self):
@@ -242,14 +242,14 @@ class Bus(abc.ABC):
 
 
 @dataclass
-class Computer:
-    bus: Optional[Bus]
+class Computer[T: Bus]:
+    bus: T
     memory: list[int]
     pointer: int = 0
     base: int = 0
 
     def run(self) -> None:
-        while self.has_next() and (self.bus is None or self.bus.active()):
+        while self.has_next() and self.bus.active():
             self.next()
 
     def has_next(self) -> bool:
