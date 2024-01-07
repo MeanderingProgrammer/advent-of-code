@@ -1,6 +1,7 @@
 import pandas as pd
-from pojo.runtime_info import RuntimeInfo
 from termcolor import colored
+
+from pojo.runtime_info import RuntimeInfo
 
 
 class Displayer:
