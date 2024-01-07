@@ -233,7 +233,6 @@ a_graph \
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
 | 2021 | 23  | 1.856   | Go       | Looks like a complex path finding problem               |
 | 2022 | 16  | 1.723   | Rust     | Path finding with multiple agents is fairly optimized   |
-| 2019 | 23  | 1.583   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |
 | 2016 | 14  | 1.391   | Go       | Already batched implementation of md5                   |
 | 2019 | 18  | 1.245   | Java     | Can likely minimize state to make lookups faster        |
 | 2016 | 5   | 1.220   | Go       | Already batched implementation of md5                   |
