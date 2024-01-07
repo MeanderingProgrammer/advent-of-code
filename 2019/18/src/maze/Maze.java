@@ -13,7 +13,7 @@ public class Maze {
 
     Grid initialGrid = new Grid(maze);
     if (splitMaze) {
-      Position startingPosition = initialGrid.getStartingPosition();
+      Position startingPosition = initialGrid.getStart();
       int x = startingPosition.x();
       int y = startingPosition.y();
       MazeSplitter.split(maze, x, y);
@@ -29,26 +29,21 @@ public class Maze {
   }
 
   private void fillNodes(Grid grid) {
-    for (var keyPosition : grid.getKeyPositions()) {
-      var key = grid.get(keyPosition).getValue();
-      expandPosition(grid, keyPosition, key, keyPosition, new HashSet<>(), 0);
+    for (var key : grid.getKeys()) {
+      var value = grid.get(key).getValue();
+      expandPosition(grid, key, value, key, new HashSet<>(), 0);
     }
   }
 
   private void expandPosition(
-      Grid grid,
-      Position keyPosition,
-      char key,
-      Position position,
-      Set<Character> keysNeeded,
-      int distance) {
+      Grid grid, Position key, char value, Position position, Set<Character> needed, int distance) {
     Node node = grid.get(position);
 
     if (node.isDoor()) {
-      keysNeeded.add(node.asKey());
+      needed.add(node.asKey());
     }
 
-    Path path = new Path(keyPosition, key, keysNeeded, distance);
+    Path path = new Path(key, value, needed, distance);
     if (!node.shouldGo(path)) {
       return;
     }
@@ -56,30 +51,30 @@ public class Maze {
 
     for (Position adjacent : position.adjacent()) {
       if (grid.contains(adjacent)) {
-        expandPosition(grid, keyPosition, key, adjacent, new HashSet<>(keysNeeded), distance + 1);
+        expandPosition(grid, key, value, adjacent, new HashSet<>(needed), distance + 1);
       }
     }
   }
 
   public int complete() {
-    List<Position> startingPositions = grids.stream().map(Grid::getStartingPosition).toList();
-    return solve(new State(startingPositions, new HashSet<>()), new HashMap<>());
+    var state = new State(grids.stream().map(Grid::getStart).toList(), new HashSet<>());
+    return solve(state, new HashMap<>());
   }
 
   private int solve(State state, Map<List<Position>, Map<Set<Character>, Integer>> cache) {
-    if (state.keys().size() == totalKeys()) {
+    if (state.values().size() == totalKeys()) {
       return 0;
     }
 
     List<Integer> distances = new ArrayList<>();
     for (Move move : getMoves(state)) {
       State nextState = state.move(move);
-      int subDistance =
+      int distance =
           cache
-              .computeIfAbsent(nextState.positions(), k -> new HashMap<>())
-              .computeIfAbsent(nextState.keys(), k -> solve(nextState, cache));
+              .computeIfAbsent(nextState.keys(), k -> new HashMap<>())
+              .computeIfAbsent(nextState.values(), k -> solve(nextState, cache));
 
-      distances.add(move.path().distance() + subDistance);
+      distances.add(move.path().distance() + distance);
     }
     return Collections.min(distances);
   }
@@ -87,12 +82,12 @@ public class Maze {
   private Set<Move> getMoves(State state) {
     Set<Move> moves = new HashSet<>();
     for (int i = 0; i < grids.size(); i++) {
-      Node node = grids.get(i).get(state.positions().get(i));
+      Node node = grids.get(i).get(state.keys().get(i));
       for (Path path : node.getPaths()) {
-        if (state.keys().contains(path.key())) {
+        if (state.values().contains(path.value())) {
           continue;
         }
-        if (!state.keys().containsAll(path.keysNeeded())) {
+        if (!state.values().containsAll(path.needed())) {
           continue;
         }
         moves.add(new Move(i, path));
@@ -105,16 +100,16 @@ public class Maze {
     return grids.get(0).totalKeys();
   }
 
-  private static record State(List<Position> positions, Set<Character> keys) {
+  private static record State(List<Position> keys, Set<Character> values) {
 
     public State move(Move move) {
-      List<Position> nextPositions = new ArrayList<>(positions);
-      nextPositions.set(move.i(), move.path().keyPosition());
+      List<Position> nextKeys = new ArrayList<>(keys);
+      nextKeys.set(move.i(), move.path().key());
 
-      Set<Character> nextKeys = new HashSet<>(keys);
-      nextKeys.add(move.path().key());
+      Set<Character> nextValues = new HashSet<>(values);
+      nextValues.add(move.path().value());
 
-      return new State(nextPositions, nextKeys);
+      return new State(nextKeys, nextValues);
     }
   }
 
