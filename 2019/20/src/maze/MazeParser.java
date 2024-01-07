@@ -89,14 +89,14 @@ public class MazeParser {
             return Set.of(new Edge(nodes.get(current), length));
         } else {
             return current.adjacent().stream()
-              .filter(this::inMaze)
-              .filter(adjacent -> {
-                  boolean unseen = !seen.contains(adjacent);
-                  seen.add(adjacent);
-                  return unseen;
-              })
-              .flatMap(adjacent -> getEdges(adjacent, nodes, seen, length + 1).stream())
-              .collect(Collectors.toSet());
+                .filter(this::inMaze)
+                .filter(adjacent -> {
+                    boolean unseen = !seen.contains(adjacent);
+                    seen.add(adjacent);
+                    return unseen;
+                })
+                .flatMap(adjacent -> getEdges(adjacent, nodes, seen, length + 1).stream())
+                .collect(Collectors.toSet());
         }
     }
 

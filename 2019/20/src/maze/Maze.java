@@ -25,9 +25,9 @@ public class Maze {
         }
     }
 
-    private int path(Path startingPath, Node end) {
+    private int path(Path start, Node end) {
         PriorityQueue<Path> queue = new PriorityQueue<>();
-        queue.add(startingPath);
+        queue.add(start);
         Set<State> seen = new HashSet<>();
         while (!queue.isEmpty()) {
             Path current = queue.poll();
@@ -60,6 +60,8 @@ public class Maze {
     }
 
     private List<Node> getNodes(String label) {
-        return graph.keySet().stream().filter(node -> node.label().equals(label)).toList();
+        return graph.keySet().stream()
+            .filter(node -> node.label().equals(label))
+            .toList();
     }
 }
