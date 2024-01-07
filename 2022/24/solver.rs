@@ -5,16 +5,6 @@ use aoc_lib::reader;
 use queues::{IsQueue, Queue};
 use std::collections::HashSet;
 
-fn parse_direction(ch: &char) -> Option<Direction> {
-    match ch {
-        '^' => Some(Direction::Up),
-        '>' => Some(Direction::Right),
-        'v' => Some(Direction::Down),
-        '<' => Some(Direction::Left),
-        _ => None,
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Blizzard {
     position: Point,
@@ -61,7 +51,7 @@ impl Valley {
                 blizzard_positions.insert(point.clone());
                 blizzards.insert(Blizzard {
                     position: point.clone(),
-                    direction: parse_direction(value).unwrap(),
+                    direction: value.to_string().parse().unwrap(),
                 });
             });
         Self {
