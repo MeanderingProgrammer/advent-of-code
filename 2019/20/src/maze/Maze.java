@@ -1,7 +1,6 @@
 package maze;
 
 import java.util.*;
-import java.util.function.Function;
 import maze.path.NormalPath;
 import maze.path.Path;
 import maze.path.RecursivePath;
@@ -15,11 +14,12 @@ public class Maze {
     }
 
     public int path(String start, String end, boolean recursive) {
-        List<Node> startNode = getNodes(start);
-        List<Node> endNode = getNodes(end);
-        if (startNode.size() == 1 && endNode.size() == 1) {
-            Function<Node, Path> pathCreator = recursive ? RecursivePath::new : NormalPath::new;
-            return path(pathCreator.apply(startNode.get(0)), endNode.get(0));
+        List<Node> startNodes = getNodes(start);
+        List<Node> endNodes = getNodes(end);
+        if (startNodes.size() == 1 && endNodes.size() == 1) {
+            Node startNode = startNodes.get(0);
+            Path startPath = recursive ? new RecursivePath(startNode) : new NormalPath(startNode);
+            return path(startPath, endNodes.get(0));
         } else {
             throw new RuntimeException("Couldn't find nodes matching input");
         }
