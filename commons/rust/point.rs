@@ -12,6 +12,20 @@ pub enum Direction {
     Right,
 }
 
+impl FromStr for Direction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "^" => Ok(Self::Up),
+            ">" => Ok(Self::Right),
+            "v" => Ok(Self::Down),
+            "<" => Ok(Self::Left),
+            _ => Err(format!("Unknown direction: {s}")),
+        }
+    }
+}
+
 impl Direction {
     pub fn to_point(&self) -> Point {
         match self {
