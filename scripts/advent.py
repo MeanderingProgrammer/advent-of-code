@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 from typing import Optional
 
 import click
@@ -8,6 +9,7 @@ from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
 from args.str_enum_type import StrEnumType
+from command.command import Command
 from command.generate import Generator
 from command.graph import Grapher
 from command.run import Runner
@@ -33,7 +35,7 @@ def setup(language: tuple[Language, ...], info: bool) -> None:
     setup = Setup(
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
     )
-    click.echo(f"{setup}") if info else setup.run()
+    run_command(setup, info)
 
 
 @cli.command()
@@ -80,7 +82,7 @@ def run(
         run_args=["--test"] if test else [],
         save=template in [RunName.DAYS] and len(language) == 0,
     )
-    click.echo(f"{runner}") if info else runner.run()
+    run_command(runner, info)
 
 
 @cli.command()
@@ -113,7 +115,7 @@ def generate(
 
     assert len(days) == 1, f"Can only generate one day at a time found: {len(days)}"
     generator = Generator(day=days[0], language=language, puzzle=puzzle)
-    click.echo(f"{generator}") if info else generator.run()
+    run_command(generator, info)
 
 
 @cli.command()
@@ -124,7 +126,11 @@ def graph(archive: bool, info: bool) -> None:
     Creates some fun graphs of runtimes
     """
     grapher = Grapher(archive=archive)
-    click.echo(f"{grapher}") if info else grapher.run()
+    run_command(grapher, info)
+
+
+def run_command(command: Command, info: bool) -> None:
+    click.echo(json.dumps(command.info(), indent=2)) if info else command.run()
 
 
 if __name__ == "__main__":
