@@ -38,17 +38,14 @@ public class Maze {
   private void expandPosition(
       Grid grid, Position key, char value, Position position, Set<Character> needed, int distance) {
     Node node = grid.get(position);
-
     if (node.isDoor()) {
       needed.add(node.asKey());
     }
-
     Path path = new Path(key, value, needed, distance);
     if (!node.shouldGo(path)) {
       return;
     }
     node.addPath(path);
-
     for (Position adjacent : position.adjacent()) {
       if (grid.contains(adjacent)) {
         expandPosition(grid, key, value, adjacent, new HashSet<>(needed), distance + 1);
@@ -61,19 +58,18 @@ public class Maze {
     return solve(state, new HashMap<>());
   }
 
-  private int solve(State state, Map<List<Position>, Map<Set<Character>, Integer>> cache) {
+  private int solve(State state, Map<State, Integer> cache) {
     if (state.values().size() == totalKeys()) {
       return 0;
     }
-
     List<Integer> distances = new ArrayList<>();
     for (Move move : getMoves(state)) {
       State nextState = state.move(move);
-      int distance =
-          cache
-              .computeIfAbsent(nextState.keys(), k -> new HashMap<>())
-              .computeIfAbsent(nextState.values(), k -> solve(nextState, cache));
-
+      Integer distance = cache.get(nextState);
+      if (distance == null) {
+        distance = solve(nextState, cache);
+        cache.put(nextState, distance);
+      }
       distances.add(move.path().distance() + distance);
     }
     return Collections.min(distances);
@@ -105,10 +101,8 @@ public class Maze {
     public State move(Move move) {
       List<Position> nextKeys = new ArrayList<>(keys);
       nextKeys.set(move.i(), move.path().key());
-
       Set<Character> nextValues = new HashSet<>(values);
       nextValues.add(move.path().value());
-
       return new State(nextKeys, nextValues);
     }
   }
