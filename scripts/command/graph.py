@@ -2,17 +2,28 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import override
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
+
+from command.command import Command
 from component.figure_saver import FigType, FigureSaver
 
 
 @dataclass(frozen=True)
-class Grapher:
+class Grapher(Command):
     archive: bool
 
+    @override
+    def info(self) -> dict:
+        saver = self.__figure_saver()
+        return dict(
+            archive=saver.archive, archive_directory=str(saver.archive_directory)
+        )
+
+    @override
     def run(self) -> None:
         plt.style.use("ggplot")
 
@@ -21,16 +32,20 @@ class Grapher:
             raise Exception(f"Runtimes were never determined: {runtimes_file}")
         runtimes = pd.DataFrame(json.loads(runtimes_file.read_text()))
 
-        archive_directory = None
-        if self.archive:
-            date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
-            archive_directory = Path("images/archive").joinpath(date_directory)
-            archive_directory.mkdir(parents=True, exist_ok=False)
-        saver = FigureSaver(archive=self.archive, archive_directory=archive_directory)
+        saver = self.__figure_saver()
+        if saver.archive_directory is not None:
+            saver.archive_directory.mkdir(parents=True, exist_ok=False)
 
         runtimes["all"] = "ALL"
         runtimes["runtime"] = runtimes["runtime"].round(3)
         self.__create_graphs(runtimes, saver)
+
+    def __figure_saver(self) -> FigureSaver:
+        archive_directory = None
+        if self.archive:
+            date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
+            archive_directory = Path("images/archive").joinpath(date_directory)
+        return FigureSaver(archive=self.archive, archive_directory=archive_directory)
 
     def __create_graphs(self, runtimes: pd.DataFrame, saver: FigureSaver) -> None:
         saver.save(

@@ -2,17 +2,29 @@ import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
+from typing import override
 
+from command.command import Command
 from language.language import Language
 from pojo.day import Day
 
 
 @dataclass(frozen=True)
-class Generator:
+class Generator(Command):
     day: Day
     language: Language
     puzzle: bool
 
+    @override
+    def info(self) -> dict:
+        return dict(
+            year=self.day.year,
+            day=self.day.day,
+            language=self.language.name,
+            puzzle=self.puzzle,
+        )
+
+    @override
     def run(self) -> None:
         self.__setup_language()
         self.__setup_data_files()

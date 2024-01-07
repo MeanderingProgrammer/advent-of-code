@@ -2,26 +2,58 @@ import json
 import re
 import time
 from dataclasses import dataclass
+from typing import override
 
+from command.command import Command
 from component.command import execute
 from component.display_runtimes import Displayer
 from component.language_strategy import LanguageStrategy
-from language.language import Language
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
 
 
 @dataclass(frozen=True)
-class Runner:
+class LanguageRunner:
+    day: Day
+    name: str
+    command: list[str]
+
+    def key(self) -> str:
+        return f"{self.day.year}/{self.day.day} - {self.name}"
+
+    def value(self) -> str:
+        return " ".join(self.command)
+
+    def execute(self) -> RuntimeInfo:
+        print(f"Running year {self.day.year} day {self.day.day} with {self.name}")
+        result = execute(self.command)
+        runtime = LanguageRunner.__parse_runtime_seconds(result)
+        return RuntimeInfo(self.day, self.name, runtime)
+
+    @staticmethod
+    def __parse_runtime_seconds(result: str) -> float:
+        matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
+        assert len(matches) == 1, "Could not find runtime in output"
+        runtime_ns = float(matches[0])
+        return runtime_ns / 1_000_000_000
+
+
+@dataclass(frozen=True)
+class Runner(Command):
     days: list[Day]
     language_strategy: LanguageStrategy
     slow: int
     run_args: list[str]
     save: bool
 
+    @override
+    def info(self) -> dict:
+        return {runner.key(): runner.value() for runner in self.__language_runners()}
+
+    @override
     def run(self) -> None:
         start = time.time()
-        runtimes = self.__get_runtimes()
+        runtimes = [runner.execute() for runner in self.__language_runners()]
         overall_runtime = time.time() - start
 
         displayer = Displayer()
@@ -34,35 +66,21 @@ class Runner:
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
-    def __get_runtimes(self) -> list[RuntimeInfo]:
-        runtimes = []
-        for day in self.days:
-            runtimes.extend(self.__run_day(day))
-        return runtimes
-
-    def __run_day(self, day: Day) -> list[RuntimeInfo]:
-        runtimes = []
-        for language in self.language_strategy.get(day):
-            runtime = self.__run_language(language, day)
-            runtimes.append(runtime)
-        return runtimes
-
-    def __run_language(self, language: Language, day: Day) -> RuntimeInfo:
-        print(f"Running year {day.year} day {day.day} with {language.name}")
-        result = execute(language.run_command(day, self.run_args))
-        runtime = Runner.__parse_runtime_seconds(result)
-        return RuntimeInfo(day, language.name, runtime)
-
-    @staticmethod
-    def __parse_runtime_seconds(result: str) -> float:
-        matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
-        assert len(matches) == 1, "Could not find runtime in output"
-        runtime_ns = float(matches[0])
-        return runtime_ns / 1_000_000_000
-
     def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
         if not self.save:
             return
         with open(f"{name}.json", "w") as f:
             value = [runtime.as_dict() for runtime in runtimes]
             f.write(json.dumps(value))
+
+    def __language_runners(self) -> list[LanguageRunner]:
+        result: list[LanguageRunner] = []
+        for day in self.days:
+            for language in self.language_strategy.get(day):
+                runner = LanguageRunner(
+                    day=day,
+                    name=language.name,
+                    command=language.run_command(day, self.run_args),
+                )
+                result.append(runner)
+        return result
