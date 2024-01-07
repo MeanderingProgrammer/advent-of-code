@@ -20,46 +20,42 @@ class Network:
             Node(Computer(bus=NodeBus(network=self, packets=[i]), memory=list(memory)))
             for i in range(50)
         ]
-        [node.run() for node in self.network]
 
     def run_until_repeat(self) -> list[int]:
         history: list[int] = []
+        self.run()
         while True:
-            running = all([node.run() for node in self.network])
-            if running:
-                continue
+            self.run()
             assert self.nat is not None
             destination = self.nat.y
             seen = destination in history
             history.append(destination)
             if seen:
                 return history
-            self.send_to_node(0, self.nat)
+            self.send_packet(Packet(dest=0, x=self.nat.x, y=self.nat.y))
+
+    def run(self) -> None:
+        [node.run() for node in self.network]
 
     def send_packet(self, packet: Packet) -> None:
         if packet.dest == 255:
             self.nat = packet
         else:
-            self.send_to_node(packet.dest, packet)
-
-    def send_to_node(self, destination: int, packet: Packet) -> None:
-        node = self.network[destination]
-        node.send_packet(packet)
-        node.run()
+            node = self.network[packet.dest]
+            node.send_packet(packet)
+            node.run()
 
 
 @dataclass(frozen=True)
 class Node:
     computer: Computer
 
-    def run(self) -> bool:
+    def run(self) -> None:
         self.computer.bus.running = True
         self.computer.run()
-        return self.computer.bus.active()
 
     def send_packet(self, packet: Packet) -> None:
-        self.computer.bus.packets.append(packet.x)
-        self.computer.bus.packets.append(packet.y)
+        self.computer.bus.send_packet(packet)
 
 
 @dataclass
@@ -68,6 +64,10 @@ class NodeBus(Bus):
     packets: list[int]
     running: bool = True
     buffer: list[int] = field(default_factory=list)
+
+    def send_packet(self, packet: Packet) -> None:
+        self.packets.append(packet.x)
+        self.packets.append(packet.y)
 
     @override
     def active(self) -> bool:
