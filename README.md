@@ -231,7 +231,6 @@ a_graph \
 
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
-| 2019 | 17  | 1.993   | Python   | Annoying int-code that hasn't been moved to Rust        |
 | 2021 | 23  | 1.856   | Go       | Looks like a complex path finding problem               |
 | 2022 | 16  | 1.723   | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2019 | 23  | 1.583   | Python   | Kinda annoying int-code that hasn't been moved to Rust  |

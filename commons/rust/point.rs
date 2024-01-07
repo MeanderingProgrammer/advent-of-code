@@ -45,7 +45,7 @@ impl Direction {
         }
     }
 
-    pub fn righ(&self) -> Self {
+    pub fn right(&self) -> Self {
         match self {
             Self::Up => Self::Right,
             Self::Right => Self::Down,
