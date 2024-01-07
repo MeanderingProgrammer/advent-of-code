@@ -35,6 +35,24 @@ impl Direction {
             Self::Right => Point::new(1, 0),
         }
     }
+
+    pub fn left(&self) -> Self {
+        match self {
+            Self::Up => Self::Left,
+            Self::Left => Self::Down,
+            Self::Down => Self::Right,
+            Self::Right => Self::Up,
+        }
+    }
+
+    pub fn righ(&self) -> Self {
+        match self {
+            Self::Up => Self::Right,
+            Self::Right => Self::Down,
+            Self::Down => Self::Left,
+            Self::Left => Self::Up,
+        }
+    }
 }
 
 #[derive(Debug, EnumIter)]
