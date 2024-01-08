@@ -25,7 +25,7 @@ of having no single solution take more than 1 second to run.
 Sometimes this involves algorithm improvements, other times I decided to re-write
 solutions from `Python` into something like `Rust` or `Go`.
 
-There is a section at the bottom of this doc tracking any remaining outliers.
+This [section](#take-over-1-second-on-m2-mac) tracks any remaining outliers.
 
 Currently no solution takes longer than 2 seconds to run, woo!
 
