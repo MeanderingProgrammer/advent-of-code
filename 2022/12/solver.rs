@@ -2,8 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
-use priority_queue::PriorityQueue;
-use std::collections::HashSet;
+use aoc_lib::search::Search;
 
 fn main() {
     answer::timer(solution);
@@ -25,27 +24,19 @@ fn shortest_bfs(grid: &Grid<i64>, end: &Point) -> Option<i64> {
 }
 
 fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
-    let mut queue = PriorityQueue::new();
-    queue.push(start.clone(), 0);
-    let mut seen: HashSet<Point> = HashSet::new();
-    while !queue.is_empty() {
-        let (point, distance) = queue.pop().unwrap();
-        if &point == end {
-            return Some(distance * -1);
-        }
-        seen.insert(point.clone());
-        let max_height = grid.get(&point) + 1;
-        for neighbor in point.neighbors() {
-            if !seen.contains(&neighbor) && can_go(grid, &neighbor, &max_height) {
-                queue.push_increase(neighbor, distance - 1);
-            }
-        }
+    Search {
+        start: start.clone(),
+        is_done: |node| node == end,
+        get_neighbors: |node| {
+            let max_height = grid.get(node) + 1;
+            node.neighbors()
+                .into_iter()
+                .filter(|neighbor| grid.contains(neighbor) && grid.get(neighbor) <= &max_height)
+                .map(|neighbor| (neighbor, 1))
+                .collect()
+        },
     }
-    None
-}
-
-fn can_go(grid: &Grid<i64>, point: &Point, max_height: &i64) -> bool {
-    grid.contains(point) && grid.get(point) <= max_height
+    .dijkstra()
 }
 
 fn get_graph() -> (Grid<i64>, Point, Point) {
