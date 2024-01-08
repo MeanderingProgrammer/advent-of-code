@@ -260,7 +260,6 @@ a_graph \
 
 | Year | Day | Runtime (ms) | Language | Notes                                                   |
 | ---- | --- | ------------ | -------- | ------------------------------------------------------- |
-| 2022 | 16  | 1801.31      | Rust     | Path finding with multiple agents is fairly optimized   |
 | 2021 | 23  | 1538.08      | Go       | Looks like a complex path finding problem               |
 | 2016 | 14  | 1394.71      | Go       | Already batched implementation of md5                   |
 | 2016 | 5   | 1322.47      | Go       | Already batched implementation of md5                   |
