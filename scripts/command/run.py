@@ -16,6 +16,7 @@ from pojo.runtime_info import RuntimeInfo
 class LanguageRunner:
     day: Day
     name: str
+    times: int
     command: list[str]
 
     def as_dict(self) -> dict:
@@ -23,21 +24,26 @@ class LanguageRunner:
             year=self.day.year,
             day=self.day.day,
             name=self.name,
+            times=self.times,
             command=" ".join(self.command),
         )
 
     def execute(self) -> RuntimeInfo:
-        print(f"Running year {self.day.year} day {self.day.day} with {self.name}")
-        result = execute(self.command)
-        runtime = LanguageRunner.__parse_runtime_seconds(result)
-        return RuntimeInfo(self.day, self.name, runtime)
+        message = (
+            f"Running {self.day.year}/{self.day.day}"
+            f" {self.times} times with {self.name}"
+        )
+        print(message)
+        runtimes = [LanguageRunner.__execute(self.command) for _ in range(self.times)]
+        return RuntimeInfo(self.day, self.name, sum(runtimes) / self.times)
 
     @staticmethod
-    def __parse_runtime_seconds(result: str) -> float:
+    def __execute(command: list[str]) -> float:
+        result = execute(command)
         matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
         assert len(matches) == 1, "Could not find runtime in output"
         runtime_ns = float(matches[0])
-        return runtime_ns / 1_000_000_000
+        return runtime_ns / 1_000_000
 
 
 @dataclass(frozen=True)
@@ -83,9 +89,13 @@ class Runner(Command):
         result: list[LanguageRunner] = []
         for day in self.days:
             for language in self.language_strategy.get(day):
+                # 2023/25 is written in a randomized implementation
+                # Average of multiple runs is more representative
+                times = 10 if day == Day("2023", "25") else 1
                 runner = LanguageRunner(
                     day=day,
                     name=language.name,
+                    times=times,
                     command=language.run_command(day, self.run_args),
                 )
                 result.append(runner)

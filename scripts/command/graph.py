@@ -37,7 +37,7 @@ class Grapher(Command):
             saver.archive_directory.mkdir(parents=True, exist_ok=False)
 
         runtimes["all"] = "ALL"
-        runtimes["runtime"] = runtimes["runtime"].round(3)
+        runtimes["runtime"] = runtimes["runtime"].round(0)
         self.__create_graphs(runtimes, saver)
 
     def __figure_saver(self) -> FigureSaver:
