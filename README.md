@@ -231,8 +231,8 @@ a_graph \
 
 | Year | Day | Runtime | Language | Notes                                                   |
 | ---- | --- | ------- | -------- | ------------------------------------------------------- |
-| 2021 | 23  | 1.856   | Go       | Looks like a complex path finding problem               |
 | 2022 | 16  | 1.723   | Rust     | Path finding with multiple agents is fairly optimized   |
+| 2021 | 23  | 1.546   | Go       | Looks like a complex path finding problem               |
 | 2016 | 14  | 1.391   | Go       | Already batched implementation of md5                   |
 | 2016 | 5   | 1.220   | Go       | Already batched implementation of md5                   |
 | 2023 | 25  | 1.208   | Ocaml    | Uses Karger algorithm which has randomness, time varies |
