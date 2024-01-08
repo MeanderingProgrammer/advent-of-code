@@ -74,9 +74,12 @@ impl FullState {
     }
 }
 
+/// Valves are represented using u8s rather than strings
 #[derive(Debug)]
 struct Cave {
+    /// Mapping from each valve to each reachable valve and the time it takes to reach it
     graph: FxHashMap<u8, Vec<(u8, u16)>>,
+    /// Mapping from each valve to its flow rate
     valve_flow: FxHashMap<u8, u16>,
 }
 
@@ -87,7 +90,7 @@ impl Cave {
         let mut max_score: u16 = 0;
         while !queue.is_empty() {
             let (state, score) = queue.pop().unwrap();
-            if score + self.max_score(&state) < max_score {
+            if score + self.max_score(&state, 3) < max_score {
                 continue;
             }
             max_score = max_score.max(score);
@@ -130,38 +133,32 @@ impl Cave {
             .filter(|(destination, _)| !state.valves_opened.contains(destination))
             .map(|(destination, time)| {
                 let minutes_left = individual.minutes_left - time - 1;
-
                 let mut valves_opened = state.valves_opened.clone();
                 valves_opened.insert(*destination);
-
                 let mut individuals = state.individuals.clone();
                 individuals[i] = IndividualState {
                     location: *destination,
                     minutes_left,
                 };
-
-                (
-                    FullState {
-                        individuals,
-                        valves_opened,
-                    },
-                    score + (self.valve_flow[destination] * minutes_left),
-                )
+                let next_state = FullState {
+                    individuals,
+                    valves_opened,
+                };
+                let next_score = score + (self.valve_flow[destination] * minutes_left);
+                (next_state, next_score)
             })
             .collect()
     }
 
-    fn max_score(&self, state: &FullState) -> u16 {
-        let mut unopened: Vec<u16> = self
+    fn max_score(&self, state: &FullState, move_time: u16) -> u16 {
+        let mut highest_values = self
             .valve_flow
             .iter()
             .filter(|(&ref name, _)| !state.valves_opened.contains(name))
             .map(|(_, &flow_rate)| flow_rate)
-            .collect();
-        unopened.sort();
-        unopened.reverse();
-
-        let mut highest_values = unopened.iter().peekable();
+            .sorted()
+            .rev()
+            .peekable();
 
         let mut times_left: Vec<u16> = state
             .individuals
@@ -170,7 +167,7 @@ impl Cave {
             .collect();
 
         let mut additional_score = 0;
-        while times_left.iter().max().unwrap() > &2 && !highest_values.peek().is_none() {
+        while times_left.iter().max().unwrap() > &move_time && !highest_values.peek().is_none() {
             let index_of_max = times_left
                 .iter()
                 .enumerate()
@@ -178,7 +175,7 @@ impl Cave {
                 .map(|(index, _)| index)
                 .unwrap();
 
-            times_left[index_of_max] -= 2;
+            times_left[index_of_max] -= move_time;
             additional_score += times_left[index_of_max] * highest_values.next().unwrap();
         }
         additional_score
