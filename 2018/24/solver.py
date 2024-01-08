@@ -12,9 +12,10 @@ class Group:
     is_immune: bool
     units: int
     hp: int
-    weaknesses: tuple[str, ...]
-    immunities: tuple[str, ...]
+    weaknesses: list[str]
+    immunities: list[str]
     damage: int
+    power: int
     damage_type: str
     initiative: int
 
@@ -22,27 +23,23 @@ class Group:
     def dead(self) -> bool:
         return self.units <= 0
 
-    @property
-    def power(self) -> int:
-        return self.units * self.damage
-
     def calculate_damage(self, o: Self) -> int:
         if self.damage_type in o.immunities:
-            multiplier = 0
+            return 0
         elif self.damage_type in o.weaknesses:
-            multiplier = 2
+            return self.power * 2
         else:
-            multiplier = 1
-        return self.power * multiplier
+            return self.power
 
     def hit(self, damage: int) -> None:
         self.units -= damage // self.hp
+        self.power = self.units * self.damage
 
     def __eq__(self, o) -> bool:
         return o is not None and self.id == o.id
 
 
-@dataclass
+@dataclass(frozen=True)
 class Battle:
     groups: list[Group]
 
@@ -65,11 +62,11 @@ class Battle:
                 self.groups.remove(target)
 
     def assign_targets(self) -> list[tuple[Group, Group]]:
-        assignments: list[tuple[Group, Group]] = []
-        targets: list[Group] = []
         self.groups.sort(
             key=lambda group: (group.power, group.initiative), reverse=True
         )
+        assignments: list[tuple[Group, Group]] = []
+        targets: list[Group] = []
         for group in self.groups:
             target = self.get_target(group, targets)
             if target is not None:
@@ -107,17 +104,17 @@ class Battle:
 
 @answer.timer
 def main() -> None:
-    answer.part1(16086, solve_part_1())
-    answer.part2(3957, solve_part_2())
+    answer.part1(16086, part_1())
+    answer.part2(3957, part_2())
 
 
-def solve_part_1() -> int:
+def part_1() -> int:
     battle = get_battle(0)
     battle.simulate()
     return battle.winning_units()
 
 
-def solve_part_2() -> int:
+def part_2() -> int:
     immune_boost = 0
     while True:
         immune_boost += 1
@@ -129,33 +126,35 @@ def solve_part_2() -> int:
 
 def get_battle(immune_boost: int) -> Battle:
     def parse_group(id: int, immune: bool, raw: str, boost: int) -> Group:
-        traits: dict[str, tuple[str, ...]] = dict()
+        traits: dict[str, list[str]] = dict()
         match = re.search(r"\((.*)\)", raw)
+        # Not all groups have associated traits
         if match is not None:
             for raw_trait in match.group(1).split("; "):
                 trait_type, trait_values = raw_trait.split(" to ")
-                traits[trait_type] = tuple(trait_values.split(", "))
+                traits[trait_type] = trait_values.split(", ")
         parts = raw.split()
+        units = int(parts[0])
+        damage = int(parts[-6]) + boost
         return Group(
             id=id,
             is_immune=immune,
-            units=int(parts[0]),
+            units=units,
             hp=int(parts[4]),
-            weaknesses=traits.get("weak", ()),
-            immunities=traits.get("immune", ()),
-            damage=int(parts[-6]) + boost,
+            weaknesses=traits.get("weak", []),
+            immunities=traits.get("immune", []),
+            damage=damage,
+            power=units * damage,
             damage_type=parts[-5],
             initiative=int(parts[-1]),
         )
 
+    groups: list[Group] = []
     immune, infection = Parser().line_groups()
-    id, groups = 0, []
     for value in immune[1:]:
-        groups.append(parse_group(id, True, value, immune_boost))
-        id += 1
+        groups.append(parse_group(len(groups), True, value, immune_boost))
     for value in infection[1:]:
-        groups.append(parse_group(id, False, value, 0))
-        id += 1
+        groups.append(parse_group(len(groups), False, value, 0))
     return Battle(groups)
 
 
