@@ -8,6 +8,7 @@ import (
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
 	"hash/fnv"
+	"maps"
 	"math"
 	"sort"
 )
@@ -127,18 +128,14 @@ func (state BoardState) charactersInRoom(value Value) []Value {
 }
 
 func (state BoardState) apply(move Move) BoardState {
-	updated, cost := make(Characters), 0
-	for position, character := range state.characters {
-		if position != move.start {
-			updated[position] = character
-		} else {
-			updated[move.end] = Character{
-				moved: true,
-				value: character.value,
-			}
-			cost = character.value.cost()
-		}
+	updated := maps.Clone(state.characters)
+	character := updated[move.start]
+	delete(updated, move.start)
+	updated[move.end] = Character{
+		moved: true,
+		value: character.value,
 	}
+	cost := character.value.cost()
 	return BoardState{
 		characters: updated,
 		cost:       state.cost + cost*move.distance(),
