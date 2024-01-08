@@ -31,8 +31,11 @@ Currently no solution takes longer than 2 seconds to run, woo!
 
 # Input Data
 
-The input for each puzzle is in a separate private Github repo to comply with
-the policy [here](https://adventofcode.com/about).
+<details>
+
+<summary>The input for each puzzle is in a separate private Github repo</summary>
+
+This is done to comply with the policy [here](https://adventofcode.com/about).
 
 These inputs end up in the `data` folder in the same structure as the solutions.
 
@@ -40,15 +43,17 @@ For instance the input for year `2020` day `5` is file `data/2020/05/data.txt`.
 
 After cloning this repo the following command needs to be run to get the data.
 
-```
+```bash
 git submodule update --init
 ```
 
 This also means when pulling changes the `update` command must also be ran.
 
-```
+```bash
 git submodule update
 ```
+
+</details>
 
 # Setup
 
@@ -60,7 +65,7 @@ pip install -r scripts/requirements.txt
 
 ## Set Aliases
 
-```
+```bash
 alias a_setup="./scripts/advent.py setup"
 alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
@@ -81,7 +86,7 @@ all supported languages.
 
 ## Usage
 
-```
+```bash
 a_setup \
   (--language <language>)* \
   --info?
@@ -107,7 +112,7 @@ latest day in the fastest language it is implemented in.
 
 ## Usage
 
-```
+```bash
 a_run \
   --template <template>? \
   (--year <year>)* \
@@ -131,7 +136,7 @@ a_run \
 
 ## Process Runtime Output
 
-```
+```bash
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json | sort -nk4
 jq -r '.[]|.runtime' all.json | awk '{ sum+=$1 } END { print "Seconds:", sum; print "Minutes:", sum / 60 }'
@@ -144,7 +149,7 @@ jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 This will test that some shared logic works across usage days. Such as the `int-code`
 implementation from 2019.
 
-```
+```bash
 pytest -s
 ```
 
@@ -164,7 +169,7 @@ next day using the rust template.
 
 ## Usage
 
-```
+```bash
 a_gen \
   --template <template>? \
   --year <year>? \
@@ -194,7 +199,7 @@ Follow the instructions in the `README` of `aoc-cli` to get your session cookie 
 
 This library relies on openssl which you will also need to install if you don't already have it.
 
-```
+```bash
 cargo install aoc-cli
 touch .adventofcode.session
 ```
@@ -212,7 +217,7 @@ new graphs and skip graphs that have been created before.
 
 ## Usage
 
-```
+```bash
 a_graph \
   --archive? \
   --info?
