@@ -44,13 +44,16 @@ pub fn read_lines() -> Vec<String> {
     read(|line| line.to_string())
 }
 
+pub fn read_line() -> String {
+    read_lines().remove(0)
+}
+
 pub fn read_csv() -> Vec<i64> {
-    let line = &read_lines()[0];
-    line.split(",").map(|value| to_int(value)).collect()
+    read_line().split(",").map(|value| to_int(value)).collect()
 }
 
 pub fn read_chars() -> Vec<char> {
-    read_lines()[0].chars().collect()
+    read_line().chars().collect()
 }
 
 fn to_int(value: &str) -> i64 {

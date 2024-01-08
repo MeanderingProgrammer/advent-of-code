@@ -5,7 +5,8 @@ from aoc.parser import Parser
 @answer.timer
 def main() -> None:
     values = Parser().entries()
-    index = get_index(int(values[-3][:-1]), int(values[-1][:-1]))
+    row, column = int(values[-3][:-1]), int(values[-1][:-1])
+    index = get_index(row, column)
     answer.part1(19980801, get_password(index))
 
 
