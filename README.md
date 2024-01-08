@@ -156,7 +156,9 @@ jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 
 </details>
 
-## Unit Test
+<details>
+
+<summary>Unit Test</summary>
 
 This will test that some shared logic works across usage days. Such as the `int-code`
 implementation from 2019.
@@ -164,6 +166,8 @@ implementation from 2019.
 ```bash
 pytest -s
 ```
+
+</details>
 
 # Generate
 
