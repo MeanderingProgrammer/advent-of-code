@@ -84,7 +84,9 @@ all supported languages.
 - Alias Command: `a_setup`
 - Direct Command: `./scripts/advent.py setup`
 
-## Usage
+<details>
+
+<summary>Usage</summary>
 
 ```bash
 a_setup \
@@ -96,6 +98,8 @@ a_setup \
 | ------------- | ---- | -------------------------------------- | ------- | --------- |
 | language      | `-l` | Limit setup to the specified languages | None    | `-l rust` |
 | info          | `-i` | Outputs which languages will be setup  | `False` | `-i`      |
+
+</details>
 
 # Run
 
@@ -110,7 +114,9 @@ latest day in the fastest language it is implemented in.
 - Alias Command: `a_run`
 - Direct Command: `./scripts/advent.py run`
 
-## Usage
+<details>
+
+<summary>Usage</summary>
 
 ```bash
 a_run \
@@ -134,7 +140,11 @@ a_run \
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
 
-## Process Runtime Output
+</details>
+
+<details>
+
+<summary>Process Runtime Output</summary>
 
 ```bash
 jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
@@ -143,6 +153,8 @@ jq -r '.[]|.runtime' all.json | awk '{ sum+=$1 } END { print "Seconds:", sum; pr
 jq -r '.[]|[.year, .day, .runtime]|@tsv' all.json | sort -rnk3 | awk '{ if ($3 > 1) { print $0 } }'
 jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
 ```
+
+</details>
 
 ## Unit Test
 
@@ -167,7 +179,9 @@ next day using the rust template.
 - Alias Command: `a_gen`
 - Direct Command: `./scripts/advent.py generate`
 
-## Usage
+<details>
+
+<summary>Usage</summary>
 
 ```bash
 a_gen \
@@ -190,6 +204,8 @@ a_gen \
 
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
+
+</details>
 
 ## Install aoc-cli
 
@@ -215,7 +231,9 @@ new graphs and skip graphs that have been created before.
 - Alias Command: `a_graph`
 - Direct Command: `./scripts/advent.py graph`
 
-## Usage
+<details>
+
+<summary>Usage</summary>
 
 ```bash
 a_graph \
@@ -227,6 +245,8 @@ a_graph \
 | ------------- | ---- | --------------------------------------- | ------- | ------- |
 | archive       | `-a` | Archive existing graphs                 | `False` | `-a`    |
 | info          | `-i` | Outputs whether graphs would be arhived | `False` | `-i`    |
+
+</details>
 
 # Runtimes
 
