@@ -2,8 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
-use priority_queue::DoublePriorityQueue;
-use std::collections::HashSet;
+use aoc_lib::search::Search;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Node {
@@ -51,54 +50,48 @@ impl Node {
 }
 
 #[derive(Debug)]
-struct Search {
+struct Searcher {
     grid: Grid<u32>,
     start: Point,
     target: Point,
 }
 
-impl Search {
-    fn dijkstra(&self, turn_resistance: usize, allowed_repeats: usize) -> Option<u32> {
-        let mut queue = DoublePriorityQueue::new();
-        let start_node = Node {
-            position: self.start.clone(),
-            directions: vec![],
-        };
-        queue.push_decrease(start_node, 0 as u32);
-        let mut seen = HashSet::new();
-        while !queue.is_empty() {
-            let (node, weight) = queue.pop_min().unwrap();
-            if node.position == self.target {
-                return Some(weight);
-            }
-            if seen.contains(&node) {
-                continue;
-            } else {
-                seen.insert(node.clone());
-            }
-            node.get_neighbors(turn_resistance)
-                .into_iter()
-                .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
-                .for_each(|(direction, is_turn, positions)| {
-                    let mut directions = vec![direction.clone(); positions.len()];
-                    if !is_turn {
-                        directions.append(&mut node.directions.clone());
-                    }
-                    let next_node = Node {
-                        position: positions.last().unwrap().clone(),
-                        directions,
-                    };
-                    let repeats = next_node.directions.len();
-                    if repeats <= allowed_repeats && !seen.contains(&next_node) {
-                        let heat: u32 = positions
-                            .iter()
-                            .map(|position| self.grid.get(position))
-                            .sum();
-                        queue.push_decrease(next_node, weight + heat);
-                    }
-                });
+impl Searcher {
+    fn min_heat(&self, turn_resistance: usize, allowed_repeats: usize) -> Option<i64> {
+        Search {
+            start: Node {
+                position: self.start.clone(),
+                directions: vec![],
+            },
+            is_done: |node| node.position == self.target,
+            get_neighbors: |node| {
+                node.get_neighbors(turn_resistance)
+                    .into_iter()
+                    .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
+                    .filter_map(|(direction, is_turn, positions)| {
+                        let mut directions = vec![direction.clone(); positions.len()];
+                        if !is_turn {
+                            directions.append(&mut node.directions.clone());
+                        }
+                        let next_node = Node {
+                            position: positions.last().unwrap().clone(),
+                            directions,
+                        };
+                        let repeats = next_node.directions.len();
+                        if repeats <= allowed_repeats {
+                            let cost = positions
+                                .iter()
+                                .map(|position| *self.grid.get(position) as i64)
+                                .sum();
+                            Some((next_node, cost))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            },
         }
-        None
+        .dijkstra()
     }
 }
 
@@ -109,13 +102,13 @@ fn main() {
 fn solution() {
     let grid = reader::read_grid(|ch| ch.to_digit(10));
     let bounds = grid.bounds(0);
-    let search = Search {
+    let searcher = Searcher {
         grid,
         start: bounds.lower,
         target: bounds.upper,
     };
-    let part1 = search.dijkstra(1, 3);
-    let part2 = search.dijkstra(4, 10);
+    let part1 = searcher.min_heat(1, 3);
+    let part2 = searcher.min_heat(4, 10);
     answer::part1(694, part1.unwrap());
     answer::part2(829, part2.unwrap());
 }

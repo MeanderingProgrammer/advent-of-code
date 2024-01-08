@@ -84,6 +84,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "itertools",
+ "priority-queue",
  "strum",
  "strum_macros",
 ]
