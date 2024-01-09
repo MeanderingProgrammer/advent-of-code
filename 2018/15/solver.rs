@@ -140,18 +140,18 @@ impl Game {
 
     fn find_move(&self, position: &Point, character: &Character) -> Option<Point> {
         let distances = self.distances(position);
-        let mut target_distances: Vec<(u16, Point)> = self
+        let closest: Option<(u16, Point)> = self
             .opponents(character)
             .iter()
             .flat_map(|opponent| opponent.neighbors())
             .filter(|target| distances.contains_key(target))
             .map(|target| (distances.get(&target).unwrap().0, target))
-            .collect();
-        target_distances.sort();
-        match target_distances.iter().next() {
-            Some(mut closest) => {
+            .min();
+        match closest {
+            Some(closest) => {
+                let mut closest = &closest;
                 while distances.get(&closest.1).unwrap().0 > 1 {
-                    closest = &distances.get(&closest.1).unwrap();
+                    closest = distances.get(&closest.1).unwrap();
                 }
                 Some(closest.1.clone())
             }
