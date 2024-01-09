@@ -19,6 +19,7 @@ aoc.egg-info
 .gradle
 build
 bin
+kls_database.db
 .settings
 .project
 .classpath
