@@ -2,6 +2,6 @@ plugins {
     id("solution")
 }
 
-dependencies { 
+dependencies {
     implementation(project(":lib"))
 }
