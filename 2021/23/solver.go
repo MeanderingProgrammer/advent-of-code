@@ -199,7 +199,7 @@ func (board Board) moves(state BoardState, start point.Point) []Move {
 		toExplore = toExplore[1:]
 		for _, destination := range board.graph.Neighbors(current) {
 			_, ok := state.characters[destination]
-			if explored[destination] || ok {
+			if ok || explored[destination] {
 				// If we've already explored a particular position or that position is occupied
 				// then break the chain and do not try to explore from this position
 				continue
@@ -216,19 +216,19 @@ func (board Board) moves(state BoardState, start point.Point) []Move {
 }
 
 func (board Board) valid(state BoardState, move Move) bool {
-	currentValue := state.characters[move.start].value
+	current := state.characters[move.start]
 	endValue := board.graph.Value(move.end)
 	if endValue == Doorway {
 		// Can never stop outside of a room
 		return false
 	} else if endValue == Hallway {
-		// Can not move to hallway once we are already in the hallway must go to a room
-		if board.graph.Value(move.start) == Hallway {
+		// Can not move to hallway once we have already been moved
+		if current.moved {
 			return false
 		}
 		// Here we detect "deadlock", which occurs when we put our character in the Hallway
 		// and this blocks a character from reaching their room who is in turn blocking us
-		for _, point := range currentValue.pathToGoal(move.end) {
+		for _, point := range current.value.pathToGoal(move.end) {
 			characterOnPath, ok := state.characters[point]
 			if !ok {
 				continue
@@ -238,21 +238,20 @@ func (board Board) valid(state BoardState, move Move) bool {
 				return false
 			}
 		}
-	} else if currentValue != endValue {
+	} else if current.value != endValue {
 		// If this room is for another character then we cannot enter
 		return false
 	} else {
 		// Otherwise it is the room for this character, we need to make sure that:
 		// 1) Only valid characters are in the room
 		// 2) That we go to the correct point in the room, i.e. as far back as possible
-		charactersInRoom := state.charactersInRoom(currentValue)
+		charactersInRoom := state.charactersInRoom(current.value)
 		for _, characterInRoom := range charactersInRoom {
-			if characterInRoom != currentValue {
+			if characterInRoom != current.value {
 				// At least one character in the room needs to leave
 				return false
 			}
 		}
-		// Must go to back of room
 		if move.end.Y != board.roomSize-len(charactersInRoom)+1 {
 			return false
 		}
