@@ -260,10 +260,10 @@ a_graph \
 
 | Year | Day | Runtime (ms) | Language | Notes                                                   |
 | ---- | --- | ------------ | -------- | ------------------------------------------------------- |
-| 2021 | 23  | 1538.08      | Go       | Looks like a complex path finding problem               |
-| 2016 | 14  | 1394.71      | Go       | Already batched implementation of md5                   |
-| 2016 | 5   | 1322.47      | Go       | Already batched implementation of md5                   |
+| 2016 | 14  | 1394.71      | Go       | Batched implementation of md5                           |
+| 2016 | 5   | 1322.47      | Go       | Batched implementation of md5                           |
 | 2022 | 15  | 1206.56      | Rust     | Dealing with large space                                |
+| 2021 | 23  | 1190.90      | Go       | Complex path finding problem                            |
 | 2018 | 15  | 1159.35      | Rust     | Complex game state with path finding between characters |
 | 2019 | 25  | 1154.32      | Rust     | Mostly spends time permuting through the items          |
 | 2019 | 18  | 1097.30      | Java     | Can likely minimize state to make lookups faster        |
