@@ -13,33 +13,19 @@ import (
 	"sort"
 )
 
-type Value string
+type Value byte
 
 const (
-	Hallway Value = "."
-	Doorway Value = "x"
-	A       Value = "A"
-	B       Value = "B"
-	C       Value = "C"
-	D       Value = "D"
+	Hallway Value = '.'
+	Doorway Value = 'x'
+	A       Value = 'A'
+	B       Value = 'B'
+	C       Value = 'C'
+	D       Value = 'D'
 )
 
-func (v Value) toByte() byte {
-	if v == A {
-		return 0
-	} else if v == B {
-		return 1
-	} else if v == C {
-		return 2
-	} else if v == D {
-		return 3
-	} else {
-		return 4
-	}
-}
-
 func (v Value) distance() int {
-	return int(v[0] - 'A')
+	return int(v - 'A')
 }
 
 func (v Value) cost() int {
@@ -69,7 +55,7 @@ func (c Character) atGoal(p point.Point) bool {
 }
 
 func (c Character) toByte() byte {
-	value := c.value.toByte() * 2
+	value := byte(c.value.distance() * 2)
 	if c.moved {
 		return value + 1
 	} else {
@@ -206,7 +192,12 @@ func (board Board) moves(state BoardState, start point.Point) []Move {
 			}
 			explored[destination] = true
 			move := Move{start: start, end: destination}
-			if board.valid(state, move) {
+			valid, inRoom := board.valid(state, move)
+			// If we can get into the room always pick this move, ignore other options
+			if valid && inRoom {
+				return []Move{move}
+			}
+			if valid {
 				moves = append(moves, move)
 			}
 			toExplore = append(toExplore, destination)
@@ -215,16 +206,16 @@ func (board Board) moves(state BoardState, start point.Point) []Move {
 	return moves
 }
 
-func (board Board) valid(state BoardState, move Move) bool {
+func (board Board) valid(state BoardState, move Move) (bool, bool) {
 	current := state.characters[move.start]
 	endValue := board.graph.Value(move.end)
 	if endValue == Doorway {
 		// Can never stop outside of a room
-		return false
+		return false, false
 	} else if endValue == Hallway {
 		// Can not move to hallway once we have already been moved
 		if current.moved {
-			return false
+			return false, false
 		}
 		// Here we detect "deadlock", which occurs when we put our character in the Hallway
 		// and this blocks a character from reaching their room who is in turn blocking us
@@ -235,12 +226,13 @@ func (board Board) valid(state BoardState, move Move) bool {
 			}
 			characterOnPathGoalPath := characterOnPath.value.pathToGoal(point)
 			if util.Contains(characterOnPathGoalPath, move.end) {
-				return false
+				return false, false
 			}
 		}
+		return true, false
 	} else if current.value != endValue {
 		// If this room is for another character then we cannot enter
-		return false
+		return false, false
 	} else {
 		// Otherwise it is the room for this character, we need to make sure that:
 		// 1) Only valid characters are in the room
@@ -249,14 +241,14 @@ func (board Board) valid(state BoardState, move Move) bool {
 		for _, characterInRoom := range charactersInRoom {
 			if characterInRoom != current.value {
 				// At least one character in the room needs to leave
-				return false
+				return false, false
 			}
 		}
 		if move.end.Y != board.roomSize-len(charactersInRoom)+1 {
-			return false
+			return false, false
 		}
+		return true, true
 	}
-	return true
 }
 
 func main() {
@@ -324,7 +316,7 @@ func getCharacters(rows []string) Characters {
 		Splitter: parser.Character,
 		Ignore:   ".# ",
 		Transformer: func(position point.Point, value string) Value {
-			return Value(value)
+			return Value(value[0])
 		},
 	}.Construct()
 	characters := make(Characters)
