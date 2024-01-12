@@ -27,7 +27,7 @@ func (h hashSearch) runBatch(start int, batchSize int) []string {
 func (h hashSearch) getHash(i int) string {
 	value := h.prefix + strconv.Itoa(i)
 	result := md5.Sum([]byte(value))
-	return hex.EncodeToString(result[:])
+	return hex.EncodeToString(result[:4])
 }
 
 type Populator interface {
@@ -71,7 +71,7 @@ func getPassword(doorId string, populator Populator) string {
 	passwords := make(map[int]string)
 	batch := async.Batch[[]string]{
 		Batches:   8,
-		BatchSize: 2048,
+		BatchSize: 16384,
 		Index:     0,
 		Complete: func() bool {
 			return len(passwords) == 8
