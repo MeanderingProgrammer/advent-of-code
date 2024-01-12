@@ -17,8 +17,8 @@ const (
 type hashInfo struct {
 	index   int
 	value   string
-	triples []rune
-	cinqs   []rune
+	triples []byte
+	cinqs   []byte
 }
 
 type hashSearch struct {
@@ -40,24 +40,26 @@ func (h hashSearch) getHash(index int) hashInfo {
 		result := md5.Sum([]byte(value))
 		value = hex.EncodeToString(result[:])
 	}
-	return hashInfo{index: index, triples: getRepeats(value, 3), cinqs: getRepeats(value, 5)}
+	return hashInfo{index: index, triples: getRepeats(value, 3, true), cinqs: getRepeats(value, 5, false)}
 }
 
-func getRepeats(value string, length int) []rune {
-	repeats := []rune{}
+func getRepeats(value string, length int, first bool) []byte {
+	repeats := []byte{}
 	for i := 0; i <= len(value)-length; i++ {
-		subString := value[i : i+length]
-		if sameChar(subString) {
-			repeats = append(repeats, rune(subString[0]))
+		if sameChar(value, i, i+length) {
+			repeats = append(repeats, value[i])
+			if first {
+				return repeats
+			}
 		}
 	}
 	return repeats
 }
 
-func sameChar(value string) bool {
-	firstChar := rune(value[0])
-	for _, char := range value[1:] {
-		if char != firstChar {
+func sameChar(value string, start int, end int) bool {
+	first := value[start]
+	for i := start + 1; i < end; i++ {
+		if value[i] != first {
 			return false
 		}
 	}
@@ -105,7 +107,7 @@ func generate(search hashSearch) int {
 	return keys[63]
 }
 
-func contains(infos map[int]hashInfo, index int, target rune) bool {
+func contains(infos map[int]hashInfo, index int, target byte) bool {
 	for i := index; i < index+offset; i++ {
 		for _, value := range infos[i].cinqs {
 			if value == target {
