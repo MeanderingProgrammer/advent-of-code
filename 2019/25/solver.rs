@@ -3,7 +3,7 @@ use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::Direction;
 use aoc_lib::reader;
 use fxhash::{FxHashMap, FxHashSet};
-use itertools::{Itertools, Permutations};
+use itertools::{Combinations, Itertools};
 use std::collections::VecDeque;
 use std::str::FromStr;
 use std::vec::IntoIter;
@@ -84,7 +84,7 @@ impl Graph {
 struct ItemBag {
     items: Vec<String>,
     index: usize,
-    current: Option<Permutations<IntoIter<String>>>,
+    current: Option<Combinations<IntoIter<String>>>,
 }
 
 impl ItemBag {
@@ -106,12 +106,12 @@ impl Iterator for ItemBag {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.current.is_none() {
-            self.current = Some(self.items.clone().into_iter().permutations(self.index));
+            self.current = Some(self.items.clone().into_iter().combinations(self.index));
         }
         let mut next_value = self.current.as_mut().unwrap().next();
         if next_value.is_none() {
             self.index += 1;
-            self.current = Some(self.items.clone().into_iter().permutations(self.index));
+            self.current = Some(self.items.clone().into_iter().combinations(self.index));
             next_value = self.current.as_mut().unwrap().next();
         }
         next_value
