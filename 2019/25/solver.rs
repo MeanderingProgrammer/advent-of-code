@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
+use aoc_lib::point::Direction;
 use aoc_lib::reader;
 use fxhash::{FxHashMap, FxHashSet};
 use itertools::{Itertools, Permutations};
@@ -14,50 +15,6 @@ const BAD_ITEMS: [&str; 5] = [
     "escape pod",
     "infinite loop",
 ];
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-enum Direction {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST,
-}
-
-impl Direction {
-    fn opposite(&self) -> Self {
-        match self {
-            Self::NORTH => Self::SOUTH,
-            Self::SOUTH => Self::NORTH,
-            Self::EAST => Self::WEST,
-            Self::WEST => Self::EAST,
-        }
-    }
-}
-
-impl FromStr for Direction {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "north" => Ok(Self::NORTH),
-            "south" => Ok(Self::SOUTH),
-            "east" => Ok(Self::EAST),
-            "west" => Ok(Self::WEST),
-            _ => Err(format!("Unknown direction {s}")),
-        }
-    }
-}
-
-impl ToString for Direction {
-    fn to_string(&self) -> String {
-        match self {
-            Self::NORTH => "north".to_string(),
-            Self::SOUTH => "south".to_string(),
-            Self::EAST => "east".to_string(),
-            Self::WEST => "west".to_string(),
-        }
-    }
-}
 
 #[derive(Debug)]
 struct View {
@@ -115,8 +72,11 @@ impl Graph {
 
     fn get_unexplored(&self, name: &str, directions: &Vec<Direction>) -> Option<Direction> {
         let explored = &self.graph[name];
-        let mut unexplored = directions.iter().filter(|dir| !explored.contains(dir));
-        unexplored.next().map(|direction| direction.clone())
+        directions
+            .iter()
+            .filter(|dir| !explored.contains(dir))
+            .next()
+            .map(|direction| direction.clone())
     }
 }
 
@@ -160,8 +120,8 @@ impl Iterator for ItemBag {
 
 #[derive(Debug)]
 enum State {
-    EXPLORING,
-    SOLVING,
+    Exploring,
+    Solving,
 }
 
 #[derive(Debug)]
@@ -181,7 +141,7 @@ impl DroidBus {
         Self {
             instruction: String::new(),
             commands: VecDeque::new(),
-            state: State::EXPLORING,
+            state: State::Exploring,
             grid: Graph {
                 graph: FxHashMap::default(),
             },
@@ -208,7 +168,7 @@ impl DroidBus {
             .filter(|item| !BAD_ITEMS.contains(&item.as_str()))
             .for_each(|item| {
                 self.item_bag.add(item);
-                self.add_command(format!("take {item}"));
+                self.add_command(&format!("take {item}"));
             });
 
         let directions = if location == "Security Checkpoint" {
@@ -224,12 +184,12 @@ impl DroidBus {
             let command = unexplored.unwrap();
             self.history.push(command.clone());
             self.previous = Some((location, command.clone()));
-            self.add_command(command);
+            self.add_direction(command);
             true
         } else if !self.history.is_empty() {
             let command = self.history.pop().unwrap().opposite();
             self.previous = Some((location, command.clone()));
-            self.add_command(command);
+            self.add_direction(command);
             true
         } else {
             false
@@ -239,15 +199,25 @@ impl DroidBus {
     fn attempt_solve(&mut self) {
         let items_to_drop = self.item_bag.items.clone();
         items_to_drop.iter().for_each(|item| {
-            self.add_command(format!("drop {item}"));
+            self.add_command(&format!("drop {item}"));
         });
         self.item_bag.next().unwrap().iter().for_each(|item| {
-            self.add_command(format!("take {item}"));
+            self.add_command(&format!("take {item}"));
         });
-        self.add_command(Direction::SOUTH);
+        self.add_direction(Direction::Down);
     }
 
-    fn add_command<T: ToString>(&mut self, command: T) {
+    fn add_direction(&mut self, direction: Direction) {
+        let command = match direction {
+            Direction::Up => "north",
+            Direction::Down => "south",
+            Direction::Right => "east",
+            Direction::Left => "west",
+        };
+        self.add_command(command);
+    }
+
+    fn add_command(&mut self, command: &str) {
         let as_string = command.to_string() + "\n";
         self.commands.append(&mut as_string.chars().collect());
     }
@@ -271,16 +241,16 @@ impl Bus for DroidBus {
     fn get_input(&mut self) -> i64 {
         if self.commands.is_empty() {
             match self.state {
-                State::EXPLORING => {
+                State::Exploring => {
                     if !self.continue_exploring() {
                         let path = self.path_to_checkpoint.clone();
                         path.into_iter()
-                            .for_each(|direction| self.add_command(direction));
-                        self.add_command(Direction::SOUTH);
-                        self.state = State::SOLVING;
+                            .for_each(|direction| self.add_direction(direction));
+                        self.add_direction(Direction::Down);
+                        self.state = State::Solving;
                     }
                 }
-                State::SOLVING => self.attempt_solve(),
+                State::Solving => self.attempt_solve(),
             }
         }
         self.commands.pop_front().unwrap() as i64
