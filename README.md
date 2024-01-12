@@ -264,4 +264,3 @@ a_graph \
 | 2021 | 23  | 1214.76      | Go       | Complex path finding problem                            |
 | 2018 | 15  | 1159.35      | Rust     | Complex game state with path finding between characters |
 | 2023 | 25  | 1046.72      | Ocaml    | Uses Karger algorithm which has randomness, time varies |
-| 2016 | 11  | 1012.55      | Python   | That chips and generator problem                        |
