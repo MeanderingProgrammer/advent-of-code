@@ -1,6 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
+use itertools::Itertools;
 use nom::{
     bytes::complete::tag,
     character::complete::digit0,
@@ -20,7 +21,7 @@ impl Line {
         Self { slope, y_intercept }
     }
 
-    fn x_value_at(&self, y: i64) -> i64 {
+    fn x(&self, y: i64) -> i64 {
         (y - self.y_intercept) / self.slope
     }
 }
@@ -32,42 +33,26 @@ struct Range {
 }
 
 impl Range {
-    fn new(center: i64, offset: i64) -> Self {
-        Self {
-            min: center - offset,
-            max: center + offset,
-        }
+    fn new(min: i64, max: i64) -> Self {
+        Self { min, max }
     }
 
     fn contains(&self, value: i64) -> bool {
         value >= self.min && value <= self.max
     }
 
-    fn can_join(&self, value: i64) -> bool {
-        value >= self.min && value <= self.max + 1
-    }
-
     fn len(&self) -> i64 {
         self.max - self.min
     }
 
-    fn join(&self, other: &Self) -> Self {
-        if !self.can_join(other.min) {
-            panic!("No overlap, cannot join");
-        }
-        Self {
-            min: self.min.min(other.min),
-            max: self.max.max(other.max),
-        }
+    fn join(&mut self, other: &Self) {
+        self.max = self.max.max(other.max);
     }
 }
 
 #[derive(Debug)]
 struct CoverageZone {
-    top_right: Line,
-    top_left: Line,
-    bottom_right: Line,
-    bottom_left: Line,
+    lines: Vec<Line>,
     x_range: Range,
     y_range: Range,
 }
@@ -102,12 +87,14 @@ impl CoverageZone {
         Ok((
             input,
             Self {
-                top_right: Line::new(-1, y + x + radius),
-                top_left: Line::new(1, y - x + radius),
-                bottom_right: Line::new(1, y - x - radius),
-                bottom_left: Line::new(-1, y + x - radius),
-                x_range: Range::new(x, radius),
-                y_range: Range::new(y, radius),
+                lines: vec![
+                    Line::new(-1, y + x + radius),
+                    Line::new(1, y - x + radius),
+                    Line::new(1, y - x - radius),
+                    Line::new(-1, y + x - radius),
+                ],
+                x_range: Range::new(x - radius, x + radius),
+                y_range: Range::new(y - radius, y + radius),
             },
         ))
     }
@@ -116,26 +103,16 @@ impl CoverageZone {
         if !self.y_range.contains(y) {
             return None;
         }
-        let intercepts = vec![
-            self.top_right.x_value_at(y),
-            self.top_left.x_value_at(y),
-            self.bottom_right.x_value_at(y),
-            self.bottom_left.x_value_at(y),
-        ];
-        let valid_intercepts: Vec<i64> = intercepts
+        let valid_intercepts: Vec<i64> = self
+            .lines
             .iter()
-            .map(|&intercept| intercept)
+            .map(|line| line.x(y))
             .filter(|&intercept| self.x_range.contains(intercept))
             .collect();
-
-        match valid_intercepts.len() {
-            0 => None,
-            2 | 4 => Some(Range {
-                min: *valid_intercepts.iter().min().unwrap(),
-                max: *valid_intercepts.iter().max().unwrap(),
-            }),
-            _ => panic!("Should never be anyting other than 0, 2, or 4 intercepts"),
-        }
+        Some(Range::new(
+            *valid_intercepts.iter().min().unwrap(),
+            *valid_intercepts.iter().max().unwrap(),
+        ))
     }
 }
 
@@ -150,19 +127,17 @@ fn solution() {
 }
 
 fn covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
-    let mut overlaps: Vec<Range> = coverage
+    let overlaps: Vec<Range> = coverage
         .iter()
-        .map(|zone| zone.overlap_at_y(y))
-        .filter(|overlap| overlap.is_some())
-        .map(|overlap| overlap.unwrap())
+        .flat_map(|zone| zone.overlap_at_y(y))
+        .sorted()
         .collect();
-    overlaps.sort();
 
     let mut joined = overlaps[0].clone();
     for i in 1..overlaps.len() {
         let overlap = &overlaps[i];
-        if joined.can_join(overlap.min) {
-            joined = joined.join(overlap);
+        if joined.contains(overlap.min) {
+            joined.join(overlap);
         } else {
             return joined;
         }
@@ -171,11 +146,11 @@ fn covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
 }
 
 fn tuning_frequency(coverage: &Vec<CoverageZone>, max_value: i64) -> i64 {
-    for y in 0..=max_value {
-        let covered = covered_range(coverage, y);
-        if covered.max <= max_value {
-            return ((covered.max + 1) * 4_000_000) + y;
-        }
-    }
-    unreachable!()
+    (0..=max_value)
+        .into_iter()
+        .map(|y| (covered_range(coverage, y).max + 1, y))
+        .filter(|(x, _)| *x <= max_value)
+        .next()
+        .map(|(x, y)| (x * 4_000_000) + y)
+        .unwrap()
 }

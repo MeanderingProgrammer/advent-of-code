@@ -261,7 +261,6 @@ a_graph \
 | Year | Day | Runtime (ms) | Language | Notes                                                   |
 | ---- | --- | ------------ | -------- | ------------------------------------------------------- |
 | 2016 | 14  | 1394.71      | Go       | Batched implementation of md5                           |
-| 2022 | 15  | 1223.15      | Rust     | Dealing with large space                                |
 | 2021 | 23  | 1214.76      | Go       | Complex path finding problem                            |
 | 2018 | 15  | 1159.35      | Rust     | Complex game state with path finding between characters |
 | 2023 | 25  | 1046.72      | Ocaml    | Uses Karger algorithm which has randomness, time varies |
