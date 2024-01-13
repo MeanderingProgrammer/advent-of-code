@@ -1,157 +1,133 @@
+from dataclasses import dataclass
+from enum import Enum, auto
 from typing import Optional, Self
 
 
+class Direction(Enum):
+    UP = auto()
+    DOWN = auto()
+    LEFT = auto()
+    RIGHT = auto()
+
+    @staticmethod
+    def from_str(s: str) -> "Direction":
+        if s in ["^", "U"]:
+            return Direction.UP
+        elif s in ["v", "D"]:
+            return Direction.DOWN
+        elif s in ["<", "L"]:
+            return Direction.LEFT
+        elif s in [">", "R"]:
+            return Direction.RIGHT
+        else:
+            raise Exception(f"Unknown direction: {s}")
+
+
+@dataclass(frozen=True)
 class Point:
-    def __init__(self, *coords: int):
-        self.__coords = coords
-
-    # Basic Getters
-
-    def dimensions(self) -> int:
-        return len(self.__coords)
-
-    def x(self) -> int:
-        return self.__get(0)
-
-    def y(self) -> int:
-        return self.__get(1)
-
-    def z(self) -> int:
-        return self.__get(2)
-
-    def __get(self, i) -> int:
-        return self.__coords[i]
-
-    # 2D Transformers
+    x: int
+    y: int
 
     def reflect(self) -> Self:
-        self.__verify_2d()
-        return type(self)(-self.x(), self.y())
+        return type(self)(-self.x, self.y)
 
     def rotate(self) -> Self:
-        self.__verify_2d()
-        return type(self)(-self.y(), self.x())
+        return type(self)(-self.y, self.x)
 
     def mirror(self) -> Self:
-        self.__verify_2d()
-        return type(self)(self.x(), -self.y())
+        return type(self)(self.x, -self.y)
 
-    def __verify_2d(self) -> None:
-        if self.dimensions() != 2:
-            raise Exception("This function only works on 2D points")
+    def neighbors(self) -> list[Self]:
+        return [
+            type(self)(self.x, self.y + 1),
+            type(self)(self.x, self.y - 1),
+            type(self)(self.x + 1, self.y),
+            type(self)(self.x - 1, self.y),
+        ]
 
-    # Get Adjacent points (either includes diagonals or not)
+    def neighbors_diagonal(self) -> list[Self]:
+        return [
+            type(self)(self.x, self.y + 1),
+            type(self)(self.x, self.y - 1),
+            type(self)(self.x + 1, self.y),
+            type(self)(self.x - 1, self.y),
+            type(self)(self.x - 1, self.y - 1),
+            type(self)(self.x + 1, self.y - 1),
+            type(self)(self.x - 1, self.y + 1),
+            type(self)(self.x + 1, self.y + 1),
+        ]
 
-    def adjacent(self, diagonal=False) -> list[Self]:
-        adjacent = [self] if diagonal else []
-        for i in range(self.dimensions()):
-            to_add = []
-            to_modify = adjacent if diagonal else [self]
-
-            for point in to_modify:
-                to_add.append(point.__create(i, -1))
-                to_add.append(point.__create(i, 1))
-
-            adjacent.extend(to_add)
-
-        return adjacent[1:] if diagonal else adjacent
-
-    # Some Simple Directions (up increases y, careful when reading top to bottom)
-
-    def right(self) -> Self:
-        return self.__create(0, 1)
-
-    def left(self) -> Self:
-        return self.__create(0, -1)
-
-    def up(self) -> Self:
-        return self.__create(1, 1)
-
-    def down(self) -> Self:
-        return self.__create(1, -1)
-
-    def __create(self, i, amount) -> Self:
-        coords = list(self.__coords)
-        coords[i] += amount
-        return type(self)(*coords)
-
-    def validate(self, o: Self) -> None:
-        if self.dimensions() != o.dimensions():
-            raise Exception("Cannot compare points of different dimensionality")
+    def go(self, direction: Direction) -> Self:
+        if direction == Direction.UP:
+            return type(self)(self.x, self.y + 1)
+        elif direction == Direction.DOWN:
+            return type(self)(self.x, self.y - 1)
+        elif direction == Direction.LEFT:
+            return type(self)(self.x - 1, self.y)
+        elif direction == Direction.RIGHT:
+            return type(self)(self.x + 1, self.y)
+        else:
+            raise Exception(f"Unknown direction: {direction}")
 
     def __len__(self) -> int:
-        return sum([abs(coord) for coord in self.__coords])
-
-    # Math Operations Between Points
+        return abs(self.x) + abs(self.y)
 
     def __add__(self, o: Self) -> Self:
-        return self.__math(o, lambda coord_1, coord_2: coord_1 + coord_2)
+        return type(self)(self.x + o.x, self.y + o.y)
 
     def __sub__(self, o: Self) -> Self:
-        return self.__math(o, lambda coord_1, coord_2: coord_1 - coord_2)
-
-    def __math(self, o: Self, f) -> Self:
-        self.validate(o)
-        coords = []
-        for coord_1, coord_2 in zip(self.__coords, o.__coords):
-            coords.append(f(coord_1, coord_2))
-        return type(self)(*coords)
-
-    # Math Operations Between Point and Scalar
+        return type(self)(self.x - o.x, self.y - o.y)
 
     def __mul__(self, amount: int) -> Self:
-        coords = []
-        for coord in self.__coords:
-            coords.append(coord * amount)
-        return type(self)(*coords)
+        return type(self)(self.x * amount, self.y * amount)
 
     def __rmul__(self, amount: int) -> Self:
         return self.__mul__(amount)
 
-    # Equality checks start from highest dimension
-
     def __lt__(self, o: Self) -> bool:
-        comparison = self.__compare(o, lambda coord_1, coord_2: coord_1 < coord_2)
-        return False if comparison is None else comparison
+        return (self.y, self.x) < (o.y, o.x)
 
     def __le__(self, o: Self) -> bool:
-        comparison = self.__compare(o, lambda coord_1, coord_2: coord_1 < coord_2)
-        return True if comparison is None else comparison
-
-    def __compare(self, o: Self, f) -> Optional[bool]:
-        self.validate(o)
-        zipped = list(zip(self.__coords, o.__coords))
-        zipped.reverse()
-        for coord_1, coord_2 in zipped:
-            if coord_1 != coord_2:
-                return f(coord_1, coord_2)
-        return None
-
-    # Basic Equality, Hash, and to String implementations
-
-    def __eq__(self, o) -> bool:
-        return isinstance(o, Point) and self.__coords == o.__coords
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    def __str__(self) -> str:
-        return str(self.__coords)
+        return (self.y, self.x) <= (o.y, o.x)
 
 
-class Grid:
-    def __init__(self):
-        self.__grid = {}
-        self.__dimensionality = None
+@dataclass(frozen=True)
+class Point3d:
+    x: int
+    y: int
+    z: int
 
-    def get(self, point: Point, default_value):
-        return self[point] if point in self else default_value
+    def __len__(self) -> int:
+        return abs(self.x) + abs(self.y) + abs(self.z)
+
+    def __add__(self, o: Self) -> Self:
+        return type(self)(self.x + o.x, self.y + o.y, self.z + o.z)
+
+    def __sub__(self, o: Self) -> Self:
+        return type(self)(self.x - o.x, self.y - o.y, self.z - o.z)
+
+    def __mul__(self, amount: int) -> Self:
+        return type(self)(self.x * amount, self.y * amount, self.z * amount)
+
+    def __rmul__(self, amount: int) -> Self:
+        return self.__mul__(amount)
+
+    def __lt__(self, o: Self) -> bool:
+        return (self.z, self.y, self.x) < (o.z, o.y, o.x)
+
+    def __le__(self, o: Self) -> bool:
+        return (self.z, self.y, self.x) <= (o.z, o.y, o.x)
+
+
+class Grid[T]:
+    def __init__(self, grid: Optional[dict[Point, T]] = None):
+        self.grid: dict[Point, T] = grid if grid is not None else dict()
+
+    def get(self, point: Point, default_value: T) -> T:
+        return self.grid.get(point, default_value)
 
     def items(self):
-        return self.__grid.items()
+        return self.grid.items()
 
     def reflect(self) -> Self:
         result = type(self)()
@@ -172,45 +148,31 @@ class Grid:
         return result
 
     def xs(self) -> set[int]:
-        return set([point.x() for point in self.__grid])
+        return set([point.x for point in self.grid])
 
-    def ys(self) -> Optional[set[int]]:
-        if self.__dimensionality is None or self.__dimensionality < 2:
-            return None
-        return set([point.y() for point in self.__grid])
+    def ys(self) -> set[int]:
+        return set([point.y for point in self.grid])
 
-    def __setitem__(self, point: Point, value) -> None:
-        if self.__dimensionality is None:
-            self.__dimensionality = point.dimensions()
-        elif self.__dimensionality != point.dimensions():
-            raise Exception("Cannot create grid with mismatching dimensions")
-        self.__grid[point] = value
+    def __setitem__(self, point: Point, value: T) -> None:
+        self.grid[point] = value
 
-    def __getitem__(self, point: Point):
-        return self.__grid.get(point, None)
+    def __getitem__(self, point: Point) -> Optional[T]:
+        return self.grid.get(point, None)
 
     def __contains__(self, point: Point) -> bool:
-        return point in self.__grid
+        return point in self.grid
 
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
-        ys = self.ys()
-        if ys is None:
-            return self.__make_row()
-        if len(ys) == 0:
-            return ""
-
-        rows = []
+        rows: list[str] = []
+        xs, ys = self.xs(), self.ys()
         for y in range(max(ys), min(ys) - 1, -1):
-            rows.append(self.__make_row(y))
+            row: list[str] = []
+            for x in range(min(xs), max(xs) + 1):
+                point = Point(x, y)
+                value = str(self[point]) if point in self else "."
+                row.append(value)
+            rows.append("".join(row))
         return "\n".join(rows)
-
-    def __make_row(self, y=None) -> str:
-        row, xs = [], self.xs()
-        for x in range(min(xs), max(xs) + 1):
-            point = Point(x) if y is None else Point(x, y)
-            value = str(self[point]) if point in self else "."
-            row.append(value)
-        return "".join(row)

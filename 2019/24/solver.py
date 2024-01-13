@@ -71,7 +71,7 @@ def main() -> None:
     grid: set[Location] = set()
     for point, value in Parser().as_grid().items():
         if value == "#":
-            grid.add(((point.x(), point.y()), 0))
+            grid.add(((point.x, point.y), 0))
     answer.part1(32776479, part_1(grid))
     answer.part2(2017, part_2(grid))
 

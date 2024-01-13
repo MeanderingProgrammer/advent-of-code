@@ -30,8 +30,8 @@ def move_to_end(directions: list[str]) -> list[Point]:
 
 
 def steps(position: Point) -> int:
-    x_steps = abs(position.x())
-    y_teps = abs(position.y()) - x_steps
+    x_steps = abs(position.x)
+    y_teps = abs(position.y) - x_steps
     return x_steps + max(0, y_teps // 2)
 
 

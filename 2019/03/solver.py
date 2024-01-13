@@ -2,15 +2,8 @@ from dataclasses import dataclass
 from typing import Self
 
 from aoc import answer
-from aoc.board import Point
+from aoc.board import Direction, Point
 from aoc.parser import Parser
-
-POINT_MAPPING: dict[str, Point] = dict(
-    R=Point(1, 0),
-    L=Point(-1, 0),
-    U=Point(0, 1),
-    D=Point(0, -1),
-)
 
 
 @dataclass(frozen=True)
@@ -41,10 +34,10 @@ def create_path(line: str) -> Path:
     step_counts: dict[Point, int] = dict()
     steps: int = 0
     for part in line.split(","):
-        direction = POINT_MAPPING[part[0]]
+        direction = Direction.from_str(part[0])
         for _ in range(int(part[1:])):
             steps += 1
-            next_point = points[-1] + direction
+            next_point = points[-1].go(direction)
             points.append(next_point)
             if next_point not in step_counts:
                 step_counts[next_point] = steps

@@ -12,8 +12,8 @@ class Maze:
 
     def get_adjacent(self, point: Point) -> list[Point]:
         result = set()
-        for adjacent in point.adjacent():
-            if adjacent.x() >= 0 and adjacent.y() >= 0:
+        for adjacent in point.neighbors():
+            if adjacent.x >= 0 and adjacent.y >= 0:
                 if adjacent not in self.grid:
                     self.grid[adjacent] = self.is_wall(adjacent)
                 if not self.grid[adjacent]:
@@ -21,7 +21,7 @@ class Maze:
         return list(result)
 
     def is_wall(self, point: Point) -> bool:
-        x, y = point.x(), point.y()
+        x, y = point.x, point.y
         value = (x * x) + (3 * x) + (2 * x * y) + y + y * y
         value += self.favorite_number
         value = bin(value)[2:]

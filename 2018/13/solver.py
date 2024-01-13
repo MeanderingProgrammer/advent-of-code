@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.board import Direction, Grid, Point
 from aoc.parser import Parser
 
 LEFT = "<"
@@ -89,21 +89,26 @@ class CartSystem:
     def get_options(self, point: Point) -> list[Point]:
         value = self.track[point]
         if value == "+":
-            return [point.left(), point.right(), point.up(), point.down()]
+            return [
+                point.go(Direction.LEFT),
+                point.go(Direction.RIGHT),
+                point.go(Direction.UP),
+                point.go(Direction.DOWN),
+            ]
         elif value == "|":
-            return [point.up(), point.down()]
+            return [point.go(Direction.UP), point.go(Direction.DOWN)]
         elif value == "-":
-            return [point.left(), point.right()]
+            return [point.go(Direction.LEFT), point.go(Direction.RIGHT)]
         elif value == "/":
-            if self.track[point.up()] in ["|", "+"]:
-                return [point.up(), point.right()]
+            if self.track[point.go(Direction.UP)] in ["|", "+"]:
+                return [point.go(Direction.UP), point.go(Direction.RIGHT)]
             else:
-                return [point.down(), point.left()]
+                return [point.go(Direction.DOWN), point.go(Direction.LEFT)]
         elif value == "\\":
-            if self.track[point.up()] in ["|", "+"]:
-                return [point.up(), point.left()]
+            if self.track[point.go(Direction.UP)] in ["|", "+"]:
+                return [point.go(Direction.UP), point.go(Direction.LEFT)]
             else:
-                return [point.down(), point.right()]
+                return [point.go(Direction.DOWN), point.go(Direction.RIGHT)]
         else:
             raise Exception("Unknown value at point")
 

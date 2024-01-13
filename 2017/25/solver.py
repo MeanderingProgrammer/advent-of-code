@@ -1,8 +1,7 @@
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
-MOVEMENTS = {"left": Point(-1), "right": Point(1)}
+MOVEMENTS: dict[str, int] = dict(left=-1, right=1)
 
 
 class Rule:
@@ -35,11 +34,11 @@ class TuringMachine:
         self.state = state
         self.rules = rules
 
-        self.pos = Point(0)
-        self.tape = Grid()
+        self.pos = 0
+        self.tape = dict()
 
     def step(self) -> None:
-        value = self.tape[self.pos] or 0
+        value = self.tape.get(self.pos, 0)
         transition = self.rules[self.state].get(value)
 
         self.tape[self.pos] = transition.write
