@@ -1,8 +1,14 @@
 from aoc import answer
-from aoc.board import Grid, Point
 from aoc.parser import Parser
 
-DIRECTIONS: list[Point] = [Point(0, -1), Point(0, 1), Point(-1, 0), Point(1, 0)]
+type Point = tuple[int, int]
+type Grid = dict[Point, str]
+
+DIRECTIONS: list[Point] = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+
+def add(p1: Point, p2: Point) -> Point:
+    return (p1[0] + p2[0], p1[1] + p2[1])
 
 
 class Traverser:
@@ -13,9 +19,8 @@ class Traverser:
         self.seen = [self.pos]
 
     def get_start(self) -> Point:
-        for x in self.grid.xs():
-            point = Point(x, 0)
-            if point in self.grid:
+        for point in self.grid:
+            if point[1] == 0:
                 return point
         raise Exception("Failed")
 
@@ -32,13 +37,13 @@ class Traverser:
                 self.seen.append(self.pos)
 
     def get_options(self) -> list[tuple[Point, Point]]:
-        same_direction = self.pos + self.direction
+        same_direction = add(self.pos, self.direction)
         if same_direction in self.grid:
             return [(self.direction, same_direction)]
         else:
             options = []
             for direction in DIRECTIONS:
-                new_pos = self.pos + direction
+                new_pos = add(self.pos, direction)
                 if self.valid_position(new_pos):
                     options.append((direction, new_pos))
             return options
@@ -67,12 +72,11 @@ def main() -> None:
 
 
 def get_grid() -> Grid:
-    grid = Grid()
+    grid: Grid = dict()
     for y, line in enumerate(Parser().nested_lines()):
         for x, value in enumerate(line):
-            point = Point(x, y)
             if value != " ":
-                grid[point] = value
+                grid[(x, y)] = value
     return grid
 
 
