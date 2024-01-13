@@ -1,27 +1,20 @@
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.board import Direction, Grid, Point
 from aoc.parser import Parser
-
-CONTROLS: dict[str, Point] = dict(
-    U=Point(0, -1),
-    D=Point(0, 1),
-    L=Point(-1, 0),
-    R=Point(1, 0),
-)
 
 
 @answer.timer
 def main() -> None:
-    answer.part1("47978", get_code([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
+    answer.part1("47978", get_code([[7, 8, 9], [4, 5, 6], [1, 2, 3]]))
     answer.part2(
         "659AD",
         get_code(
             [
-                ["*", "*", 1, "*", "*"],
-                ["*", 2, 3, 4, "*"],
-                [5, 6, 7, 8, 9],
-                ["*", "A", "B", "C", "*"],
                 ["*", "*", "D", "*", "*"],
+                ["*", "A", "B", "C", "*"],
+                [5, 6, 7, 8, 9],
+                ["*", 2, 3, 4, "*"],
+                ["*", "*", 1, "*", "*"],
             ]
         ),
     )
@@ -52,7 +45,7 @@ def create_phone(pattern: list[list[int | str]]) -> tuple[Grid, Point]:
 
 def follow(phone: Grid, position: Point, instruction: str) -> Point:
     for direction in instruction:
-        new_position = position + CONTROLS[direction]
+        new_position = position.go(Direction.from_str(direction))
         if new_position in phone:
             position = new_position
     return position

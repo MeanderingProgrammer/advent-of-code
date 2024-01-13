@@ -61,8 +61,7 @@ def create_display(w: int, h: int) -> Grid:
     display = Grid()
     for x in range(w):
         for y in range(h):
-            point = Point(x, y)
-            display[point] = "."
+            display[Point(x, y)] = "."
     return display
 
 

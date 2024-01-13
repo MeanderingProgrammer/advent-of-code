@@ -4,13 +4,13 @@ from dataclasses import dataclass
 from typing import Self
 
 from aoc import answer
-from aoc.board import Point
+from aoc.board import Point3d
 from aoc.parser import Parser
 
 
 @dataclass(frozen=True)
 class NanoBot:
-    pos: Point
+    pos: Point3d
     r: int
 
     def in_range(self, o: Self):
@@ -33,7 +33,7 @@ def get_bots() -> list[NanoBot]:
     def parse_bot(line: str) -> NanoBot:
         pos, radius = line.split(", ")
         return NanoBot(
-            pos=Point(*[int(c) for c in pos.split("=")[1][1:-1].split(",")]),
+            pos=Point3d(*[int(c) for c in pos.split("=")[1][1:-1].split(",")]),
             r=int(radius.split("=")[1]),
         )
 

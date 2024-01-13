@@ -12,7 +12,7 @@ class Node:
 
         self.children: list[Self] = []
         for _ in range(num_children):
-            child = Node(values)
+            child = type(self)(values)
             self.children.append(child)
             values = values[len(child) :]
 

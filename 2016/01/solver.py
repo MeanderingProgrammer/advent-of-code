@@ -1,8 +1,13 @@
 from aoc import answer
-from aoc.board import Point
+from aoc.board import Direction, Point
 from aoc.parser import Parser
 
-DIRECTIONS: list[Point] = [Point(0, 1), Point(1, 0), Point(0, -1), Point(-1, 0)]
+DIRECTIONS: list[Direction] = [
+    Direction.UP,
+    Direction.RIGHT,
+    Direction.DOWN,
+    Direction.LEFT,
+]
 
 
 @answer.timer
@@ -20,7 +25,7 @@ def traverse() -> list[Point]:
         change = -1 if instruction[0] == "L" else 1
         index = (index + change) % len(DIRECTIONS)
         for _ in range(int(instruction[1:])):
-            position += DIRECTIONS[index]
+            position = position.go(DIRECTIONS[index])
             visited.append(position)
     return visited
 

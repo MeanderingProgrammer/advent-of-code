@@ -27,7 +27,7 @@ class Character:
         target.hp -= self.damage
 
     def find_target(self, opponents: list[Self]) -> Optional[Self]:
-        reach = self.position.adjacent()
+        reach = self.position.neighbors()
         targets = [opponent for opponent in opponents if opponent.position in reach]
         if len(targets) == 0:
             return None
@@ -89,7 +89,7 @@ class Game:
 
         def get_adjacent(point: Point) -> list[Point]:
             result = []
-            for adjacent in point.adjacent():
+            for adjacent in point.neighbors():
                 if adjacent in self.open_path and adjacent not in occupied:
                     result.append(adjacent)
             return result

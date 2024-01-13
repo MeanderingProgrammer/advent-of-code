@@ -21,7 +21,7 @@ class PowerGrid:
 
                 self.grid[point] = above + left + power_level - overlap
 
-    def get_largest_any(self) -> Point:
+    def get_largest_any(self) -> tuple[int, int, int]:
         largest_any = None
         for sub_grid_size in range(1, self.grid_size):
             largest = self.get_largest(sub_grid_size)
@@ -30,7 +30,7 @@ class PowerGrid:
         if largest_any is None:
             raise Exception("Should always be able to find largest grid")
         point = largest_any[0][0]
-        return Point(point.x(), point.y(), largest_any[1])
+        return point.x, point.y, largest_any[1]
 
     def get_largest(self, size: int) -> tuple[Point, int]:
         largest = None
@@ -45,15 +45,15 @@ class PowerGrid:
         return largest
 
     def get_total_power(self, point: Point, size: int) -> int:
-        total = self.grid[Point(point.x() + size - 1, point.y() + size - 1)]
-        above = self.grid.get(Point(point.x() + size - 1, point.y() - 1), 0)
-        left = self.grid.get(Point(point.x() - 1, point.y() + size - 1), 0)
-        overlap = self.grid.get(Point(point.x() - 1, point.y() - 1), 0)
+        total = self.grid[Point(point.x + size - 1, point.y + size - 1)]
+        above = self.grid.get(Point(point.x + size - 1, point.y - 1), 0)
+        left = self.grid.get(Point(point.x - 1, point.y + size - 1), 0)
+        overlap = self.grid.get(Point(point.x - 1, point.y - 1), 0)
         return total - above - left + overlap
 
     def get_power_level(self, point: Point) -> int:
-        rack_id = point.x() + 10
-        initial_power_level = rack_id * point.y()
+        rack_id = point.x + 10
+        initial_power_level = rack_id * point.y
         power_level = initial_power_level + self.serial_number
         power_level *= rack_id
         power_level //= 100
@@ -66,7 +66,7 @@ def main() -> None:
     power_grid = PowerGrid(Parser().integer(), 300)
     power_grid.initialize()
     answer.part1(Point(243, 43), power_grid.get_largest(3)[0])
-    answer.part2(Point(236, 151, 15), power_grid.get_largest_any())
+    answer.part2((236, 151, 15), power_grid.get_largest_any())
 
 
 if __name__ == "__main__":
