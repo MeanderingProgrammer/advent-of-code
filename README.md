@@ -25,9 +25,8 @@ of having no single solution take more than 1 second to run.
 Sometimes this involves algorithm improvements, other times I decided to re-write
 solutions from `Python` into something like `Rust` or `Go`.
 
-This [section](#take-over-1-second-on-m2-mac) tracks any remaining outliers.
-
-Currently no solution takes longer than 2 seconds to run, woo!
+Since there are only a couple outliers and nothing runs longer than 2 seconds I
+consider this goal completed.
 
 # Input Data
 
@@ -255,11 +254,3 @@ a_graph \
 # Runtimes
 
 ![Runtimes](images/year_percentage.png)
-
-# Take over 1 second on M2 Mac
-
-| Year | Day | Runtime (ms) | Language | Notes                                                   |
-| ---- | --- | ------------ | -------- | ------------------------------------------------------- |
-| 2016 | 14  | 1394.71      | Go       | Batched implementation of md5                           |
-| 2021 | 23  | 1214.76      | Go       | Complex path finding problem                            |
-| 2023 | 25  | 1046.72      | Ocaml    | Uses Karger algorithm which has randomness, time varies |
