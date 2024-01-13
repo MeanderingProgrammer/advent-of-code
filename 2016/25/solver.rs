@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 #[derive(Debug)]
 enum Computation {
@@ -10,7 +10,7 @@ enum Computation {
 
 #[derive(Debug)]
 struct Computer {
-    registers: HashMap<String, i64>,
+    registers: FxHashMap<String, i64>,
     instructions: Vec<String>,
     pointer: i64,
     num_outputs: i64,
@@ -45,12 +45,12 @@ impl Computer {
     }
 
     fn run_next(&mut self) -> Computation {
-        let instruction = self.instructions[self.pointer as usize].clone();
+        let instruction = &self.instructions[self.pointer as usize];
         let parts: Vec<&str> = instruction.split(" ").collect();
         match parts[0] {
-            "cpy" => self.set(parts[2], self.get(parts[1])),
-            "inc" => self.set(parts[1], self.get(parts[1]) + 1),
-            "dec" => self.set(parts[1], self.get(parts[1]) - 1),
+            "cpy" => self.set(parts[2].to_string(), self.get(parts[1])),
+            "inc" => self.set(parts[1].to_string(), self.get(parts[1]) + 1),
+            "dec" => self.set(parts[1].to_string(), self.get(parts[1]) - 1),
             "jnz" => {
                 if self.get(parts[1]) != 0 {
                     Computation::Success(self.get(parts[2]))
@@ -77,8 +77,8 @@ impl Computer {
         }
     }
 
-    fn set(&mut self, register: &str, value: i64) -> Computation {
-        self.registers.insert(register.to_string(), value);
+    fn set(&mut self, register: String, value: i64) -> Computation {
+        self.registers.insert(register, value);
         Computation::Success(1)
     }
 }
