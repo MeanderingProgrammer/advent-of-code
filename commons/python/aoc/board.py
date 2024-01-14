@@ -1,6 +1,5 @@
-from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional, Self
+from typing import NamedTuple, Optional, Self
 
 
 class Direction(Enum):
@@ -8,6 +7,19 @@ class Direction(Enum):
     DOWN = auto()
     LEFT = auto()
     RIGHT = auto()
+
+    @staticmethod
+    def counter_clockwise(direction: "Direction") -> "Direction":
+        if direction == Direction.UP:
+            return Direction.LEFT
+        elif direction == Direction.LEFT:
+            return Direction.DOWN
+        elif direction == Direction.DOWN:
+            return Direction.RIGHT
+        elif direction == Direction.RIGHT:
+            return Direction.UP
+        else:
+            raise Exception(f"Unknown direction: {direction}")
 
     @staticmethod
     def from_str(s: str) -> "Direction":
@@ -23,8 +35,7 @@ class Direction(Enum):
             raise Exception(f"Unknown direction: {s}")
 
 
-@dataclass(frozen=True)
-class Point:
+class Point(NamedTuple):
     x: int
     y: int
 
@@ -72,27 +83,20 @@ class Point:
     def __len__(self) -> int:
         return abs(self.x) + abs(self.y)
 
-    def __add__(self, o: Self) -> Self:
+    def __add__(self, o) -> Self:
         return type(self)(self.x + o.x, self.y + o.y)
 
-    def __sub__(self, o: Self) -> Self:
+    def __sub__(self, o) -> Self:
         return type(self)(self.x - o.x, self.y - o.y)
 
-    def __mul__(self, amount: int) -> Self:
-        return type(self)(self.x * amount, self.y * amount)
-
-    def __rmul__(self, amount: int) -> Self:
-        return self.__mul__(amount)
-
-    def __lt__(self, o: Self) -> bool:
+    def __lt__(self, o) -> bool:
         return (self.y, self.x) < (o.y, o.x)
 
-    def __le__(self, o: Self) -> bool:
-        return (self.y, self.x) <= (o.y, o.x)
+    def __gt__(self, o) -> bool:
+        return (self.y, self.x) > (o.y, o.x)
 
 
-@dataclass(frozen=True)
-class Point3d:
+class Point3d(NamedTuple):
     x: int
     y: int
     z: int
@@ -100,23 +104,17 @@ class Point3d:
     def __len__(self) -> int:
         return abs(self.x) + abs(self.y) + abs(self.z)
 
-    def __add__(self, o: Self) -> Self:
+    def __add__(self, o) -> Self:
         return type(self)(self.x + o.x, self.y + o.y, self.z + o.z)
 
-    def __sub__(self, o: Self) -> Self:
+    def __sub__(self, o) -> Self:
         return type(self)(self.x - o.x, self.y - o.y, self.z - o.z)
 
-    def __mul__(self, amount: int) -> Self:
-        return type(self)(self.x * amount, self.y * amount, self.z * amount)
-
-    def __rmul__(self, amount: int) -> Self:
-        return self.__mul__(amount)
-
-    def __lt__(self, o: Self) -> bool:
+    def __lt__(self, o) -> bool:
         return (self.z, self.y, self.x) < (o.z, o.y, o.x)
 
-    def __le__(self, o: Self) -> bool:
-        return (self.z, self.y, self.x) <= (o.z, o.y, o.x)
+    def __gt__(self, o) -> bool:
+        return (self.z, self.y, self.x) > (o.z, o.y, o.x)
 
 
 class Grid[T]:
