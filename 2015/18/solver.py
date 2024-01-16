@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid
+from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -50,9 +50,9 @@ def main() -> None:
     answer.part2(1006, run(grid, True))
 
 
-def run(grid: Grid, force_corners: bool) -> int:
+def run(grid: Grid[str], force_corners: bool) -> int:
     on = points_on(grid)
-    xs, ys = grid.xs(), grid.ys()
+    xs, ys = GridHelper.xs(grid), GridHelper.ys(grid)
     animator = Animator(
         force_corners=force_corners,
         on=on,
@@ -71,7 +71,7 @@ def points_on(grid: Grid) -> set[Point]:
     on: set[Point] = set()
     for point, value in grid.items():
         if value == "#":
-            on.add((point.x, point.y))
+            on.add(point)
     return on
 
 

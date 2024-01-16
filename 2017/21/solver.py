@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.grid import GridHelper
 from aoc.parser import Parser
 
 
@@ -36,15 +36,15 @@ class Pattern:
 
     @staticmethod
     def permute(value: str) -> set[str]:
-        grid = Grid()
+        grid = dict()
         for y, row in enumerate(value.split("/")):
             for x, value in enumerate(row):
-                grid[Point(x, y)] = value
+                grid[(x, y)] = value
         permutations: set[str] = set()
         for _ in range(4):
-            permutations.add(str(grid))
-            permutations.add(str(grid.reflect()))
-            grid = grid.rotate()
+            permutations.add(GridHelper.to_str(grid))
+            permutations.add(GridHelper.to_str(GridHelper.reflect(grid)))
+            grid = GridHelper.rotate(grid)
         return permutations
 
 

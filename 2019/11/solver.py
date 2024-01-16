@@ -2,9 +2,10 @@ from dataclasses import dataclass
 from typing import override
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.grid import Grid, GridHelper
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
@@ -16,16 +17,16 @@ class Direction:
     def rotate(self, value: int) -> None:
         self.index += value if value == 1 else -1
 
-    def step(self, position: tuple[int, int]) -> tuple[int, int]:
+    def step(self, position: Point) -> tuple[int, int]:
         to_go = DIRECTIONS[self.index % len(DIRECTIONS)]
-        return position[0] + to_go[0], position[1] + to_go[1]
+        return PointHelper.add(position, to_go)
 
 
 @dataclass
 class PaintBot(Bus):
     direction: Direction
-    position: tuple[int, int]
-    grid: dict[tuple[int, int], int]
+    position: Point
+    grid: Grid[int]
     color: bool = True
 
     @override
@@ -45,12 +46,11 @@ class PaintBot(Bus):
             self.position = self.direction.step(self.position)
         self.color = not self.color
 
-    def get_grid(self) -> Grid:
-        grid = Grid()
-        for position, value in self.grid.items():
-            point = Point(*position)
+    def grid_str(self) -> str:
+        grid = dict()
+        for point, value in self.grid.items():
             grid[point] = "." if value == 0 else "#"
-        return grid
+        return GridHelper.to_str(grid)
 
 
 @answer.timer
@@ -64,7 +64,7 @@ def main() -> None:
         ".#..#.#..#.#....#....#.#..#..#.#....#..#...",
         "..##...##..#....####.#..#.#..#.#....#..#...",
     ]
-    answer.part2("\n" + "\n".join(expected), "\n" + str(run(1).get_grid()))
+    answer.part2("\n" + "\n".join(expected), "\n" + str(run(1).grid_str()))
 
 
 def run(setting: int) -> PaintBot:

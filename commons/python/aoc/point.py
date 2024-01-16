@@ -34,7 +34,7 @@ class Direction(Enum):
             raise Exception(f"Unknown direction: {s}")
 
 
-Point = tuple[int, int]
+type Point = tuple[int, int]
 
 
 class PointHelper:
@@ -54,6 +54,18 @@ class PointHelper:
             return (p[0] + 1, p[1])
         else:
             raise Exception(f"Unknown direction: {direction}")
+
+    @staticmethod
+    def rotate(p: Point) -> Point:
+        return (-p[1], p[0])
+
+    @staticmethod
+    def reflect(p: Point) -> Point:
+        return (-p[0], p[1])
+
+    @staticmethod
+    def mirror(p: Point) -> Point:
+        return (p[0], -p[1])
 
     @staticmethod
     def neighbors(p: Point) -> list[Point]:
