@@ -2,19 +2,19 @@ import re
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 
 @dataclass(frozen=True)
 class Particle:
-    position: tuple[int, int]
-    velocity: tuple[int, int]
+    position: Point
+    velocity: Point
 
-    def at(self, time: int) -> tuple[int, int]:
-        return (
-            self.position[0] + (time * self.velocity[0]),
-            self.position[1] + (time * self.velocity[1]),
+    def at(self, time: int) -> Point:
+        return PointHelper.add(
+            self.position, (time * self.velocity[0], time * self.velocity[1])
         )
 
 
@@ -28,12 +28,12 @@ class Particles:
         ys = [y for _, y in positions]
         return (max(ys) - min(ys)) * (max(xs) - min(xs))
 
-    def grid_at(self, time: int) -> Grid:
-        grid = Grid()
+    def grid_str(self, time: int) -> str:
+        grid: Grid[str] = dict()
         for particle in self.particles:
             x, y = particle.at(time)
-            grid[Point(x, -1 * y)] = "#"
-        return grid
+            grid[(x, -y)] = "#"
+        return GridHelper.to_str(grid)
 
 
 @answer.timer
@@ -52,7 +52,7 @@ def main() -> None:
         "#...##..#.......#...#...#.......#.......#.......#.......#....#",
         ".###.#..#........###....######..######..######..######..#....#",
     ]
-    answer.part1("\n" + "\n".join(expected), "\n" + str(particles.grid_at(time)))
+    answer.part1("\n" + "\n".join(expected), "\n" + particles.grid_str(time))
     answer.part2(10515, time)
 
 

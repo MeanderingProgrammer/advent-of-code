@@ -1,8 +1,9 @@
 from collections import deque
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
+from aoc.point import PointHelper
 
 CLEAN = "."
 WEAKENED = "W"
@@ -16,9 +17,9 @@ class Virus:
     def __init__(self, grid: Grid, state_chage: dict[str, str]):
         self.grid = grid
         self.state_chage = state_chage
-        self.position = Point(Virus.mid(grid.xs()), Virus.mid(grid.ys()))
+        self.position = (Virus.mid(GridHelper.xs(grid)), Virus.mid(GridHelper.ys(grid)))
 
-        self.directions = deque([Point(0, 1), Point(-1, 0), Point(0, -1), Point(1, 0)])
+        self.directions = deque([(0, 1), (-1, 0), (0, -1), (1, 0)])
         self.infections = 0
 
     def burst(self) -> None:
@@ -30,13 +31,13 @@ class Virus:
             self.infections += 1
 
         self.directions.rotate(-STATE_DIRECTION_CHANGE[state])
-        self.position += self.directions[0]
+        self.position = PointHelper.add(self.position, self.directions[0])
 
     @staticmethod
-    def mid(values):
-        values = list(values)
-        values.sort()
-        return values[len(values) // 2]
+    def mid(values: set[int]):
+        as_list = list(values)
+        as_list.sort()
+        return as_list[len(values) // 2]
 
 
 @answer.timer

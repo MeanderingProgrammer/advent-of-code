@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Direction, Grid, Point
+from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
+from aoc.point import Direction, Point, PointHelper
 
 LEFT = "<"
 RIGHT = ">"
@@ -12,10 +13,10 @@ DOWN = "v"
 OPPOSITES: dict[str, str] = {LEFT: RIGHT, RIGHT: LEFT, UP: DOWN, DOWN: UP}
 
 AS_POSITION: dict[str, Point] = {
-    LEFT: Point(-1, 0),
-    RIGHT: Point(1, 0),
-    UP: Point(0, -1),
-    DOWN: Point(0, 1),
+    LEFT: (-1, 0),
+    RIGHT: (1, 0),
+    UP: (0, -1),
+    DOWN: (0, 1),
 }
 
 INTERSECTION_OPTIONS: dict[str, list[str]] = {
@@ -44,11 +45,11 @@ class Cart:
         options = INTERSECTION_OPTIONS[self.direction]
         self.direction = options[self.choice % len(options)]
         self.choice += 1
-        self.position += AS_POSITION[self.direction]
+        self.position = PointHelper.add(self.position, AS_POSITION[self.direction])
 
     def standard_movement(self, options: list[Point]) -> None:
         opposite = OPPOSITES[self.direction]
-        dont_go = self.position + AS_POSITION[opposite]
+        dont_go = PointHelper.add(self.position, AS_POSITION[opposite])
         options.remove(dont_go)
         if len(options) != 1:
             raise Exception("Unable to eliminate enough options")
@@ -58,14 +59,14 @@ class Cart:
 
     def how_to_get(self, new_position: Point) -> str:
         for direction in AS_POSITION:
-            if self.position + AS_POSITION[direction] == new_position:
+            if PointHelper.add(self.position, AS_POSITION[direction]) == new_position:
                 return direction
         raise Exception("Unable to determine how to reach position")
 
 
 @dataclass(frozen=True)
 class CartSystem:
-    track: Grid
+    track: Grid[str]
     carts: list[Cart]
     crash_positions: list[Point]
 
@@ -90,25 +91,43 @@ class CartSystem:
         value = self.track[point]
         if value == "+":
             return [
-                point.go(Direction.LEFT),
-                point.go(Direction.RIGHT),
-                point.go(Direction.UP),
-                point.go(Direction.DOWN),
+                PointHelper.go(point, Direction.LEFT),
+                PointHelper.go(point, Direction.RIGHT),
+                PointHelper.go(point, Direction.UP),
+                PointHelper.go(point, Direction.DOWN),
             ]
         elif value == "|":
-            return [point.go(Direction.UP), point.go(Direction.DOWN)]
+            return [
+                PointHelper.go(point, Direction.UP),
+                PointHelper.go(point, Direction.DOWN),
+            ]
         elif value == "-":
-            return [point.go(Direction.LEFT), point.go(Direction.RIGHT)]
+            return [
+                PointHelper.go(point, Direction.LEFT),
+                PointHelper.go(point, Direction.RIGHT),
+            ]
         elif value == "/":
-            if self.track[point.go(Direction.UP)] in ["|", "+"]:
-                return [point.go(Direction.UP), point.go(Direction.RIGHT)]
+            if self.track.get(PointHelper.go(point, Direction.UP)) in ["|", "+"]:
+                return [
+                    PointHelper.go(point, Direction.UP),
+                    PointHelper.go(point, Direction.RIGHT),
+                ]
             else:
-                return [point.go(Direction.DOWN), point.go(Direction.LEFT)]
+                return [
+                    PointHelper.go(point, Direction.DOWN),
+                    PointHelper.go(point, Direction.LEFT),
+                ]
         elif value == "\\":
-            if self.track[point.go(Direction.UP)] in ["|", "+"]:
-                return [point.go(Direction.UP), point.go(Direction.LEFT)]
+            if self.track.get(PointHelper.go(point, Direction.UP)) in ["|", "+"]:
+                return [
+                    PointHelper.go(point, Direction.UP),
+                    PointHelper.go(point, Direction.LEFT),
+                ]
             else:
-                return [point.go(Direction.DOWN), point.go(Direction.RIGHT)]
+                return [
+                    PointHelper.go(point, Direction.DOWN),
+                    PointHelper.go(point, Direction.RIGHT),
+                ]
         else:
             raise Exception("Unknown value at point")
 
@@ -119,15 +138,15 @@ class CartSystem:
 @answer.timer
 def main() -> None:
     system = run_system()
-    answer.part1(Point(86, 118), system.crash_positions[0])
-    answer.part2(Point(2, 81), system.carts[0].position)
+    answer.part1((86, 118), system.crash_positions[0])
+    answer.part2((2, 81), system.carts[0].position)
 
 
 def run_system() -> CartSystem:
-    data: dict[Point, str] = dict()
+    data: Grid[str] = dict()
     for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
-            data[Point(x, y)] = value
+            data[(x, y)] = value
     system = CartSystem(
         track=get_track(data), carts=get_carts(data), crash_positions=[]
     )
@@ -135,8 +154,8 @@ def run_system() -> CartSystem:
     return system
 
 
-def get_track(data: dict[Point, str]) -> Grid:
-    track = Grid()
+def get_track(data: Grid[str]) -> Grid[str]:
+    track = dict()
     for point, value in data.items():
         if value != " ":
             value = "-" if value in [LEFT, RIGHT] else value
@@ -145,7 +164,7 @@ def get_track(data: dict[Point, str]) -> Grid:
     return track
 
 
-def get_carts(data: dict[Point, str]) -> list[Cart]:
+def get_carts(data: Grid[str]) -> list[Cart]:
     carts: list[Cart] = []
     for point, value in data.items():
         if value in AS_POSITION:
