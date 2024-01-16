@@ -1,6 +1,7 @@
 from aoc import answer
-from aoc.board import Direction, Grid, Point
+from aoc.grid import Grid
 from aoc.parser import Parser
+from aoc.point import Direction, Point, PointHelper
 
 
 @answer.timer
@@ -30,11 +31,11 @@ def get_code(pattern: list[list[int | str]]) -> str:
 
 
 def create_phone(pattern: list[list[int | str]]) -> tuple[Grid, Point]:
-    phone = Grid()
+    phone = dict()
     start = None
     for y, row in enumerate(pattern):
         for x, value in enumerate(row):
-            point = Point(x, y)
+            point = (x, y)
             if value != "*":
                 phone[point] = value
             if value == 5:
@@ -45,7 +46,7 @@ def create_phone(pattern: list[list[int | str]]) -> tuple[Grid, Point]:
 
 def follow(phone: Grid, position: Point, instruction: str) -> Point:
     for direction in instruction:
-        new_position = position.go(Direction.from_str(direction))
+        new_position = PointHelper.go(position, Direction.from_str(direction))
         if new_position in phone:
             position = new_position
     return position

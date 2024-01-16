@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from typing import Self
 
 from aoc import answer
-from aoc.board import Point3d
 from aoc.parser import Parser
+
+type Point3d = tuple[int, int, int]
 
 
 @dataclass(frozen=True)
@@ -13,11 +14,14 @@ class NanoBot:
     pos: Point3d
     r: int
 
-    def in_range(self, o: Self):
-        return len(self.pos - o.pos) <= self.r
+    def in_range(self, o: Self) -> bool:
+        x1, y1, z1 = self.pos
+        x2, y2, z2 = o.pos
+        return abs(x1 - x2) + abs(y1 - y2) + abs(z1 - z2) <= self.r
 
-    def __len__(self):
-        return len(self.pos)
+    def __len__(self) -> int:
+        x, y, z = self.pos
+        return abs(x) + abs(y) + abs(z)
 
 
 @answer.timer
@@ -32,8 +36,10 @@ def main() -> None:
 def get_bots() -> list[NanoBot]:
     def parse_bot(line: str) -> NanoBot:
         pos, radius = line.split(", ")
+        coords = [int(c) for c in pos.split("=")[1][1:-1].split(",")]
+        assert len(coords) == 3
         return NanoBot(
-            pos=Point3d(*[int(c) for c in pos.split("=")[1][1:-1].split(",")]),
+            pos=(coords[0], coords[1], coords[2]),
             r=int(radius.split("=")[1]),
         )
 
@@ -44,9 +50,8 @@ def distance_of_most_overlap(bots: list[NanoBot]) -> int:
     # A copy of: https://github.com/tterb/advent-of-code/blob/master/2018/day23.py
     queue: list[tuple[int, bool]] = []
 
-    # One key piece of information is that the minimum distance from the origin is
-    # guaranteed to be on the edge of one of the bots, i.e. its manhattan distance,
-    # minus its radius
+    # One key piece of information is that the minimum distance from the origin is guaranteed
+    # to be on the edge of one of the bots, i.e. its manhattan distance minus its radius
     for bot in bots:
         # Positions that have a manhattan distance larger than bots manhattan
         # distance minus radius will be included by this bots radius

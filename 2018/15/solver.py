@@ -1,15 +1,33 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Callable, Optional, Self
+from typing import Callable, NamedTuple, Optional, Self
 
 from aoc import answer
-from aoc.board import Point
 from aoc.parser import Parser
 
 
 class Team(Enum):
     GOBLIN = auto()
     ELF = auto()
+
+
+class Point(NamedTuple):
+    x: int
+    y: int
+
+    def neighbors(self) -> list[Self]:
+        return [
+            type(self)(self.x, self.y + 1),
+            type(self)(self.x, self.y - 1),
+            type(self)(self.x + 1, self.y),
+            type(self)(self.x - 1, self.y),
+        ]
+
+    def __lt__(self, o) -> bool:
+        return (self.y, self.x) < (o.y, o.x)
+
+    def __gt__(self, o) -> bool:
+        return (self.y, self.x) > (o.y, o.x)
 
 
 @dataclass
