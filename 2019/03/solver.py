@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Self
 
 from aoc import answer
-from aoc.board import Direction, Point
 from aoc.parser import Parser
+from aoc.point import Direction, Point, PointHelper
 
 
 @dataclass(frozen=True)
@@ -23,21 +23,21 @@ def main() -> None:
     data = Parser().lines()
     p1, p2 = create_path(data[0]), create_path(data[1])
     intersections = p1.intersection(p2)
-    answer.part1(870, min(list(map(len, intersections))))
+    answer.part1(870, min(list(map(PointHelper.len, intersections))))
     answer.part2(
         13698, min([p1.steps(point) + p2.steps(point) for point in intersections])
     )
 
 
 def create_path(line: str) -> Path:
-    points: list[Point] = [Point(0, 0)]
+    points: list[Point] = [(0, 0)]
     step_counts: dict[Point, int] = dict()
     steps: int = 0
     for part in line.split(","):
         direction = Direction.from_str(part[0])
         for _ in range(int(part[1:])):
             steps += 1
-            next_point = points[-1].go(direction)
+            next_point = PointHelper.go(points[-1], direction)
             points.append(next_point)
             if next_point not in step_counts:
                 step_counts[next_point] = steps
