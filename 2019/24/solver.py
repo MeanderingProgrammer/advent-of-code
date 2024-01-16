@@ -3,8 +3,8 @@ from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
+from aoc.point import Point
 
-Point = tuple[int, int]
 Location = tuple[Point, int]
 
 MIDDLE = (2, 2)
@@ -71,7 +71,7 @@ def main() -> None:
     grid: set[Location] = set()
     for point, value in Parser().as_grid().items():
         if value == "#":
-            grid.add(((point.x, point.y), 0))
+            grid.add((point, 0))
     answer.part1(32776479, part_1(grid))
     answer.part2(2017, part_2(grid))
 
