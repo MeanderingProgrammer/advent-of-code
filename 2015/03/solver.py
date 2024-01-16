@@ -1,6 +1,6 @@
 from aoc import answer
-from aoc.board import Direction, Point
 from aoc.parser import Parser
+from aoc.point import Direction, Point, PointHelper
 
 
 @answer.timer
@@ -12,14 +12,14 @@ def main() -> None:
 def run(santas: int) -> int:
     locations: list[Point] = []
     for i in range(santas):
-        locations.append(Point(0, 0))
+        locations.append((0, 0))
 
     visited = [location for location in locations]
 
     for i, direction in enumerate(Parser().string()):
         direction = Direction.from_str(direction)
         santa_index = i % len(locations)
-        locations[santa_index] = locations[santa_index].go(direction)
+        locations[santa_index] = PointHelper.go(locations[santa_index], direction)
         visited.append(locations[santa_index])
 
     return len(set(visited))

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Grid, Point
+from aoc.board import Grid
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 
 @dataclass
@@ -16,16 +17,16 @@ class Animator:
 
     def add_corners(self) -> None:
         if self.force_corners:
-            self.on.add(Point(self.min_x, self.min_y))
-            self.on.add(Point(self.min_x, self.max_y))
-            self.on.add(Point(self.max_x, self.min_y))
-            self.on.add(Point(self.max_x, self.max_y))
+            self.on.add((self.min_x, self.min_y))
+            self.on.add((self.min_x, self.max_y))
+            self.on.add((self.max_x, self.min_y))
+            self.on.add((self.max_x, self.max_y))
 
     def step(self) -> None:
         next_on: set[Point] = set()
         for x in range(self.min_x, self.max_x + 1):
             for y in range(self.min_y, self.max_y + 1):
-                point = Point(x, y)
+                point = (x, y)
                 neighbors_on = self.neighbors_on(point)
                 neighbors_needed = [2, 3] if point in self.on else [3]
                 if neighbors_on in neighbors_needed:
@@ -34,7 +35,9 @@ class Animator:
         self.add_corners()
 
     def neighbors_on(self, point: Point) -> int:
-        return sum([adjacent in self.on for adjacent in point.neighbors_diagonal()])
+        return sum(
+            [adjacent in self.on for adjacent in PointHelper.neighbors_diagonal(point)]
+        )
 
     def lights_on(self) -> int:
         return len(self.on)
@@ -68,7 +71,7 @@ def points_on(grid: Grid) -> set[Point]:
     on: set[Point] = set()
     for point, value in grid.items():
         if value == "#":
-            on.add(point)
+            on.add((point.x, point.y))
     return on
 
 

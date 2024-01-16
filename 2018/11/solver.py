@@ -1,6 +1,6 @@
 from aoc import answer
-from aoc.board import Point
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 
 class PowerGrid:
@@ -12,12 +12,12 @@ class PowerGrid:
     def initialize(self) -> None:
         for x in range(1, self.grid_size + 1):
             for y in range(1, self.grid_size + 1):
-                point = Point(x, y)
+                point: Point = (x, y)
                 power_level = self.get_power_level(point)
 
-                above = self.grid.get(Point(x, y - 1), 0)
-                left = self.grid.get(Point(x - 1, y), 0)
-                overlap = self.grid.get(Point(x - 1, y - 1), 0)
+                above = self.grid.get(PointHelper.add(point, (0, -1)), 0)
+                left = self.grid.get(PointHelper.add(point, (-1, 0)), 0)
+                overlap = self.grid.get(PointHelper.add(point, (-1, -1)), 0)
 
                 self.grid[point] = above + left + power_level - overlap
 
@@ -30,13 +30,13 @@ class PowerGrid:
         if largest_any is None:
             raise Exception("Should always be able to find largest grid")
         point = largest_any[0][0]
-        return point.x, point.y, largest_any[1]
+        return point[0], point[1], largest_any[1]
 
     def get_largest(self, size: int) -> tuple[Point, int]:
         largest = None
         for x in range(1, self.grid_size - size + 1):
             for y in range(1, self.grid_size - size + 1):
-                point = Point(x, y)
+                point = (x, y)
                 power = self.get_total_power(point, size)
                 if largest is None or power > largest[1]:
                     largest = point, power
@@ -45,15 +45,15 @@ class PowerGrid:
         return largest
 
     def get_total_power(self, point: Point, size: int) -> int:
-        total = self.grid[Point(point.x + size - 1, point.y + size - 1)]
-        above = self.grid.get(Point(point.x + size - 1, point.y - 1), 0)
-        left = self.grid.get(Point(point.x - 1, point.y + size - 1), 0)
-        overlap = self.grid.get(Point(point.x - 1, point.y - 1), 0)
+        total = self.grid[PointHelper.add(point, (size - 1, size - 1))]
+        above = self.grid.get(PointHelper.add(point, (size - 1, -1)), 0)
+        left = self.grid.get(PointHelper.add(point, (-1, size - 1)), 0)
+        overlap = self.grid.get(PointHelper.add(point, (-1, -1)), 0)
         return total - above - left + overlap
 
     def get_power_level(self, point: Point) -> int:
-        rack_id = point.x + 10
-        initial_power_level = rack_id * point.y
+        rack_id = point[0] + 10
+        initial_power_level = rack_id * point[1]
         power_level = initial_power_level + self.serial_number
         power_level *= rack_id
         power_level //= 100
@@ -65,7 +65,7 @@ class PowerGrid:
 def main() -> None:
     power_grid = PowerGrid(Parser().integer(), 300)
     power_grid.initialize()
-    answer.part1(Point(243, 43), power_grid.get_largest(3)[0])
+    answer.part1((243, 43), power_grid.get_largest(3)[0])
     answer.part2((236, 151, 15), power_grid.get_largest_any())
 
 

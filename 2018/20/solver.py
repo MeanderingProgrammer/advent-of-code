@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.board import Point
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
-MAPPING: dict[str, Point] = {
-    "N": Point(0, 1),
-    "E": Point(1, 0),
-    "W": Point(-1, 0),
-    "S": Point(0, -1),
-}
+MAPPING: dict[str, Point] = dict(
+    N=(0, 1),
+    E=(1, 0),
+    W=(-1, 0),
+    S=(0, -1),
+)
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Regex:
             elif char == "|":
                 self.current = self.positions[-1]
             else:
-                self.current += MAPPING[char]
+                self.current = PointHelper.add(self.current, MAPPING[char])
                 distance = self.distances.get(self.previous, 0) + 1
                 if self.current not in self.distances:
                     self.distances[self.current] = distance
@@ -52,8 +52,8 @@ class Regex:
 def main() -> None:
     regex = Regex(
         expression=Parser().string()[1:-1],
-        current=Point(0, 0),
-        previous=Point(0, 0),
+        current=(0, 0),
+        previous=(0, 0),
         positions=[],
         distances=dict(),
     )
