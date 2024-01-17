@@ -7,7 +7,6 @@ from aoc.parser import Parser
 
 @dataclass
 class Player:
-    id: int
     score: int
 
 
@@ -35,18 +34,18 @@ class Game:
 
 @answer.timer
 def main() -> None:
-    values = Parser().entries()
-    num_players, highest_value = int(values[0]), int(values[-2])
-    answer.part1(429943, solve(num_players, highest_value))
-    answer.part2(3615691746, solve(num_players, highest_value * 100))
+    entries = Parser().entries()
+    players, value = int(entries[0]), int(entries[-2])
+    answer.part1(429943, solve(players, value))
+    answer.part2(3615691746, solve(players, value * 100))
 
 
-def solve(num_players: int, num_moves: int) -> int:
+def solve(players: int, moves: int) -> int:
     game = Game(
-        players=[Player(i + 1, 0) for i in range(num_players)],
+        players=[Player(0) for _ in range(players)],
         board=deque([0]),
     )
-    game.play(num_moves)
+    game.play(moves)
     return game.get_high_score()
 
 
