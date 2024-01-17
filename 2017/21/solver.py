@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.grid import GridHelper
+from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
 
 
@@ -25,55 +25,40 @@ class Art:
         return sum([sum([v == "#" for v in row]) for row in self.value])
 
 
-class Pattern:
-    def __init__(self, value: str):
-        parts = value.split(" => ")
-        self.permutations: set[str] = Pattern.permute(parts[0])
-        self.output: list[str] = parts[1].split("/")
-
-    def matches(self, component: str) -> bool:
-        return component in self.permutations
-
-    @staticmethod
-    def permute(value: str) -> set[str]:
-        grid = dict()
-        for y, row in enumerate(value.split("/")):
-            for x, value in enumerate(row):
-                grid[(x, y)] = value
-        permutations: set[str] = set()
-        for _ in range(4):
-            permutations.add(GridHelper.to_str(grid))
-            permutations.add(GridHelper.to_str(GridHelper.reflect(grid)))
-            grid = GridHelper.rotate(grid)
-        return permutations
-
-
 @answer.timer
 def main() -> None:
-    patterns = [Pattern(line) for line in Parser().lines()]
+    patterns = get_patterns()
     answer.part1(188, run_iterations(patterns, 5))
     answer.part2(2758764, run_iterations(patterns, 18))
 
 
-def run_iterations(patterns: list[Pattern], n: int):
+def get_patterns() -> dict[str, list[str]]:
+    patterns: dict[str, list[str]] = dict()
+    for line in Parser().lines():
+        parts: list[str] = line.split(" => ")
+        output: list[str] = parts[1].split("/")
+        grid: Grid = dict()
+        for y, row in enumerate(parts[0].split("/")):
+            for x, value in enumerate(row):
+                grid[(x, y)] = value
+        for _ in range(4):
+            patterns[GridHelper.to_str(grid)] = output
+            patterns[GridHelper.to_str(GridHelper.reflect(grid))] = output
+            grid = GridHelper.rotate(grid)
+    return patterns
+
+
+def run_iterations(patterns: dict[str, list[str]], n: int):
     art = Art([".#.", "..#", "###"])
     for _ in range(n):
         rows: list[str] = []
         for component_row in art.split():
-            new_row: list[list[str]] = []
-            for component in component_row:
-                pattern = get_matching_pattern(component, patterns)
-                new_row.append(pattern.output)
+            new_row: list[list[str]] = [
+                patterns[component] for component in component_row
+            ]
             rows.extend(join_row(new_row))
         art = Art(rows)
     return art.on()
-
-
-def get_matching_pattern(component: str, patterns: list[Pattern]) -> Pattern:
-    for pattern in patterns:
-        if pattern.matches(component):
-            return pattern
-    raise Exception("Failed")
 
 
 def join_row(row: list[list[str]]) -> list[str]:
