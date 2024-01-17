@@ -25,6 +25,7 @@ class FigureSaver:
         if fig_path.exists():
             print(f"Skipping {fig_path} as it already exists")
         else:
+            print(f"Creating {fig_path}")
             if fig_type == FigType.MATPLOTLIB:
                 self.save_matplotlib(fig, legend, fig_path)
             elif fig_type == FigType.PLOTLY:
