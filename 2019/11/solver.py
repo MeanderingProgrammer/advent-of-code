@@ -64,7 +64,7 @@ def main() -> None:
         ".#..#.#..#.#....#....#.#..#..#.#....#..#...",
         "..##...##..#....####.#..#.#..#.#....#..#...",
     ]
-    answer.part2("\n" + "\n".join(expected), "\n" + str(run(1).grid_str()))
+    answer.part2("\n" + "\n".join(expected), "\n" + run(1).grid_str())
 
 
 def run(setting: int) -> PaintBot:
