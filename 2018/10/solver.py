@@ -13,9 +13,7 @@ class Particle:
     velocity: Point
 
     def at(self, time: int) -> Point:
-        return PointHelper.add(
-            self.position, (time * self.velocity[0], time * self.velocity[1])
-        )
+        return PointHelper.add(self.position, PointHelper.multiply(self.velocity, time))
 
 
 @dataclass(frozen=True)

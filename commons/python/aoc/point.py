@@ -43,6 +43,10 @@ class PointHelper:
         return (p1[0] + p2[0], p1[1] + p2[1])
 
     @staticmethod
+    def multiply(p: Point, amount: int) -> Point:
+        return (p[0] * amount, p[1] * amount)
+
+    @staticmethod
     def go(p: Point, direction: Direction) -> Point:
         if direction == Direction.UP:
             return (p[0], p[1] + 1)
