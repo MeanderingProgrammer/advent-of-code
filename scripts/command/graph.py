@@ -73,6 +73,14 @@ class Grapher(Command):
             fig_type=FigType.PLOTLY,
         )
 
+        runtimes_only: pd.DataFrame = runtimes[["runtime"]]
+        sorted_runtimes = runtimes_only.sort_values("runtime").reset_index(drop=True)
+        saver.save(
+            name="cumulative_sum",
+            fig=sorted_runtimes.cumsum().plot.line(legend=False, figsize=(8, 6)),
+            fig_type=FigType.MATPLOTLIB,
+        )
+
         language_counts = runtimes["language"].value_counts()
         saver.save(
             name="usage_langauage",
