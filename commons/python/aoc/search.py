@@ -68,8 +68,10 @@ def bfs_complete[
     return None
 
 
-def reachable(start, maximum, get_adjacent):
-    queue = [(0, start)]
+def reachable[
+    T
+](start: T, maximum: int, get_adjacent: Callable[[T], list[T]]) -> set[T]:
+    queue: list[tuple[int, T]] = [(0, start)]
     seen = set()
     while len(queue) > 0:
         length, item = heapq.heappop(queue)
