@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from aoc import answer
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
-Point = tuple[int, int]
 DIRECTIONS: dict[str, Point] = dict(
     e=(2, 0),
     w=(-2, 0),
@@ -14,58 +14,39 @@ DIRECTIONS: dict[str, Point] = dict(
 )
 
 
-def add(p1: Point, p2: Point) -> Point:
-    return (p1[0] + p2[0], p1[1] + p2[1])
-
-
 def neighbors(p: Point) -> list[Point]:
-    return [add(p, direction) for direction in DIRECTIONS.values()]
-
-
-class Path:
-    def __init__(self, path: str):
-        self.instructions: list[Point] = []
-        path_iter = iter(path)
-        for letter in path_iter:
-            instruction = letter if letter in ["e", "w"] else letter + next(path_iter)
-            self.instructions.append(DIRECTIONS[instruction])
+    return [PointHelper.add(p, direction) for direction in DIRECTIONS.values()]
 
 
 @dataclass(frozen=True)
 class Floor:
     floor: dict[Point, bool]
 
-    def follow_path(self, path: Path) -> None:
-        point = (0, 0)
-        for instruction in path.instructions:
-            point = add(point, instruction)
-            if point not in self.floor:
-                self.floor[point] = True
-        self.flip(point)
+    def follow_path(self, path: str) -> None:
+        point: Point = (0, 0)
+        path_iter = iter(path)
+        for letter in path_iter:
+            instruction = letter if letter in ["e", "w"] else letter + next(path_iter)
+            point = PointHelper.add(point, DIRECTIONS[instruction])
+        self.floor[point] = not self.get(point)
 
     def transform(self) -> None:
-        self.pad_around_black()
-        to_flip: list[Point] = []
+        # Track number of black tiles adjacent to every point on the floor
+        counts: dict[Point, int] = dict()
         for point, tile in self.floor.items():
+            counts[point] = counts.get(point, 0)
+            if not tile:
+                for neighbor in neighbors(point):
+                    counts[neighbor] = counts.get(neighbor, 0) + 1
+        # Flip tiles depending on current state and number of adjacent black tiles
+        for point, count in counts.items():
+            tile = self.get(point)
             flip_counts = [2] if tile else [0, 3, 4, 5, 6]
-            black_count = sum(
-                [not self.floor.get(neighbor, True) for neighbor in neighbors(point)]
-            )
-            if black_count in flip_counts:
-                to_flip.append(point)
-        [self.flip(point) for point in to_flip]
+            if count in flip_counts:
+                self.floor[point] = not tile
 
-    def pad_around_black(self) -> None:
-        for point in list(self.floor.keys()):
-            if self.floor[point]:
-                continue
-            for neighbor in neighbors(point):
-                if neighbor in self.floor:
-                    continue
-                self.floor[neighbor] = True
-
-    def flip(self, point: Point) -> None:
-        self.floor[point] = not self.floor[point]
+    def get(self, point: Point) -> bool:
+        return self.floor.get(point, True)
 
     def count_black(self):
         return sum([not tile for tile in self.floor.values()])
@@ -73,9 +54,8 @@ class Floor:
 
 @answer.timer
 def main() -> None:
-    floor = Floor(floor={(0, 0): True})
-    paths = [Path(line) for line in Parser().lines()]
-    for path in paths:
+    floor = Floor(dict())
+    for path in Parser().lines():
         floor.follow_path(path)
     answer.part1(320, floor.count_black())
     for _ in range(100):
