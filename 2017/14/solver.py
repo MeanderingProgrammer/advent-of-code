@@ -3,9 +3,7 @@ from dataclasses import dataclass, field
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
-DIRECTIONS: list[Point] = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+from aoc.point import Point, PointHelper
 
 
 @dataclass
@@ -54,7 +52,7 @@ class Knot:
 def main() -> None:
     points = enabled_points(Parser(strip=True).string())
     answer.part1(8190, len(points))
-    answer.part2(1134, len(group_points(points)))
+    answer.part2(1134, group_points(points))
 
 
 def enabled_points(prefix: str) -> list[Point]:
@@ -68,17 +66,17 @@ def enabled_points(prefix: str) -> list[Point]:
     return points
 
 
-def group_points(points: list[Point]) -> set[frozenset[Point]]:
-    groups: set[frozenset[Point]] = set()
+def group_points(points: list[Point]) -> int:
+    groups: list[frozenset[Point]] = []
     for point in points:
-        adjacent = set([(point[0] + dx, point[1] + dy) for dy, dx in DIRECTIONS])
-        matching_groups = [group for group in groups if adjacent & group]
+        adjacent = set(PointHelper.neighbors(point))
+        matching_groups = [group for group in groups if not adjacent.isdisjoint(group)]
         new_group = set([point])
         for group in matching_groups:
             new_group |= group
             groups.remove(group)
-        groups.add(frozenset(new_group))
-    return groups
+        groups.append(frozenset(new_group))
+    return len(groups)
 
 
 if __name__ == "__main__":
