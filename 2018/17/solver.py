@@ -2,7 +2,9 @@ import sys
 from dataclasses import dataclass
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
+from aoc.point import Point
 
 sys.setrecursionlimit(10_000)
 
@@ -11,13 +13,10 @@ DOWN = "d"
 LEFT = "l"
 RIGHT = "r"
 
-Point = tuple[int, int]
-Grid = dict[Point, str]
-
 
 @dataclass(frozen=True)
 class GroundReservoir:
-    grid: Grid
+    grid: Grid[str]
     min_y: int
     max_y: int
     flowing: set[Point]
@@ -79,7 +78,7 @@ def main() -> None:
     answer.part2(32288, sum([reservoir.in_range(point) for point in reservoir.settled]))
 
 
-def get_grid() -> Grid:
+def get_grid() -> Grid[str]:
     def parse_range(value: str) -> list[int]:
         parts = value.split("..")
         if len(parts) == 1:

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 from aoc import answer, search
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
-Point = tuple[int, int]
 WALL, OPEN = "#", "."
 
 
@@ -40,26 +40,17 @@ class Grid:
 
     def get_adjacent(self, p: Point) -> list[Point]:
         result: list[Point] = []
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            adjacent = (p[0] + dx, p[1] + dy)
-            if adjacent in self.grid and self.grid[adjacent] != WALL:
+        for adjacent in PointHelper.neighbors(p):
+            if self.grid.get(adjacent, WALL) != WALL:
                 result.append(adjacent)
         return result
 
 
 @answer.timer
 def main() -> None:
-    distances = get_grid().compute_distances()
+    distances = Grid(Parser().as_grid()).compute_distances()
     answer.part1(498, traverse(distances, False))
     answer.part2(804, traverse(distances, True))
-
-
-def get_grid() -> Grid:
-    grid: dict[Point, str] = dict()
-    for y, line in enumerate(Parser().lines()):
-        for x, value in enumerate(line):
-            grid[(x, y)] = value
-    return Grid(grid)
 
 
 def traverse(distances: dict[tuple[str, str], int], go_home: bool) -> int:

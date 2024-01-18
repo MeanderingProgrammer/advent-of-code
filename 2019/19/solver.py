@@ -4,8 +4,7 @@ from typing import Optional, override
 from aoc import answer
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
+from aoc.point import Point
 
 
 @dataclass

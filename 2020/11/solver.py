@@ -4,13 +4,7 @@ from typing import Optional, Self
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
-
-
-def add(p1: Point, p2: Point) -> Point:
-    return p1[0] + p2[0], p1[1] + p2[1]
-
+from aoc.point import Point, PointHelper
 
 DIRECTIONS: list[Point] = [
     (-1, 0),
@@ -67,12 +61,12 @@ class SeatingChart:
         return result
 
     def explore_direction(self, p: Point, direction: Point) -> Optional[Seat]:
-        point = add(p, direction)
+        point = PointHelper.add(p, direction)
         seat = self.chart.get(point)
         if not self.look:
             return seat
         while seat == Seat.FLOOR:
-            point = add(point, direction)
+            point = PointHelper.add(point, direction)
             seat = self.chart.get(point)
         return seat
 

@@ -62,7 +62,7 @@ class Parser:
     def line_groups(self) -> list[list[str]]:
         return [group.split("\n") for group in self.string().split("\n\n")]
 
-    def as_grid(self) -> Grid:
+    def as_grid(self) -> Grid[str]:
         """
         Grids are often created bottom up, where an increase in y leads a value that is
         up more. However files are read top down where an increased index means the value

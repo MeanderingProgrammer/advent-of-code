@@ -3,8 +3,7 @@ from dataclasses import dataclass
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
+from aoc.point import Point
 
 
 @dataclass(frozen=True)

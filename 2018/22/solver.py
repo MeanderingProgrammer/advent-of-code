@@ -4,13 +4,7 @@ from typing import Optional, Self
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
-
-
-def neighbors(p: Point) -> list[Point]:
-    return [(p[0] + dx, p[1] + dy) for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]]
-
+from aoc.point import Point, PointHelper
 
 GEAR, TORCH, NEITHER = "g", "t", "n"
 VALID_TOOL: dict[int, set[str]] = {
@@ -107,7 +101,7 @@ def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> int:
         elif location == end:
             add_item(time + 7, location, TORCH)
         else:
-            for neighbor in neighbors(location):
+            for neighbor in PointHelper.neighbors(location):
                 if neighbor not in cave:
                     continue
                 if item in cave[neighbor].tools():

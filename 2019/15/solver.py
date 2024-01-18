@@ -4,13 +4,7 @@ from typing import Optional, override
 from aoc import answer, search
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
-
-
-def add(p1: Point, p2: Point) -> Point:
-    return (p1[0] + p2[0], p1[1] + p2[1])
-
+from aoc.point import Point, PointHelper
 
 WALL, EMPTY, OXYGEN = 0, 1, 2
 DIRECTIONS: dict[int, Point] = {1: (0, 1), 2: (0, -1), 3: (-1, 0), 4: (1, 0)}
@@ -46,7 +40,7 @@ class RepairDroid(Bus):
 
     def get_unexplored(self) -> Optional[tuple[int, Point]]:
         for code, direction in DIRECTIONS.items():
-            next_position = add(self.position, direction)
+            next_position = PointHelper.add(self.position, direction)
             if next_position not in self.grid:
                 return code, next_position
         return None
@@ -79,8 +73,7 @@ class Traverser:
 
     def get_options(self, position: Point) -> list[tuple[int, Point]]:
         options: list[tuple[int, Point]] = []
-        for direction in DIRECTIONS.values():
-            next_position = add(position, direction)
+        for next_position in PointHelper.neighbors(position):
             if self.grid.get(next_position, WALL) != WALL:
                 options.append((1, next_position))
         return options

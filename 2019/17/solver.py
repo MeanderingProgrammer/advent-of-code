@@ -4,18 +4,10 @@ from typing import Generator, Optional, override
 from aoc import answer
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
-Point = tuple[int, int]
 STATE_MAPPING: dict[str, int] = {"^": 0, ">": 1, "v": 2, "<": 3}
 DIRECTIONS: list[Point] = [(0, -1), (1, 0), (0, 1), (-1, 0)]
-
-
-def add(p1: Point, p2: Point) -> Point:
-    return (p1[0] + p2[0], p1[1] + p2[1])
-
-
-def adjacent(p: Point) -> list[Point]:
-    return [add(p, direction) for direction in DIRECTIONS]
 
 
 @dataclass
@@ -40,15 +32,15 @@ class DroidState:
             R=DIRECTIONS[(index + 1) % len(DIRECTIONS)],
         )
         for code, direction in directions.items():
-            if add(self.location, direction) in self.scafolding:
+            if PointHelper.add(self.location, direction) in self.scafolding:
                 self.direction = direction
                 return code
         return None
 
     def move_until_end(self) -> int:
         amount = 0
-        while add(self.location, self.direction) in self.scafolding:
-            self.location = add(self.location, self.direction)
+        while PointHelper.add(self.location, self.direction) in self.scafolding:
+            self.location = PointHelper.add(self.location, self.direction)
             amount += 1
         return amount
 
@@ -168,16 +160,16 @@ class VacuumDroid(Bus):
         if value == "\n":
             return (0, self.current[1] + 1)
         elif value == ".":
-            return add(self.current, (1, 0))
+            return PointHelper.add(self.current, (1, 0))
         elif value == "#":
             self.scafolding.append(self.current)
-            return add(self.current, (1, 0))
+            return PointHelper.add(self.current, (1, 0))
         elif value in STATE_MAPPING:
             self.state = DroidState(
                 self.current, self.scafolding, DIRECTIONS[STATE_MAPPING[value]]
             )
             self.scafolding.append(self.current)
-            return add(self.current, (1, 0))
+            return PointHelper.add(self.current, (1, 0))
         else:
             raise Exception("FAILED")
 
@@ -185,7 +177,7 @@ class VacuumDroid(Bus):
         return [
             point
             for point in self.scafolding
-            if all([p in self.scafolding for p in adjacent(point)])
+            if all([p in self.scafolding for p in PointHelper.neighbors(point)])
         ]
 
     def create_path(self) -> None:
