@@ -1,5 +1,5 @@
+use fxhash::FxHashSet;
 use priority_queue::DoublePriorityQueue;
-use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
 
@@ -26,7 +26,7 @@ where
     pub fn dijkstra(&self) -> Option<i64> {
         let mut queue = DoublePriorityQueue::new();
         queue.push_decrease(self.start.clone(), 0);
-        let mut seen = HashSet::new();
+        let mut seen = FxHashSet::default();
         while !queue.is_empty() {
             let (node, weight) = queue.pop_min().unwrap();
             if (self.is_done)(&node) {
