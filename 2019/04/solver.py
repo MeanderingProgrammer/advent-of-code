@@ -9,8 +9,8 @@ class Password:
     value: str
 
     def only_increase(self) -> bool:
-        for i, digit in enumerate(self.value[:-1]):
-            if int(digit) > int(self.value[i + 1]):
+        for i in range(len(self.value) - 1):
+            if int(self.value[i]) > int(self.value[i + 1]):
                 return False
         return True
 
