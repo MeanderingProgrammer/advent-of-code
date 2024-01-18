@@ -1,18 +1,13 @@
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
-
-type Point = tuple[int, int]
-type Grid = dict[Point, str]
+from aoc.point import Point, PointHelper
 
 DIRECTIONS: list[Point] = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
 
-def add(p1: Point, p2: Point) -> Point:
-    return (p1[0] + p2[0], p1[1] + p2[1])
-
-
 class Traverser:
-    def __init__(self, grid: Grid):
+    def __init__(self, grid: Grid[str]):
         self.grid = grid
         self.pos = self.get_start()
         self.direction = DIRECTIONS[1]
@@ -37,13 +32,13 @@ class Traverser:
                 self.seen.append(self.pos)
 
     def get_options(self) -> list[tuple[Point, Point]]:
-        same_direction = add(self.pos, self.direction)
+        same_direction = PointHelper.add(self.pos, self.direction)
         if same_direction in self.grid:
             return [(self.direction, same_direction)]
         else:
             options = []
             for direction in DIRECTIONS:
-                new_pos = add(self.pos, direction)
+                new_pos = PointHelper.add(self.pos, direction)
                 if self.valid_position(new_pos):
                     options.append((direction, new_pos))
             return options
@@ -71,7 +66,7 @@ def main() -> None:
     answer.part2(17540, traverser.steps())
 
 
-def get_grid() -> Grid:
+def get_grid() -> Grid[str]:
     grid: Grid = dict()
     for y, line in enumerate(Parser().nested_lines()):
         for x, value in enumerate(line):

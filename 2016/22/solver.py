@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
 from aoc import answer, search
+from aoc.grid import Grid
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 
 @dataclass(frozen=True)
@@ -20,10 +22,6 @@ class Node:
         return self.total >= o.used
 
 
-Point = tuple[int, int]
-Nodes = dict[Point, Node]
-
-
 @answer.timer
 def main() -> None:
     nodes = get_nodes()
@@ -31,7 +29,7 @@ def main() -> None:
     answer.part2(222, calculate_transfers(nodes))
 
 
-def get_nodes() -> Nodes:
+def get_nodes() -> Grid[Node]:
     def parse_point(s: str) -> Point:
         point = s.split("/")[-1].split("-")
         return (int(point[1][1:]), int(point[2][1:]))
@@ -39,7 +37,7 @@ def get_nodes() -> Nodes:
     def parse_size(s: str) -> int:
         return int(s[:-1])
 
-    nodes = Nodes()
+    nodes = dict()
     for line in Parser().lines()[2:]:
         point, total, used, available, _ = line.split()
         nodes[parse_point(point)] = Node(
@@ -50,7 +48,7 @@ def get_nodes() -> Nodes:
     return nodes
 
 
-def viable_connections(nodes: Nodes) -> int:
+def viable_connections(nodes: Grid[Node]) -> int:
     viable = 0
     for p1, n1 in nodes.items():
         for p2, n2 in nodes.items():
@@ -59,7 +57,7 @@ def viable_connections(nodes: Nodes) -> int:
     return viable
 
 
-def calculate_transfers(nodes: Nodes) -> int:
+def calculate_transfers(nodes: Grid[Node]) -> int:
     start = [point for point, node in nodes.items() if node.empty()][0]
     end = (max([point[0] for point in nodes]) - 1, 1)
     to_free = search.bfs(start, end, lambda point: get_adjacent(nodes, point))
@@ -71,10 +69,9 @@ def calculate_transfers(nodes: Nodes) -> int:
     return to_free + 2 + end[0] * 5
 
 
-def get_adjacent(nodes: Nodes, point: Point) -> list[Point]:
+def get_adjacent(nodes: Grid[Node], point: Point) -> list[Point]:
     result = []
-    for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-        adjacent = (point[0] + dx, point[1] + dy)
+    for adjacent in PointHelper.neighbors(point):
         if adjacent in nodes and nodes[point].could_store(nodes[adjacent]):
             result.append(adjacent)
     return result

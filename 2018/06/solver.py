@@ -3,12 +3,7 @@ from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
-
-
-def distance(p1: Point, p2: Point) -> int:
-    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+from aoc.point import Point, PointHelper
 
 
 class PointGrid:
@@ -23,7 +18,9 @@ class PointGrid:
         for x in range(self.x_bounds[0], self.x_bounds[1] + 1):
             for y in range(self.y_bounds[0], self.y_bounds[1] + 1):
                 start = (x, y)
-                self.distances[start] = {end: distance(start, end) for end in points}
+                self.distances[start] = {
+                    end: PointHelper.distance(start, end) for end in points
+                }
 
     def largest_finite(self) -> int:
         regions = defaultdict(list)
