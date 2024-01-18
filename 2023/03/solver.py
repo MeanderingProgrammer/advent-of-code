@@ -1,9 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from aoc import answer
 from aoc.parser import Parser
-
-Point = tuple[int, int]
+from aoc.point import Point
 
 
 @dataclass(frozen=True)
@@ -12,25 +11,28 @@ class Part:
     row: int
     start: int
     end: int
+    adjacent: set[Point] = field(default_factory=set)
 
     def is_in(self, locations: set[Point]):
-        return len(self.adjacent().intersection(locations)) > 0
+        return len(self.get_adjacent().intersection(locations)) > 0
 
-    def adjacent(self) -> set[Point]:
-        left: list[Point] = [
-            (self.start - 1, self.row + 1),
-            (self.start - 1, self.row),
-            (self.start - 1, self.row - 1),
-        ]
-        right: list[Point] = [
-            (self.end + 1, self.row + 1),
-            (self.end + 1, self.row),
-            (self.end + 1, self.row - 1),
-        ]
-        result: set[Point] = set(left + right)
-        for x in range(self.start, self.end + 1):
-            result.update([(x, self.row + 1), (x, self.row - 1)])
-        return result
+    def get_adjacent(self) -> set[Point]:
+        if len(self.adjacent) == 0:
+            left: list[Point] = [
+                (self.start - 1, self.row + 1),
+                (self.start - 1, self.row),
+                (self.start - 1, self.row - 1),
+            ]
+            self.adjacent.update(left)
+            right: list[Point] = [
+                (self.end + 1, self.row + 1),
+                (self.end + 1, self.row),
+                (self.end + 1, self.row - 1),
+            ]
+            self.adjacent.update(right)
+            for x in range(self.start, self.end + 1):
+                self.adjacent.update([(x, self.row + 1), (x, self.row - 1)])
+        return self.adjacent
 
 
 @dataclass(frozen=True)
@@ -41,7 +43,7 @@ class Symbol:
     def ratio(self, parts: list[Part]) -> int:
         if self.value != "*":
             return 0
-        adjacent = [part for part in parts if self.location in part.adjacent()]
+        adjacent = [part for part in parts if self.location in part.get_adjacent()]
         if len(adjacent) != 2:
             return 0
         p1, p2 = adjacent
