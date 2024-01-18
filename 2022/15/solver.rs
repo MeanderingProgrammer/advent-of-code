@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
-use itertools::Itertools;
+use itertools::{Itertools, MinMaxResult};
 use nom::{
     bytes::complete::tag,
     character::complete::digit0,
@@ -103,16 +103,16 @@ impl CoverageZone {
         if !self.y_range.contains(y) {
             return None;
         }
-        let valid_intercepts: Vec<i64> = self
+        let intercepts = self
             .lines
             .iter()
             .map(|line| line.x(y))
             .filter(|&intercept| self.x_range.contains(intercept))
-            .collect();
-        Some(Range::new(
-            *valid_intercepts.iter().min().unwrap(),
-            *valid_intercepts.iter().max().unwrap(),
-        ))
+            .minmax();
+        match intercepts {
+            MinMaxResult::MinMax(min, max) => Some(Range::new(min, max)),
+            _ => None,
+        }
     }
 }
 
@@ -132,7 +132,6 @@ fn covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
         .flat_map(|zone| zone.overlap_at_y(y))
         .sorted()
         .collect();
-
     let mut joined = overlaps[0].clone();
     for i in 1..overlaps.len() {
         let overlap = &overlaps[i];

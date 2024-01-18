@@ -1,6 +1,6 @@
 use crate::point::Point;
 use fxhash::FxHashMap;
-use itertools::Itertools;
+use itertools::{Itertools, MinMaxResult};
 use std::cmp::PartialEq;
 use std::fmt;
 use std::string::ToString;
@@ -79,21 +79,20 @@ impl<T: GridValue> Grid<T> {
     }
 
     pub fn bounds(&self, buffer: i64) -> Bound {
-        let points = self.points();
-        if points.len() == 0 {
+        if self.grid.is_empty() {
             panic!("Can't get the bounds of an empty grid");
         }
-        fn get_min(values: &Vec<i64>, buffer: i64) -> i64 {
-            values.iter().min().unwrap() - buffer
+        fn get_min_max(min_max: MinMaxResult<i64>, buffer: i64) -> (i64, i64) {
+            match min_max {
+                MinMaxResult::MinMax(min, max) => (min - buffer, max + buffer),
+                _ => panic!("Could not find min max"),
+            }
         }
-        fn get_max(values: &Vec<i64>, buffer: i64) -> i64 {
-            values.iter().max().unwrap() + buffer
-        }
-        let xs: Vec<i64> = points.iter().map(|point| point.x).collect();
-        let ys: Vec<i64> = points.iter().map(|point| point.y).collect();
+        let (min_x, max_x) = get_min_max(self.grid.keys().map(|point| point.x).minmax(), buffer);
+        let (min_y, max_y) = get_min_max(self.grid.keys().map(|point| point.y).minmax(), buffer);
         Bound {
-            lower: Point::new(get_min(&xs, buffer), get_min(&ys, buffer)),
-            upper: Point::new(get_max(&xs, buffer), get_max(&ys, buffer)),
+            lower: Point::new(min_x, min_y),
+            upper: Point::new(max_x, max_y),
         }
     }
 
