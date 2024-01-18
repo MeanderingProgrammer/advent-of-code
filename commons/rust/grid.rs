@@ -1,7 +1,7 @@
 use crate::point::Point;
+use fxhash::FxHashMap;
 use itertools::Itertools;
 use std::cmp::PartialEq;
-use std::collections::HashMap;
 use std::fmt;
 use std::string::ToString;
 
@@ -10,13 +10,13 @@ impl<T: PartialEq + ToString> GridValue for T {}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Grid<T: GridValue> {
-    grid: HashMap<Point, T>,
+    grid: FxHashMap<Point, T>,
 }
 
 impl<T: GridValue> Grid<T> {
     pub fn new() -> Self {
         Self {
-            grid: HashMap::new(),
+            grid: FxHashMap::default(),
         }
     }
 
@@ -34,7 +34,7 @@ impl<T: GridValue> Grid<T> {
         grid
     }
 
-    pub fn get_grid(self) -> HashMap<Point, T> {
+    pub fn get_grid(self) -> FxHashMap<Point, T> {
         self.grid
     }
 

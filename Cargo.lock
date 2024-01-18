@@ -83,6 +83,7 @@ name = "aoc_lib"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "fxhash",
  "itertools",
  "priority-queue",
  "strum",
