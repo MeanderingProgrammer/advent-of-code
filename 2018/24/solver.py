@@ -31,6 +31,12 @@ class Group:
         else:
             return self.power
 
+    def to_choose(self) -> tuple[int, int]:
+        return self.power, self.initiative
+
+    def to_target(self, o: Self) -> tuple[int, int, int]:
+        return self.calculate_damage(o), o.power, o.initiative
+
     def hit(self, damage: int) -> None:
         self.units -= damage // self.hp
         self.power = self.units * self.damage
@@ -44,47 +50,38 @@ class Battle:
     groups: list[Group]
 
     def simulate(self) -> None:
-        current, previous = None, 0
-        while len(self.groups) > 0 and current != previous:
+        previous = -1
+        current = 0
+        while len(self.groups) > 0 and previous != current:
             self.attack()
             previous = current
             current = self.winning_units()
 
     def attack(self) -> None:
+        self.groups.sort(key=lambda group: group.to_choose(), reverse=True)
         assignments = self.assign_targets()
         assignments.sort(key=lambda assignment: assignment[0].initiative, reverse=True)
         for group, target in assignments:
-            if group.dead:
-                continue
-            damage = group.calculate_damage(target)
-            target.hit(damage)
-            if target.dead:
-                self.groups.remove(target)
+            if not group.dead:
+                damage = group.calculate_damage(target)
+                target.hit(damage)
+                if target.dead:
+                    self.groups.remove(target)
 
     def assign_targets(self) -> list[tuple[Group, Group]]:
-        self.groups.sort(
-            key=lambda group: (group.power, group.initiative), reverse=True
-        )
         assignments: list[tuple[Group, Group]] = []
-        targets: list[Group] = []
+        targets: set[int] = set()
         for group in self.groups:
             target = self.get_target(group, targets)
             if target is not None:
                 assignments.append((group, target))
-                targets.append(target)
+                targets.add(target.id)
         return assignments
 
-    def get_target(self, group: Group, targets: list[Group]) -> Optional[Group]:
+    def get_target(self, group: Group, targets: set[int]) -> Optional[Group]:
         options = self.get_category(not group.is_immune)
-        options = [option for option in options if option not in targets]
-        options.sort(
-            key=lambda option: (
-                group.calculate_damage(option),
-                option.power,
-                option.initiative,
-            ),
-            reverse=True,
-        )
+        options = [option for option in options if option.id not in targets]
+        options.sort(key=lambda option: group.to_target(option), reverse=True)
         if len(options) == 0:
             return None
         else:
