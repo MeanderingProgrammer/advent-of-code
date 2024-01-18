@@ -1,46 +1,57 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
+use aoc_lib::point::Point;
 use aoc_lib::reader;
 use fxhash::FxHashSet;
-
-type Point = (i16, i16);
+use std::collections::VecDeque;
 
 #[derive(Debug)]
 struct Garden {
     start: Point,
     walls: FxHashSet<Point>,
-    len: i16,
+    len: i64,
 }
 
 impl Garden {
     fn new(grid: Grid<char>) -> Self {
         let starts = grid.points_with_value('S');
         Self {
-            start: (starts[0].x as i16, starts[0].y as i16),
+            start: starts[0].clone(),
             walls: grid
                 .points_with_value('#')
                 .into_iter()
-                .map(|point| (point.x as i16, point.y as i16))
+                .map(|point| point.clone())
                 .collect(),
-            len: (grid.bounds(0).upper.x as i16) + 1,
+            len: grid.bounds(0).upper.x + 1,
         }
     }
 
-    fn step_n(&self, current: FxHashSet<Point>, n: i16) -> (i64, FxHashSet<Point>) {
-        let mut result = current;
-        for _ in 0..n {
-            result = result
-                .into_iter()
-                .flat_map(|(x, y)| [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)])
-                .filter(|point| !self.is_wall(point))
-                .collect();
+    fn step(&self, n: i64) -> i64 {
+        let mut result: FxHashSet<Point> = FxHashSet::default();
+        let mut seen: FxHashSet<Point> = FxHashSet::default();
+        let mut q: VecDeque<(Point, i64)> = [(self.start.clone(), n)].into();
+        while !q.is_empty() {
+            let (point, steps) = q.pop_front().unwrap();
+            // Any position reached with an even number of steps
+            // remaining will remain reachable
+            if steps % 2 == 0 {
+                result.insert(point.clone());
+            }
+            if steps > 0 {
+                for neighbor in point.neighbors() {
+                    if !self.is_wall(&neighbor) && !seen.contains(&neighbor) {
+                        seen.insert(neighbor.clone());
+                        q.push_back((neighbor, steps - 1));
+                    }
+                }
+            }
         }
-        (result.len() as i64, result)
+        result.len() as i64
     }
 
-    fn is_wall(&self, (x, y): &Point) -> bool {
-        let (x, y) = (x.rem_euclid(self.len), y.rem_euclid(self.len));
-        self.walls.contains(&(x, y))
+    fn is_wall(&self, point: &Point) -> bool {
+        let (x, y) = (point.x.rem_euclid(self.len), point.y.rem_euclid(self.len));
+        self.walls.contains(&Point::new(x, y))
     }
 }
 
@@ -52,17 +63,18 @@ fn solution() {
     let grid = reader::read_grid(|ch| Some(ch));
     let garden = Garden::new(grid);
 
-    let mut points: FxHashSet<Point> = FxHashSet::default();
-    points.insert(garden.start.clone());
-    let (part1, points) = garden.step_n(points, 64);
+    let part1 = garden.step(64);
 
     // Quadratic pattern in a growing diamond shape
     // https://www.reddit.com/r/adventofcode/comments/18nevo3/comment/keaiiq7
-    let (f0, points) = garden.step_n(points, 1);
-    let (f1, points) = garden.step_n(points, garden.len);
-    let (f2, _) = garden.step_n(points, garden.len);
-    let n = (26501365 - 65) / (garden.len as i64);
-    let part2 = solve_quadratic([f0, f1, f2], n);
+    let part2 = solve_quadratic(
+        [
+            garden.step(65),
+            garden.step(65 + garden.len),
+            garden.step(65 + 2 * garden.len),
+        ],
+        (26501365 - 65) / garden.len,
+    );
 
     answer::part1(3847, part1);
     answer::part2(637537341306357, part2);
