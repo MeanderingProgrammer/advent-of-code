@@ -43,7 +43,7 @@ def setup(language: tuple[Language, ...], info: bool) -> None:
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
-@click.option("-s", "--slow", type=int, default=1_000)
+@click.option("-s", "--slow", type=int, default=500)
 @click.option("-i", "--info", is_flag=True)
 @click.option("-T", "--test", is_flag=True)
 def run(

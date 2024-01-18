@@ -57,7 +57,7 @@ class Runner(Command):
     @override
     def info(self) -> dict:
         return dict(
-            executions=[runner.as_dict() for runner in self.__language_runners()],
+            executions=[runner.as_dict() for runner in self.__runners()],
             slow=self.slow,
             save=self.save,
         )
@@ -65,7 +65,7 @@ class Runner(Command):
     @override
     def run(self) -> None:
         start = time.time()
-        runtimes = [runner.execute() for runner in self.__language_runners()]
+        runtimes = [runner.execute() for runner in self.__runners()]
         overall_runtime = time.time() - start
 
         displayer = Displayer()
@@ -78,14 +78,7 @@ class Runner(Command):
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
-    def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
-        if not self.save:
-            return
-        with open(f"{name}.json", "w") as f:
-            value = [runtime.as_dict() for runtime in runtimes]
-            f.write(json.dumps(value))
-
-    def __language_runners(self) -> list[LanguageRunner]:
+    def __runners(self) -> list[LanguageRunner]:
         result: list[LanguageRunner] = []
         for day in self.days:
             for language in self.language_strategy.get(day):
@@ -100,3 +93,10 @@ class Runner(Command):
                 )
                 result.append(runner)
         return result
+
+    def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
+        if not self.save:
+            return
+        with open(f"{name}.json", "w") as f:
+            value = [runtime.as_dict() for runtime in runtimes]
+            f.write(json.dumps(value))
