@@ -50,17 +50,17 @@ def run_simulation(cleanup: bool) -> list[Particle]:
 
     particles = [parse_particle(i, line) for i, line in enumerate(Parser().lines())]
     for _ in range(1_000):
-        seen, to_remove = set(), set()
+        seen, bad_positions = set(), set()
         for particle in particles:
             particle.step()
-            if particle.pos in seen:
-                if cleanup:
-                    to_remove.add(particle.pos)
-            else:
-                seen.add(particle.pos)
+            if cleanup:
+                if particle.pos in seen:
+                    bad_positions.add(particle.pos)
+                else:
+                    seen.add(particle.pos)
 
         delete_particles = [
-            particle for particle in particles if particle.pos in to_remove
+            particle for particle in particles if particle.pos in bad_positions
         ]
         [particles.remove(particle) for particle in delete_particles]
 
