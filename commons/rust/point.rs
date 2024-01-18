@@ -190,6 +190,10 @@ impl Point {
     pub fn manhattan_distance(&self, other: &Self) -> i64 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
+
+    pub fn length(&self) -> i64 {
+        self.x.abs() + self.y.abs()
+    }
 }
 
 #[derive(Debug, EnumIter)]
@@ -271,5 +275,9 @@ impl Point3d {
 
     pub fn neighbors(&self) -> Vec<Self> {
         Direction3d::iter().map(|dir| self + &dir).collect()
+    }
+
+    pub fn length(&self) -> i64 {
+        self.x.abs() + self.y.abs() + self.z.abs()
     }
 }
