@@ -18,7 +18,7 @@ class Grapher(Command):
 
     @override
     def info(self) -> dict:
-        saver = self.__figure_saver()
+        saver = self.__saver()
         return dict(
             archive=saver.archive, archive_directory=str(saver.archive_directory)
         )
@@ -32,7 +32,7 @@ class Grapher(Command):
             raise Exception(f"Runtimes were never determined: {runtimes_file}")
         runtimes = pd.DataFrame(json.loads(runtimes_file.read_text()))
 
-        saver = self.__figure_saver()
+        saver = self.__saver()
         if saver.archive_directory is not None:
             saver.archive_directory.mkdir(parents=True, exist_ok=False)
 
@@ -40,7 +40,7 @@ class Grapher(Command):
         runtimes["runtime"] = runtimes["runtime"].round(0)
         self.__create_graphs(runtimes, saver)
 
-    def __figure_saver(self) -> FigureSaver:
+    def __saver(self) -> FigureSaver:
         archive_directory = None
         if self.archive:
             date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
