@@ -2,8 +2,8 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
+use fxhash::FxHashSet;
 use queues::{IsQueue, Queue};
-use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
@@ -55,7 +55,7 @@ impl State {
 }
 
 fn energized(grid: &Grid<char>, start: State) -> usize {
-    let mut explored = HashSet::new();
+    let mut explored = FxHashSet::default();
     explored.insert(start.clone());
     let mut q: Queue<State> = Queue::new();
     q.add(start).unwrap();
@@ -70,7 +70,7 @@ fn energized(grid: &Grid<char>, start: State) -> usize {
     explored
         .into_iter()
         .map(|state| state.position)
-        .collect::<HashSet<_>>()
+        .collect::<FxHashSet<_>>()
         .len()
 }
 

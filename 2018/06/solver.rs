@@ -1,13 +1,13 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 #[derive(Debug)]
 struct PointGrid {
     x_bounds: (i64, i64),
     y_bounds: (i64, i64),
-    distances: HashMap<Point, HashMap<Point, i64>>,
+    distances: FxHashMap<Point, FxHashMap<Point, i64>>,
 }
 
 impl PointGrid {
@@ -17,11 +17,11 @@ impl PointGrid {
         let ys: Vec<i64> = points.iter().map(|point| point.y).collect();
         let y_bounds = (*ys.iter().min().unwrap(), *ys.iter().max().unwrap());
 
-        let mut distances = HashMap::new();
+        let mut distances = FxHashMap::default();
         for x in x_bounds.0..=x_bounds.1 {
             for y in y_bounds.0..=y_bounds.1 {
                 let start = Point::new(x, y);
-                let mut from_start = HashMap::new();
+                let mut from_start = FxHashMap::default();
                 for end in &points {
                     from_start.insert(end.clone(), start.manhattan_distance(end));
                 }
@@ -37,7 +37,7 @@ impl PointGrid {
     }
 
     fn largest_finite(&self) -> usize {
-        let mut regions: HashMap<Point, Vec<Point>> = HashMap::new();
+        let mut regions: FxHashMap<Point, Vec<Point>> = FxHashMap::default();
         for point in self.distances.keys() {
             if let Some(closest) = self.get_closest(point) {
                 if regions.contains_key(&closest) {
