@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::{Point, Point3d};
 use aoc_lib::reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
 struct FuelCell {
@@ -29,12 +29,12 @@ impl FuelCell {
 #[derive(Debug)]
 struct PowerGrid {
     size: i64,
-    grid: HashMap<FuelCell, i64>,
+    grid: FxHashMap<FuelCell, i64>,
 }
 
 impl PowerGrid {
     fn new(serial_number: i64, size: i64) -> Self {
-        let mut grid = HashMap::new();
+        let mut grid = FxHashMap::default();
         for x in 1..=size {
             for y in 1..=size {
                 let fuel_cell = FuelCell::new(x, y);

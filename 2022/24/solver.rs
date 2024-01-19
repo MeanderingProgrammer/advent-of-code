@@ -2,8 +2,8 @@ use aoc_lib::answer;
 use aoc_lib::grid::{Bound, Grid};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader;
+use fxhash::FxHashSet;
 use queues::{IsQueue, Queue};
-use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Blizzard {
@@ -35,14 +35,14 @@ impl Blizzard {
 #[derive(Debug, Clone)]
 struct Valley {
     bounds: Bound,
-    blizzards: HashSet<Blizzard>,
-    blizzard_positions: HashSet<Point>,
+    blizzards: FxHashSet<Blizzard>,
+    blizzard_positions: FxHashSet<Point>,
 }
 
 impl Valley {
     fn new(grid: Grid<char>) -> Self {
-        let mut blizzards = HashSet::new();
-        let mut blizzard_positions = HashSet::new();
+        let mut blizzards = FxHashSet::default();
+        let mut blizzard_positions = FxHashSet::default();
         grid.points()
             .iter()
             .map(|point| (point, grid.get(point)))
@@ -75,7 +75,7 @@ impl Valley {
 
         let mut minutes = 0;
         while q.size() > 0 {
-            let mut next_states: HashSet<Point> = HashSet::new();
+            let mut next_states: FxHashSet<Point> = FxHashSet::default();
             while q.size() > 0 {
                 let current = q.remove().unwrap();
                 if &current == end {
@@ -105,8 +105,8 @@ impl Valley {
     }
 
     fn next(&mut self) {
-        let mut next_blizzards = HashSet::new();
-        let mut next_blizzard_positions = HashSet::new();
+        let mut next_blizzards = FxHashSet::default();
+        let mut next_blizzard_positions = FxHashSet::default();
 
         self.blizzards.iter().for_each(|blizzard| {
             let next_blizzard = blizzard.next(self);
