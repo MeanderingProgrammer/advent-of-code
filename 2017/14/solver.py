@@ -17,10 +17,9 @@ class Knot:
         for _ in range(64):
             self.run()
         self.q.rotate(sum(self.skipped))
-        blocks = [
-            bin(int(value, 16))[2:].rjust(4, "0")
-            for value in Knot.dense_hash(list(self.q))
-        ]
+        blocks: list[str] = []
+        for value in Knot.dense_hash(list(self.q)):
+            blocks.append(bin(int(value, 16))[2:].rjust(4, "0"))
         return "".join(blocks)
 
     def run(self) -> None:
@@ -58,10 +57,11 @@ def main() -> None:
 def enabled_points(prefix: str) -> list[Point]:
     points: list[Point] = []
     for y in range(128):
-        hashed = Knot(
+        knot = Knot(
             q=deque(range(256)),
             lengths=list(map(ord, prefix + "-" + str(y))) + [17, 31, 73, 47, 23],
-        ).run_hash()
+        )
+        hashed = knot.run_hash()
         points.extend([(x, y) for x, value in enumerate(hashed) if value == "1"])
     return points
 
