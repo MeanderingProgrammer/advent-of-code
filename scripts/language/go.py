@@ -11,6 +11,10 @@ class Go(Language):
     solution_file: str = field(default="solver.go", repr=False)
 
     @override
+    def test_command(self) -> list[str]:
+        return ["go", "test", "./..."]
+
+    @override
     def setup_commands(self) -> list[list[str]]:
         # For now we use go run, which both compiles and runs our code
         return []

@@ -9,17 +9,24 @@ from language.language import Language
 @dataclass(frozen=True)
 class LanguageSetup:
     name: str
-    commands: list[list[str]]
+    build: list[list[str]]
+    test: list[str]
 
     def key(self) -> str:
         return self.name
 
-    def value(self) -> list[str]:
-        return [" ".join(command) for command in self.commands]
+    def value(self) -> dict[str, str]:
+        return dict(
+            build=" && ".join([" ".join(command) for command in self.build]),
+            test=" ".join(self.test),
+        )
 
     def execute(self) -> None:
         print(f"Setting up: {self.name}")
-        [execute(command) for command in self.commands]
+        print("Building")
+        [execute(command) for command in self.build]
+        print("Testing")
+        execute(self.test)
 
 
 @dataclass(frozen=True)
@@ -36,6 +43,10 @@ class Setup(Command):
 
     def __setups(self) -> list[LanguageSetup]:
         return [
-            LanguageSetup(name=language.name, commands=language.setup_commands())
+            LanguageSetup(
+                name=language.name,
+                build=language.setup_commands(),
+                test=language.test_command(),
+            )
             for language in self.languages
         ]

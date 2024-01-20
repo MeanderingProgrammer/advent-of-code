@@ -11,6 +11,11 @@ class Python(Language):
     solution_file: str = field(default="solver.py", repr=False)
 
     @override
+    def test_command(self) -> list[str]:
+        # TODO
+        return []
+
+    @override
     def setup_commands(self) -> list[list[str]]:
         return [["pip", "install", "-q", "-e", "commons/python"]]
 
