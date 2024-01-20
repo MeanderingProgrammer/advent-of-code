@@ -18,8 +18,19 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+    }
+}
+
 sourceSets {
-    named("main") {
+    main {
         java.srcDir("src")
+    }
+    test {
+        java.srcDir("test")
     }
 }
