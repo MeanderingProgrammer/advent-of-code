@@ -11,6 +11,10 @@ class Java(Language):
     solution_file: str = field(default="src/Solver.java", repr=False)
 
     @override
+    def test_command(self) -> list[str]:
+        return ["./gradlew", "test"]
+
+    @override
     def setup_commands(self) -> list[list[str]]:
         return [["./gradlew", "build", "-q"]]
 

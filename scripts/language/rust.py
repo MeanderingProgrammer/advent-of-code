@@ -13,6 +13,11 @@ class Rust(Language):
     solution_file: str = field(default="solver.rs", repr=False)
 
     @override
+    def test_command(self) -> list[str]:
+        # TODO
+        return []
+
+    @override
     def setup_commands(self) -> list[list[str]]:
         return [["cargo", "build", "-rq", "--bins"]]
 
