@@ -14,7 +14,7 @@ class HashInfo:
 
 @answer.timer
 def main() -> None:
-    prefix = Parser(strip=True).string()
+    prefix = Parser().string()
     answer.part1(15168, generate(prefix, 1))
     answer.part2(20864, generate(prefix, 2_017))
 

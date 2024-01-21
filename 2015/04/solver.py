@@ -6,7 +6,7 @@ from aoc.parser import Parser
 
 @answer.timer
 def main() -> None:
-    prefix = Parser(strip=True).string()
+    prefix = Parser().string()
     five_leading_0s = first_index(prefix, 5, 1)
     answer.part1(346386, five_leading_0s)
     answer.part2(9958218, first_index(prefix, 6, five_leading_0s))

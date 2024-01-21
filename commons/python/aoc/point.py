@@ -47,10 +47,6 @@ class PointHelper:
         return (p[0] * amount, p[1] * amount)
 
     @staticmethod
-    def distance(p1: Point, p2: Point) -> int:
-        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
-
-    @staticmethod
     def go(p: Point, direction: Direction) -> Point:
         if direction == Direction.UP:
             return (p[0], p[1] + 1)
@@ -96,6 +92,10 @@ class PointHelper:
             (p[0] - 1, p[1] + 1),
             (p[0] + 1, p[1] + 1),
         ]
+
+    @staticmethod
+    def distance(p1: Point, p2: Point) -> int:
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
     @staticmethod
     def len(p: Point) -> int:

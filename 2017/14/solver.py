@@ -49,7 +49,7 @@ class Knot:
 
 @answer.timer
 def main() -> None:
-    points = enabled_points(Parser(strip=True).string())
+    points = enabled_points(Parser().string())
     answer.part1(8190, len(points))
     answer.part2(1134, group_points(points))
 

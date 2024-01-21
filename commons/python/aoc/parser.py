@@ -8,24 +8,37 @@ from .point import Point
 
 
 @dataclass(frozen=True)
+class AdventData:
+    file_name: Optional[str] = None
+
+    def get_file_path(self) -> str:
+        year, day = sys.path[0].split("/")[-2:]
+        file_name = self.file_name or self.get_file_name()
+        return f"data/{year}/{day}/{file_name}"
+
+    def get_file_name(self) -> str:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--test", action="store_true")
+        args = parser.parse_args()
+        return "sample.txt" if args.test else "data.txt"
+
+
+@dataclass(frozen=True)
 class Parser:
     file_name: Optional[str] = None
-    strip: bool = False
+    data_file: bool = True
+
+    def get_file_path(self) -> str:
+        if self.data_file:
+            return AdventData(self.file_name).get_file_path()
+        else:
+            assert self.file_name is not None
+            return str(self.file_name)
 
     def string(self) -> str:
-        def get_file_name() -> str:
-            parser = argparse.ArgumentParser()
-            parser.add_argument("--test", action="store_true")
-            args = parser.parse_args()
-            return "sample" if args.test else "data"
-
-        year, day = sys.path[0].split("/")[-2:]
-        file_name = self.file_name or get_file_name()
-        file_path = f"data/{year}/{day}/{file_name}.txt"
-        with open(file_path, "r") as f:
-            data = f.read()
-        if self.strip:
-            data = data.strip()
+        f = open(self.get_file_path(), "r")
+        data = f.read().strip("\n")
+        f.close()
         return data
 
     def integer(self) -> int:

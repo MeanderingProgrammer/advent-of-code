@@ -70,7 +70,7 @@ class PasswordGenerator:
 
 @answer.timer
 def main() -> None:
-    value = Parser(strip=True).string()
+    value = Parser().string()
     generator = PasswordGenerator(value)
     answer.part1("hxbxxyzz", run(generator))
     answer.part2("hxcaabcc", run(generator))

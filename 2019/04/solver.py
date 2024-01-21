@@ -37,7 +37,7 @@ class Password:
 
 @answer.timer
 def main() -> None:
-    start, end = Parser(strip=True).string().split("-")
+    start, end = Parser().string().split("-")
     passwords = [Password(str(i)) for i in range(int(start), int(end) + 1)]
     passwords = [password for password in passwords if password.only_increase()]
     answer.part1(979, sum([password.valid_p1() for password in passwords]))

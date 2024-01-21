@@ -20,7 +20,7 @@ class Game:
 
 @answer.timer
 def main() -> None:
-    game = Game(Parser(strip=True).int_string())
+    game = Game(Parser().int_string())
     answer.part1(360154, run(game, 40))
     answer.part2(5103798, run(game, 10))
 
