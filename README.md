@@ -163,7 +163,7 @@ This will test that some shared logic works across usage days. Such as the `int-
 implementation from 2019.
 
 ```bash
-pytest -s
+pytest -s scripts
 ```
 
 </details>

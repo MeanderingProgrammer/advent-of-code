@@ -17,7 +17,7 @@ class Ocaml(Language):
         return []
 
     @override
-    def setup_commands(self) -> list[list[str]]:
+    def build_commands(self) -> list[list[str]]:
         return [
             ["opam", "install", "--deps-only", "."],
             ["dune", "build"],

@@ -15,7 +15,7 @@ class Go(Language):
         return ["go", "test", "./..."]
 
     @override
-    def setup_commands(self) -> list[list[str]]:
+    def build_commands(self) -> list[list[str]]:
         # For now we use go run, which both compiles and runs our code
         return []
 

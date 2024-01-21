@@ -18,7 +18,7 @@ class Language(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def setup_commands(self) -> list[list[str]]:
+    def build_commands(self) -> list[list[str]]:
         pass
 
     @abc.abstractmethod
