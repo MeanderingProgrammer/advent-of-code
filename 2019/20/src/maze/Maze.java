@@ -1,6 +1,7 @@
 package maze;
 
 import java.util.*;
+
 import maze.path.NormalPath;
 import maze.path.Path;
 import maze.path.RecursivePath;

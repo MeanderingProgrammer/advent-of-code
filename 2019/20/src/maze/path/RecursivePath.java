@@ -1,6 +1,7 @@
 package maze.path;
 
 import java.util.*;
+
 import maze.Edge;
 import maze.Node;
 
