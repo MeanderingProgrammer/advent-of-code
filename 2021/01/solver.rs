@@ -1,12 +1,12 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let values = reader::read_int();
+    let values = Reader::default().read_int();
     answer::part1(1292, window_increases(values.as_slice(), 1));
     answer::part2(1262, window_increases(values.as_slice(), 3));
 }

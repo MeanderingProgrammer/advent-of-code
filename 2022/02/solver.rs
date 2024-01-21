@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -125,7 +125,7 @@ fn main() {
 }
 
 fn solution() {
-    let rounds = reader::read(|line| line.parse::<Round>().unwrap());
+    let rounds = Reader::default().read(|line| line.parse::<Round>().unwrap());
     answer::part1(9651, rounds.iter().map(|round| round.score_play()).sum());
     answer::part2(10560, rounds.iter().map(|round| round.score_result()).sum());
 }

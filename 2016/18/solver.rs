@@ -1,12 +1,12 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let data = reader::read_chars();
+    let data = Reader::default().read_chars();
     let starting_row: Vec<bool> = data.into_iter().map(|ch| ch == '.').collect();
     answer::part1(2013, total_safe(starting_row.clone(), 40));
     answer::part2(20006289, total_safe(starting_row.clone(), 400_000));

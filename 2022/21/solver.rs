@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -67,7 +67,7 @@ fn main() {
 }
 
 fn solution() {
-    let monkeys = Monkeys::new(reader::read_lines());
+    let monkeys = Monkeys::new(Reader::default().read_lines());
     answer::part1(81075092088442, evaluate(&monkeys, "root"));
     answer::part2(3349136384441, evaluate_human(&monkeys));
 }

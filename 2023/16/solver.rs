@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use queues::{IsQueue, Queue};
 
@@ -89,7 +89,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = reader::read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(|ch| Some(ch));
 
     let part1 = energized(&grid, State::new(Point::default(), Direction::Right));
 

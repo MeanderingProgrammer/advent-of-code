@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
@@ -140,7 +140,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut network = Network::new(reader::read_csv());
+    let mut network = Network::new(Reader::default().read_csv());
     let history = network.run_until_repeat();
     answer::part1(16549, *history.first().unwrap());
     answer::part2(11462, *history.last().unwrap());

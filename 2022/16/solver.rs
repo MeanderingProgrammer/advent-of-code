@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
 use nom::{
@@ -187,7 +187,7 @@ fn main() {
 }
 
 fn solution() {
-    let valves = reader::read(|line| Valve::from_str(line).unwrap().1);
+    let valves = Reader::default().read(|line| Valve::from_str(line).unwrap().1);
     let cave = create_cave(valves, "AA");
     answer::part1(1873, cave.traverse(30, 1));
     answer::part2(2425, cave.traverse(26, 2));

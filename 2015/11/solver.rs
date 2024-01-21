@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashSet;
 
 #[derive(Debug)]
@@ -84,7 +84,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut generator = PasswordGenerator::new(reader::read_line());
+    let mut generator = PasswordGenerator::new(Reader::default().read_line());
     answer::part1("hxbxxyzz", &run(&mut generator));
     answer::part1("hxcaabcc", &run(&mut generator));
 }

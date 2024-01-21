@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct SandFlow {
@@ -69,7 +69,7 @@ fn fill(with_floor: bool) -> usize {
 }
 
 fn get_grid() -> Grid<char> {
-    let rock_formations: Vec<Vec<Point>> = reader::read(|line| {
+    let rock_formations: Vec<Vec<Point>> = Reader::default().read(|line| {
         line.to_string()
             .split(" -> ")
             .map(|point| match point.split_once(",") {

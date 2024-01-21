@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use priority_queue::PriorityQueue;
 use std::str::FromStr;
 
@@ -194,7 +194,7 @@ fn main() {
 }
 
 fn solution() {
-    let bps: Vec<Blueprint> = reader::read(|line| line.parse().unwrap());
+    let bps: Vec<Blueprint> = Reader::default().read(|line| line.parse().unwrap());
     answer::part1(1599, bps.iter().map(|bp| bp.simulate(24) * bp.id).sum());
     answer::part2(
         14112,

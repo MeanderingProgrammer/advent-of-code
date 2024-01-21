@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct SequenceEntry {
@@ -46,7 +46,8 @@ fn decrypt(multiplier: i64, rounds: usize) -> i64 {
 }
 
 fn get_sequence(multiplier: i64) -> Vec<SequenceEntry> {
-    reader::read_int()
+    Reader::default()
+        .read_int()
         .iter()
         .enumerate()
         .map(|(index, &value)| SequenceEntry {

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -26,7 +26,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = reader::read(|line| line.parse::<Instruction>().unwrap());
+    let instructions = Reader::default().read(|line| line.parse::<Instruction>().unwrap());
     let cycles = get_cycles(instructions);
 
     answer::part1(

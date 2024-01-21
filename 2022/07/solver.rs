@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use id_tree::InsertBehavior;
 use id_tree::{Node, NodeId, Tree};
 
@@ -72,7 +72,7 @@ fn solution() {
 
 fn get_file_system() -> FileSystem {
     let mut fs = FileSystem::new();
-    reader::read_lines().iter().for_each(|line| {
+    Reader::default().read_lines().iter().for_each(|line| {
         let parts: Vec<&str> = line.split(" ").collect();
         match (parts[0], parts[1]) {
             ("$", "cd") => match parts[2] {

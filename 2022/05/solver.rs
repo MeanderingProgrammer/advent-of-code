@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -48,7 +48,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = reader::read_group_lines();
+    let groups = Reader::default().read_group_lines();
 
     let arrangement = get_arrangement(&groups[0]);
     let instructions: Vec<Instruction> = groups[1]

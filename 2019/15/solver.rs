@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use aoc_lib::search::Search;
 use std::collections::{HashMap, VecDeque};
 use strum::IntoEnumIterator;
@@ -150,7 +150,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut computer = Computer::new(RepairDroid::new(), reader::read_csv());
+    let mut computer = Computer::new(RepairDroid::new(), Reader::default().read_csv());
     computer.run();
     let traverser = Traverser {
         grid: computer.bus.grid,

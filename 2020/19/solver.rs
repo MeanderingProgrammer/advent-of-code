@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -60,7 +60,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = reader::read_group_lines();
+    let groups = Reader::default().read_group_lines();
     let mut rules = parse_rules(&groups[0]);
     answer::part1(198, total_matches(&rules, &groups[1]));
     rules.update(8, parse_rule("42 | 42 8"));

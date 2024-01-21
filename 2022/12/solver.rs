@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use aoc_lib::search::Search;
 
 fn main() {
@@ -40,7 +40,7 @@ fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
 }
 
 fn get_graph() -> (Grid<i64>, Point, Point) {
-    let mut grid = reader::read_grid(|ch| Some(get_offset(ch)));
+    let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
 
     let start = grid.points_with_value(get_offset('S'))[0].clone();
     grid.add(start.clone(), get_offset('a'));

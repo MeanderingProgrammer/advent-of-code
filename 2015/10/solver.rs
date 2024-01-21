@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Game {
@@ -35,7 +35,8 @@ fn main() {
 
 fn solution() {
     let mut game = Game {
-        value: reader::read_chars()
+        value: Reader::default()
+            .read_chars()
             .into_iter()
             .map(|ch| ch.to_digit(10).unwrap() as u8)
             .collect(),

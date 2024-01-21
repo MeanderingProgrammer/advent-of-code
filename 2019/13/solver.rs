@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -67,7 +67,7 @@ fn solution() {
 }
 
 fn play_game(play_for_free: bool) -> i64 {
-    let mut memory = reader::read_csv();
+    let mut memory = Reader::default().read_csv();
     if play_for_free {
         memory[0] = 2;
     }

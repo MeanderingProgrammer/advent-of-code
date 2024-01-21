@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -116,7 +116,7 @@ fn run_until_stable(look: bool) -> usize {
         look,
     };
     let mut current = SeatingChart {
-        chart: reader::read_grid(|ch| Seat::from_ch(ch)),
+        chart: Reader::default().read_grid(|ch| Seat::from_ch(ch)),
         look,
     };
     while previous != current {

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashSet;
 
 #[derive(Debug)]
@@ -50,7 +50,7 @@ fn main() {
 
 fn solution() {
     let mut polymer = Polymer {
-        units: reader::read_chars(),
+        units: Reader::default().read_chars(),
     };
     answer::part1(11242, polymer.react());
     answer::part2(5492, best_removed(&polymer));

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 
 #[derive(Debug)]
@@ -88,7 +88,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = reader::read_lines();
+    let lines = Reader::default().read_lines();
     answer::part1(198, run(lines));
 }
 

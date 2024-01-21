@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug)]
@@ -129,7 +129,7 @@ fn solution() {
 }
 
 fn play_game(recursize: bool) -> usize {
-    let data = reader::read_group_lines();
+    let data = Reader::default().read_group_lines();
     let mut game = Game::new(get_deck(&data[0]), get_deck(&data[1]), recursize);
     game.play().score()
 }

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use nom::{
     bytes::complete::tag,
@@ -124,7 +124,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = reader::read_full_groups();
+    let groups = Reader::default().read_full_groups();
     let (state, steps) = get_state(&groups[0]).unwrap().1;
     let mut machine = TuringMachine {
         state,

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Transformer {
@@ -37,7 +37,7 @@ fn main() {
 }
 
 fn solution() {
-    let data = reader::read_int();
+    let data = Reader::default().read_int();
     let (card, door) = (data[0], data[1]);
     let loop_size = Transformer::new(7).loop_size(card);
     answer::part1(3015200, Transformer::new(door).run(loop_size));

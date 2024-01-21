@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
@@ -11,7 +11,7 @@ fn solution() {
 }
 
 fn run(f: fn(i64) -> i64) -> usize {
-    let mut jumps = reader::read_int();
+    let mut jumps = Reader::default().read_int();
     let mut steps = 0;
     let mut ip: i64 = 0;
     while ip >= 0 && ip < jumps.len() as i64 {

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -34,7 +34,7 @@ fn main() {
 }
 
 fn solution() {
-    let disks: Vec<Disk> = reader::read(|line| line.parse().unwrap());
+    let disks: Vec<Disk> = Reader::default().read(|line| line.parse().unwrap());
     answer::part1(121834, calculate(disks.clone(), false));
     answer::part2(3208099, calculate(disks.clone(), true));
 }

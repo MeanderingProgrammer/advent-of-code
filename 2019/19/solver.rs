@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 
 #[derive(Debug)]
@@ -72,7 +72,7 @@ fn main() {
 
 fn solution() {
     let mut tester = Tester {
-        memory: reader::read_csv(),
+        memory: Reader::default().read_csv(),
         beam_starts: FxHashMap::default(),
     };
     answer::part1(160, affected_points(&mut tester, 50));

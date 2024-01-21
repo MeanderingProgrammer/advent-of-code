@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::math;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use itertools::Itertools;
 use regex::Regex;
 use std::cmp::Ordering;
@@ -130,7 +130,7 @@ fn main() {
 
 fn solution() {
     let system = System {
-        bodies: reader::read(|line| line.parse().unwrap()),
+        bodies: Reader::default().read(|line| line.parse().unwrap()),
     };
     answer::part1(5350, run_for(system.clone(), 1_000));
     answer::part2(467034091553512, system_period(system.clone()));

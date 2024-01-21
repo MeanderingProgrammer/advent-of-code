@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use serde::Deserialize;
 use serde_json;
 use std::cmp::Ordering;
@@ -46,7 +46,8 @@ fn main() {
 }
 
 fn solution() {
-    let packets: Vec<PacketData> = reader::read_lines()
+    let packets: Vec<PacketData> = Reader::default()
+        .read_lines()
         .iter()
         .filter(|line| !line.is_empty())
         .map(|line| line.parse().unwrap())

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use itertools::Itertools;
 
 fn main() {
@@ -7,7 +7,7 @@ fn main() {
 }
 
 fn solution() {
-    let data = reader::read_chars();
+    let data = Reader::default().read_chars();
     answer::part1(1909, first_unique_sequence(&data, 4));
     answer::part2(3380, first_unique_sequence(&data, 14));
 }
