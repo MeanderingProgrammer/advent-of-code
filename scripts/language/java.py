@@ -15,7 +15,7 @@ class Java(Language):
         return ["./gradlew", "test"]
 
     @override
-    def setup_commands(self) -> list[list[str]]:
+    def build_commands(self) -> list[list[str]]:
         return [["./gradlew", "build", "-q"]]
 
     @override

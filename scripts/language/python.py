@@ -9,15 +9,15 @@ from pojo.day import Day
 class Python(Language):
     name: str = field(default="python", repr=False)
     solution_file: str = field(default="solver.py", repr=False)
+    commons_path: str = field(default="commons/python", repr=False)
 
     @override
     def test_command(self) -> list[str]:
-        # TODO
-        return []
+        return ["pytest", "-s", self.commons_path]
 
     @override
-    def setup_commands(self) -> list[list[str]]:
-        return [["pip", "install", "-q", "-e", "commons/python"]]
+    def build_commands(self) -> list[list[str]]:
+        return [["pip", "install", "-q", "-e", self.commons_path]]
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:

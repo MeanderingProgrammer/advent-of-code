@@ -18,4 +18,5 @@ def test_run_go_batches() -> None:
 def run_script(args: list[str]) -> None:
     runner = CliRunner()
     result = runner.invoke(run, args)
+    print(result.output)
     assert result.exit_code == 0

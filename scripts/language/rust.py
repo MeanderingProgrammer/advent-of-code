@@ -17,7 +17,7 @@ class Rust(Language):
         return ["cargo", "test", "-r", "-p", "aoc_lib"]
 
     @override
-    def setup_commands(self) -> list[list[str]]:
+    def build_commands(self) -> list[list[str]]:
         return [["cargo", "build", "-rq", "--bins"]]
 
     @override

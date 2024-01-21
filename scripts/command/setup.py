@@ -45,7 +45,7 @@ class Setup(Command):
         return [
             LanguageSetup(
                 name=language.name,
-                build=language.setup_commands(),
+                build=language.build_commands(),
                 test=language.test_command(),
             )
             for language in self.languages
