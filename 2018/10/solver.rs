@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{
     bytes::complete::tag,
     character::complete::{digit0, space0},
@@ -99,7 +99,7 @@ fn main() {
 
 fn solution() {
     let particles = Particles {
-        particles: reader::read(|line| Particle::from_str(line).unwrap().1),
+        particles: Reader::default().read(|line| Particle::from_str(line).unwrap().1),
     };
     let time = particles.min_area().unwrap();
     let expected = vec![

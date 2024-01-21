@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use regex::Regex;
 use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
@@ -198,7 +198,7 @@ fn get_battle(boost: i64) -> Battle {
     }
 
     let mut groups = Vec::new();
-    let line_groups = reader::read_group_lines();
+    let line_groups = Reader::default().read_group_lines();
     for value in line_groups[0].iter().skip(1) {
         groups.push(parse_group(groups.len(), Category::Immune, value, boost));
     }

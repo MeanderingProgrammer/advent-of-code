@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 
 #[derive(Debug)]
@@ -94,7 +94,7 @@ fn main() {
 }
 
 fn solution() {
-    let points: Vec<Point> = reader::read(|line| line.parse().unwrap());
+    let points: Vec<Point> = Reader::default().read(|line| line.parse().unwrap());
     let point_grid = PointGrid::new(points);
     answer::part1(3251, point_grid.largest_finite());
     answer::part2(47841, point_grid.within_distance(10_000));

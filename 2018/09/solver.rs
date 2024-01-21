@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{bytes::complete::tag, character::complete::digit0, IResult};
 use std::collections::VecDeque;
 
@@ -42,7 +42,7 @@ fn main() {
 }
 
 fn solution() {
-    let line = reader::read_line();
+    let line = Reader::default().read_line();
     let (players, value) = parse_line(&line).unwrap().1;
     answer::part1(429943, solve(players, value));
     answer::part2(3615691746, solve(players, value * 100));

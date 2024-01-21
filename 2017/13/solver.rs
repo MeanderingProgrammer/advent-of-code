@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let scanners: Vec<Scanner> = reader::read(|line| line.parse().unwrap());
+    let scanners: Vec<Scanner> = Reader::default().read(|line| line.parse().unwrap());
     answer::part1(632, trip_severity(&scanners));
     answer::part2(3849742, find_wait(&scanners));
 }

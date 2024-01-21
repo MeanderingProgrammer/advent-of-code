@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::{Bound, Grid};
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use queues::{IsQueue, Queue};
 
@@ -139,7 +139,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut valley = Valley::new(reader::read_grid(|ch| match ch {
+    let mut valley = Valley::new(Reader::default().read_grid(|ch| match ch {
         '<' | '^' | '>' | 'v' | '.' => Some(ch),
         _ => None,
     }));

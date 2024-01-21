@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{bytes::complete::tag, character::complete::digit0, IResult};
 
 fn main() {
@@ -7,7 +7,7 @@ fn main() {
 }
 
 fn solution() {
-    let line = reader::read_line();
+    let line = Reader::default().read_line();
     let (row, column) = parse_line(&line).unwrap().1;
     let index = get_index(row, column);
     answer::part1(19980801, get_password(index));

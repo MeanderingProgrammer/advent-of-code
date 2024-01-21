@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{
     bytes::complete::{tag, take},
     character::complete::{alphanumeric1, digit1, newline},
@@ -133,7 +133,8 @@ fn solution() {
 }
 
 fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
-    let mut monkeys: Vec<Monkey> = reader::read_full_groups()
+    let mut monkeys: Vec<Monkey> = Reader::default()
+        .read_full_groups()
         .iter()
         .map(|group| Monkey::from_str(group).unwrap().1)
         .collect();

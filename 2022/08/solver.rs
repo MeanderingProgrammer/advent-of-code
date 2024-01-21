@@ -1,14 +1,14 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let grid = reader::read_grid(|ch| Some(ch.to_digit(10).unwrap() as i64));
+    let grid = Reader::default().read_grid(|ch| Some(ch.to_digit(10).unwrap() as i64));
     let result: Vec<(i64, bool)> = grid
         .points()
         .iter()

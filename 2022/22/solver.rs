@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{
     bytes::complete::tag,
     character::complete::{alpha0, digit0},
@@ -317,7 +317,7 @@ fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
 }
 
 fn get_input() -> (Cube, Vec<Instruction>) {
-    let data = reader::read_group_lines();
+    let data = Reader::default().read_group_lines();
     (parse_cube(&data[0]), parse_instructions(&data[1][0]))
 }
 

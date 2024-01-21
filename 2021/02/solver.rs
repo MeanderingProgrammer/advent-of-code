@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point3d;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 enum Direction {
@@ -41,7 +41,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = reader::read(|line| Instruction::from_str(line));
+    let instructions = Reader::default().read(|line| Instruction::from_str(line));
 
     let mut p = Point3d::default();
     instructions.iter().for_each(|instruction| {

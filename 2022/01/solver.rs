@@ -1,12 +1,12 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let elf_items: Vec<Vec<i64>> = reader::read_group_int();
+    let elf_items: Vec<Vec<i64>> = Reader::default().read_group_int();
     let mut elf_calories: Vec<i64> = elf_items.iter().map(|item| item.iter().sum()).collect();
     elf_calories.sort();
     elf_calories.reverse();

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use md5;
 
 struct Password {
@@ -64,11 +64,9 @@ fn main() {
 }
 
 fn solution() {
-    let lines = reader::read_lines();
-    let door_id = &lines[0];
-
-    answer::part1("d4cd2ee1", &get_password(door_id, Part1));
-    answer::part2("f2c730e5", &get_password(door_id, Part2));
+    let door_id = Reader::default().read_line();
+    answer::part1("d4cd2ee1", &get_password(&door_id, Part1));
+    answer::part2("f2c730e5", &get_password(&door_id, Part2));
 }
 
 fn get_password(door_id: &str, populator: impl PasswordPopulator) -> String {

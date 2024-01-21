@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
@@ -11,7 +11,11 @@ fn solution() {
 }
 
 fn fill_disk(length: usize) -> String {
-    let mut curve: Vec<bool> = reader::read_chars().iter().map(|&ch| ch == '1').collect();
+    let mut curve: Vec<bool> = Reader::default()
+        .read_chars()
+        .iter()
+        .map(|&ch| ch == '1')
+        .collect();
     while curve.len() < length {
         let mut flipped: Vec<bool> = curve.iter().rev().map(|value| !value).collect();
         curve.push(false);

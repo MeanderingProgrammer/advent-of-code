@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::Direction;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use itertools::{Combinations, Itertools};
 use std::collections::VecDeque;
@@ -262,7 +262,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut computer = Computer::new(DroidBus::new(), reader::read_csv());
+    let mut computer = Computer::new(DroidBus::new(), Reader::default().read_csv());
     computer.run();
     answer::part1(2622472, computer.bus.get_key());
 }

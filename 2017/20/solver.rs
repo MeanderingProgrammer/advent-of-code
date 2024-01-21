@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point3d;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{
     bytes::complete::tag,
     character::complete::digit0,
@@ -79,7 +79,8 @@ fn main() {
 }
 
 fn solution() {
-    let particles: Vec<Particle> = reader::read_lines()
+    let particles: Vec<Particle> = Reader::default()
+        .read_lines()
         .into_iter()
         .enumerate()
         .map(|(i, line)| Particle::from_str(i, &line).unwrap().1)

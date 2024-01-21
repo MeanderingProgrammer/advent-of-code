@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
@@ -62,7 +62,7 @@ fn main() {
 }
 
 fn solution() {
-    let jets = reader::read_chars();
+    let jets = Reader::default().read_chars();
 
     let shapes = vec![
         // ####

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 
 #[derive(Debug, Clone)]
@@ -63,7 +63,7 @@ fn main() {
 
 fn solution() {
     let mut components: FxHashMap<u8, Vec<u8>> = FxHashMap::default();
-    reader::read_lines().iter().for_each(|line| {
+    Reader::default().read_lines().iter().for_each(|line| {
         let (p1, p2) = line.split_once("/").unwrap();
         let v1: u8 = p1.parse().unwrap();
         let v2: u8 = p2.parse().unwrap();

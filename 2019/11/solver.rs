@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -78,7 +78,7 @@ fn solution() {
 }
 
 fn run(settting: i64) -> PaintBot {
-    let mut computer = Computer::new(PaintBot::new(settting), reader::read_csv());
+    let mut computer = Computer::new(PaintBot::new(settting), Reader::default().read_csv());
     computer.run();
     computer.bus
 }

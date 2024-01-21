@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug, Clone)]
 struct Stats {
@@ -33,7 +33,8 @@ fn main() {
 }
 
 fn solution() {
-    let values = reader::read_csv()
+    let values = Reader::default()
+        .read_csv()
         .into_iter()
         .map(|value| value as usize)
         .collect();

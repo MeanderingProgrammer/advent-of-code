@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
@@ -32,7 +32,7 @@ fn main() {
 
 fn solution() {
     let mut graph: Graph = HashMap::new();
-    let lines = reader::read_lines();
+    let lines = Reader::default().read_lines();
     lines.iter().for_each(|line| {
         let parts: Vec<&str> = line[0..line.len() - 1].split_whitespace().collect();
         let multiplier: i64 = match parts[2] {

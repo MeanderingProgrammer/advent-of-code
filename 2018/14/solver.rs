@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Recipes {
@@ -62,7 +62,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal = reader::read_int()[0] as usize;
+    let goal = Reader::default().read_int()[0] as usize;
     let mut recipes = Recipes::new(goal);
     let sequence = recipes.evolve();
     answer::part1("2103141159", &sequence[goal..goal + 10]);

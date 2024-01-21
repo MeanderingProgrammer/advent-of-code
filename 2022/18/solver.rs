@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point3d;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use queues::{IsQueue, Queue};
 use std::collections::HashSet;
 
@@ -86,7 +86,7 @@ fn solution() {
 }
 
 fn get_grid() -> Grid {
-    let points: Vec<Point3d> = reader::read(|line| line.parse().unwrap());
+    let points: Vec<Point3d> = Reader::default().read(|line| line.parse().unwrap());
     Grid {
         points: points.into_iter().collect(),
     }

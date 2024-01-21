@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
@@ -60,7 +60,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = reader::read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(|ch| Some(ch));
     let garden = Garden::new(grid);
 
     let part1 = garden.step(64);

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Backpack {
@@ -39,7 +39,7 @@ fn main() {
 }
 
 fn solution() {
-    let backpacks = reader::read(|line| Backpack::new(line));
+    let backpacks = Reader::default().read(|line| Backpack::new(line));
 
     let p1_items = backpacks.iter().map(|backpack| backpack.shared());
     answer::part1(8298, p1_items.map(|item| priority(item)).sum());

@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -70,7 +70,7 @@ fn solution() {
 fn run_droid(actions: Vec<&str>) -> i64 {
     let mut computer = Computer::new(
         JumpDroid::new(actions.iter().map(|s| s.to_string()).collect()),
-        reader::read_csv(),
+        Reader::default().read_csv(),
     );
     computer.run();
     computer.bus.value.unwrap()

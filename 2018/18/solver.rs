@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
@@ -91,7 +91,7 @@ fn solution() {
 
 fn run(n: usize) -> usize {
     let mut landscape = Landscape {
-        grid: reader::read_grid(State::from_ch),
+        grid: Reader::default().read_grid(State::from_ch),
     };
     let mut scores = vec![landscape.resource_value()];
     for _ in 0..n {

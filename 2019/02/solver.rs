@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Computer, NoopBus};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
@@ -12,7 +12,7 @@ fn solution() {
 }
 
 fn run(v1: i64, v2: i64) -> i64 {
-    let mut memory = reader::read_csv();
+    let mut memory = Reader::default().read_csv();
     memory[1] = v1;
     memory[2] = v2;
     let mut computer = Computer::new(NoopBus::new(), memory);

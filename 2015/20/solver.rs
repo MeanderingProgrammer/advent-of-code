@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::cmp::min;
 
 fn main() {
@@ -7,7 +7,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal = reader::read_int()[0] as usize;
+    let goal = Reader::default().read_int()[0] as usize;
     answer::part1(665280, find_first(goal, false));
     answer::part2(705600, find_first(goal, true));
 }

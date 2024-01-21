@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -274,7 +274,7 @@ fn solution() {
 }
 
 fn run_droid(droid: VacuumDroid, prompt: bool) -> VacuumDroid {
-    let mut memory = reader::read_csv();
+    let mut memory = Reader::default().read_csv();
     memory[0] = if prompt { 2 } else { memory[0] };
     let mut computer = Computer::new(droid, memory);
     computer.run();

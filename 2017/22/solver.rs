@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use std::collections::{HashMap, VecDeque};
 
 type Point = (i16, i16);
@@ -90,7 +90,7 @@ fn solution() {
 
 fn run(n: usize, state_change: HashMap<State, State>) -> usize {
     let mut grid: HashMap<Point, State> = HashMap::new();
-    for (y, line) in reader::read_lines().iter().enumerate() {
+    for (y, line) in Reader::default().read_lines().iter().enumerate() {
         for (x, ch) in line.char_indices() {
             grid.insert((x as i16, y as i16), State::from_char(ch).unwrap());
         }

@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use aoc_lib::search::Search;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
@@ -100,7 +100,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = reader::read_grid(|ch| ch.to_digit(10));
+    let grid = Reader::default().read_grid(|ch| ch.to_digit(10));
     let bounds = grid.bounds(0);
     let searcher = Searcher {
         grid,

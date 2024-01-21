@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use itertools::{Itertools, MinMaxResult};
 use nom::{
     bytes::complete::tag,
@@ -121,7 +121,7 @@ fn main() {
 }
 
 fn solution() {
-    let coverage = reader::read(|line| CoverageZone::from_str(line).unwrap().1);
+    let coverage = Reader::default().read(|line| CoverageZone::from_str(line).unwrap().1);
     answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }

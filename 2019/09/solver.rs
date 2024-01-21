@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct BoostProgram {
@@ -37,7 +37,7 @@ fn run(setting: i64) -> i64 {
             input: setting,
             output: None,
         },
-        reader::read_csv(),
+        Reader::default().read_csv(),
     );
     computer.run();
     computer.bus.output.unwrap()

@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
@@ -64,7 +64,7 @@ fn main() {
 }
 
 fn solution() {
-    let points = enabled_points(reader::read_line());
+    let points = enabled_points(Reader::default().read_line());
     answer::part1(8190, points.len());
     answer::part2(1134, group_points(points));
 }

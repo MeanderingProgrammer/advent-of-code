@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
 use priority_queue::DoublePriorityQueue;
@@ -196,7 +196,7 @@ fn play_game(until_elf_death: bool) -> i64 {
 }
 
 fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
-    let grid = reader::read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(|ch| Some(ch));
     let mut game = Game {
         characters: FxHashMap::default(),
         open_paths: grid

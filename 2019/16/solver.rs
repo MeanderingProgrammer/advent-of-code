@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Transmission {
@@ -62,7 +62,7 @@ fn solution() {
 }
 
 fn apply_fft(repeats: usize, apply_offset: bool) -> usize {
-    let lines = reader::read_lines();
+    let lines = Reader::default().read_lines();
     let line = lines.first().unwrap();
     let mut digits = line.repeat(repeats);
     if apply_offset {

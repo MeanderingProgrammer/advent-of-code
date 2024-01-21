@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::point::{Point, Point3d};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
@@ -91,7 +91,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = reader::read_int();
+    let values = Reader::default().read_int();
     let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);
     answer::part1(Point::new(243, 43), Point::new(largest_3.0, largest_3.1));

@@ -1,12 +1,12 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let snafu_numbers = reader::read_lines();
+    let snafu_numbers = Reader::default().read_lines();
     let total_fuel: i64 = snafu_numbers
         .iter()
         .map(|snafu_number| to_decimal(snafu_number))

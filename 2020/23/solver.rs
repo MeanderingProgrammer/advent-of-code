@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Cups {
@@ -76,7 +76,8 @@ fn solution() {
 }
 
 fn run(num_cups: usize, rounds: usize) -> Cups {
-    let mut values: Vec<usize> = reader::read_chars()
+    let mut values: Vec<usize> = Reader::default()
+        .read_chars()
         .iter()
         .map(|c| c.to_digit(10).unwrap() as usize)
         .collect();

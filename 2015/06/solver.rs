@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use nom::{
     bytes::complete::{tag, take_till},
     character::complete::digit1,
@@ -90,7 +90,7 @@ fn main() {
 }
 
 fn solution() {
-    let directions = reader::read(|line| Direction::from_str(line).unwrap().1);
+    let directions = Reader::default().read(|line| Direction::from_str(line).unwrap().1);
     answer::part1(400410, apply_all(&directions, Action::single));
     answer::part2(15343601, apply_all(&directions, Action::dimable));
 }

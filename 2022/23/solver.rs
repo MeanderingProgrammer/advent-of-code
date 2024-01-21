@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
-use aoc_lib::reader;
+use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use itertools::Itertools;
 
@@ -106,7 +106,7 @@ fn simulate_until_end() -> (i64, usize) {
 }
 
 fn get_elves() -> Elves {
-    let grid = reader::read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(|ch| Some(ch));
     Elves {
         locations: grid
             .points_with_value('#')
