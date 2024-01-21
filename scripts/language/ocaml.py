@@ -13,8 +13,7 @@ class Ocaml(Language):
 
     @override
     def test_command(self) -> list[str]:
-        # TODO
-        return []
+        return ["dune", "test"]
 
     @override
     def build_commands(self) -> list[list[str]]:

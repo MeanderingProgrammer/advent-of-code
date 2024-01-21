@@ -11,6 +11,8 @@ depends: [
   "dune" {>= "3.11"}
   "core_kernel"
   "ppx_jane"
+  "ppx_sexp_conv"
+  "ppx_expect"
   "odoc" {with-doc}
 ]
 build: [
