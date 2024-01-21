@@ -58,12 +58,12 @@ fn main() {
 }
 
 fn solution() {
-    let password = get_password_data(Reader::default().read_line());
+    let password = get_password(Reader::default().read_line());
     answer::part1("d4cd2ee1", &password.part_1());
     answer::part2("f2c730e5", &password.part_2());
 }
 
-fn get_password_data(prefix: String) -> Password {
+fn get_password(prefix: String) -> Password {
     let shared = State {
         prefix,
         index: AtomicUsize::new(0),
@@ -83,12 +83,12 @@ fn worker(state: &State, mutex: &Mutex<Password>, batch_size: usize) {
     while !state.done.load(Ordering::Relaxed) {
         let start = state.index.fetch_add(batch_size, Ordering::Relaxed);
         for i in start..start + batch_size {
-            update_password_data(state, mutex, i);
+            update_password(state, mutex, i);
         }
     }
 }
 
-fn update_password_data(state: &State, mutex: &Mutex<Password>, i: usize) {
+fn update_password(state: &State, mutex: &Mutex<Password>, i: usize) {
     let hash = format!("{:x}", md5::compute(format!("{}{i}", state.prefix)));
     if &hash[0..5] == "00000" {
         let mut password = mutex.lock().unwrap();
