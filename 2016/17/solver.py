@@ -9,7 +9,7 @@ DIRECTIONS: list[str] = ["U", "D", "L", "R"]
 
 @answer.timer
 def main() -> None:
-    code = Parser(strip=True).string()
+    code = Parser().string()
     paths = search.bfs_paths(((-3, 3), code), (0, 0), get_adjacent)
     answer.part1("DDRLRRUDDR", pull_path(code, paths[0]))
     answer.part2(556, len(pull_path(code, paths[-1])))

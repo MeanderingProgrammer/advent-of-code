@@ -9,7 +9,7 @@ def main() -> None:
 
 
 def fill_disk(length: int) -> str:
-    curve: list[bool] = [value == "1" for value in Parser(strip=True).string()]
+    curve: list[bool] = [value == "1" for value in Parser().string()]
     while len(curve) < length:
         flipped = [not value for value in curve[::-1]]
         curve.append(False)

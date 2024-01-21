@@ -52,7 +52,7 @@ class Symbol:
 
 @answer.timer
 def main() -> None:
-    lines: list[str] = Parser(strip=True).lines()
+    lines: list[str] = Parser().lines()
     parts: list[Part] = get_parts(lines)
     symbols: list[Symbol] = get_symbols(lines)
     locations = set([symbol.location for symbol in symbols])

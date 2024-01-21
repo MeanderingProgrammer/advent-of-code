@@ -4,7 +4,7 @@ from aoc.parser import Parser
 
 @answer.timer
 def main() -> None:
-    starting_row = [v == "." for v in Parser(strip=True).string()]
+    starting_row = [v == "." for v in Parser().string()]
     answer.part1(2013, total_safe(starting_row, 40))
     answer.part2(20006289, total_safe(starting_row, 400_000))
 

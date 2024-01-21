@@ -229,7 +229,7 @@ def corner_values(board: PuzzleBoard) -> int:
 
 
 def get_roughness(board: PuzzleBoard) -> int:
-    search_image = SearchImage(Parser(file_name="sea-monster").lines())
+    search_image = SearchImage(Parser(file_name="sea-monster.txt").lines())
     search_positive = len(search_image.points)
 
     image = board.coalesce()
