@@ -4,19 +4,29 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.List;
 import java.util.function.Function;
-import lombok.SneakyThrows;
+
 import org.apache.commons.cli.*;
 
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+
+@AllArgsConstructor
 public class FileReader {
 
-    private final String fileName;
+    private final Path path;
 
     @SneakyThrows
     public FileReader(String[] args) {
         Options options = new Options();
         options.addOption(Option.builder().longOpt("test").build());
         CommandLine cmd = new DefaultParser().parse(options, args);
-        this.fileName = cmd.hasOption("test") ? "sample" : "data";
+        var fileName = cmd.hasOption("test") ? "sample" : "data";
+        var project = Paths.get("").toAbsolutePath();
+        this.path = project.getParent().getParent()
+            .resolve("data")
+            .resolve(project.getParent().getFileName())
+            .resolve(project.getFileName())
+            .resolve(String.format("%s.txt", fileName));
     }
 
     public List<String> read() {
@@ -29,15 +39,6 @@ public class FileReader {
 
     @SneakyThrows
     private List<String> getLines() {
-        return Files.readAllLines(getFilePath(), StandardCharsets.UTF_8);
-    }
-
-    private Path getFilePath() {
-        var project = Paths.get("").toAbsolutePath();
-        var day = project.getFileName();
-        var year = project.getParent().getFileName();
-        var root = project.getParent().getParent();
-        var fileName = String.format("%s.txt", this.fileName);
-        return root.resolve("data").resolve(year).resolve(day).resolve(fileName);
+        return Files.readAllLines(this.path, StandardCharsets.UTF_8);
     }
 }

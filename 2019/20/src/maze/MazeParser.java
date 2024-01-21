@@ -3,7 +3,9 @@ package maze;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import lib.Position;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 

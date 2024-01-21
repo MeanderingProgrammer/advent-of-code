@@ -1,6 +1,7 @@
 package maze;
 
 import java.util.*;
+
 import lib.Position;
 
 public class Maze {

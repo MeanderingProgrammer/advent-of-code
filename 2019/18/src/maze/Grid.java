@@ -1,7 +1,9 @@
 package maze;
 
 import java.util.*;
+
 import lib.Position;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
