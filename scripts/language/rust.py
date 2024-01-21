@@ -14,8 +14,7 @@ class Rust(Language):
 
     @override
     def test_command(self) -> list[str]:
-        # TODO
-        return []
+        return ["cargo", "test", "-r", "-p", "aoc_lib"]
 
     @override
     def setup_commands(self) -> list[list[str]]:
