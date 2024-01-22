@@ -2,9 +2,10 @@ package file
 
 import (
 	"advent-of-code/commons/go/util"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestContent(t *testing.T) {
