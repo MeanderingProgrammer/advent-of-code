@@ -36,12 +36,13 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(656, solve(false))
-	answer.Part2(2979, solve(true))
+	lines := file.Default[string]().ReadLines()
+	answer.Part1(656, solve(lines, false))
+	answer.Part2(2979, solve(lines, true))
 }
 
-func solve(wrap bool) int {
-	grid := getGrid(wrap)
+func solve(lines []string, wrap bool) int {
+	grid := getGrid(lines, wrap)
 	g := graph.ConstructGraph(grid)
 	result := graph.Search[Path]{
 		Initial: Path{
@@ -64,9 +65,9 @@ func solve(wrap bool) int {
 	return result.Completed[0].value
 }
 
-func getGrid(wrap bool) grid.Grid[int] {
+func getGrid(lines []string, wrap bool) grid.Grid[int] {
 	grid := parser.GridMaker[int]{
-		Rows:        file.ReadLines(),
+		Rows:        lines,
 		Splitter:    parser.Character,
 		Ignore:      "",
 		Transformer: parser.ToInt,

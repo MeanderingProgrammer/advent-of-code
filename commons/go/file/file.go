@@ -8,43 +8,21 @@ import (
 	"strings"
 )
 
-var testMode bool
+type Reader[T any] struct {
+	path string
+}
 
-func init() {
+func New[T any](path string) Reader[T] {
+	return Reader[T]{path}
+}
+
+func Default[T any]() Reader[T] {
+	var testMode bool
 	flag.BoolVar(&testMode, "test", false, "Test mode")
 	flag.Parse()
-}
-
-func ReadInt() []int {
-	return Read(util.ToInt)
-}
-
-func Read[T any](f func(string) T) []T {
-	var result []T
-	for _, line := range ReadLines() {
-		result = append(result, f(line))
-	}
-	return result
-}
-
-func ReadGroups() []string {
-	return SplitContent("\n\n")
-}
-
-func ReadLines() []string {
-	return SplitContent("\n")
-}
-
-func SplitContent(splitter string) []string {
-	return strings.Split(Content(), splitter)
-}
-
-func Content() string {
 	year, day := getYearDay()
-	filepath := []string{"data", year, day, fileName()}
-	content, err := os.ReadFile(strings.Join(filepath, "/"))
-	util.CheckError(err)
-	return strings.ReplaceAll(string(content), "\r\n", "\n")
+	filepath := []string{"data", year, day, fileName(testMode)}
+	return New[T](strings.Join(filepath, "/"))
 }
 
 func getYearDay() (string, string) {
@@ -60,10 +38,36 @@ func getYearDay() (string, string) {
 	return "", ""
 }
 
-func fileName() string {
+func fileName(testMode bool) string {
 	if testMode {
 		return "sample.txt"
 	} else {
 		return "data.txt"
 	}
+}
+
+func (r Reader[T]) Read(f func(string) T) []T {
+	var result []T
+	for _, line := range r.ReadLines() {
+		result = append(result, f(line))
+	}
+	return result
+}
+
+func (r Reader[T]) ReadGroups() []string {
+	return r.SplitContent("\n\n")
+}
+
+func (r Reader[T]) ReadLines() []string {
+	return r.SplitContent("\n")
+}
+
+func (r Reader[T]) SplitContent(splitter string) []string {
+	return strings.Split(r.Content(), splitter)
+}
+
+func (r Reader[T]) Content() string {
+	content, err := os.ReadFile(r.path)
+	util.CheckError(err)
+	return strings.ReplaceAll(string(content), "\r\n", "\n")
 }

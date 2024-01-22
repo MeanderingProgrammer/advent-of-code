@@ -11,7 +11,7 @@ func main() {
 }
 
 func solution() {
-	data := file.ReadLines()
+	data := file.Default[string]().ReadLines()
 	fmt.Println(data)
 	answer.Part1(1, 1)
 }

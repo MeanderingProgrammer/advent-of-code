@@ -34,21 +34,22 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(345793, fishAfter(80))
-	answer.Part2(1572643095893, fishAfter(256))
+	content := file.Default[string]().Content()
+	answer.Part1(345793, fishAfter(content, 80))
+	answer.Part2(1572643095893, fishAfter(content, 256))
 }
 
-func fishAfter(days int) int {
-	school := getSchool()
+func fishAfter(content string, days int) int {
+	school := getSchool(content)
 	for i := 0; i < days; i++ {
 		school.runDay()
 	}
 	return school.totalFish()
 }
 
-func getSchool() School {
+func getSchool(content string) School {
 	school := make(map[int]int)
-	fishes := util.SubstringAfter(file.Content(), ": ")
+	fishes := util.SubstringAfter(content, ": ")
 	for _, fish := range util.IntCsv(fishes) {
 		school[fish]++
 	}

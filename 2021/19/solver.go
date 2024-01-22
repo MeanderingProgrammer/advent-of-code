@@ -177,7 +177,7 @@ func joinAllScanners() Scanner {
 
 func getScanners() []Scanner {
 	var scanners []Scanner
-	for _, rawScanner := range file.ReadGroups() {
+	for _, rawScanner := range file.Default[string]().ReadGroups() {
 		points := make(Points)
 		for _, rawPoint := range util.Lines(rawScanner)[1:] {
 			coordinates := util.IntCsv(rawPoint)

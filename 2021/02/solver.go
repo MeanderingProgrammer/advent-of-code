@@ -58,7 +58,7 @@ func getInstructions() Instructions {
 			amount:    util.ToInt(parts[1]),
 		}
 	}
-	return file.Read(toInstruction)
+	return file.Default[Instruction]().Read(toInstruction)
 }
 
 func part1(position *Position, amount int, direction Direction) {

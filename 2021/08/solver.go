@@ -136,7 +136,7 @@ func getSegmentEntries() []SegmentEntry {
 			outputDigits: parseDigits(parts[1]),
 		}
 	}
-	return file.Read(toSegmentEntry)
+	return file.Default[SegmentEntry]().Read(toSegmentEntry)
 }
 
 func parseDigits(raw string) []Digit {

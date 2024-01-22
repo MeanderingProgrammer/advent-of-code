@@ -134,7 +134,7 @@ func pullType4Number(packets string, i int) (int, int) {
 
 func getData() string {
 	var packets strings.Builder
-	for _, hex := range file.Content() {
+	for _, hex := range file.Default[string]().Content() {
 		hexadecimal := string(hex)
 		decimal := util.HexToDecimal(hexadecimal)
 		binary := util.DecimalToBinary(decimal)

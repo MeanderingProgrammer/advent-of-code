@@ -127,7 +127,7 @@ func getBounds() Bounds {
 			zs:    parseRange(where[2]),
 		}
 	}
-	return file.Read(toBound)
+	return file.Default[Bound]().Read(toBound)
 }
 
 func parseRange(rawRange string) Range {
