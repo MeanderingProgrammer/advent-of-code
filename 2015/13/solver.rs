@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
-use std::collections::{HashMap, HashSet};
 
-type Graph<'a> = HashMap<(&'a str, &'a str), i64>;
+type Graph<'a> = FxHashMap<(&'a str, &'a str), i64>;
 
 #[derive(Debug)]
 struct People<'a> {
@@ -31,7 +31,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut graph: Graph = HashMap::new();
+    let mut graph: Graph = FxHashMap::default();
     let lines = Reader::default().read_lines();
     lines.iter().for_each(|line| {
         let parts: Vec<&str> = line[0..line.len() - 1].split_whitespace().collect();
@@ -50,7 +50,7 @@ fn solution() {
 }
 
 fn max_score(graph: &Graph, include_self: bool) -> i64 {
-    let mut all_people: HashSet<&str> = graph.keys().map(|pair| pair.0).collect();
+    let mut all_people: FxHashSet<&str> = graph.keys().map(|pair| pair.0).collect();
     if include_self {
         all_people.insert("Myself");
     }

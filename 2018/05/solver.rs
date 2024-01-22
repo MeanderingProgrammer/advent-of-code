@@ -1,6 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use std::collections::HashSet;
+use fxhash::FxHashSet;
 
 #[derive(Debug)]
 struct Polymer {
@@ -26,7 +26,7 @@ impl Polymer {
         None
     }
 
-    fn get_unit_types(&self) -> HashSet<char> {
+    fn get_unit_types(&self) -> FxHashSet<char> {
         self.units
             .iter()
             .map(|unit| unit.to_ascii_lowercase())

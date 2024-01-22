@@ -3,7 +3,8 @@ use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Search;
-use std::collections::{HashMap, VecDeque};
+use fxhash::FxHashMap;
+use std::collections::VecDeque;
 use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone)]
@@ -51,7 +52,7 @@ struct RepairDroid {
     position: Point,
     next_position: Option<(Direction, Point)>,
     path: VecDeque<(Direction, Point)>,
-    grid: HashMap<Point, Item>,
+    grid: FxHashMap<Point, Item>,
 }
 
 impl RepairDroid {
@@ -112,7 +113,7 @@ impl Bus for RepairDroid {
 
 #[derive(Debug)]
 struct Traverser {
-    grid: HashMap<Point, Item>,
+    grid: FxHashMap<Point, Item>,
 }
 
 impl Traverser {

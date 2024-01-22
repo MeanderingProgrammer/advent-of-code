@@ -1,8 +1,8 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use fxhash::{FxHashMap, FxHashSet};
 use regex::Regex;
 use std::cmp::Reverse;
-use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, PartialEq)]
 enum Category {
@@ -25,8 +25,8 @@ struct Group {
     category: Category,
     units: i64,
     hp: i64,
-    weaknesses: HashSet<String>,
-    immunities: HashSet<String>,
+    weaknesses: FxHashSet<String>,
+    immunities: FxHashSet<String>,
     damage: i64,
     damage_type: String,
     initiative: i64,
@@ -98,7 +98,7 @@ impl Battle {
 
     fn assign_targets(&self) -> Vec<(usize, usize)> {
         let mut assignments = Vec::new();
-        let mut targets = HashSet::new();
+        let mut targets = FxHashSet::default();
         for group in self.groups.iter() {
             match self.get_target(group, &targets) {
                 None => (),
@@ -111,7 +111,7 @@ impl Battle {
         assignments
     }
 
-    fn get_target(&self, group: &Group, targets: &HashSet<usize>) -> Option<&Group> {
+    fn get_target(&self, group: &Group, targets: &FxHashSet<usize>) -> Option<&Group> {
         self.get_category(group.category.enemy())
             .into_iter()
             .filter(|target| !targets.contains(&target.id))
@@ -168,7 +168,7 @@ fn part_2() -> Option<i64> {
 fn get_battle(boost: i64) -> Battle {
     fn parse_group(id: usize, category: Category, raw: &str, boost: i64) -> Group {
         let re = Regex::new(r"\((.*)\)").unwrap();
-        let mut traits: HashMap<String, HashSet<String>> = HashMap::new();
+        let mut traits: FxHashMap<String, FxHashSet<String>> = FxHashMap::default();
         if let Some(captures) = re.captures(raw) {
             for raw_trait in captures.get(1).unwrap().as_str().split("; ") {
                 let (trait_type, trait_values) = raw_trait.split_once(" to ").unwrap();
@@ -184,8 +184,8 @@ fn get_battle(boost: i64) -> Battle {
             category,
             units: parts[0].parse().unwrap(),
             hp: parts[4].parse().unwrap(),
-            weaknesses: traits.get("weak").unwrap_or(&HashSet::new()).clone(),
-            immunities: traits.get("immune").unwrap_or(&HashSet::new()).clone(),
+            weaknesses: traits.entry("weak".to_string()).or_default().clone(),
+            immunities: traits.entry("immune".to_string()).or_default().clone(),
             damage: parts[parts.len() - 6].parse::<i64>().unwrap() + boost,
             damage_type: parts[parts.len() - 5].to_string(),
             initiative: parts[parts.len() - 1].parse().unwrap(),

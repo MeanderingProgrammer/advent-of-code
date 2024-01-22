@@ -2,8 +2,8 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
+use fxhash::FxHashMap;
 use std::collections::hash_map::Entry;
-use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 struct Shape {
@@ -133,7 +133,7 @@ fn simulate<'a>(
     mut shapes: impl Iterator<Item = &'a Shape>,
 ) -> i64 {
     let mut grid: Grid<char> = Grid::default();
-    let mut cache: HashMap<String, (i64, i64)> = HashMap::new();
+    let mut cache: FxHashMap<String, (i64, i64)> = FxHashMap::default();
 
     let mut additional_height = 0;
     let mut rocks_dropped = 0;
