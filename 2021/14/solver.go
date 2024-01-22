@@ -73,8 +73,6 @@ func diffAfter(groups []string, n int) int {
 }
 
 func getData(templateRules []string) (Template, Rules) {
-	// templateRules := file.Default[string]().ReadGroups()
-
 	template := make(map[string]int)
 	for i := 0; i < len(templateRules[0])-1; i++ {
 		template[templateRules[0][i:i+2]]++
