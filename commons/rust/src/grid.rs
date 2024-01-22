@@ -5,10 +5,10 @@ use std::cmp::PartialEq;
 use std::fmt;
 use std::string::ToString;
 
-pub trait GridValue: PartialEq + ToString {}
-impl<T: PartialEq + ToString> GridValue for T {}
+pub trait GridValue: Default + PartialEq + ToString {}
+impl<T: Default + PartialEq + ToString> GridValue for T {}
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Grid<T: GridValue> {
     grid: FxHashMap<Point, T>,
 }
@@ -21,14 +21,13 @@ impl<T: GridValue> Grid<T> {
     }
 
     pub fn from_lines(lines: Vec<String>, f: impl Fn(char) -> Option<T>) -> Self {
-        let mut grid = Self::new();
+        let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
                 let point = Point::new(x as i64, y as i64);
-                match f(ch) {
-                    Some(value) => grid.add(point, value),
-                    None => (),
-                };
+                if let Some(value) = f(ch) {
+                    grid.add(point, value);
+                }
             }
         }
         grid
