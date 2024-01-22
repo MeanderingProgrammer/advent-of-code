@@ -1,11 +1,15 @@
 package maze;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import lib.Position;
-
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -19,19 +23,18 @@ public class MazeParser {
         this.maze = maze;
         String middleRow = maze.get(maze.size() / 2);
         long mazeCharacters = middleRow.chars()
-            .mapToObj(ch -> (char) ch)
-            .filter(ch -> ch == '#' || ch == '.')
-            .count();
+                .mapToObj(ch -> (char) ch)
+                .filter(ch -> ch == '#' || ch == '.')
+                .count();
         this.mazeSize = (int) mazeCharacters / 2;
     }
 
     public Map<Node, Set<Edge>> asGraph() {
         Map<Position, Node> nodes = getNodes();
         return nodes.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getValue, 
-                entry -> getEdges(entry.getKey(), nodes)
-            ));
+                .collect(Collectors.toMap(
+                        Map.Entry::getValue,
+                        entry -> getEdges(entry.getKey(), nodes)));
     }
 
     private Map<Position, Node> getNodes() {
@@ -61,11 +64,10 @@ public class MazeParser {
 
     private Set<NodeStart> getStartIndices(String rowColumn) {
         return Set.of(
-            new NodeStart(0, true, false),
-            new NodeStart(mazeSize + 2, false, true),
-            new NodeStart(rowColumn.length() - mazeSize - 4, true, true),
-            new NodeStart(rowColumn.length() - 2, false, false)
-        );
+                new NodeStart(0, true, false),
+                new NodeStart(mazeSize + 2, false, true),
+                new NodeStart(rowColumn.length() - mazeSize - 4, true, true),
+                new NodeStart(rowColumn.length() - 2, false, false));
     }
 
     private String getColumn(int column) {
@@ -78,9 +80,9 @@ public class MazeParser {
 
     private Set<Edge> getEdges(Position position, Map<Position, Node> nodes) {
         Position mazePosition = position.adjacent().stream()
-            .filter(this::inMaze)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Couldn't find maze entrance"));
+                .filter(this::inMaze)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Couldn't find maze entrance"));
         return getEdges(mazePosition, nodes, new HashSet<>(List.of(position, mazePosition)), 1);
     }
 
@@ -89,14 +91,14 @@ public class MazeParser {
             return Set.of(new Edge(nodes.get(current), length));
         } else {
             return current.adjacent().stream()
-                .filter(this::inMaze)
-                .filter(adjacent -> {
-                    boolean unseen = !seen.contains(adjacent);
-                    seen.add(adjacent);
-                    return unseen;
-                })
-                .flatMap(adjacent -> getEdges(adjacent, nodes, seen, length + 1).stream())
-                .collect(Collectors.toSet());
+                    .filter(this::inMaze)
+                    .filter(adjacent -> {
+                        boolean unseen = !seen.contains(adjacent);
+                        seen.add(adjacent);
+                        return unseen;
+                    })
+                    .flatMap(adjacent -> getEdges(adjacent, nodes, seen, length + 1).stream())
+                    .collect(Collectors.toSet());
         }
     }
 

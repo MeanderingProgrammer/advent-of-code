@@ -1,6 +1,8 @@
 package maze;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,20 +39,20 @@ public class Node {
     private boolean shouldGo(Path newPath) {
         var remove = new ArrayList<>();
         var result = paths.stream()
-            // Get all existing paths we have to the same key
-            .filter(path -> path.value() == newPath.value())
-            .allMatch(path -> {
-                if (newPath.distance() < path.distance()) {
-                    // New path does not require any more keys than the existing path
-                    if (path.needed().containsAll(newPath.needed())) {
-                        remove.add(path);
+                // Get all existing paths we have to the same key
+                .filter(path -> path.value() == newPath.value())
+                .allMatch(path -> {
+                    if (newPath.distance() < path.distance()) {
+                        // New path does not require any more keys than the existing path
+                        if (path.needed().containsAll(newPath.needed())) {
+                            remove.add(path);
+                        }
+                        return true;
+                    } else {
+                        // New path does not require every key required by the existing path
+                        return !newPath.needed().containsAll(path.needed());
                     }
-                    return true;
-                } else {
-                    // New path does not require every key required by the existing path
-                    return !newPath.needed().containsAll(path.needed());
-                }
-            });
+                });
         remove.forEach(this.paths::remove);
         return result;
     }

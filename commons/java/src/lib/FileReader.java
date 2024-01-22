@@ -1,11 +1,16 @@
 package lib;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -23,10 +28,10 @@ public class FileReader {
         var fileName = cmd.hasOption("test") ? "sample" : "data";
         var project = Paths.get("").toAbsolutePath();
         this.path = project.getParent().getParent()
-            .resolve("data")
-            .resolve(project.getParent().getFileName())
-            .resolve(project.getFileName())
-            .resolve(String.format("%s.txt", fileName));
+                .resolve("data")
+                .resolve(project.getParent().getFileName())
+                .resolve(project.getFileName())
+                .resolve(String.format("%s.txt", fileName));
     }
 
     public List<String> read() {

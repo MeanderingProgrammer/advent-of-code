@@ -1,7 +1,8 @@
 package lib;
 
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class FileReaderTest {
     void testRead(@TempDir Path tempDir) {
         var reader = newReader(tempDir, List.of("abcd", "efg"));
         Assertions.assertEquals(List.of("abcd", "efg"), reader.read());
-    } 
+    }
 
     @SneakyThrows
     private static FileReader newReader(Path directory, List<String> lines) {

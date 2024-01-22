@@ -1,6 +1,12 @@
 package maze;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import lib.Position;
 
@@ -37,13 +43,12 @@ public class Maze {
     }
 
     private void expandPosition(
-        Grid grid, 
-        Position key, 
-        char value, 
-        Position position, 
-        Set<Character> needed, 
-        int distance
-    ) {
+            Grid grid,
+            Position key,
+            char value,
+            Position position,
+            Set<Character> needed,
+            int distance) {
         Node node = grid.get(position);
         if (node.isDoor()) {
             needed.add(node.asKey());
@@ -73,8 +78,8 @@ public class Maze {
         for (Move move : getMoves(state)) {
             State nextState = state.move(move);
             int distance = cache
-                .computeIfAbsent(nextState.keys(), k -> new HashMap<>())
-                .computeIfAbsent(nextState.values(), k -> solve(nextState, cache));
+                    .computeIfAbsent(nextState.keys(), k -> new HashMap<>())
+                    .computeIfAbsent(nextState.values(), k -> solve(nextState, cache));
             distances.add(move.path().distance() + distance);
         }
         return Collections.min(distances);
@@ -112,5 +117,6 @@ public class Maze {
         }
     }
 
-    private static record Move(int i, Path path) {}
+    private static record Move(int i, Path path) {
+    }
 }

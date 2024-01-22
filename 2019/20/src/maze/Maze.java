@@ -1,6 +1,10 @@
 package maze;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 import maze.path.NormalPath;
 import maze.path.Path;
@@ -62,7 +66,7 @@ public class Maze {
 
     private List<Node> getNodes(String label) {
         return graph.keySet().stream()
-            .filter(node -> node.label().equals(label))
-            .toList();
+                .filter(node -> node.label().equals(label))
+                .toList();
     }
 }

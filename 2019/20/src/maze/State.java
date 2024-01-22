@@ -1,3 +1,4 @@
 package maze;
 
-public record State(Node node, int level) {}
+public record State(Node node, int level) {
+}
