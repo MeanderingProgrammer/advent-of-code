@@ -23,7 +23,7 @@ impl FromStr for Instruction {
             }
         }
 
-        let parts: Vec<&str> = s.split(" ").collect();
+        let parts: Vec<&str> = s.split(' ').collect();
         Ok(Self {
             material: parse_material(parts[1]),
             requirements: match parts.len() {
@@ -57,12 +57,12 @@ impl FromStr for Blueprint {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (id_data, instruction_data) = s.split_once(": ").unwrap();
 
-        let id: i64 = id_data.split_once(" ").unwrap().1.parse().unwrap();
+        let id: i64 = id_data.split_once(' ').unwrap().1.parse().unwrap();
 
         let instructions: Vec<Instruction> = instruction_data
-            .split(".")
+            .split('.')
             .map(|value| value.trim())
-            .filter(|value| value.len() > 0)
+            .filter(|value| !value.is_empty())
             .map(|value| value.parse().unwrap())
             .collect();
 
@@ -97,15 +97,15 @@ impl Blueprint {
                 .instructions
                 .iter()
                 .filter(|instruction| state.can_build(instruction))
-                .map(|instruction| Some(instruction))
+                .map(Some)
                 .collect();
             valid_instructions.push(None);
             let next_time_left = time_left - 1;
             for instruction in valid_instructions {
                 let mut next_state = state.clone();
                 next_state.collect();
-                if instruction.is_some() {
-                    next_state.build_robot(instruction.unwrap());
+                if let Some(instruction) = instruction {
+                    next_state.build_robot(instruction);
                 }
                 for material in 0..3 {
                     // By capping materials to twice maximum we make similar states look identical allowing them to be pruned.

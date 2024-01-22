@@ -15,7 +15,7 @@ fn run(v1: i64, v2: i64) -> i64 {
     let mut memory = Reader::default().read_csv();
     memory[1] = v1;
     memory[2] = v2;
-    let mut computer = Computer::new(NoopBus::new(), memory);
+    let mut computer = Computer::new(NoopBus::default(), memory);
     computer.run();
     computer.get(0)
 }

@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use itertools::Itertools;
-use md5;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::thread;

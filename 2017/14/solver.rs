@@ -3,6 +3,7 @@ use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use std::collections::VecDeque;
+use std::fmt::Write;
 
 #[derive(Debug)]
 struct Knot {
@@ -29,8 +30,10 @@ impl Knot {
         self.dense_hash()
             .chars()
             .map(|ch| u32::from_str_radix(&ch.to_string(), 16))
-            .map(|hex_bytes| format!("{:04b}", hex_bytes.unwrap()))
-            .collect()
+            .fold(String::new(), |mut output, hex_bytes| {
+                let _ = write!(output, "{:04b}", hex_bytes.unwrap());
+                output
+            })
     }
 
     fn run(&mut self) {
@@ -44,18 +47,17 @@ impl Knot {
     }
 
     fn dense_hash(&self) -> String {
-        self.q
-            .iter()
-            .collect::<Vec<&usize>>()
-            .chunks(16)
-            .map(|chunk| {
+        self.q.iter().collect::<Vec<&usize>>().chunks(16).fold(
+            String::new(),
+            |mut output, chunk| {
                 let mut hashed = 0;
                 for &value in chunk {
                     hashed ^= value;
                 }
-                format!("{:02x}", hashed)
-            })
-            .collect()
+                let _ = write!(output, "{hashed:02x}");
+                output
+            },
+        )
     }
 }
 
@@ -93,16 +95,13 @@ fn group_points(points: Vec<Point>) -> usize {
     for point in points.into_iter() {
         let adjacent: FxHashSet<Point> = point.neighbors().into_iter().collect();
         let mut new_group: FxHashSet<Point> = [point].into_iter().collect();
-        groups = groups
-            .into_iter()
-            .filter(|group| match adjacent.is_disjoint(&group) {
-                true => true,
-                false => {
-                    new_group.extend(group.clone());
-                    false
-                }
-            })
-            .collect();
+        groups.retain(|group| match adjacent.is_disjoint(group) {
+            true => true,
+            false => {
+                new_group.extend(group.clone());
+                false
+            }
+        });
         groups.push(new_group);
     }
     groups.len()

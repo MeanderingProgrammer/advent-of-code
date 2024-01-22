@@ -28,7 +28,7 @@ struct Instruction {
 
 impl Instruction {
     fn from_str(line: &str) -> Self {
-        let (direction, amount) = line.split_once(" ").unwrap();
+        let (direction, amount) = line.split_once(' ').unwrap();
         Instruction {
             direction: Direction::from_str(direction).unwrap(),
             amount: amount.parse().unwrap(),
@@ -41,7 +41,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = Reader::default().read(|line| Instruction::from_str(line));
+    let instructions = Reader::default().read(Instruction::from_str);
 
     let mut p = Point3d::default();
     instructions.iter().for_each(|instruction| {

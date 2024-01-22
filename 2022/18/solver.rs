@@ -48,10 +48,10 @@ impl Grid {
     }
 
     fn get_bound(&self) -> Bound {
-        fn get_min(values: &Vec<i64>) -> i64 {
+        fn get_min(values: &[i64]) -> i64 {
             values.iter().min().unwrap() - 1
         }
-        fn get_max(values: &Vec<i64>) -> i64 {
+        fn get_max(values: &[i64]) -> i64 {
             values.iter().max().unwrap() + 1
         }
         let xs: Vec<i64> = self.points.iter().map(|point| point.x).collect();
@@ -68,7 +68,7 @@ impl Grid {
             .iter()
             .map(|point| {
                 let neighbors = point.neighbors().into_iter();
-                neighbors.filter(|neighbor| f(&neighbor)).count()
+                neighbors.filter(|neighbor| f(neighbor)).count()
             })
             .sum()
     }

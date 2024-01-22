@@ -4,16 +4,6 @@ use aoc_lib::reader::Reader;
 use std::collections::HashSet;
 use std::str::FromStr;
 
-fn parse_direction(s: &str) -> Result<Direction, String> {
-    match s {
-        "U" => Ok(Direction::Up),
-        "D" => Ok(Direction::Down),
-        "L" => Ok(Direction::Left),
-        "R" => Ok(Direction::Right),
-        _ => Err("Unkown direction value".to_string()),
-    }
-}
-
 #[derive(Debug)]
 struct Motion {
     direction: Direction,
@@ -24,9 +14,9 @@ impl FromStr for Motion {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (direction, amount) = s.split_once(" ").unwrap();
+        let (direction, amount) = s.split_once(' ').unwrap();
         Ok(Self {
-            direction: parse_direction(direction)?,
+            direction: Direction::from_str(direction)?,
             amount: amount.parse().unwrap(),
         })
     }
@@ -42,7 +32,7 @@ fn solution() {
     answer::part2(2653, follow_trail(&motions, 10));
 }
 
-fn follow_trail(motions: &Vec<Motion>, length: usize) -> usize {
+fn follow_trail(motions: &[Motion], length: usize) -> usize {
     let mut rope = vec![Point::default(); length];
     let mut tail_locations: HashSet<Point> = HashSet::new();
 

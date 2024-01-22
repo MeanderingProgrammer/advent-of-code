@@ -64,16 +64,12 @@ fn main() {
 fn solution() {
     let mut components: FxHashMap<u8, Vec<u8>> = FxHashMap::default();
     Reader::default().read_lines().iter().for_each(|line| {
-        let (p1, p2) = line.split_once("/").unwrap();
+        let (p1, p2) = line.split_once('/').unwrap();
         let v1: u8 = p1.parse().unwrap();
         let v2: u8 = p2.parse().unwrap();
-        if !components.contains_key(&v1) {
-            components.insert(v1, Vec::new());
-        }
+        components.entry(v1).or_default();
         components.get_mut(&v1).unwrap().push(v2);
-        if !components.contains_key(&v2) {
-            components.insert(v2, Vec::new());
-        }
+        components.entry(v2).or_default();
         components.get_mut(&v2).unwrap().push(v1);
     });
     let bridge_builder = BridgeBuilder { components };
@@ -82,7 +78,7 @@ fn solution() {
     answer::part2(1642, longest_strongest(&bridges));
 }
 
-fn strongest(bridges: &Vec<Bridge>) -> usize {
+fn strongest(bridges: &[Bridge]) -> usize {
     bridges
         .iter()
         .map(|bridge| bridge.strength())
@@ -90,12 +86,12 @@ fn strongest(bridges: &Vec<Bridge>) -> usize {
         .unwrap()
 }
 
-fn longest_strongest(bridges: &Vec<Bridge>) -> usize {
+fn longest_strongest(bridges: &[Bridge]) -> usize {
     let longest = bridges.iter().map(|bridge| bridge.len()).max().unwrap();
-    let all_longest = bridges
+    let all_longest: Vec<Bridge> = bridges
         .iter()
         .filter(|bridge| bridge.len() == longest)
-        .map(|bridge| bridge.clone())
+        .cloned()
         .collect();
     strongest(&all_longest)
 }

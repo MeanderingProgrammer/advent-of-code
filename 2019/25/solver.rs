@@ -33,7 +33,7 @@ impl FromStr for View {
             items: Vec::new(),
         };
         for group in s.split("\n\n") {
-            let values: Vec<&str> = group.split("\n").filter(|s| !s.is_empty()).collect();
+            let values: Vec<&str> = group.split('\n').filter(|s| !s.is_empty()).collect();
             if values.is_empty() {
                 continue;
             }
@@ -70,13 +70,12 @@ impl Graph {
         from_end.insert(direction.opposite());
     }
 
-    fn get_unexplored(&self, name: &str, directions: &Vec<Direction>) -> Option<Direction> {
+    fn get_unexplored(&self, name: &str, directions: &[Direction]) -> Option<Direction> {
         let explored = &self.graph[name];
         directions
             .iter()
-            .filter(|dir| !explored.contains(dir))
-            .next()
-            .map(|direction| direction.clone())
+            .find(|dir| !explored.contains(dir))
+            .cloned()
     }
 }
 
@@ -178,10 +177,7 @@ impl DroidBus {
         } else {
             view.directions
         };
-        let unexplored = self.grid.get_unexplored(&location, &directions);
-
-        if unexplored.is_some() {
-            let command = unexplored.unwrap();
+        if let Some(command) = self.grid.get_unexplored(&location, &directions) {
             self.history.push(command.clone());
             self.previous = Some((location, command.clone()));
             self.add_direction(command);
@@ -223,7 +219,7 @@ impl DroidBus {
     }
 
     fn get_key(&self) -> i64 {
-        let lines = self.instruction.split("\n").filter(|s| !s.is_empty());
+        let lines = self.instruction.split('\n').filter(|s| !s.is_empty());
         let last_line = lines.last().unwrap().split_whitespace().collect_vec();
         last_line[last_line.len() - 8].parse().unwrap()
     }

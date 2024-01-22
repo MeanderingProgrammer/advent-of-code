@@ -42,7 +42,7 @@ impl Rules {
         }
     }
 
-    fn matching<'a>(&'a self, inputs: Vec<&'a str>, rules: &Vec<i64>) -> Vec<&'a str> {
+    fn matching<'a>(&'a self, inputs: Vec<&'a str>, rules: &[i64]) -> Vec<&'a str> {
         let mut result = inputs;
         for rule in rules.iter() {
             result = self.remainders(result, *rule);
@@ -68,11 +68,11 @@ fn solution() {
     answer::part2(372, total_matches(&rules, &groups[1]));
 }
 
-fn total_matches(rules: &Rules, lines: &Vec<String>) -> usize {
+fn total_matches(rules: &Rules, lines: &[String]) -> usize {
     lines.iter().filter(|line| rules.matches(line)).count()
 }
 
-fn parse_rules(lines: &Vec<String>) -> Rules {
+fn parse_rules(lines: &[String]) -> Rules {
     let mut result = HashMap::new();
     for line in lines.iter() {
         let (number, rule) = line.split_once(": ").unwrap();
@@ -82,7 +82,7 @@ fn parse_rules(lines: &Vec<String>) -> Rules {
 }
 
 fn parse_rule(line: &str) -> Rule {
-    if line.len() == 3 && line.starts_with("\"") && line.ends_with("\"") {
+    if line.len() == 3 && line.starts_with('\"') && line.ends_with('\"') {
         Rule::Letter(line.as_bytes()[1] as char)
     } else if line.contains('|') {
         let (left, right) = line.split_once(" | ").unwrap();
@@ -93,5 +93,5 @@ fn parse_rule(line: &str) -> Rule {
 }
 
 fn rule_list(s: &str) -> Vec<i64> {
-    s.split(" ").map(|n| n.parse().unwrap()).collect()
+    s.split(' ').map(|n| n.parse().unwrap()).collect()
 }

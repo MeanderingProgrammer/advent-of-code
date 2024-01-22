@@ -25,16 +25,11 @@ impl PasswordGenerator {
                 index
             }
         };
-        ((index + 1)..self.value.len())
-            .into_iter()
-            .for_each(|i| self.value[i] = 0);
+        ((index + 1)..self.value.len()).for_each(|i| self.value[i] = 0);
     }
 
     fn last_index_under(&self, n: u8) -> Option<usize> {
-        (0..self.value.len())
-            .rev()
-            .filter(|&i| self.value[i] < n)
-            .next()
+        (0..self.value.len()).rev().find(|&i| self.value[i] < n)
     }
 
     fn valid(&self) -> bool {
@@ -42,7 +37,7 @@ impl PasswordGenerator {
     }
 
     fn contains_triple(&self) -> bool {
-        (0..self.value.len() - 2).into_iter().any(|i| {
+        (0..self.value.len() - 2).any(|i| {
             self.value[i] + 1 == self.value[i + 1] && self.value[i] + 2 == self.value[i + 2]
         })
     }
@@ -59,7 +54,6 @@ impl PasswordGenerator {
 
     fn num_pairs(&self) -> usize {
         let pairs: HashSet<u8> = (0..self.value.len() - 1)
-            .into_iter()
             .filter(|&i| self.value[i] == self.value[i + 1])
             .map(|i| self.value[i])
             .collect();
@@ -71,11 +65,11 @@ impl PasswordGenerator {
     }
 
     fn to_char(ch: &u8) -> char {
-        (ch + 'a' as u8) as char
+        (ch + b'a') as char
     }
 
     fn to_index(ch: char) -> u8 {
-        (ch as u8) - ('a' as u8)
+        (ch as u8) - (b'a')
     }
 }
 

@@ -61,7 +61,7 @@ impl Direction {
             Ok((input, (x.parse().unwrap(), y.parse().unwrap())))
         }
         // <action> <point> through <point>
-        let (input, action) = take_till(|ch: char| ch.is_digit(10))(input)?;
+        let (input, action) = take_till(|ch: char| ch.is_ascii_digit())(input)?;
         let (input, start) = parse_point(input)?;
         let (input, _) = tag(" through ")(input)?;
         let (input, end) = parse_point(input)?;
@@ -75,7 +75,7 @@ impl Direction {
         ))
     }
 
-    fn apply(&self, grid: &mut Vec<i64>, f: fn(&Action, i64) -> i64) {
+    fn apply(&self, grid: &mut [i64], f: fn(&Action, i64) -> i64) {
         for x in self.start.0..=self.end.0 {
             for y in self.start.1..=self.end.1 {
                 let index = (x * 1_000) + y;
@@ -95,7 +95,7 @@ fn solution() {
     answer::part2(15343601, apply_all(&directions, Action::dimable));
 }
 
-fn apply_all(directions: &Vec<Direction>, f: fn(&Action, i64) -> i64) -> i64 {
+fn apply_all(directions: &[Direction], f: fn(&Action, i64) -> i64) -> i64 {
     let mut grid: Vec<i64> = vec![0; 1_000_000];
     directions
         .iter()

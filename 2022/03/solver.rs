@@ -39,13 +39,13 @@ fn main() {
 }
 
 fn solution() {
-    let backpacks = Reader::default().read(|line| Backpack::new(line));
+    let backpacks = Reader::default().read(Backpack::new);
 
     let p1_items = backpacks.iter().map(|backpack| backpack.shared());
-    answer::part1(8298, p1_items.map(|item| priority(item)).sum());
+    answer::part1(8298, p1_items.map(priority).sum());
 
-    let p2_items = backpacks.chunks(3).map(|group| group_overlap(group));
-    answer::part2(2708, p2_items.map(|item| priority(item)).sum());
+    let p2_items = backpacks.chunks(3).map(group_overlap);
+    answer::part2(2708, p2_items.map(priority).sum());
 }
 
 fn priority(ch: char) -> u32 {

@@ -7,7 +7,7 @@ struct Transmission {
 }
 
 impl Transmission {
-    fn new(digits: &String) -> Self {
+    fn new(digits: &str) -> Self {
         Self {
             digits: digits
                 .chars()
@@ -47,8 +47,12 @@ impl Transmission {
         self.digits = new_digits;
     }
 
-    fn to_string(&self) -> String {
-        self.digits.iter().map(|digit| digit.to_string()).collect()
+    fn to_string(&self, n: usize) -> String {
+        self.digits
+            .iter()
+            .take(n)
+            .map(|digit| digit.to_string())
+            .collect()
     }
 }
 
@@ -76,10 +80,10 @@ fn apply_fft(repeats: usize, apply_offset: bool) -> usize {
             transmission.standard();
         }
     }
-    first_n(&transmission.to_string(), 8)
+    transmission.to_string(8).parse().unwrap()
 }
 
-fn first_n(digits: &String, n: usize) -> usize {
+fn first_n(digits: &str, n: usize) -> usize {
     let substring = &digits[..n];
     substring.parse().unwrap()
 }

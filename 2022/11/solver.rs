@@ -150,11 +150,11 @@ fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
             let monkey = &mut monkeys[m];
 
             let mut movements: Vec<ItemMove> = Vec::new();
-            while monkey.items.len() > 0 {
+            while !monkey.items.is_empty() {
                 let mut item = monkey.items.remove(0);
                 item = monkey.apply_operation(item);
                 item = if reduce_worry { item / 3 } else { item };
-                item = item % multiple_of_all;
+                item %= multiple_of_all;
 
                 monkey.inspections += 1;
 

@@ -41,7 +41,7 @@ impl Game {
     }
 
     fn play(&mut self) -> Option<i64> {
-        let (mut round, mut status) = (0 as i64, GameStatus::InProgress);
+        let (mut round, mut status) = (0, GameStatus::InProgress);
         while status == GameStatus::InProgress {
             status = self.round();
             round += 1;
@@ -94,10 +94,7 @@ impl Game {
     }
 
     fn positions(&self) -> impl Iterator<Item = Point> {
-        self.characters
-            .keys()
-            .map(|position| position.clone())
-            .sorted()
+        self.characters.keys().cloned().sorted()
     }
 
     fn opponents<'a>(&'a self, character: &'a Character) -> impl Iterator<Item = &Point> {
@@ -124,7 +121,7 @@ impl Game {
 
     fn adjacent_target(&self, position: &Point, character: &Character) -> Option<Point> {
         let neighbors = position.neighbors();
-        self.opponents(&character)
+        self.opponents(character)
             .filter(|opponent| neighbors.contains(opponent))
             .map(|opponent| (self.characters.get(opponent).unwrap().hp, opponent))
             .min()
@@ -187,23 +184,18 @@ fn play_game(until_elf_death: bool) -> i64 {
     let mut elf_damage = 3;
     loop {
         let mut game = get_game(elf_damage, until_elf_death);
-        let result = game.play();
-        if result.is_some() {
-            return result.unwrap();
+        if let Some(result) = game.play() {
+            return result;
         }
         elf_damage += 1;
     }
 }
 
 fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
-    let grid = Reader::default().read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(Some);
     let mut game = Game {
         characters: FxHashMap::default(),
-        open_paths: grid
-            .points_with_value('.')
-            .into_iter()
-            .map(|point| point.clone())
-            .collect(),
+        open_paths: grid.points_with_value('.').into_iter().cloned().collect(),
         until_elf_death,
     };
     game.add(

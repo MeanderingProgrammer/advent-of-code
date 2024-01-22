@@ -49,7 +49,7 @@ fn solution() {
     answer::part2(3849742, find_wait(&scanners));
 }
 
-fn trip_severity(scanners: &Vec<Scanner>) -> usize {
+fn trip_severity(scanners: &[Scanner]) -> usize {
     scanners
         .iter()
         .filter(|scanner| scanner.caught(0))
@@ -57,9 +57,8 @@ fn trip_severity(scanners: &Vec<Scanner>) -> usize {
         .sum()
 }
 
-fn find_wait(scanners: &Vec<Scanner>) -> usize {
+fn find_wait(scanners: &[Scanner]) -> usize {
     (0..)
-        .filter(|&offset| !scanners.iter().any(|scanner| scanner.caught(offset)))
-        .next()
+        .find(|&offset| !scanners.iter().any(|scanner| scanner.caught(offset)))
         .unwrap()
 }

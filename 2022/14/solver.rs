@@ -28,8 +28,7 @@ impl SandFlow {
             let next = vec![Heading::South, Heading::SouthWest, Heading::SouthEast]
                 .into_iter()
                 .map(|heading| &grain + &heading)
-                .filter(|point| !self.grid.contains(&point))
-                .next();
+                .find(|point| !self.grid.contains(point));
             if next.is_none() {
                 break;
             }
@@ -72,14 +71,14 @@ fn get_grid() -> Grid<char> {
     let rock_formations: Vec<Vec<Point>> = Reader::default().read(|line| {
         line.to_string()
             .split(" -> ")
-            .map(|point| match point.split_once(",") {
+            .map(|point| match point.split_once(',') {
                 Some((x, y)) => Point::new(x.parse().unwrap(), y.parse().unwrap()),
                 None => panic!(),
             })
             .collect()
     });
 
-    let mut grid: Grid<char> = Grid::new();
+    let mut grid: Grid<char> = Grid::default();
     rock_formations
         .iter()
         .flat_map(|rock_formation| {

@@ -14,12 +14,6 @@ pub struct Grid<T: GridValue> {
 }
 
 impl<T: GridValue> Grid<T> {
-    pub fn new() -> Self {
-        Self {
-            grid: FxHashMap::default(),
-        }
-    }
-
     pub fn from_lines(lines: Vec<String>, f: impl Fn(char) -> Option<T>) -> Self {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
@@ -96,7 +90,7 @@ impl<T: GridValue> Grid<T> {
     }
 
     pub fn as_string(&self, default: &str, buffer: i64) -> String {
-        if self.grid.len() == 0 {
+        if self.grid.is_empty() {
             return "".to_string();
         }
         let bounds = self.bounds(buffer);

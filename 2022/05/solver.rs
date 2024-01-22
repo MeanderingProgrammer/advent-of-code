@@ -14,7 +14,7 @@ impl FromStr for Instruction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(" ").collect();
+        let parts: Vec<&str> = s.split(' ').collect();
         Ok(Self {
             amount: parts[1].parse().unwrap(),
             from: parts[3].parse().unwrap(),
@@ -74,15 +74,13 @@ fn solution() {
     );
 }
 
-fn get_arrangement(raw: &Vec<String>) -> HashMap<usize, Vec<char>> {
+fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {
     let mut arrangement: HashMap<usize, Vec<char>> = HashMap::new();
     for row in raw.iter().rev().skip(1) {
         let row_chars: Vec<char> = row.chars().collect();
         for (i, index) in (1..row.len()).step_by(4).enumerate() {
             let pile_index = i + 1;
-            if !arrangement.contains_key(&pile_index) {
-                arrangement.insert(pile_index, Vec::new());
-            }
+            arrangement.entry(pile_index).or_default();
             let ch = row_chars[index];
             if ch != ' ' {
                 arrangement.get_mut(&pile_index).unwrap().push(ch);

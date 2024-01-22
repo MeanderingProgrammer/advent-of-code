@@ -35,7 +35,7 @@ impl Cups {
         self.current = self.cups[self.current];
     }
 
-    fn get_destination(&self, aside: &Vec<usize>) -> usize {
+    fn get_destination(&self, aside: &[usize]) -> usize {
         let mut destination = self.previous(self.current);
         while aside.contains(&destination) {
             destination = self.previous(destination);

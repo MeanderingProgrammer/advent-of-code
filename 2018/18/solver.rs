@@ -4,8 +4,9 @@ use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 enum State {
+    #[default]
     Open,
     Tree,
     Yard,
@@ -97,12 +98,10 @@ fn run(n: usize) -> usize {
     for _ in 0..n {
         landscape.step();
         scores.push(landscape.resource_value());
-        let result = match find_pattern(&scores) {
-            Some((start, pattern)) => Some(pattern[(n - start) % pattern.len()]),
-            None => None,
-        };
-        if result.is_some() {
-            return result.unwrap();
+        if let Some(result) =
+            find_pattern(&scores).map(|(start, pattern)| pattern[(n - start) % pattern.len()])
+        {
+            return result;
         }
     }
     *scores.last().unwrap()
@@ -110,7 +109,7 @@ fn run(n: usize) -> usize {
 
 fn find_pattern(values: &[usize]) -> Option<(usize, &[usize])> {
     for i in 1..values.len() - 1 {
-        if &values[i - 1..=i] == &values[values.len() - 2..=values.len() - 1] {
+        if values[i - 1..=i] == values[values.len() - 2..=values.len() - 1] {
             return Some((i - 1, &values[i - 1..values.len() - 2]));
         }
     }

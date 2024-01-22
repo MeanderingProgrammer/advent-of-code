@@ -20,7 +20,7 @@ impl Cli {
     fn get_year_day() -> (String, String) {
         let executable_path = env::current_exe().unwrap();
         let binary_name = executable_path.file_name().unwrap().to_str().unwrap();
-        let binary_parts: Vec<&str> = binary_name.split("_").collect();
+        let binary_parts: Vec<&str> = binary_name.split('_').collect();
         (binary_parts[1].into(), binary_parts[2].into())
     }
 }
@@ -64,7 +64,7 @@ impl Reader {
     }
 
     pub fn read_grid<T: GridValue>(&self, f: fn(char) -> Option<T>) -> Grid<T> {
-        Grid::from_lines(self.read_lines(), |ch| f(ch))
+        Grid::from_lines(self.read_lines(), f)
     }
 
     pub fn read_int(&self) -> Vec<i64> {
@@ -80,7 +80,7 @@ impl Reader {
     }
 
     pub fn read_csv(&self) -> Vec<i64> {
-        self.read_line().split(",").map(Self::to_int).collect()
+        self.read_line().split(',').map(Self::to_int).collect()
     }
 
     pub fn read_chars(&self) -> Vec<char> {
@@ -88,7 +88,8 @@ impl Reader {
     }
 
     pub fn read<T>(&self, f: fn(&str) -> T) -> Vec<T> {
-        let file = File::open(&self.path).expect(&format!("Could not open: {}", self.path));
+        let file =
+            File::open(&self.path).unwrap_or_else(|_| panic!("Could not open: {}", self.path));
         BufReader::new(file)
             .lines()
             .map(|line| f(&line.unwrap()))

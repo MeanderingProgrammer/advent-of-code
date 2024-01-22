@@ -45,14 +45,8 @@ pub trait Bus {
     fn add_output(&mut self, value: i64);
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct NoopBus {}
-
-impl NoopBus {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
 
 impl Bus for NoopBus {
     fn active(&self) -> bool {
@@ -113,10 +107,7 @@ impl<T: Bus + Debug> Computer<T> {
             _ => (),
         };
         // Whether or not to Halt
-        match response {
-            Response::Halt => false,
-            _ => true,
-        }
+        !matches!(response, Response::Halt)
     }
 
     fn next(&mut self) -> Response {

@@ -60,7 +60,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(Some);
     answer::part1(1061, run(&grid, false));
     answer::part2(1006, run(&grid, true));
 }
@@ -69,11 +69,7 @@ fn run(grid: &Grid<char>, force_corners: bool) -> usize {
     let bound = grid.bounds(0);
     let mut animator = Animator {
         force_corners,
-        on: grid
-            .points_with_value('#')
-            .into_iter()
-            .map(|point| point.clone())
-            .collect(),
+        on: grid.points_with_value('#').into_iter().cloned().collect(),
         min: bound.lower.clone(),
         max: bound.upper.clone(),
     };

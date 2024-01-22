@@ -42,7 +42,7 @@ fn solution() {
 
 fn matches(n: i64, wait_mult: bool) -> u64 {
     let generators: Vec<u64> =
-        Reader::default().read(|line| line.rsplit(" ").next().unwrap().parse().unwrap());
+        Reader::default().read(|line| line.rsplit(' ').next().unwrap().parse().unwrap());
     let mut gen_a = Generator::new(generators[0], 16_807, 4);
     let mut gen_b = Generator::new(generators[1], 48_271, 8);
     let mut count = 0;

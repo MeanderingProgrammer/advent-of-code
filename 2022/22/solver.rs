@@ -14,8 +14,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 enum Space {
+    #[default]
     Open,
     Wall,
 }
@@ -321,8 +322,8 @@ fn get_input() -> (Cube, Vec<Instruction>) {
     (parse_cube(&data[0]), parse_instructions(&data[1][0]))
 }
 
-fn parse_cube(lines: &Vec<String>) -> Cube {
-    let grid = Grid::from_lines(lines.clone(), |ch| match ch {
+fn parse_cube(lines: &[String]) -> Cube {
+    let grid = Grid::from_lines(lines.to_vec(), |ch| match ch {
         '.' => Some(Space::Open),
         '#' => Some(Space::Wall),
         _ => None,
@@ -331,9 +332,9 @@ fn parse_cube(lines: &Vec<String>) -> Cube {
 }
 
 fn parse_instructions(line: &str) -> Vec<Instruction> {
-    line.replace("L", ",L,")
-        .replace("R", ",R,")
-        .split(",")
+    line.replace('L', ",L,")
+        .replace('R', ",R,")
+        .split(',')
         .map(|part| match part {
             "L" => Instruction::Turn(Turn::Left),
             "R" => Instruction::Turn(Turn::Right),

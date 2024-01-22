@@ -17,9 +17,7 @@ fn solution() {
 fn shortest_bfs(grid: &Grid<i64>, end: &Point) -> Option<i64> {
     grid.points_with_value(get_offset('a'))
         .iter()
-        .map(|start| bfs(grid, start, end))
-        .filter(|result| result.is_some())
-        .map(|result| result.unwrap())
+        .filter_map(|start| bfs(grid, start, end))
         .min()
 }
 

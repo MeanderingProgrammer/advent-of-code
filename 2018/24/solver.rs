@@ -89,16 +89,11 @@ impl Battle {
             if !group.dead() {
                 let target_index = self.groups.iter().position(|g| g.id == target_id).unwrap();
                 let target = self.groups.get_mut(target_index).unwrap();
-                let damage = group.calculate_damage(&target);
+                let damage = group.calculate_damage(target);
                 target.hit(damage);
             }
         }
-        self.groups = self
-            .groups
-            .iter()
-            .filter(|group| !group.dead())
-            .map(|group| group.clone())
-            .collect();
+        self.groups.retain(|group| !group.dead());
     }
 
     fn assign_targets(&self) -> Vec<(usize, usize)> {
@@ -159,7 +154,7 @@ fn part_1() -> i64 {
 }
 
 fn part_2() -> Option<i64> {
-    (1..).into_iter().find_map(|boost| {
+    (1..).find_map(|boost| {
         let mut battle = get_battle(boost);
         battle.simulate();
         if battle.immune_won() {

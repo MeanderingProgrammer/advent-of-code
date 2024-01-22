@@ -24,7 +24,7 @@ impl Network {
                     computer: Computer::new(NodeBus::new(i), memory.clone()),
                 };
                 let packets = node.run();
-                assert_eq!(true, packets.is_empty());
+                assert!(packets.is_empty());
                 node
             })
             .collect();

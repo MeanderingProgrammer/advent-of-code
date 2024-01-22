@@ -31,7 +31,6 @@ impl Node {
             .into_iter()
             .map(|turn| {
                 let positions = (1..=length)
-                    .into_iter()
                     .map(|i| &self.position + &(&turn.to_point() * (i as i64)))
                     .collect();
                 (turn, true, positions)
