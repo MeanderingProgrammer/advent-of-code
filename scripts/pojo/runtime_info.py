@@ -16,3 +16,14 @@ class RuntimeInfo:
             "language": self.language,
             "runtime": self.runtime,
         }
+
+    @staticmethod
+    def from_dict(value: dict) -> "RuntimeInfo":
+        return RuntimeInfo(
+            day=Day(
+                year=str(value["year"]),
+                day=str(value["day"]).zfill(2),
+            ),
+            language=value["language"],
+            runtime=value["runtime"],
+        )

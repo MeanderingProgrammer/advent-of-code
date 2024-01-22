@@ -4,6 +4,7 @@ from pathlib import Path
 
 from component.day_factory import DayFactory
 from pojo.day import Day
+from pojo.runtime_info import RuntimeInfo
 
 
 class RunName(StrEnum):
@@ -39,6 +40,6 @@ class RunTemplate:
             raise Exception("Looks like slow runtimes were never determined")
         days = set()
         for runtime in json.loads(slow_file.read_text()):
-            day_factory = DayFactory(years=[runtime["year"]], days=[runtime["day"]])
-            days.update(day_factory.get_days())
+            runtime_info = RuntimeInfo.from_dict(runtime)
+            days.add(runtime_info.day)
         return sorted(list(days))
