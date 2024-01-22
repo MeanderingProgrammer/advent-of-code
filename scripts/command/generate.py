@@ -26,10 +26,10 @@ class Generator(Command):
 
     @override
     def run(self) -> None:
-        self.__setup_language()
-        self.__setup_data_files()
+        self.setup_language()
+        self.setup_data_files()
 
-    def __setup_language(self) -> None:
+    def setup_language(self) -> None:
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         # Copy over language template if not already present
@@ -37,10 +37,10 @@ class Generator(Command):
         if solution_path.exists():
             print(f"Solution already exists under: {solution_path}")
         else:
-            self.__copy_template_files()
+            self.copy_template_files()
             self.language.template_processing(self.day)
 
-    def __copy_template_files(self) -> None:
+    def copy_template_files(self) -> None:
         template_directory = Path(f"scripts/templates/{self.language.name}")
         if not template_directory.is_dir():
             raise Exception(f"No template defined in {template_directory}")
@@ -55,18 +55,18 @@ class Generator(Command):
                     print(f"Copying {template_file} to {destination}")
                     shutil.copy(template_file, destination)
 
-    def __setup_data_files(self) -> None:
+    def setup_data_files(self) -> None:
         # Create data directory, okay if it already exists
         data_dir = Path("data").joinpath(self.day.dir())
         data_dir.mkdir(parents=True, exist_ok=True)
         # Download the necessary files
-        data_created = self.__pull_aoc_file("-I -i", data_dir.joinpath("data.txt"))
+        data_created = self.pull_aoc_file("-I -i", data_dir.joinpath("data.txt"))
         if data_created:
-            Generator.__create_empty_file(data_dir.joinpath("sample.txt"))
+            Generator.create_empty_file(data_dir.joinpath("sample.txt"))
         if self.puzzle:
-            self.__pull_aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
+            self.pull_aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
 
-    def __pull_aoc_file(self, flags: str, file_path: Path) -> bool:
+    def pull_aoc_file(self, flags: str, file_path: Path) -> bool:
         if file_path.exists():
             print(f"{file_path} already exists, leaving as is")
             return False
@@ -84,11 +84,11 @@ class Generator(Command):
             os.system(" ".join(download_command))
         else:
             print("aoc-cli is not setup")
-            Generator.__create_empty_file(file_path)
+            Generator.create_empty_file(file_path)
         return True
 
     @staticmethod
-    def __create_empty_file(file_path: Path) -> None:
+    def create_empty_file(file_path: Path) -> None:
         if not file_path.exists():
             print(f"Creating empty {file_path}")
             file_path.touch()

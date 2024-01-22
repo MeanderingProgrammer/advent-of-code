@@ -44,16 +44,16 @@ def setup(language: tuple[Language, ...], info: bool) -> None:
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
 @click.option("-s", "--slow", type=int, default=500)
-@click.option("-i", "--info", is_flag=True)
 @click.option("-T", "--test", is_flag=True)
+@click.option("-i", "--info", is_flag=True)
 def run(
     template: Optional[RunName],
     year: tuple[int, ...],
     day: tuple[int, ...],
     language: tuple[Language, ...],
     slow: int,
-    info: bool,
     test: bool,
+    info: bool,
 ) -> None:
     """
     Runs specific days / years for either specific or all languages
@@ -69,7 +69,7 @@ def run(
     if len(days) == 0:
         raise Exception("Could not find any days to run given input")
 
-    fast = [RunName.LATEST, RunName.DAYS]
+    fast = [RunName.LATEST, RunName.DAYS, RunName.SLOW]
     language_strategy = LanguageStrategy(
         name=StrategyName.FASTEST if template in fast else StrategyName.ALL,
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),

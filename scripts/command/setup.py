@@ -35,13 +35,13 @@ class Setup(Command):
 
     @override
     def info(self) -> dict:
-        return {setup.key(): setup.value() for setup in self.__setups()}
+        return {setup.key(): setup.value() for setup in self.setups()}
 
     @override
     def run(self) -> None:
-        [setup.execute() for setup in self.__setups()]
+        [setup.execute() for setup in self.setups()]
 
-    def __setups(self) -> list[LanguageSetup]:
+    def setups(self) -> list[LanguageSetup]:
         return [
             LanguageSetup(
                 name=language.name,
