@@ -1,6 +1,6 @@
 package maze;
 
-import java.util.*;
+import java.util.List;
 
 public class MazeSplitter {
 

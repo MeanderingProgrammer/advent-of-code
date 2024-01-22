@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.List;
 
 import lib.Answer;
 import lib.FileReader;
@@ -27,7 +27,7 @@ public class Solver {
 
     private static int sum(List<Integer> values, int windowSize, int start) {
         return values.subList(start, start + windowSize).stream()
-            .mapToInt(Integer::intValue)
-            .sum();
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 }

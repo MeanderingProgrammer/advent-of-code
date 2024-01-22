@@ -1,13 +1,14 @@
 package maze.path;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import maze.Edge;
 import maze.Node;
 
 /**
- * Path logic here is kind of funny, it is where we end up, not where we went through
- * This means if we see an AB inner Node to get there we went through the AB outer Node
+ * Path logic here is kind of funny, where we end up, not where we went through
+ * If we see an AB inner Node to get there we went through the AB outer Node
  */
 public class RecursivePath extends Path {
 
@@ -38,12 +39,12 @@ public class RecursivePath extends Path {
     @Override
     protected int computeLevel() {
         List<Node> nonTerminal = path.stream()
-            .map(Edge::destination)
-            .filter(node -> !isEnd(node))
-            .toList();
+                .map(Edge::destination)
+                .filter(node -> !isEnd(node))
+                .toList();
         int inner = (int) nonTerminal.stream()
-            .filter(Node::inner)
-            .count();
+                .filter(Node::inner)
+                .count();
         return nonTerminal.size() - inner - inner;
     }
 

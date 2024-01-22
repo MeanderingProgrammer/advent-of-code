@@ -1,9 +1,11 @@
 package maze;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import lib.Position;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -12,8 +14,10 @@ import lombok.experimental.FieldDefaults;
 public class Grid {
 
     Map<Position, Node> grid;
-    @Getter List<Position> keys;
-    @Getter Position start;
+    @Getter
+    List<Position> keys;
+    @Getter
+    Position start;
 
     public Grid(List<String> maze, Position start) {
         this.grid = initializeGrid(maze);
@@ -53,16 +57,16 @@ public class Grid {
 
     private List<Position> computeKeys() {
         return grid.entrySet().stream()
-            .filter(entry -> entry.getValue().isKey())
-            .map(Map.Entry::getKey)
-            .toList();
+                .filter(entry -> entry.getValue().isKey())
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     private Position computeStart() {
         return grid.entrySet().stream()
-            .filter(entry -> entry.getValue().isStart())
-            .map(Map.Entry::getKey)
-            .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+                .filter(entry -> entry.getValue().isStart())
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 }

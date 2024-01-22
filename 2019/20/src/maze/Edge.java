@@ -1,3 +1,4 @@
 package maze;
 
-public record Edge(Node destination, int length) {}
+public record Edge(Node destination, int length) {
+}

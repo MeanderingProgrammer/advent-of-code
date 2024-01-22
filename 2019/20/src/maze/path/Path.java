@@ -1,22 +1,25 @@
 package maze.path;
 
-import java.util.*;
-
-import maze.Edge;
-import maze.Node;
-import maze.State;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.PackagePrivate;
+import maze.Edge;
+import maze.Node;
+import maze.State;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public abstract class Path implements Comparable<Path> {
 
-    @PackagePrivate List<Edge> path;
-    @Getter int length;
-    @Getter int level;
+    @PackagePrivate
+    List<Edge> path;
+    @Getter
+    int length;
+    @Getter
+    int level;
 
     public Path(List<Edge> path) {
         this.path = path;
