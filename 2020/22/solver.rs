@@ -1,6 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use std::collections::{HashSet, VecDeque};
+use fxhash::FxHashSet;
+use std::collections::VecDeque;
 
 #[derive(Debug)]
 enum Player {
@@ -47,7 +48,7 @@ struct Game {
     deck1: Deck,
     deck2: Deck,
     recursize: bool,
-    states: HashSet<(Deck, Deck)>,
+    states: FxHashSet<(Deck, Deck)>,
 }
 
 impl Game {
@@ -56,7 +57,7 @@ impl Game {
             deck1,
             deck2,
             recursize,
-            states: HashSet::new(),
+            states: FxHashSet::default(),
         }
     }
     fn play(&mut self) -> &Deck {
