@@ -12,7 +12,7 @@ class Go(Language):
 
     @override
     def test_command(self) -> list[str]:
-        return ["go", "test", "./..."]
+        return ["go", "test", "-v", "./..."]
 
     @override
     def build_commands(self) -> list[list[str]]:

@@ -95,20 +95,20 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(5437, litAfter(2))
-	answer.Part2(19340, litAfter(50))
+	groups := file.Default[string]().ReadGroups()
+	answer.Part1(5437, litAfter(groups, 2))
+	answer.Part2(19340, litAfter(groups, 50))
 }
 
-func litAfter(times int) int {
-	enhancer, image := getEnhancerImage()
+func litAfter(groups []string, times int) int {
+	enhancer, image := getEnhancerImage(groups)
 	for i := 0; i < times; i++ {
 		image = image.enhance(enhancer)
 	}
 	return image.Len()
 }
 
-func getEnhancerImage() (Enhancer, Image) {
-	enhancerImage := file.ReadGroups()
+func getEnhancerImage(enhancerImage []string) (Enhancer, Image) {
 	return Enhancer(enhancerImage[0]), parseImage(enhancerImage[1])
 }
 

@@ -81,12 +81,13 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(492, getGrid().untilStop())
+	lines := file.Default[string]().ReadLines()
+	answer.Part1(492, getGrid(lines).untilStop())
 }
 
-func getGrid() Grid {
+func getGrid(lines []string) Grid {
 	grid := parser.GridMaker[Cucumber]{
-		Rows:     file.ReadLines(),
+		Rows:     lines,
 		Splitter: parser.Character,
 		Ignore:   ".",
 		Transformer: func(point point.Point, value string) Cucumber {

@@ -3,6 +3,7 @@ package main
 import (
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/util"
 )
 
 func main() {
@@ -10,7 +11,7 @@ func main() {
 }
 
 func solution() {
-	values := file.ReadInt()
+	values := file.Default[int]().Read(util.ToInt)
 	answer.Part1(1292, windowIncreases(values, 1))
 	answer.Part2(1262, windowIncreases(values, 3))
 }

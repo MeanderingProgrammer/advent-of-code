@@ -59,13 +59,14 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(1732, getGrid().runFor(100))
-	answer.Part2(290, getGrid().runUntilAll())
+	lines := file.Default[string]().ReadLines()
+	answer.Part1(1732, getGrid(lines).runFor(100))
+	answer.Part2(290, getGrid(lines).runUntilAll())
 }
 
-func getGrid() OctopusGrid {
+func getGrid(lines []string) OctopusGrid {
 	grid := parser.GridMaker[int]{
-		Rows:        file.ReadLines(),
+		Rows:        lines,
 		Splitter:    parser.Character,
 		Ignore:      "",
 		Transformer: parser.ToInt,

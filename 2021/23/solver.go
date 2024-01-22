@@ -256,20 +256,20 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(18282, solve(false))
-	answer.Part2(50132, solve(true))
+	lines := file.Default[string]().ReadLines()
+	answer.Part1(18282, solve(lines, false))
+	answer.Part2(50132, solve(lines, true))
 }
 
-func solve(extend bool) int {
-	rows := getRows(extend)
+func solve(lines []string, extend bool) int {
+	rows := getRows(lines, extend)
 	board := getBoard(rows)
 	characters := getCharacters(rows)
 	endState := board.solve(characters)
 	return endState.cost
 }
 
-func getRows(extend bool) []string {
-	rows := file.ReadLines()
+func getRows(rows []string, extend bool) []string {
 	if extend {
 		lastRows := make([]string, 2)
 		copy(lastRows, rows[len(rows)-2:])

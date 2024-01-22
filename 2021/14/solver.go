@@ -59,20 +59,21 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(2899, diffAfter(10))
-	answer.Part2(3528317079545, diffAfter(40))
+	groups := file.Default[string]().ReadGroups()
+	answer.Part1(2899, diffAfter(groups, 10))
+	answer.Part2(3528317079545, diffAfter(groups, 40))
 }
 
-func diffAfter(n int) int {
-	template, rules := getData()
+func diffAfter(groups []string, n int) int {
+	template, rules := getData(groups)
 	for i := 0; i < n; i++ {
 		template = template.apply(rules)
 	}
 	return template.frequencies().diff()
 }
 
-func getData() (Template, Rules) {
-	templateRules := file.ReadGroups()
+func getData(templateRules []string) (Template, Rules) {
+	// templateRules := file.Default[string]().ReadGroups()
 
 	template := make(map[string]int)
 	for i := 0; i < len(templateRules[0])-1; i++ {

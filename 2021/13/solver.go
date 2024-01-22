@@ -85,7 +85,7 @@ func solution() {
 }
 
 func getGridFolds() (PaperGrid, []Fold) {
-	dotsInstructions := file.ReadGroups()
+	dotsInstructions := file.Default[string]().ReadGroups()
 	dots, instructions := util.Lines(dotsInstructions[0]), util.Lines(dotsInstructions[1])
 
 	grid := PaperGrid{}

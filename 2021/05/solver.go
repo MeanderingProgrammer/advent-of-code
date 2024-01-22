@@ -78,7 +78,7 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 }
 
 func getLines() []Line {
-	return file.Read(func(line string) Line {
+	return file.Default[Line]().Read(func(line string) Line {
 		points := strings.Split(line, " -> ")
 		return Line{
 			p1: point.ConstructPoint(points[0]),

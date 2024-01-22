@@ -161,7 +161,7 @@ func main() {
 }
 
 func solution() {
-	numbers := file.ReadLines()
+	numbers := file.Default[string]().ReadLines()
 	answer.Part1(3892, sumAll(numbers))
 	answer.Part2(4909, sumAny(numbers))
 }

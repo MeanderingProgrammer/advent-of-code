@@ -71,7 +71,7 @@ func main() {
 }
 
 func solution() {
-	prefix := strings.TrimSpace(file.Content())
+	prefix := strings.TrimSpace(file.Default[string]().Content())
 	answer.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
 	answer.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))
 }

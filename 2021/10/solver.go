@@ -109,5 +109,5 @@ func solution() {
 }
 
 func getSystem() Systems {
-	return file.ReadLines()
+	return file.Default[string]().ReadLines()
 }

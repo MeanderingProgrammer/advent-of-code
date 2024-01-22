@@ -173,17 +173,18 @@ func main() {
 }
 
 func solution() {
-	answer.Part1(571032, part1())
-	answer.Part2(49975322685009, part2())
+	lines := file.Default[string]().ReadLines()
+	answer.Part1(571032, part1(lines))
+	answer.Part2(49975322685009, part2(lines))
 }
 
-func part1() int {
+func part1(lines []string) int {
 	dice := DeterministicDice{
 		current: 0,
 		max:     100,
 		moves:   0,
 	}
-	gamesWon := play(1000, &dice)
+	gamesWon := play(lines, 1000, &dice)
 	result := 0
 	for gameWon := range gamesWon {
 		result += gameWon.losingScore() * dice.moves
@@ -191,26 +192,25 @@ func part1() int {
 	return result
 }
 
-func part2() int {
+func part2(lines []string) int {
 	dice := QuantumDice{
 		dimensions: 3,
 		rolls:      3,
 	}
 	dice.stateSpace = dice.computeStateSpace()
-	gamesWon := play(21, dice)
+	gamesWon := play(lines, 21, dice)
 	return gamesWon.total()
 }
 
-func play(target int, dice Dice) GameStateFrequency {
+func play(lines []string, target int, dice Dice) GameStateFrequency {
 	game := Game{
 		target: target,
 		dice:   dice,
 	}
-	return game.play(getPlayers())
+	return game.play(getPlayers(lines))
 }
 
-func getPlayers() (Player, Player) {
-	players := file.ReadLines()
+func getPlayers(players []string) (Player, Player) {
 	return parsePlayer(players[0]), parsePlayer(players[1])
 }
 

@@ -69,7 +69,7 @@ func solution() {
 
 func getGraph() graph.Graph[Cave, string] {
 	var pairs [][2]Cave
-	for _, creationRule := range file.ReadLines() {
+	for _, creationRule := range file.Default[string]().ReadLines() {
 		startEnd := strings.Split(creationRule, "-")
 		pair := [2]Cave{Cave(startEnd[0]), Cave(startEnd[1])}
 		pairs = append(pairs, pair)

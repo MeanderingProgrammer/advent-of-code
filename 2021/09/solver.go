@@ -78,7 +78,7 @@ func solution() {
 
 func getGrid() Grid {
 	grid := parser.GridMaker[int]{
-		Rows:        file.ReadLines(),
+		Rows:        file.Default[string]().ReadLines(),
 		Splitter:    parser.Character,
 		Ignore:      "",
 		Transformer: parser.ToInt,
