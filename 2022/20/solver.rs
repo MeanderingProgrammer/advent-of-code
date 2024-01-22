@@ -38,7 +38,7 @@ fn decrypt(multiplier: i64, rounds: usize) -> i64 {
         .position(|sequence_entry| sequence_entry.value == 0)
         .unwrap();
 
-    vec![1_000, 2_000, 3_000]
+    [1_000, 2_000, 3_000]
         .iter()
         .map(|offset| (start_index + offset) % full_length)
         .map(|index| sequence[index].value)

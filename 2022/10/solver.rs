@@ -12,7 +12,7 @@ impl FromStr for Instruction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(" ").collect();
+        let parts: Vec<&str> = s.split(' ').collect();
         match parts[0] {
             "noop" => Ok(Self::Noop),
             "addx" => Ok(Self::Add(parts[1].parse().unwrap())),
@@ -68,7 +68,7 @@ fn get_cycles(instructions: Vec<Instruction>) -> Vec<i64> {
     cycles
 }
 
-fn get_crt(cycles: &Vec<i64>, rows: usize, columns: usize) -> Vec<String> {
+fn get_crt(cycles: &[i64], rows: usize, columns: usize) -> Vec<String> {
     let mut result = Vec::new();
     result.push("".to_string());
     for row in 0..rows {

@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use serde::Deserialize;
-use serde_json;
 use std::cmp::Ordering;
 use std::str::FromStr;
 
@@ -26,8 +25,7 @@ impl PacketData {
             (PacketData::List(data_1), PacketData::List(data_2)) => {
                 (0..data_1.len().min(data_2.len()))
                     .map(|i| data_1[i].compare(&data_2[i]))
-                    .filter(|&result| result != Ordering::Equal)
-                    .next()
+                    .find(|&result| result != Ordering::Equal)
                     .unwrap_or(data_1.len().cmp(&data_2.len()))
             }
             (PacketData::Item(value_1), PacketData::Item(value_2)) => value_1.cmp(value_2),
@@ -56,7 +54,7 @@ fn solution() {
     answer::part2(22600, get_decoder_key(&packets));
 }
 
-fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
+fn sum_adjacent(packets: &[PacketData]) -> usize {
     packets
         .chunks(2)
         .enumerate()
@@ -67,11 +65,11 @@ fn sum_adjacent(packets: &Vec<PacketData>) -> usize {
         .sum()
 }
 
-fn get_decoder_key(packets: &Vec<PacketData>) -> usize {
+fn get_decoder_key(packets: &[PacketData]) -> usize {
     (packet_idx(packets, "[[2]]") + 1) * (packet_idx(packets, "[[6]]") + 2)
 }
 
-fn packet_idx(packets: &Vec<PacketData>, value: &str) -> usize {
+fn packet_idx(packets: &[PacketData], value: &str) -> usize {
     let target = value.parse::<PacketData>().unwrap();
     packets
         .iter()

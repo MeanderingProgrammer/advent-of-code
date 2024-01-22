@@ -75,7 +75,7 @@ fn energized(grid: &Grid<char>, start: State) -> usize {
 }
 
 fn create_states<'a, F: Fn(i64) -> Point + 'a>(
-    coords: &'a Vec<i64>,
+    coords: &'a [i64],
     direction: Direction,
     f: F,
 ) -> impl Iterator<Item = State> + 'a {
@@ -89,7 +89,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(Some);
 
     let part1 = energized(&grid, State::new(Point::default(), Direction::Right));
 

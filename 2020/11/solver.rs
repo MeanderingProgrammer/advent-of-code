@@ -4,10 +4,11 @@ use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
 use strum::IntoEnumIterator;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 enum Seat {
     Occupied,
     Empty,
+    #[default]
     Floor,
 }
 
@@ -40,7 +41,7 @@ struct SeatingChart {
 
 impl SeatingChart {
     fn next(&self) -> Self {
-        let mut next_chart = Grid::new();
+        let mut next_chart = Grid::default();
         self.chart.points().into_iter().for_each(|p| {
             next_chart.add(p.clone(), self.next_seat(p));
         });
@@ -112,11 +113,11 @@ fn solution() {
 
 fn run_until_stable(look: bool) -> usize {
     let mut previous = SeatingChart {
-        chart: Grid::new(),
+        chart: Grid::default(),
         look,
     };
     let mut current = SeatingChart {
-        chart: Reader::default().read_grid(|ch| Seat::from_ch(ch)),
+        chart: Reader::default().read_grid(Seat::from_ch),
         look,
     };
     while previous != current {

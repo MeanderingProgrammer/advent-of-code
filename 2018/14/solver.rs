@@ -37,7 +37,7 @@ impl Recipes {
         if num_scores < num_digits + offset {
             false
         } else {
-            self.digits == &self.scores[num_scores - num_digits - offset..num_scores - offset]
+            self.digits == self.scores[num_scores - num_digits - offset..num_scores - offset]
         }
     }
 

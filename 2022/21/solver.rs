@@ -52,7 +52,7 @@ impl Monkeys {
         let mut monkeys = HashMap::new();
         lines.iter().for_each(|line| {
             let (name, job) = line.split_once(": ").unwrap();
-            monkeys.insert(name.to_string(), Expression::new(job.split(" ").collect()));
+            monkeys.insert(name.to_string(), Expression::new(job.split(' ').collect()));
         });
         Monkeys { monkeys }
     }
@@ -99,7 +99,7 @@ fn evaluate_human(monkeys: &Monkeys) -> i64 {
         }
         _ => unreachable!(),
     };
-    process_human(monkeys, to_process, evaluate(monkeys, &to_calculate))
+    process_human(monkeys, to_process, evaluate(monkeys, to_calculate))
 }
 
 fn process_human(monkeys: &Monkeys, name: &str, value: i64) -> i64 {
@@ -108,7 +108,7 @@ fn process_human(monkeys: &Monkeys, name: &str, value: i64) -> i64 {
     }
     match monkeys.get(name) {
         Expression::MathOperation(left_name, operation, right_name) => {
-            let (new_name, new_value) = if depends_on_human(monkeys, &left_name) {
+            let (new_name, new_value) = if depends_on_human(monkeys, left_name) {
                 let right_value = evaluate(monkeys, right_name);
                 (
                     left_name,

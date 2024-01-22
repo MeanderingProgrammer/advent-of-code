@@ -17,10 +17,10 @@ impl FromStr for Direction {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "^" | "north" => Ok(Self::Up),
-            ">" | "east" => Ok(Self::Right),
-            "v" | "south" => Ok(Self::Down),
-            "<" | "west" => Ok(Self::Left),
+            "^" | "U" | "north" => Ok(Self::Up),
+            ">" | "R" | "east" => Ok(Self::Right),
+            "v" | "D" | "south" => Ok(Self::Down),
+            "<" | "L" | "west" => Ok(Self::Left),
             _ => Err(format!("Unknown direction: {s}")),
         }
     }
@@ -102,7 +102,7 @@ impl FromStr for Point {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let values: Vec<i64> = s
-            .split(",")
+            .split(',')
             .map(|coord| coord.trim().parse().unwrap())
             .collect();
         if values.len() == 2 {
@@ -231,7 +231,7 @@ impl FromStr for Point3d {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let values: Vec<i64> = s
-            .split(",")
+            .split(',')
             .map(|coord| coord.trim().parse().unwrap())
             .collect();
         if values.len() == 3 {

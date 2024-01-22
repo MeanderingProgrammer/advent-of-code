@@ -85,7 +85,7 @@ impl Particles {
     }
 
     fn grid_str(&self, time: i64) -> String {
-        let mut grid: Grid<char> = Grid::new();
+        let mut grid: Grid<char> = Grid::default();
         self.at(time).into_iter().for_each(|position| {
             grid.add(position, '#');
         });
@@ -102,7 +102,7 @@ fn solution() {
         particles: Reader::default().read(|line| Particle::from_str(line).unwrap().1),
     };
     let time = particles.min_area().unwrap();
-    let expected = vec![
+    let expected = [
         ".####...#####......###..#.......#.......#.......#.......#....#",
         "#....#..#....#......#...#.......#.......#.......#.......#....#",
         "#.......#....#......#...#.......#.......#.......#.......#....#",

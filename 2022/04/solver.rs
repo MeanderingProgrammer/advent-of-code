@@ -12,7 +12,7 @@ impl FromStr for Section {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (start, end) = s.split_once("-").unwrap();
+        let (start, end) = s.split_once('-').unwrap();
         Ok(Self {
             start: start.parse().unwrap(),
             end: end.parse().unwrap(),
@@ -42,7 +42,7 @@ impl FromStr for Assignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (section_1, section_2) = s.split_once(",").unwrap();
+        let (section_1, section_2) = s.split_once(',').unwrap();
         Ok(Self {
             first: section_1.parse()?,
             second: section_2.parse()?,
@@ -70,7 +70,9 @@ fn solution() {
     answer::part2(854, get_count(&assignments, Assignment::any_overlap));
 }
 
-fn get_count(assignments: &Vec<Assignment>, f: fn(&Assignment) -> bool) -> usize {
-    let filtered = assignments.iter().filter(|assignment| f(assignment));
-    filtered.count()
+fn get_count(assignments: &[Assignment], f: fn(&Assignment) -> bool) -> usize {
+    assignments
+        .iter()
+        .filter(|assignment| f(assignment))
+        .count()
 }

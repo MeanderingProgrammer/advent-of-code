@@ -17,11 +17,7 @@ impl Garden {
         let starts = grid.points_with_value('S');
         Self {
             start: starts[0].clone(),
-            walls: grid
-                .points_with_value('#')
-                .into_iter()
-                .map(|point| point.clone())
-                .collect(),
+            walls: grid.points_with_value('#').into_iter().cloned().collect(),
             len: grid.bounds(0).upper.x + 1,
         }
     }
@@ -60,7 +56,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(Some);
     let garden = Garden::new(grid);
 
     let part1 = garden.step(64);

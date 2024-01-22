@@ -126,30 +126,25 @@ fn solution() {
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }
 
-fn covered_range(coverage: &Vec<CoverageZone>, y: i64) -> Range {
+fn covered_range(coverage: &[CoverageZone], y: i64) -> Range {
     let overlaps: Vec<Range> = coverage
         .iter()
         .flat_map(|zone| zone.overlap_at_y(y))
         .sorted()
         .collect();
     let mut joined = overlaps[0].clone();
-    for i in 1..overlaps.len() {
-        let overlap = &overlaps[i];
+    overlaps.iter().skip(1).for_each(|overlap| {
         if joined.contains(overlap.min) {
             joined.join(overlap);
-        } else {
-            return joined;
         }
-    }
+    });
     joined
 }
 
-fn tuning_frequency(coverage: &Vec<CoverageZone>, max_value: i64) -> i64 {
+fn tuning_frequency(coverage: &[CoverageZone], max_value: i64) -> i64 {
     (0..=max_value)
-        .into_iter()
         .map(|y| (covered_range(coverage, y).max + 1, y))
-        .filter(|(x, _)| *x <= max_value)
-        .next()
+        .find(|(x, _)| *x <= max_value)
         .map(|(x, y)| (x * 4_000_000) + y)
         .unwrap()
 }

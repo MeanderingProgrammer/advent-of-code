@@ -111,6 +111,6 @@ fn run_simulation(mut particles: Vec<Particle>, cleanup: bool) -> Vec<Particle> 
             .filter(|particle| !bad_positions.contains(&particle.position))
             .collect();
     }
-    particles.sort_by(|a, b| a.size().cmp(&b.size()));
+    particles.sort_by_key(|a| a.size());
     particles
 }

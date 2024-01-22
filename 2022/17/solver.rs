@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
@@ -53,7 +54,7 @@ impl FallingShape {
     fn collides(&self, grid: &Grid<char>) -> bool {
         self.points()
             .iter()
-            .any(|point| grid.contains(&point) || point.y < 0 || point.x < 0 || point.x > 6)
+            .any(|point| grid.contains(point) || point.y < 0 || point.x < 0 || point.x > 6)
     }
 }
 
@@ -131,7 +132,7 @@ fn simulate<'a>(
     mut jets: impl Iterator<Item = &'a char>,
     mut shapes: impl Iterator<Item = &'a Shape>,
 ) -> i64 {
-    let mut grid: Grid<char> = Grid::new();
+    let mut grid: Grid<char> = Grid::default();
     let mut cache: HashMap<String, (i64, i64)> = HashMap::new();
 
     let mut additional_height = 0;
@@ -171,8 +172,10 @@ fn simulate<'a>(
         let height = grid.height().unwrap() + 1;
 
         let value = grid.as_string(".", 0);
-        if cache.contains_key(&value) {
-            let (cache_rocks, cache_height) = cache.get(&value).unwrap();
+        if let Entry::Vacant(entry) = cache.entry(value.clone()) {
+            entry.insert((rocks_dropped, height));
+        } else {
+            let (cache_rocks, cache_height): &(i64, i64) = cache.get(&value).unwrap();
             let (period_length, period_height) =
                 (rocks_dropped - cache_rocks, height - cache_height);
             let periods_left = (rocks_to_drop - rocks_dropped) / period_length;
@@ -180,8 +183,6 @@ fn simulate<'a>(
             // Once we have a cache hit we advance as many full periods as possible
             rocks_dropped += periods_left * period_length;
             additional_height += periods_left * period_height;
-        } else {
-            cache.insert(value, (rocks_dropped, height));
         }
 
         // Remove points that are far enough down that they'll never be touched by new rocks

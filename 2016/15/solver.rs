@@ -48,8 +48,6 @@ fn calculate(mut disks: Vec<Disk>, add_disk: bool) -> usize {
         });
     }
     (0..)
-        .into_iter()
-        .filter(|&time| disks.iter().all(|disk| disk.passes(time)))
-        .next()
+        .find(|&time| disks.iter().all(|disk| disk.passes(time)))
         .unwrap()
 }

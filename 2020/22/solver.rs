@@ -30,13 +30,7 @@ impl Deck {
     }
 
     fn split(&self, index: u8) -> Self {
-        Self(
-            self.0
-                .iter()
-                .take(index as usize)
-                .map(|&value| value)
-                .collect(),
-        )
+        Self(self.0.iter().take(index as usize).copied().collect())
     }
 
     fn score(&self) -> usize {
@@ -105,12 +99,10 @@ impl Game {
                 self.recursize,
             )
             .get_winner()
+        } else if card1 > card2 {
+            Player::One
         } else {
-            if card1 > card2 {
-                Player::One
-            } else {
-                Player::Two
-            }
+            Player::Two
         };
         match winner {
             Player::One => self.deck1.add(card1, card2),
@@ -134,7 +126,7 @@ fn play_game(recursize: bool) -> usize {
     game.play().score()
 }
 
-fn get_deck(values: &Vec<String>) -> Deck {
+fn get_deck(values: &[String]) -> Deck {
     Deck(
         values
             .iter()

@@ -26,7 +26,7 @@ struct DroidState {
 }
 
 impl DroidState {
-    fn get_instructions(&mut self, scaffolding: &Vec<Point>) -> Vec<String> {
+    fn get_instructions(&mut self, scaffolding: &[Point]) -> Vec<String> {
         let mut instructions = Vec::new();
         let mut turn = self.get_turn(scaffolding);
         while turn.is_some() {
@@ -41,7 +41,7 @@ impl DroidState {
         instructions
     }
 
-    fn get_turn(&self, scaffolding: &Vec<Point>) -> Option<Turn> {
+    fn get_turn(&self, scaffolding: &[Point]) -> Option<Turn> {
         if scaffolding.contains(&(&self.location + &self.direction.left())) {
             Some(Turn::Left)
         } else if scaffolding.contains(&(&self.location + &self.direction.right())) {
@@ -51,7 +51,7 @@ impl DroidState {
         }
     }
 
-    fn move_until_end(&mut self, scaffolding: &Vec<Point>) -> usize {
+    fn move_until_end(&mut self, scaffolding: &[Point]) -> usize {
         let mut amount = 0;
         while scaffolding.contains(&(&self.location + &self.direction)) {
             self.location = &self.location + &self.direction;
@@ -251,10 +251,10 @@ impl VacuumDroid {
         self.add_instruction(&compressed.a_function);
         self.add_instruction(&compressed.b_function);
         self.add_instruction(&compressed.c_function);
-        self.add_instruction(&vec!["n".to_string()]);
+        self.add_instruction(&["n".to_string()]);
     }
 
-    fn add_instruction(&mut self, instructions: &Vec<String>) {
+    fn add_instruction(&mut self, instructions: &[String]) {
         let as_string = instructions.join(",") + "\n";
         self.instructions.append(&mut as_string.chars().collect());
     }

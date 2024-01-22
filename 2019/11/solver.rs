@@ -24,7 +24,7 @@ impl PaintBot {
     }
 
     fn grid_str(&self) -> String {
-        let mut grid: Grid<char> = Grid::new();
+        let mut grid: Grid<char> = Grid::default();
         self.grid
             .iter()
             .filter(|(_, &value)| value == 1)
@@ -63,7 +63,7 @@ fn main() {
 
 fn solution() {
     answer::part1(1909, run(0).grid.len());
-    let expected = vec![
+    let expected = [
         "..##.#..#.####.####.#..#.#..#.###..#..#",
         "...#.#..#.#....#....#.#..#..#.#..#.#..#",
         "...#.#..#.###..###..##...####.#..#.####",

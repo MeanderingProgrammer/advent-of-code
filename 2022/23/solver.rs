@@ -53,7 +53,7 @@ impl Elves {
         let isolated = location
             .diagonal_neighbors()
             .iter()
-            .all(|location| !self.locations.contains(&location));
+            .all(|location| !self.locations.contains(location));
         match isolated {
             true => location.clone(),
             false => CHECK_ORDER
@@ -63,9 +63,9 @@ impl Elves {
                 .take(4)
                 .map(|(n1, n2, n3)| (location + n1, location + n2, location + n3))
                 .filter(|(l1, l2, l3)| {
-                    !self.locations.contains(&l1)
-                        && !self.locations.contains(&l2)
-                        && !self.locations.contains(&l3)
+                    !self.locations.contains(l1)
+                        && !self.locations.contains(l2)
+                        && !self.locations.contains(l3)
                 })
                 .map(|(_, l2, _)| l2)
                 .next()
@@ -74,7 +74,7 @@ impl Elves {
     }
 
     fn empty_tiles(&self) -> i64 {
-        let mut grid = Grid::new();
+        let mut grid = Grid::default();
         self.locations
             .iter()
             .for_each(|point| grid.add(point.clone(), '#'));
@@ -106,13 +106,9 @@ fn simulate_until_end() -> (i64, usize) {
 }
 
 fn get_elves() -> Elves {
-    let grid = Reader::default().read_grid(|ch| Some(ch));
+    let grid = Reader::default().read_grid(Some);
     Elves {
-        locations: grid
-            .points_with_value('#')
-            .into_iter()
-            .map(|point| point.clone())
-            .collect(),
+        locations: grid.points_with_value('#').into_iter().cloned().collect(),
         round: 0,
     }
 }

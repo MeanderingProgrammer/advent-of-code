@@ -89,7 +89,7 @@ impl FromStr for Round {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (opponent, me) = s.split_once(" ").unwrap();
+        let (opponent, me) = s.split_once(' ').unwrap();
         Ok(Self {
             opponent_hand: opponent.parse()?,
             hand: me.parse()?,

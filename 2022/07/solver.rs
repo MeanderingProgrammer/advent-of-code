@@ -36,7 +36,7 @@ impl FileSystem {
 
     fn directories(&self) -> Vec<i64> {
         self.tree
-            .traverse_pre_order(&self.tree.root_node_id().unwrap())
+            .traverse_pre_order(self.tree.root_node_id().unwrap())
             .unwrap()
             .filter(|node| !node.children().is_empty())
             .map(|node| self.get_size(node))
@@ -73,7 +73,7 @@ fn solution() {
 fn get_file_system() -> FileSystem {
     let mut fs = FileSystem::new();
     Reader::default().read_lines().iter().for_each(|line| {
-        let parts: Vec<&str> = line.split(" ").collect();
+        let parts: Vec<&str> = line.split(' ').collect();
         match (parts[0], parts[1]) {
             ("$", "cd") => match parts[2] {
                 "/" => {

@@ -154,7 +154,7 @@ impl Cave {
         let mut highest_values = self
             .valve_flow
             .iter()
-            .filter(|(&ref name, _)| !state.valves_opened.contains(name))
+            .filter(|(name, _)| !state.valves_opened.contains(name))
             .map(|(_, &flow_rate)| flow_rate)
             .sorted()
             .rev()
@@ -167,7 +167,7 @@ impl Cave {
             .collect();
 
         let mut additional_score = 0;
-        while times_left.iter().max().unwrap() > &move_time && !highest_values.peek().is_none() {
+        while times_left.iter().max().unwrap() > &move_time && highest_values.peek().is_some() {
             let index_of_max = times_left
                 .iter()
                 .enumerate()
@@ -220,9 +220,7 @@ fn create_cave(valves: Vec<Valve>, start: &str) -> Cave {
         .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1 as u8, v2 as u8)))
         .filter(|(v1, v2)| v1 != v2)
         .for_each(|(v1, v2)| {
-            if !graph.contains_key(&v1) {
-                graph.insert(v1, Vec::new());
-            }
+            graph.entry(v1).or_default();
             let weight = distances
                 .get(&(&ordered[v1 as usize], &ordered[v2 as usize]))
                 .unwrap();
