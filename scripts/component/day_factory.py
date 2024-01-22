@@ -20,8 +20,8 @@ class DayFactory:
         return days[0]
 
     def get_days(self) -> list[Day]:
-        valid_years = self.__valid_years()
-        valid_days = self.__valid_days()
+        valid_years = self.valid_years()
+        valid_days = self.valid_days()
 
         days = []
         for solution_directory in Path(".").glob("2*/*"):
@@ -30,10 +30,10 @@ class DayFactory:
                 days.append(Day(year, day))
         return sorted(days)
 
-    def __valid_years(self):
+    def valid_years(self):
         years = [str(year if year > 2_000 else year + 2_000) for year in self.years]
         return years if len(years) > 0 else Everything()
 
-    def __valid_days(self):
+    def valid_days(self):
         days = [str(day).zfill(2) for day in self.days]
         return days if len(days) > 0 else Everything()

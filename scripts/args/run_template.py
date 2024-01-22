@@ -28,12 +28,12 @@ class RunTemplate:
             # Single day implemented in all languages
             return [Day("2021", "01")]
         elif name == RunName.SLOW:
-            return RunTemplate.__slow()
+            return RunTemplate.slow()
         else:
             raise Exception(f"Unhandled name: {name}")
 
     @staticmethod
-    def __slow() -> list[Day]:
+    def slow() -> list[Day]:
         slow_file = Path("slow.json")
         if not slow_file.is_file():
             raise Exception("Looks like slow runtimes were never determined")

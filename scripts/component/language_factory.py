@@ -8,7 +8,7 @@ from language.rust import Rust
 
 class LanguageFactory:
     def __init__(self):
-        self.__languages = [
+        self.languages: list[Language] = [
             Go(),
             Java(),
             Ocaml(),
@@ -17,13 +17,13 @@ class LanguageFactory:
         ]
 
     def get_names(self) -> list[str]:
-        return [language.name for language in self.__languages]
+        return [language.name for language in self.languages]
 
     def get_all(self) -> list[Language]:
-        return self.__languages
+        return self.languages
 
     def get_by_name(self, name: str) -> Language:
-        for language in self.__languages:
+        for language in self.languages:
             if language.name == name:
                 return language
         raise Exception(f"Could not find language with name: {name}")

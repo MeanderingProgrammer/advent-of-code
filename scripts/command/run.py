@@ -34,11 +34,11 @@ class LanguageRunner:
             f" {self.times} times with {self.name}"
         )
         print(message)
-        runtimes = [LanguageRunner.__execute(self.command) for _ in range(self.times)]
+        runtimes = [LanguageRunner.run_command(self.command) for _ in range(self.times)]
         return RuntimeInfo(self.day, self.name, sum(runtimes) / self.times)
 
     @staticmethod
-    def __execute(command: list[str]) -> float:
+    def run_command(command: list[str]) -> float:
         result = execute(command)
         matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
         assert len(matches) == 1, "Could not find runtime in output"
@@ -57,7 +57,7 @@ class Runner(Command):
     @override
     def info(self) -> dict:
         return dict(
-            executions=[runner.as_dict() for runner in self.__runners()],
+            executions=[runner.as_dict() for runner in self.runners()],
             slow=self.slow,
             save=self.save,
         )
@@ -65,20 +65,20 @@ class Runner(Command):
     @override
     def run(self) -> None:
         start = time.time()
-        runtimes = [runner.execute() for runner in self.__runners()]
+        runtimes = [runner.execute() for runner in self.runners()]
         overall_runtime = time.time() - start
 
         displayer = Displayer()
         displayer.display("ALL", runtimes)
-        self.__save("all", runtimes)
+        self.save_as("all", runtimes)
 
         slow = list(filter(lambda runtime: runtime.runtime > self.slow, runtimes))
         displayer.display("SLOW", slow)
-        self.__save("slow", slow)
+        self.save_as("slow", slow)
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
-    def __runners(self) -> list[LanguageRunner]:
+    def runners(self) -> list[LanguageRunner]:
         result: list[LanguageRunner] = []
         for day in self.days:
             for language in self.language_strategy.get(day):
@@ -94,7 +94,7 @@ class Runner(Command):
                 result.append(runner)
         return result
 
-    def __save(self, name: str, runtimes: list[RuntimeInfo]) -> None:
+    def save_as(self, name: str, runtimes: list[RuntimeInfo]) -> None:
         if not self.save:
             return
         with open(f"{name}.json", "w") as f:

@@ -9,7 +9,7 @@ class RuntimeInfo:
     language: str
     runtime: float
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         return {
             "year": int(self.day.year),
             "day": int(self.day.day),
