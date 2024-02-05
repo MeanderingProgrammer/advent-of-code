@@ -4,6 +4,7 @@ from language.language import Language
 from language.ocaml import Ocaml
 from language.python import Python
 from language.rust import Rust
+from language.ts import TypeScript
 
 
 class LanguageFactory:
@@ -14,6 +15,7 @@ class LanguageFactory:
             Ocaml(),
             Python(),
             Rust(),
+            TypeScript(),
         ]
 
     def get_names(self) -> list[str]:
