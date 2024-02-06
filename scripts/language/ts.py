@@ -20,7 +20,7 @@ class TypeScript(Language):
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        return ["bun", "run", str(self.solution_path(day))]
+        return ["bun", "run", str(self.solution_path(day))] + run_args
 
     @override
     def template_processing(self, day: Day) -> None:

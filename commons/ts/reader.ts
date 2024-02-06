@@ -1,13 +1,22 @@
+import { parseArgs } from "util";
+
 export class Reader {
   private readonly file_path: string;
 
   constructor() {
-    // TODO: handle --test flag
-    // console.log(Bun.argv);
+    const { values } = parseArgs({
+      args: Bun.argv,
+      options: {
+        test: { type: "boolean", default: false },
+      },
+      strict: true,
+      allowPositionals: true,
+    });
+    const file_name = values.test ? "sample.txt" : "data.txt";
     const executable_path = Bun.main.split("/");
     executable_path.reverse();
     const [year, day] = [executable_path[2], executable_path[1]];
-    this.file_path = `data/${year}/${day}/data.txt`;
+    this.file_path = `data/${year}/${day}/${file_name}`;
   }
 
   async read_int(): Promise<number[]> {
