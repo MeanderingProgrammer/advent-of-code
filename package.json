@@ -1,0 +1,20 @@
+{
+  "name": "advent-of-code",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MeanderingProgrammer/advent-of-code.git"
+  },
+  "author": "MeanderingProgrammer <meanderingprogrammer@gmail.com>",
+  "description": "Public Repo for Advent of Code Solutions",
+  "license": "MIT",
+  "workspaces": [
+    "commons/ts/"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.3.3"
+  }
+}
