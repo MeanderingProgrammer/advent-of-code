@@ -7,8 +7,8 @@ fn main() {
 
 fn solution() {
     let values = Reader::default().read_int();
-    answer::part1(1292, window_increases(values.as_slice(), 1));
-    answer::part2(1262, window_increases(values.as_slice(), 3));
+    answer::part1(1292, window_increases(&values, 1));
+    answer::part2(1262, window_increases(&values, 3));
 }
 
 fn window_increases(values: &[i64], window_size: usize) -> i64 {
