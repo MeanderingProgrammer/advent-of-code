@@ -7,7 +7,7 @@ from language.language import Language
 
 
 @dataclass(frozen=True)
-class LanguageSetup:
+class LanguageBuild:
     name: str
     build: list[list[str]]
     test: list[str]
@@ -30,20 +30,20 @@ class LanguageSetup:
 
 
 @dataclass(frozen=True)
-class Setup(Command):
+class Build(Command):
     languages: list[Language]
 
     @override
     def info(self) -> dict:
-        return {setup.key(): setup.value() for setup in self.setups()}
+        return {build.key(): build.value() for build in self.builds()}
 
     @override
     def run(self) -> None:
-        [setup.execute() for setup in self.setups()]
+        [build.execute() for build in self.builds()]
 
-    def setups(self) -> list[LanguageSetup]:
+    def builds(self) -> list[LanguageBuild]:
         return [
-            LanguageSetup(
+            LanguageBuild(
                 name=language.name,
                 build=language.build_commands(),
                 test=language.test_command(),
