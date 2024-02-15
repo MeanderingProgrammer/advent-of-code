@@ -65,38 +65,38 @@ pip install -r scripts/requirements.txt
 ## Set Aliases
 
 ```bash
-alias a_setup="./scripts/advent.py setup"
+alias a_build="./scripts/advent.py build"
 alias a_run="./scripts/advent.py run"
 alias a_gen="./scripts/advent.py generate"
 alias a_graph="./scripts/advent.py graph"
 ```
 
-# Setup Languages
+# Build
 
-The `setup` target is used to do any language specific setup prior to running.
+The `build` target is used to do any language specific setup prior to running.
 
 This includes downloading any necessary libraries, compiling targets, etc.
 
-None of the parameters are required, the default behavior in this case is to setup
-all supported languages.
+None of the parameters are required, the default behavior in this case is to
+build and test all supported languages.
 
-- Alias Command: `a_setup`
-- Direct Command: `./scripts/advent.py setup`
+- Alias Command: `a_build`
+- Direct Command: `./scripts/advent.py build`
 
 <details>
 
 <summary>Usage</summary>
 
 ```bash
-a_setup \
+a_build \
   (--language <language>)* \
   --info?
 ```
 
 | Variable Name | Alt  | Description                            | Default | Example   |
 | ------------- | ---- | -------------------------------------- | ------- | --------- |
-| language      | `-l` | Limit setup to the specified languages | None    | `-l rust` |
-| info          | `-i` | Outputs which languages will be setup  | `False` | `-i`      |
+| language      | `-l` | Limit build to the specified languages | None    | `-l rust` |
+| info          | `-i` | Outputs which languages will be built  | `False` | `-i`      |
 
 </details>
 

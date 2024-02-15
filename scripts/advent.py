@@ -9,18 +9,22 @@ from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
 from args.str_enum_type import StrEnumType
+from command.build import Build
 from command.command import Command
 from command.generate import Generator
 from command.graph import Grapher
 from command.run import Runner
-from command.setup import Setup
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
 from component.language_strategy import LanguageStrategy, StrategyName
 from language.language import Language
 
 
-@click.group()
+@click.group(
+    context_settings=dict(
+        help_option_names=["-h", "--help"],
+    ),
+)
 def cli() -> None:
     pass
 
@@ -28,14 +32,14 @@ def cli() -> None:
 @cli.command()
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
 @click.option("-i", "--info", is_flag=True)
-def setup(language: tuple[Language, ...], info: bool) -> None:
+def build(language: tuple[Language, ...], info: bool) -> None:
     """
-    Setup specified languages
+    Build specified languages
     """
-    setup = Setup(
+    build = Build(
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
     )
-    run_command(setup, info)
+    run_command(build, info)
 
 
 @cli.command()
