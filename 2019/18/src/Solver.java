@@ -10,7 +10,7 @@ public class Solver {
 
     private static void solution(String[] args) {
         var lines = new FileReader(args).read();
-        Answer.part1(5402, new Maze(lines, false).complete());
-        Answer.part2(2138, new Maze(lines, true).complete());
+        Answer.<Integer>part1(5402, new Maze(lines, false).complete());
+        Answer.<Integer>part2(2138, new Maze(lines, true).complete());
     }
 }

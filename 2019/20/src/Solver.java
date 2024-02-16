@@ -10,8 +10,8 @@ public class Solver {
 
     private static void solution(String[] args) {
         Maze maze = new Maze(new FileReader(args).read());
-        Answer.part1(628, solve(maze, false));
-        Answer.part2(7506, solve(maze, true));
+        Answer.<Integer>part1(628, solve(maze, false));
+        Answer.<Integer>part2(7506, solve(maze, true));
     }
 
     private static int solve(Maze maze, boolean recursive) {

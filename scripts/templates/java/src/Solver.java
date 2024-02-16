@@ -10,6 +10,6 @@ public class Solver {
     private static void solution(String[] args) {
         FileReader fileReader = new FileReader(args);
         System.out.println(fileReader.read());
-        Answer.part1(1, 1);
+        Answer.<Integer>part1(1, 1);
     }
 }

@@ -11,8 +11,8 @@ public class Solver {
 
     private static void solution(String[] args) {
         var values = new FileReader(args).read(Integer::parseInt);
-        Answer.part1(1292, windowIncreases(values, 1));
-        Answer.part2(1262, windowIncreases(values, 3));
+        Answer.<Integer>part1(1292, windowIncreases(values, 1));
+        Answer.<Integer>part2(1262, windowIncreases(values, 3));
     }
 
     private static int windowIncreases(List<Integer> values, int windowSize) {
