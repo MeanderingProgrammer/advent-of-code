@@ -22,7 +22,7 @@ fn total_safe(starting_row: Vec<bool>, rounds: usize) -> usize {
     safe
 }
 
-fn next_row(row: &Vec<bool>) -> Vec<bool> {
+fn next_row(row: &[bool]) -> Vec<bool> {
     let mut result = Vec::new();
     for i in 0..row.len() {
         let element = get_element(

@@ -34,9 +34,8 @@ where
             }
             if seen.contains(&node) {
                 continue;
-            } else {
-                seen.insert(node.clone());
             }
+            seen.insert(node.clone());
             (self.get_neighbors)(&node)
                 .into_iter()
                 .filter(|(next_node, _)| !seen.contains(next_node))
