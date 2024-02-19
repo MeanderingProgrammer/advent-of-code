@@ -314,13 +314,13 @@ path = "2023/21/solver.rs"
 name = "aoc_2023_25"
 path = "2023/25/solver.rs"
 
-[lib]
-name = "aoc_lib"
-path = "commons/rust/src/lib.rs"
-
 [[test]]
 name = "aoc_lib"
 path = "commons/rust/tests/lib.rs"
+
+[lib]
+name = "aoc_lib"
+path = "commons/rust/src/lib.rs"
 
 [package]
 name = "advent_of_code"
