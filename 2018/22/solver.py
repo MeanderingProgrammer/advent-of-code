@@ -14,7 +14,7 @@ VALID_TOOL: dict[int, set[str]] = {
 }
 
 
-@dataclass
+@dataclass(slots=True)
 class Region:
     depth: int
     target: Point
