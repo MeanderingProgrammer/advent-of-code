@@ -33,7 +33,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = Reader::default()
+    let values: Vec<usize> = Reader::default()
         .read_csv()
         .into_iter()
         .map(|value| value as usize)
@@ -42,7 +42,7 @@ fn solution() {
     answer::part2(505, run(&values, 30_000_000));
 }
 
-fn run(values: &Vec<usize>, n: usize) -> usize {
+fn run(values: &[usize], n: usize) -> usize {
     let mut number_stats: Vec<Option<Stats>> = vec![None; n];
     values.iter().enumerate().for_each(|(i, value)| {
         number_stats[*value] = Some(Stats::new(i));

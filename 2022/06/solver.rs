@@ -12,7 +12,7 @@ fn solution() {
     answer::part2(3380, first_unique_sequence(&data, 14));
 }
 
-fn first_unique_sequence(chars: &Vec<char>, length: usize) -> usize {
+fn first_unique_sequence(chars: &[char], length: usize) -> usize {
     let unique_length = |start| chars[start..start + length].iter().unique().count();
     let start_pos = (0..chars.len()).position(|i| unique_length(i) == length);
     start_pos.unwrap() + length

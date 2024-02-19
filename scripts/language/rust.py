@@ -14,7 +14,7 @@ class Rust(Language):
 
     @override
     def test_command(self) -> list[str]:
-        return ["cargo", "test", "-r", "-p", "aoc_lib"]
+        return ["cargo", "test", "-r", "--test", "aoc_lib"]
 
     @override
     def build_commands(self) -> list[list[str]]:

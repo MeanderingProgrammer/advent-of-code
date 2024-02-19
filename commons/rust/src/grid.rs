@@ -27,10 +27,6 @@ impl<T: GridValue> Grid<T> {
         grid
     }
 
-    pub fn get_grid(self) -> FxHashMap<Point, T> {
-        self.grid
-    }
-
     pub fn add(&mut self, point: Point, value: T) {
         self.grid.insert(point, value);
     }
