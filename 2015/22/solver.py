@@ -5,7 +5,7 @@ from aoc import answer, search
 from aoc.parser import Parser
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, order=True, slots=True)
 class Stats:
     hp: int = 0
     attack: int = 0

@@ -4,7 +4,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Password:
     value: str
 

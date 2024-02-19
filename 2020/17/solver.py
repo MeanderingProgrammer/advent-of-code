@@ -5,7 +5,7 @@ from aoc import answer
 from aoc.parser import Parser
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Point:
     dimens: int
     coords: tuple[int, ...]
@@ -22,7 +22,7 @@ class Point:
         return neighbors[1:]
 
 
-@dataclass
+@dataclass(slots=True)
 class Status:
     active: bool
     active_neighbors: int = 0
@@ -40,7 +40,7 @@ class Status:
         self.active_neighbors = 0
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Grid:
     grid: dict[Point, Status]
 
