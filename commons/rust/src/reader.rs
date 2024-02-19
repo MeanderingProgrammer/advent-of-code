@@ -88,12 +88,13 @@ impl Reader {
     }
 
     pub fn read<T>(&self, f: fn(&str) -> T) -> Vec<T> {
-        let file =
-            File::open(&self.path).unwrap_or_else(|_| panic!("Could not open: {}", self.path));
-        BufReader::new(file)
-            .lines()
-            .map(|line| f(&line.unwrap()))
-            .collect()
+        match File::open(&self.path) {
+            Ok(file) => BufReader::new(file)
+                .lines()
+                .map(|line| f(&line.unwrap()))
+                .collect(),
+            Err(_) => panic!("Could not open: {}", self.path),
+        }
     }
 
     fn to_int(value: &str) -> i64 {
