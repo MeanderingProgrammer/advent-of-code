@@ -2,6 +2,8 @@ use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use rand::seq::{IteratorRandom, SliceRandom};
+use rayon::prelude::*;
+use std::thread;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Node<'a> {
@@ -108,11 +110,19 @@ fn solution() {
 }
 
 fn until_cut_size(graph: Graph, size: usize) -> usize {
+    let threads = thread::available_parallelism().unwrap().get();
     loop {
-        let mut graph_copy = graph.clone();
-        graph_copy.karger();
-        if graph_copy.cut_size() == size {
-            return graph_copy.value();
+        let found_value = (0..threads).into_par_iter().find_map_any(|_| {
+            let mut graph_copy = graph.clone();
+            graph_copy.karger();
+            if graph_copy.cut_size() == size {
+                Some(graph_copy.value())
+            } else {
+                None
+            }
+        });
+        if let Some(value) = found_value {
+            return value;
         }
     }
 }

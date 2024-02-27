@@ -337,16 +337,17 @@ petgraph = "=0.6.4"
 priority-queue = "=1.4.0"
 queues = "=1.1.0"
 rand = "=0.8.5"
+rayon = "=1.8.1"
 regex = "=1.10.3"
-serde_json = "=1.0.113"
+serde_json = "=1.0.114"
 strum = "=0.26.1"
 strum_macros = "=0.26.1"
-tempfile = "=3.10.0"
+tempfile = "=3.10.1"
 
 [dependencies.clap]
 version = "=4.5.1"
 features = [ "derive",]
 
 [dependencies.serde]
-version = "=1.0.196"
+version = "=1.0.197"
 features = [ "derive",]
