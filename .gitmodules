@@ -1,3 +1,4 @@
 [submodule "data"]
 	path = data
 	url = git@github.com:MeanderingProgrammer/advent-of-code-date.git
+	branch = main
