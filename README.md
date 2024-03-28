@@ -107,8 +107,8 @@ The `run` target is used to run various days rather than running directly.
 Does some hacky stuff to set arguments and run commands, but for the most part runs
 standard build commands for each language / framework.
 
-None of the parameters are required, the default behavior in this case is to run the
-latest day in the fastest language it is implemented in.
+None of the parameters are required, the default behavior in this case is to run
+the latest day in the fastest language it is implemented in.
 
 - Alias Command: `a_run`
 - Direct Command: `./scripts/advent.py run`
@@ -171,14 +171,15 @@ pytest -s scripts
 
 # Generate
 
-The `generate` target creates initial files and empty data file for the specified language.
+The `generate` target creates initial files and empty data file for the specified
+language.
 
 Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
 Will pull down your puzzle input if [instructions](#install-aoc-cli) are followed.
 
-None of the parameters are required, the default behavior in this case is to generate the
-next day using the rust template.
+None of the parameters are required, the default behavior in this case is to generate
+the next day using the rust template.
 
 - Alias Command: `a_gen`
 - Direct Command: `./scripts/advent.py generate`
@@ -217,7 +218,8 @@ Template generation script can use `aoc-cli` to download input: [docs](https://g
 
 Follow the instructions in the `README` of `aoc-cli` to get your session cookie setup.
 
-This library relies on openssl which you will also need to install if you don't already have it.
+This library relies on openssl which you will also need to install if you don't already
+have it.
 
 ```bash
 cargo install aoc-cli
@@ -226,11 +228,11 @@ touch .adventofcode.session
 
 # Graph
 
-The `graph` target creates a variety of graphs to visualize the runtime of days split and
-grouped on different dimensions.
+The `graph` target creates a variety of graphs to visualize the runtime of days split
+and grouped on different dimensions.
 
-None of the parameters are required, the default behavior in this case is to create only
-new graphs and skip graphs that have been created before.
+None of the parameters are required, the default behavior in this case is to create
+only new graphs and skip graphs that have been created before.
 
 - Alias Command: `a_graph`
 - Direct Command: `./scripts/advent.py graph`
