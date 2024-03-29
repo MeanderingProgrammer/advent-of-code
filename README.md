@@ -65,10 +65,10 @@ pip install -r scripts/requirements.txt
 ## Set Aliases
 
 ```bash
-alias a_build="./scripts/advent.py build"
-alias a_run="./scripts/advent.py run"
-alias a_gen="./scripts/advent.py generate"
-alias a_graph="./scripts/advent.py graph"
+alias a-build="./scripts/advent.py build"
+alias a-run="./scripts/advent.py run"
+alias a-gen="./scripts/advent.py generate"
+alias a-graph="./scripts/advent.py graph"
 ```
 
 # Build
@@ -80,7 +80,7 @@ This includes downloading any necessary libraries, compiling targets, etc.
 None of the parameters are required, the default behavior in this case is to
 build and test all supported languages.
 
-- Alias Command: `a_build`
+- Alias Command: `a-build`
 - Direct Command: `./scripts/advent.py build`
 
 <details>
@@ -88,7 +88,7 @@ build and test all supported languages.
 <summary>Usage</summary>
 
 ```bash
-a_build \
+a-build \
   (--language <language>)* \
   --info?
 ```
@@ -110,7 +110,7 @@ standard build commands for each language / framework.
 None of the parameters are required, the default behavior in this case is to run
 the latest day in the fastest language it is implemented in.
 
-- Alias Command: `a_run`
+- Alias Command: `a-run`
 - Direct Command: `./scripts/advent.py run`
 
 <details>
@@ -118,7 +118,7 @@ the latest day in the fastest language it is implemented in.
 <summary>Usage</summary>
 
 ```bash
-a_run \
+a-run \
   --template <template>? \
   (--year <year>)* \
   (--day <day>)* \
@@ -181,7 +181,7 @@ Will pull down your puzzle input if [instructions](#install-aoc-cli) are followe
 None of the parameters are required, the default behavior in this case is to generate
 the next day using the rust template.
 
-- Alias Command: `a_gen`
+- Alias Command: `a-gen`
 - Direct Command: `./scripts/advent.py generate`
 
 <details>
@@ -189,7 +189,7 @@ the next day using the rust template.
 <summary>Usage</summary>
 
 ```bash
-a_gen \
+a-gen \
   --template <template>? \
   --year <year>? \
   --day <day>? \
@@ -234,7 +234,7 @@ and grouped on different dimensions.
 None of the parameters are required, the default behavior in this case is to create
 only new graphs and skip graphs that have been created before.
 
-- Alias Command: `a_graph`
+- Alias Command: `a-graph`
 - Direct Command: `./scripts/advent.py graph`
 
 <details>
@@ -242,7 +242,7 @@ only new graphs and skip graphs that have been created before.
 <summary>Usage</summary>
 
 ```bash
-a_graph \
+a-graph \
   --archive? \
   --info?
 ```
