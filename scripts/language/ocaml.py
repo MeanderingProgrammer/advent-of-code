@@ -18,7 +18,7 @@ class Ocaml(Language):
     @override
     def build_commands(self) -> list[list[str]]:
         return [
-            ["opam", "install", "--deps-only", "."],
+            ["opam", "install", "--yes", "--deps-only", "."],
             ["dune", "build"],
         ]
 
