@@ -1,4 +1,4 @@
 [submodule "data"]
 	path = data
-	url = ../advent-of-code-date.git
+	url = ../advent-of-code-data.git
 	branch = main
