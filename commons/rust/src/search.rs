@@ -7,17 +7,30 @@ use std::hash::Hash;
 pub trait Node: Debug + Clone + Hash + Eq {}
 impl<T: Debug + Clone + Hash + Eq> Node for T {}
 
-pub trait Bfs<T: Node> {
+pub trait GraphTraversal<T: Node> {
     fn done(&self, node: &T) -> bool;
 
     fn neighbors(&self, node: &T) -> impl Iterator<Item = T>;
 
-    fn run(&self, start: &T) -> Option<i64> {
+    fn bfs(&self, start: &T) -> Option<i64> {
+        self.run(start, true)
+    }
+
+    fn dfs(&self, start: &T) -> Option<i64> {
+        self.run(start, false)
+    }
+
+    fn run(&self, start: &T, front: bool) -> Option<i64> {
         let mut queue = VecDeque::new();
         queue.push_back((start.clone(), 0));
         let mut seen = FxHashSet::default();
         while !queue.is_empty() {
-            let (node, weight) = queue.pop_front().unwrap();
+            // Remove from either the front (BFS) or back (DFS)
+            let (node, weight) = if front {
+                queue.pop_front().unwrap()
+            } else {
+                queue.pop_back().unwrap()
+            };
             if seen.contains(&node) {
                 continue;
             }
