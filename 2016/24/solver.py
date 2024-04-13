@@ -1,9 +1,10 @@
 import itertools
 from dataclasses import dataclass
 
-from aoc import answer, search
+from aoc import answer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
+from aoc.search import Search
 
 WALL, OPEN = "#", "."
 
@@ -26,7 +27,12 @@ class Grid:
                     continue
                 distance = distances.get((end.name, start.name))
                 if distance is None:
-                    distance = search.bfs(start.point, end.point, self.get_adjacent)
+                    search = Search[Point](
+                        start=start.point,
+                        end=end.point,
+                        neighbors=self.get_adjacent,
+                    )
+                    distance = search.bfs()
                     assert distance is not None
                 distances[(start.name, end.name)] = distance
         return distances

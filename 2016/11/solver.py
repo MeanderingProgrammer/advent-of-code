@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional, Self
 
-from aoc import answer, search
+from aoc import answer
 from aoc.parser import Parser
+from aoc.search import Search
 
 
 @dataclass(frozen=True)
@@ -87,7 +88,12 @@ def main() -> None:
 def count_steps(additional_items: list[str]) -> Optional[int]:
     start = get_start_state(additional_items)
     end = get_end_state(start)
-    return search.bfs(start, end, get_adjacent)
+    search = Search[State](
+        start=start,
+        end=end,
+        neighbors=get_adjacent,
+    )
+    return search.dfs()
 
 
 def get_start_state(additional_items: list[str]) -> State:
