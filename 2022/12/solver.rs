@@ -14,11 +14,20 @@ fn solution() {
     answer::part2(465, shortest_bfs(&grid, &end).unwrap());
 }
 
-fn shortest_bfs(grid: &Grid<i64>, end: &Point) -> Option<i64> {
-    grid.points_with_value(get_offset('a'))
-        .iter()
-        .filter_map(|start| bfs(grid, start, end))
-        .min()
+fn get_graph() -> (Grid<i64>, Point, Point) {
+    let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
+
+    let start = grid.points_with_value(get_offset('S'))[0].clone();
+    grid.add(start.clone(), get_offset('a'));
+
+    let end = grid.points_with_value(get_offset('E'))[0].clone();
+    grid.add(end.clone(), get_offset('z'));
+
+    (grid, start, end)
+}
+
+fn get_offset(ch: char) -> i64 {
+    (ch as i64) - ('a' as i64)
 }
 
 fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
@@ -30,25 +39,15 @@ fn bfs(grid: &Grid<i64>, start: &Point, end: &Point) -> Option<i64> {
             node.neighbors()
                 .into_iter()
                 .filter(|neighbor| grid.contains(neighbor) && grid.get(neighbor) <= &max_height)
-                .map(|neighbor| (neighbor, 1))
                 .collect()
         },
     }
-    .dijkstra()
+    .bfs()
 }
 
-fn get_graph() -> (Grid<i64>, Point, Point) {
-    let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
-
-    let start = grid.points_with_value(get_offset('S'))[0].clone();
-    grid.add(start.clone(), get_offset('a'));
-
-    let end = grid.points_with_value(get_offset('E'))[0].clone();
-    grid.add(end.clone(), get_offset('z'));
-
-    (grid, start.clone(), end.clone())
-}
-
-fn get_offset(ch: char) -> i64 {
-    (ch as i64) - ('a' as i64)
+fn shortest_bfs(grid: &Grid<i64>, end: &Point) -> Option<i64> {
+    grid.points_with_value(get_offset('a'))
+        .iter()
+        .filter_map(|start| bfs(grid, start, end))
+        .min()
 }
