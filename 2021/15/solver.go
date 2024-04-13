@@ -61,7 +61,7 @@ func solve(lines []string, wrap bool) int {
 			return nextStates
 		},
 		FirstOnly: true,
-	}.Bfs()
+	}.Dijkstra()
 	return result.Completed[0].value
 }
 

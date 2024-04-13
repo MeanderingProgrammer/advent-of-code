@@ -13,19 +13,6 @@ type Graph[K comparable, V comparable] struct {
 	grid     grid.Grid[V]
 }
 
-type Seen map[uint64]int
-
-func (seen Seen) updateIfBest(state queue.State) bool {
-	hashState, cost := state.Hash(), state.Cost()
-	lowestCost, ok := seen[hashState]
-	if !ok || cost < lowestCost {
-		seen[hashState] = cost
-		return true
-	} else {
-		return false
-	}
-}
-
 type Search[T queue.State] struct {
 	Initial    T
 	Done       func(T) bool
@@ -35,33 +22,36 @@ type Search[T queue.State] struct {
 
 type SearchResult[T queue.State] struct {
 	Completed []T
-	Explored  int
 }
 
-func (search Search[T]) Bfs() SearchResult[T] {
+func (search Search[T]) Dijkstra() SearchResult[T] {
 	completed := []T{}
 	q := &queue.Queue[T]{search.Initial}
-	explored := 0
-	seen := make(Seen)
+	seen := make(map[uint64]bool)
 	for !q.Empty() {
-		explored++
-		current := q.Next()
-		if search.Done(current) {
-			completed = append(completed, current)
+		state := q.Next()
+		hashState := state.Hash()
+		_, ok := seen[hashState]
+		if ok {
+			continue
+		}
+		seen[hashState] = true
+		if search.Done(state) {
+			completed = append(completed, state)
 			if search.FirstOnly {
 				break
 			}
 		} else {
-			for _, state := range search.NextStates(current) {
-				if seen.updateIfBest(state) {
-					q.Add(state)
+			for _, adjacent := range search.NextStates(state) {
+				_, ok := seen[adjacent.Hash()]
+				if !ok {
+					q.Add(adjacent)
 				}
 			}
 		}
 	}
 	return SearchResult[T]{
 		Completed: completed,
-		Explored:  explored,
 	}
 }
 

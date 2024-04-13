@@ -160,7 +160,7 @@ func (board Board) solve(characters Characters) BoardState {
 			return board.nextStates(state)
 		},
 		FirstOnly: true,
-	}.Bfs()
+	}.Dijkstra()
 	return result.Completed[0]
 }
 
