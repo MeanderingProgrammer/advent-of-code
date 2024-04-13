@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 
-from aoc import answer, search
+from aoc import answer
 from aoc.grid import Grid
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
+from aoc.search import Search
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,12 @@ class Maze:
 def main() -> None:
     maze = Maze(grid=dict(), favorite_number=Parser().integer())
     start: Point = (1, 1)
-    answer.part1(92, search.bfs(start, (31, 39), maze.get_adjacent))
+    search = Search[Point](
+        start=start,
+        end=(31, 39),
+        neighbors=maze.get_adjacent,
+    )
+    answer.part1(92, search.bfs())
     answer.part2(124, len(reachable(start, 50, maze)))
 
 

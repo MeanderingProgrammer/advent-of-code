@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 
-from aoc import answer, search
+from aoc import answer
 from aoc.grid import Grid
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
+from aoc.search import Search
 
 
 @dataclass(frozen=True)
@@ -60,7 +61,12 @@ def viable_connections(nodes: Grid[Node]) -> int:
 def calculate_transfers(nodes: Grid[Node]) -> int:
     start = [point for point, node in nodes.items() if node.empty()][0]
     end = (max([point[0] for point in nodes]) - 1, 1)
-    to_free = search.bfs(start, end, lambda point: get_adjacent(nodes, point))
+    search = Search[Point](
+        start=start,
+        end=end,
+        neighbors=lambda point: get_adjacent(nodes, point),
+    )
+    to_free = search.bfs()
     assert to_free is not None
 
     # Amount of movements needed to get free space above node to the left of goal
