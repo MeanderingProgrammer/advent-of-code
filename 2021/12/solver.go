@@ -16,37 +16,45 @@ func (cave Cave) isBig() bool {
 	return unicode.IsUpper(rune(cave[0]))
 }
 
-type Path []Cave
+type Path struct {
+	caves []Cave
+	hash  uint64
+}
+
+func newPath(caves []Cave) Path {
+	h := fnv.New64()
+	for _, cave := range caves {
+		h.Write([]byte(cave))
+	}
+	return Path{caves: caves, hash: h.Sum64()}
+}
 
 func (path Path) Cost() int {
-	return len(path)
+	return len(path.caves)
 }
 
 func (path Path) Hash() uint64 {
-	h := fnv.New64()
-	for _, cave := range path {
-		h.Write([]byte(cave))
-	}
-	return h.Sum64()
+	return path.hash
 }
 
 func (path Path) last() Cave {
-	return path[len(path)-1]
+	return path.caves[len(path.caves)-1]
 }
 
 func (path Path) add(cave Cave) Path {
-	desination := make([]Cave, len(path))
-	copy(desination, path)
-	return append(desination, cave)
+	desination := make([]Cave, len(path.caves))
+	copy(desination, path.caves)
+	caves := append(desination, cave)
+	return newPath(caves)
 }
 
 func (path Path) contains(destination Cave) bool {
-	return util.Contains(path, destination)
+	return util.Contains(path.caves, destination)
 }
 
 func (path Path) containsLower() bool {
 	lowerCounts := make(map[Cave]int)
-	for _, cave := range path {
+	for _, cave := range path.caves {
 		if !cave.isBig() {
 			lowerCounts[cave]++
 			if lowerCounts[cave] > 1 {
@@ -79,7 +87,7 @@ func getGraph() graph.Graph[Cave, string] {
 
 func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
 	result := graph.Search[Path]{
-		Initial: Path([]Cave{"start"}),
+		Initial: newPath([]Cave{"start"}),
 		Done: func(state Path) bool {
 			return state.last() == "end"
 		},

@@ -13,6 +13,16 @@ type Path struct {
 	point point.Point
 	value int
 	width int
+	hash  uint64
+}
+
+func newPath(p point.Point, value int, width int) Path {
+	return Path{
+		point: p,
+		value: value,
+		width: width,
+		hash:  uint64(p.Hash(width)),
+	}
 }
 
 func (path Path) Cost() int {
@@ -20,15 +30,11 @@ func (path Path) Cost() int {
 }
 
 func (path Path) Hash() uint64 {
-	return uint64(path.point.Hash(path.width))
+	return path.hash
 }
 
 func (path Path) add(graph graph.Graph[point.Point, int], p point.Point) Path {
-	return Path{
-		point: p,
-		value: path.value + graph.Value(p),
-		width: path.width,
-	}
+	return newPath(p, path.value+graph.Value(p), path.width)
 }
 
 func main() {
@@ -45,11 +51,7 @@ func solve(lines []string, wrap bool) int {
 	grid := getGrid(lines, wrap)
 	g := graph.ConstructGraph(grid)
 	result := graph.Search[Path]{
-		Initial: Path{
-			point: point.Point{X: 0, Y: 0},
-			value: 0,
-			width: grid.Width,
-		},
+		Initial: newPath(point.Point{X: 0, Y: 0}, 0, grid.Width),
 		Done: func(state Path) bool {
 			return state.point == point.Point{X: grid.Width, Y: grid.Height}
 		},

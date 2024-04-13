@@ -69,6 +69,31 @@ type BoardState struct {
 	characters Characters
 	cost       int
 	width      int
+	hash       uint64
+}
+
+func newBoardState(characters Characters, cost int, width int) BoardState {
+	points := make([]point.Point, len(characters))
+	i := 0
+	for point := range characters {
+		points[i] = point
+		i++
+	}
+	sort.Slice(points, func(i, j int) bool {
+		return points[i].Hash(width) < points[j].Hash(width)
+	})
+	h := fnv.New64()
+	for _, point := range points {
+		character := characters[point]
+		h.Write([]byte(util.ToString(point.Hash(width))))
+		h.Write([]byte{character.toByte()})
+	}
+	return BoardState{
+		characters: characters,
+		cost:       cost,
+		width:      width,
+		hash:       h.Sum64(),
+	}
 }
 
 func (state BoardState) Cost() int {
@@ -76,22 +101,7 @@ func (state BoardState) Cost() int {
 }
 
 func (state BoardState) Hash() uint64 {
-	points := make([]point.Point, len(state.characters))
-	i := 0
-	for point := range state.characters {
-		points[i] = point
-		i++
-	}
-	sort.Slice(points, func(i, j int) bool {
-		return points[i].Hash(state.width) < points[j].Hash(state.width)
-	})
-	h := fnv.New64()
-	for _, point := range points {
-		character := state.characters[point]
-		h.Write([]byte(util.ToString(point.Hash(state.width))))
-		h.Write([]byte{character.toByte()})
-	}
-	return h.Sum64()
+	return state.hash
 }
 
 func (state BoardState) complete() bool {
@@ -122,11 +132,7 @@ func (state BoardState) apply(move Move) BoardState {
 		value: character.value,
 	}
 	cost := character.value.cost()
-	return BoardState{
-		characters: updated,
-		cost:       state.cost + cost*move.distance(),
-		width:      state.width,
-	}
+	return newBoardState(updated, state.cost+cost*move.distance(), state.width)
 }
 
 type Move struct {
@@ -148,11 +154,7 @@ type Board struct {
 
 func (board Board) solve(characters Characters) BoardState {
 	result := graph.Search[BoardState]{
-		Initial: BoardState{
-			characters: characters,
-			cost:       0,
-			width:      board.width,
-		},
+		Initial: newBoardState(characters, 0, board.width),
 		Done: func(state BoardState) bool {
 			return state.complete()
 		},
