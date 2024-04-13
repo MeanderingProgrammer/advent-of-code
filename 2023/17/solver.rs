@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use aoc_lib::search::Search;
+use aoc_lib::search::Dijkstra;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Node {
@@ -49,48 +49,42 @@ impl Node {
 }
 
 #[derive(Debug)]
-struct Searcher {
-    grid: Grid<u32>,
-    start: Point,
-    target: Point,
+struct Search<'a> {
+    grid: &'a Grid<u32>,
+    target: &'a Point,
+    resistance: usize,
+    max_repeats: usize,
 }
 
-impl Searcher {
-    fn min_heat(&self, turn_resistance: usize, allowed_repeats: usize) -> Option<i64> {
-        Search {
-            start: Node {
-                position: self.start.clone(),
-                directions: vec![],
-            },
-            is_done: |node| node.position == self.target,
-            get_neighbors: |node| {
-                node.get_neighbors(turn_resistance)
-                    .into_iter()
-                    .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
-                    .filter_map(|(direction, is_turn, positions)| {
-                        let mut directions = vec![direction.clone(); positions.len()];
-                        if !is_turn {
-                            directions.append(&mut node.directions.clone());
-                        }
-                        let next_node = Node {
-                            position: positions.last().unwrap().clone(),
-                            directions,
-                        };
-                        let repeats = next_node.directions.len();
-                        if repeats <= allowed_repeats {
-                            let cost = positions
-                                .iter()
-                                .map(|position| *self.grid.get(position) as i64)
-                                .sum();
-                            Some((next_node, cost))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect()
-            },
-        }
-        .dijkstra()
+impl<'a> Dijkstra<Node> for Search<'a> {
+    fn done(&self, node: &Node) -> bool {
+        &node.position == self.target
+    }
+
+    fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
+        node.get_neighbors(self.resistance)
+            .into_iter()
+            .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
+            .filter_map(|(direction, is_turn, positions)| {
+                let mut directions = vec![direction.clone(); positions.len()];
+                if !is_turn {
+                    directions.append(&mut node.directions.clone());
+                }
+                let next_node = Node {
+                    position: positions.last().unwrap().clone(),
+                    directions,
+                };
+                let repeats = next_node.directions.len();
+                if repeats <= self.max_repeats {
+                    let cost = positions
+                        .iter()
+                        .map(|position| *self.grid.get(position) as i64)
+                        .sum();
+                    Some((next_node, cost))
+                } else {
+                    None
+                }
+            })
     }
 }
 
@@ -100,14 +94,22 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(|ch| ch.to_digit(10));
+    answer::part1(694, min_heat(&grid, 1, 3).unwrap());
+    answer::part2(829, min_heat(&grid, 4, 10).unwrap());
+}
+
+fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i64> {
     let bounds = grid.bounds(0);
-    let searcher = Searcher {
-        grid,
-        start: bounds.lower,
-        target: bounds.upper,
+    let start = &Node {
+        position: bounds.lower,
+        directions: vec![],
     };
-    let part1 = searcher.min_heat(1, 3);
-    let part2 = searcher.min_heat(4, 10);
-    answer::part1(694, part1.unwrap());
-    answer::part2(829, part2.unwrap());
+    let target = &bounds.upper;
+    let search = Search {
+        grid,
+        target,
+        resistance,
+        max_repeats,
+    };
+    search.run(start)
 }

@@ -65,7 +65,7 @@ fn main() {
 fn solution() {
     let jets = Reader::default().read_chars();
 
-    let shapes = vec![
+    let shapes = [
         // ####
         Shape::new(vec![
             Point::new(0, 0),

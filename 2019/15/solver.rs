@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use aoc_lib::search::Search;
+use aoc_lib::search::Bfs;
 use fxhash::FxHashMap;
 use std::collections::VecDeque;
 use strum::IntoEnumIterator;
@@ -112,33 +112,29 @@ impl Bus for RepairDroid {
 }
 
 #[derive(Debug)]
-struct Traverser {
+struct Search {
     grid: FxHashMap<Point, Item>,
 }
 
-impl Traverser {
-    fn min_steps(&self, position: Point) -> i64 {
-        Search {
-            start: position,
-            is_done: |node| self.grid.get(node).unwrap().is_oxygen(),
-            get_neighbors: |node| {
-                node.neighbors()
-                    .into_iter()
-                    .filter(|neighbor| self.grid.get(neighbor).unwrap_or(&Item::Wall).is_open())
-                    .map(|neighbor| (neighbor, 1))
-                    .collect()
-            },
-        }
-        .dijkstra()
-        .unwrap()
+impl Bfs<Point> for Search {
+    fn done(&self, node: &Point) -> bool {
+        self.grid.get(node).unwrap().is_oxygen()
     }
 
-    fn empty_locations(&self) -> Vec<Point> {
+    fn neighbors(&self, node: &Point) -> impl Iterator<Item = Point> {
+        node.neighbors()
+            .into_iter()
+            .filter(|neighbor| self.grid.get(neighbor).unwrap_or(&Item::Wall).is_open())
+    }
+}
+
+impl Search {
+    fn time_for_air(&self) -> Option<i64> {
         self.grid
             .iter()
             .filter(|(_, value)| value.is_empty())
-            .map(|(point, _)| point.clone())
-            .collect()
+            .map(|(position, _)| self.run(position).unwrap())
+            .max()
     }
 }
 
@@ -149,18 +145,9 @@ fn main() {
 fn solution() {
     let mut computer = Computer::new(RepairDroid::new(), Reader::default().read_csv());
     computer.run();
-    let traverser = Traverser {
+    let search = Search {
         grid: computer.bus.grid,
     };
-    answer::part1(224, traverser.min_steps(Point::default()));
-    answer::part1(284, time_for_air(&traverser));
-}
-
-fn time_for_air(traverser: &Traverser) -> i64 {
-    traverser
-        .empty_locations()
-        .into_iter()
-        .map(|position| traverser.min_steps(position))
-        .max()
-        .unwrap()
+    answer::part1(224, search.run(&Point::default()).unwrap());
+    answer::part1(284, search.time_for_air().unwrap());
 }
