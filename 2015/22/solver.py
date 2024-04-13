@@ -1,7 +1,8 @@
+import heapq
 from dataclasses import dataclass
 from typing import Optional, Self
 
-from aoc import answer, search
+from aoc import answer
 from aoc.parser import Parser
 
 
@@ -10,6 +11,9 @@ class Stats:
     hp: int = 0
     attack: int = 0
     armor: int = 0
+
+    def dead(self) -> bool:
+        return self.hp <= 0
 
     def add(self, other: Self) -> Self:
         return type(self)(
@@ -81,7 +85,7 @@ class Game:
     spells: frozenset[Spell]
 
     def get_moves(self) -> list[tuple[int, Self]]:
-        if self.player.hp <= 0:
+        if self.player.dead():
             return []
         return [
             (spell.effect().cost, self.move(spell))
@@ -144,11 +148,23 @@ def play_game(hp: int, attack: int, damage: int) -> Optional[int]:
         damage=Stats(hp=damage),
         spells=frozenset(),
     )
-    return search.bfs_complete(
-        (0, game),
-        lambda current: current.enemy.hp <= 0,
-        lambda current: current.get_moves(),
-    )
+    return dijkstra(game)
+
+
+def dijkstra(start: Game) -> Optional[int]:
+    queue: list[tuple[int, Game]] = [(0, start)]
+    seen: set[Game] = set()
+    while len(queue) > 0:
+        mana_used, game = heapq.heappop(queue)
+        if game in seen:
+            continue
+        seen.add(game)
+        if game.enemy.dead():
+            return mana_used
+        for cost, next_game in game.get_moves():
+            if next_game not in seen:
+                heapq.heappush(queue, (mana_used + cost, next_game))
+    return None
 
 
 if __name__ == "__main__":

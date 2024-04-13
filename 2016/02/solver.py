@@ -1,55 +1,58 @@
 from aoc import answer
 from aoc.grid import Grid
 from aoc.parser import Parser
-from aoc.point import Direction, Point, PointHelper
+from aoc.point import Point
+
+DIRECTIONS: dict[str, Point] = dict(
+    U=(0, -1),
+    D=(0, 1),
+    L=(-1, 0),
+    R=(1, 0),
+)
 
 
 @answer.timer
 def main() -> None:
-    answer.part1("47978", get_code([[7, 8, 9], [4, 5, 6], [1, 2, 3]]))
-    answer.part2(
-        "659AD",
-        get_code(
-            [
-                ["*", "*", "D", "*", "*"],
-                ["*", "A", "B", "C", "*"],
-                [5, 6, 7, 8, 9],
-                ["*", 2, 3, 4, "*"],
-                ["*", "*", 1, "*", "*"],
-            ]
-        ),
-    )
+    instructions: list[str] = Parser().lines()
+    keypad_1: list[list[str]] = [
+        ["1", "2", "3"],
+        ["4", "5", "6"],
+        ["7", "8", "9"],
+    ]
+    answer.part1("47978", get_code(instructions, keypad_1))
+    keypad_2: list[list[str]] = [
+        ["*", "*", "1", "*", "*"],
+        ["*", "2", "3", "4", "*"],
+        ["5", "6", "7", "8", "9"],
+        ["*", "A", "B", "C", "*"],
+        ["*", "*", "D", "*", "*"],
+    ]
+    answer.part2("659AD", get_code(instructions, keypad_2))
 
 
-def get_code(pattern: list[list[int | str]]) -> str:
-    phone, position = create_phone(pattern)
-    code = ""
-    for instruction in Parser().lines():
-        position = follow(phone, position, instruction)
-        code += str(phone[position])
-    return code
+def get_code(instructions: list[str], keypad: list[list[str]]) -> str:
+    phone: Grid[str] = create_phone(keypad)
+    position: Point = {digit: location for location, digit in phone.items()}["5"]
+
+    code: list[str] = []
+    for instruction in instructions:
+        for direction in instruction:
+            dx, dy = DIRECTIONS[direction]
+            new_position: Point = (position[0] + dx, position[1] + dy)
+            if new_position in phone:
+                position = new_position
+        code.append(phone[position])
+    return "".join(code)
 
 
-def create_phone(pattern: list[list[int | str]]) -> tuple[Grid, Point]:
-    phone = dict()
-    start = None
+def create_phone(pattern: list[list[str]]) -> Grid[str]:
+    phone: Grid[str] = dict()
     for y, row in enumerate(pattern):
         for x, value in enumerate(row):
-            point = (x, y)
+            point: Point = (x, y)
             if value != "*":
                 phone[point] = value
-            if value == 5:
-                start = point
-    assert start is not None
-    return phone, start
-
-
-def follow(phone: Grid, position: Point, instruction: str) -> Point:
-    for direction in instruction:
-        new_position = PointHelper.go(position, Direction.from_str(direction))
-        if new_position in phone:
-            position = new_position
-    return position
+    return phone
 
 
 if __name__ == "__main__":
