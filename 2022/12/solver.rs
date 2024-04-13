@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use aoc_lib::search::Bfs;
+use aoc_lib::search::GraphTraversal;
 
 #[derive(Debug)]
 struct Search {
@@ -10,7 +10,7 @@ struct Search {
     end: Point,
 }
 
-impl Bfs<Point> for Search {
+impl GraphTraversal<Point> for Search {
     fn done(&self, node: &Point) -> bool {
         node == &self.end
     }
@@ -28,7 +28,7 @@ impl Search {
         self.grid
             .points_with_value(start_value)
             .iter()
-            .filter_map(|start| self.run(start))
+            .filter_map(|start| self.bfs(start))
             .min()
     }
 }
@@ -39,7 +39,7 @@ fn main() {
 
 fn solution() {
     let (search, start) = get_search();
-    answer::part1(472, search.run(&start).unwrap());
+    answer::part1(472, search.bfs(&start).unwrap());
     answer::part2(465, search.shortest(get_offset('a')).unwrap());
 }
 

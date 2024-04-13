@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use aoc_lib::search::Bfs;
+use aoc_lib::search::GraphTraversal;
 use fxhash::FxHashMap;
 use std::collections::VecDeque;
 use strum::IntoEnumIterator;
@@ -116,7 +116,7 @@ struct Search {
     grid: FxHashMap<Point, Item>,
 }
 
-impl Bfs<Point> for Search {
+impl GraphTraversal<Point> for Search {
     fn done(&self, node: &Point) -> bool {
         self.grid.get(node).unwrap().is_oxygen()
     }
@@ -133,7 +133,7 @@ impl Search {
         self.grid
             .iter()
             .filter(|(_, value)| value.is_empty())
-            .map(|(position, _)| self.run(position).unwrap())
+            .map(|(position, _)| self.bfs(position).unwrap())
             .max()
     }
 }
@@ -148,6 +148,6 @@ fn solution() {
     let search = Search {
         grid: computer.bus.grid,
     };
-    answer::part1(224, search.run(&Point::default()).unwrap());
+    answer::part1(224, search.bfs(&Point::default()).unwrap());
     answer::part1(284, search.time_for_air().unwrap());
 }
