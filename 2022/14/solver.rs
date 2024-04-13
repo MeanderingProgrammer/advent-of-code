@@ -69,8 +69,7 @@ fn fill(with_floor: bool) -> usize {
 
 fn get_grid() -> Grid<char> {
     let rock_formations: Vec<Vec<Point>> = Reader::default().read(|line| {
-        line.to_string()
-            .split(" -> ")
+        line.split(" -> ")
             .map(|point| match point.split_once(',') {
                 Some((x, y)) => Point::new(x.parse().unwrap(), y.parse().unwrap()),
                 None => panic!(),
