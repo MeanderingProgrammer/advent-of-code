@@ -1,7 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, override
 
-from aoc import answer, search
+from aoc import answer
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
@@ -11,13 +11,13 @@ DIRECTIONS: dict[int, Point] = {1: (0, 1), 2: (0, -1), 3: (-1, 0), 4: (1, 0)}
 OPPOSITES: dict[int, int] = {1: 2, 2: 1, 3: 4, 4: 3}
 
 
+@dataclass
 class RepairDroid(Bus):
-    def __init__(self):
-        self.completed = False
-        self.position: Point = (0, 0)
-        self.next_position: Optional[tuple[int, Point]] = None
-        self.path: list[tuple[int, Point]] = [(0, self.position)]
-        self.grid: dict[Point, int] = {self.position: EMPTY}
+    completed: bool = False
+    position: Point = (0, 0)
+    next_position: Optional[tuple[int, Point]] = None
+    path: list[tuple[int, Point]] = field(default_factory=lambda: [(0, (0, 0))])
+    grid: dict[Point, int] = field(default_factory=lambda: {(0, 0): EMPTY})
 
     @override
     def active(self) -> bool:
@@ -62,24 +62,26 @@ class RepairDroid(Bus):
 class Traverser:
     grid: dict[Point, int]
 
-    def min_steps(self, position: Point) -> int:
-        min_path = search.bfs_complete(
-            start=(0, position),
-            is_done=lambda current: self.grid[current] == OXYGEN,
-            get_adjacent=self.get_options,
-        )
-        assert min_path is not None
-        return min_path
+    def bfs(self, start: Point) -> int:
+        queue: list[tuple[int, Point]] = [(0, start)]
+        seen: set[Point] = set()
+        while len(queue) > 0:
+            minutes, position = queue.pop(0)
+            if position in seen:
+                continue
+            seen.add(position)
+            if self.grid[position] == OXYGEN:
+                return minutes
+            for next_position in PointHelper.neighbors(position):
+                if self.grid.get(next_position, WALL) != WALL:
+                    if next_position not in seen:
+                        queue.append((minutes + 1, next_position))
+        raise Exception("No path found")
 
-    def get_options(self, position: Point) -> list[tuple[int, Point]]:
-        options: list[tuple[int, Point]] = []
-        for next_position in PointHelper.neighbors(position):
-            if self.grid.get(next_position, WALL) != WALL:
-                options.append((1, next_position))
-        return options
-
-    def empty_locations(self) -> list[Point]:
-        return [location for location, value in self.grid.items() if value == EMPTY]
+    def time_for_air(self) -> int:
+        empty = [location for location, value in self.grid.items() if value == EMPTY]
+        steps_needed = [self.bfs(position) for position in empty]
+        return max(steps_needed)
 
 
 @answer.timer
@@ -87,15 +89,8 @@ def main() -> None:
     droid = RepairDroid()
     Computer(bus=droid, memory=Parser().int_csv()).run()
     traverser = Traverser(grid=droid.grid)
-    answer.part1(224, traverser.min_steps((0, 0)))
-    answer.part2(284, time_for_air(traverser))
-
-
-def time_for_air(traverser: Traverser) -> int:
-    steps_needed = [
-        traverser.min_steps(position) for position in traverser.empty_locations()
-    ]
-    return max(steps_needed)
+    answer.part1(224, traverser.bfs((0, 0)))
+    answer.part2(284, traverser.time_for_air())
 
 
 if __name__ == "__main__":

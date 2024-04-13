@@ -1,45 +1,49 @@
 import hashlib
 
-from aoc import answer, search
+from aoc import answer
 from aoc.parser import Parser
-from aoc.point import Direction, Point, PointHelper
+from aoc.point import Point
 
-DIRECTIONS: list[str] = ["U", "D", "L", "R"]
+DIRECTIONS: list[tuple[str, Point]] = [
+    ("U", (0, 1)),
+    ("D", (0, -1)),
+    ("L", (-1, 0)),
+    ("R", (1, 0)),
+]
+
+LEGAL_HASH: list[str] = ["b", "c", "d", "e", "f"]
 
 
 @answer.timer
 def main() -> None:
-    code = Parser().string()
-    paths = search.bfs_paths(((-3, 3), code), (0, 0), get_adjacent)
-    answer.part1("DDRLRRUDDR", pull_path(code, paths[0]))
-    answer.part2(556, len(pull_path(code, paths[-1])))
+    code: str = Parser().string()
+    paths: list[str] = bfs(code, (-3, 3), (0, 0))
+    answer.part1("DDRLRRUDDR", paths[0])
+    answer.part2(556, len(paths[-1]))
 
 
-def get_adjacent(item: tuple[Point, str]) -> list[tuple[Point, str]]:
-    point, code = item
-    hashed = hash(code)
+def bfs(code: str, start: Point, end: Point) -> list[str]:
+    queue: list[tuple[Point, str]] = [(start, "")]
+    paths: list[str] = []
+    while len(queue) > 0:
+        point, path = queue.pop(0)
+        if point == end:
+            paths.append(path)
+        else:
+            for adjacent in get_adjacent(code, point, path):
+                queue.append(adjacent)
+    return paths
+
+
+def get_adjacent(code: str, point: Point, path: str) -> list[tuple[Point, str]]:
+    hashed: str = hashlib.md5(str.encode(code + path)).hexdigest()
     result: list[tuple[Point, str]] = []
-    for i, name in enumerate(DIRECTIONS):
-        next_point = PointHelper.go(point, Direction.from_str(name))
-        if is_legal(next_point) and unlocked(hashed[i]):
-            result.append((next_point, code + name))
+    for i, (symbol, direction) in enumerate(DIRECTIONS):
+        x, y = (point[0] + direction[0], point[1] + direction[1])
+        in_bounds: bool = x >= -3 and x <= 0 and y <= 3 and y >= 0
+        if in_bounds and hashed[i] in LEGAL_HASH:
+            result.append(((x, y), path + symbol))
     return result
-
-
-def is_legal(p: Point) -> bool:
-    return p[0] >= -3 and p[0] <= 0 and p[1] <= 3 and p[1] >= 0
-
-
-def unlocked(value: str) -> bool:
-    return value in ["b", "c", "d", "e", "f"]
-
-
-def hash(value: str) -> str:
-    return hashlib.md5(str.encode(value)).hexdigest()[:4]
-
-
-def pull_path(code: str, value: str) -> str:
-    return value[len(code) :]
 
 
 if __name__ == "__main__":
