@@ -93,7 +93,7 @@ func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
 			return nextStates
 		},
 		FirstOnly: false,
-	}.Bfs()
+	}.Dijkstra()
 	return len(result.Completed)
 }
 
