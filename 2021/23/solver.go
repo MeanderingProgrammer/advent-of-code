@@ -6,6 +6,7 @@ import (
 	"advent-of-code/commons/go/graph"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/search"
 	"advent-of-code/commons/go/util"
 	"hash/fnv"
 	"maps"
@@ -152,8 +153,8 @@ type Board struct {
 	width    int
 }
 
-func (board Board) solve(characters Characters) BoardState {
-	result := graph.Search[BoardState]{
+func (board Board) solve(characters Characters) int {
+	dijkstra := search.Dijkstra[BoardState]{
 		Initial: newBoardState(characters, 0, board.width),
 		Done: func(state BoardState) bool {
 			return state.complete()
@@ -161,9 +162,8 @@ func (board Board) solve(characters Characters) BoardState {
 		NextStates: func(state BoardState) []BoardState {
 			return board.nextStates(state)
 		},
-		FirstOnly: true,
-	}.Dijkstra()
-	return result.Completed[0]
+	}
+	return dijkstra.Run().cost
 }
 
 func (board Board) nextStates(state BoardState) []BoardState {
@@ -267,8 +267,7 @@ func solve(lines []string, extend bool) int {
 	rows := getRows(lines, extend)
 	board := getBoard(rows)
 	characters := getCharacters(rows)
-	endState := board.solve(characters)
-	return endState.cost
+	return board.solve(characters)
 }
 
 func getRows(rows []string, extend bool) []string {

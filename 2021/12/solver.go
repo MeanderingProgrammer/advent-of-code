@@ -4,6 +4,7 @@ import (
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/graph"
+	"advent-of-code/commons/go/search"
 	"advent-of-code/commons/go/util"
 	"hash/fnv"
 	"strings"
@@ -27,10 +28,6 @@ func newPath(caves []Cave) Path {
 		h.Write([]byte(cave))
 	}
 	return Path{caves: caves, hash: h.Sum64()}
-}
-
-func (path Path) Cost() int {
-	return len(path.caves)
 }
 
 func (path Path) Hash() uint64 {
@@ -86,7 +83,7 @@ func getGraph() graph.Graph[Cave, string] {
 }
 
 func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
-	result := graph.Search[Path]{
+	bfs := search.Bfs[Path]{
 		Initial: newPath([]Cave{"start"}),
 		Done: func(state Path) bool {
 			return state.last() == "end"
@@ -100,9 +97,8 @@ func paths(g graph.Graph[Cave, string], canGo func(Path, Cave) bool) int {
 			}
 			return nextStates
 		},
-		FirstOnly: false,
-	}.Dijkstra()
-	return len(result.Completed)
+	}
+	return len(bfs.Run())
 }
 
 func part1(path Path, destination Cave) bool {

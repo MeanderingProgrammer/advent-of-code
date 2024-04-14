@@ -7,6 +7,7 @@ import (
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/search"
 )
 
 type Path struct {
@@ -50,7 +51,7 @@ func solution() {
 func solve(lines []string, wrap bool) int {
 	grid := getGrid(lines, wrap)
 	g := graph.ConstructGraph(grid)
-	result := graph.Search[Path]{
+	dijkstra := search.Dijkstra[Path]{
 		Initial: newPath(point.Point{X: 0, Y: 0}, 0, grid.Width),
 		Done: func(state Path) bool {
 			return state.point == point.Point{X: grid.Width, Y: grid.Height}
@@ -62,9 +63,8 @@ func solve(lines []string, wrap bool) int {
 			}
 			return nextStates
 		},
-		FirstOnly: true,
-	}.Dijkstra()
-	return result.Completed[0].value
+	}
+	return dijkstra.Run().value
 }
 
 func getGrid(lines []string, wrap bool) grid.Grid[int] {
