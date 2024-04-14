@@ -4,23 +4,22 @@ use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;
 
-pub trait Node: Debug + Clone + Hash + Eq {}
-impl<T: Debug + Clone + Hash + Eq> Node for T {}
+pub trait GraphTraversal {
+    type T: Debug + Clone + Hash + Eq;
 
-pub trait GraphTraversal<T: Node> {
-    fn done(&self, node: &T) -> bool;
+    fn done(&self, node: &Self::T) -> bool;
 
-    fn neighbors(&self, node: &T) -> impl Iterator<Item = T>;
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = Self::T>;
 
-    fn bfs(&self, start: &T) -> Option<i64> {
+    fn bfs(&self, start: &Self::T) -> Option<i64> {
         self.run(start, true)
     }
 
-    fn dfs(&self, start: &T) -> Option<i64> {
+    fn dfs(&self, start: &Self::T) -> Option<i64> {
         self.run(start, false)
     }
 
-    fn run(&self, start: &T, front: bool) -> Option<i64> {
+    fn run(&self, start: &Self::T, front: bool) -> Option<i64> {
         let mut queue = VecDeque::new();
         queue.push_back((start.clone(), 0));
         let mut seen = FxHashSet::default();
@@ -48,12 +47,14 @@ pub trait GraphTraversal<T: Node> {
     }
 }
 
-pub trait Dijkstra<T: Node> {
-    fn done(&self, node: &T) -> bool;
+pub trait Dijkstra {
+    type T: Debug + Clone + Hash + Eq;
 
-    fn neighbors(&self, node: &T) -> impl Iterator<Item = (T, i64)>;
+    fn done(&self, node: &Self::T) -> bool;
 
-    fn run(&self, start: &T) -> Option<i64> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, i64)>;
+
+    fn run(&self, start: &Self::T) -> Option<i64> {
         let mut queue = DoublePriorityQueue::new();
         queue.push_decrease(start.clone(), 0);
         let mut seen = FxHashSet::default();

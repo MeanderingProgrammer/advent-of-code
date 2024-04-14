@@ -116,7 +116,9 @@ struct Search {
     grid: FxHashMap<Point, Item>,
 }
 
-impl GraphTraversal<Point> for Search {
+impl GraphTraversal for Search {
+    type T = Point;
+
     fn done(&self, node: &Point) -> bool {
         self.grid.get(node).unwrap().is_oxygen()
     }
