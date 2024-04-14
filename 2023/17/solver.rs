@@ -56,7 +56,9 @@ struct Search<'a> {
     max_repeats: usize,
 }
 
-impl<'a> Dijkstra<Node> for Search<'a> {
+impl<'a> Dijkstra for Search<'a> {
+    type T = Node;
+
     fn done(&self, node: &Node) -> bool {
         &node.position == self.target
     }
@@ -70,12 +72,11 @@ impl<'a> Dijkstra<Node> for Search<'a> {
                 if !is_turn {
                     directions.append(&mut node.directions.clone());
                 }
-                let next_node = Node {
-                    position: positions.last().unwrap().clone(),
-                    directions,
-                };
-                let repeats = next_node.directions.len();
-                if repeats <= self.max_repeats {
+                if directions.len() <= self.max_repeats {
+                    let next_node = Node {
+                        position: positions.last().unwrap().clone(),
+                        directions,
+                    };
                     let cost = positions
                         .iter()
                         .map(|position| *self.grid.get(position) as i64)
