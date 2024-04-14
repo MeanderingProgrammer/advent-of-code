@@ -4,48 +4,73 @@ import (
 	"container/heap"
 )
 
-type State interface {
-	Cost() int
-	Hash() uint64
+type Queue[T any] interface {
+	Add(value T)
+	Next() T
+	Empty() bool
 }
 
-type Queue[T State] []T
+// Basic queue implementation
+
+type FifoQueue[T any] []T
+
+func (q *FifoQueue[T]) Add(value T) {
+	*q = append(*q, value)
+}
+
+func (q *FifoQueue[T]) Next() T {
+	result := (*q)[0]
+	*q = (*q)[1:]
+	return result
+}
+
+func (q FifoQueue[T]) Empty() bool {
+	return len(q) == 0
+}
+
+// Priority queue implementation
+
+type Prioritized interface {
+	Cost() int
+}
+
+type PriorityQueue[T Prioritized] []T
 
 // Methods needed by container/heap module
 
-func (q Queue[T]) Len() int {
+func (q PriorityQueue[T]) Len() int {
 	return len(q)
 }
 
-func (q Queue[T]) Less(i, j int) bool {
+func (q PriorityQueue[T]) Less(i, j int) bool {
 	return q[i].Cost() < q[j].Cost()
 }
 
-func (q Queue[T]) Swap(i, j int) {
+func (q PriorityQueue[T]) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
-func (q *Queue[T]) Pop() interface{} {
+func (q *PriorityQueue[T]) Pop() interface{} {
 	length := len(*q)
 	result := (*q)[length-1]
 	*q = (*q)[:length-1]
 	return result
 }
 
-func (q *Queue[T]) Push(state any) {
+func (q *PriorityQueue[T]) Push(state any) {
 	*q = append(*q, state.(T))
 }
 
 // Methods that we actually interact with
 
-func (q *Queue[T]) Add(state T) {
+func (q *PriorityQueue[T]) Add(state T) {
 	heap.Push(q, state)
 }
 
-func (q *Queue[T]) Next() T {
+func (q *PriorityQueue[T]) Next() T {
 	return heap.Pop(q).(T)
 }
 
-func (q Queue[T]) Empty() bool {
+func (q PriorityQueue[T]) Empty() bool {
 	return q.Len() == 0
 }

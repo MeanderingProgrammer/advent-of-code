@@ -3,7 +3,6 @@ package graph
 import (
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/queue"
 	"fmt"
 	"strings"
 )
@@ -11,48 +10,6 @@ import (
 type Graph[K comparable, V comparable] struct {
 	vertices map[K][]K
 	grid     grid.Grid[V]
-}
-
-type Search[T queue.State] struct {
-	Initial    T
-	Done       func(T) bool
-	NextStates func(T) []T
-	FirstOnly  bool
-}
-
-type SearchResult[T queue.State] struct {
-	Completed []T
-}
-
-func (search Search[T]) Dijkstra() SearchResult[T] {
-	completed := []T{}
-	q := &queue.Queue[T]{search.Initial}
-	seen := make(map[uint64]bool)
-	for !q.Empty() {
-		state := q.Next()
-		hashState := state.Hash()
-		_, ok := seen[hashState]
-		if ok {
-			continue
-		}
-		seen[hashState] = true
-		if search.Done(state) {
-			completed = append(completed, state)
-			if search.FirstOnly {
-				break
-			}
-		} else {
-			for _, adjacent := range search.NextStates(state) {
-				_, ok := seen[adjacent.Hash()]
-				if !ok {
-					q.Add(adjacent)
-				}
-			}
-		}
-	}
-	return SearchResult[T]{
-		Completed: completed,
-	}
 }
 
 func (graph Graph[K, V]) Neighbors(p K) []K {
