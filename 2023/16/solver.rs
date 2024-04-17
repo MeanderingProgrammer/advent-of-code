@@ -93,7 +93,7 @@ fn solution() {
 
     let part1 = energized(&grid, State::new(Point::default(), Direction::Right));
 
-    let side = grid.bounds(0).upper.x;
+    let side = grid.bounds().upper.x;
     let coords: Vec<i64> = (0..=side).collect();
     let part2 = create_states(&coords, Direction::Down, |x| Point::new(x, 0))
         .chain(create_states(&coords, Direction::Up, |x| {

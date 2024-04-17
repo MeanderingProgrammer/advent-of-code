@@ -63,18 +63,18 @@ impl<T> Grid<T> {
         self.points().iter().map(|point| point.y).max()
     }
 
-    pub fn bounds(&self, buffer: i64) -> Bound {
+    pub fn bounds(&self) -> Bound {
         if self.grid.is_empty() {
             panic!("Can't get the bounds of an empty grid");
         }
-        fn get_min_max(min_max: MinMaxResult<i64>, buffer: i64) -> (i64, i64) {
+        fn get_min_max(min_max: MinMaxResult<i64>) -> (i64, i64) {
             match min_max {
-                MinMaxResult::MinMax(min, max) => (min - buffer, max + buffer),
+                MinMaxResult::MinMax(min, max) => (min, max),
                 _ => panic!("Could not find min max"),
             }
         }
-        let (min_x, max_x) = get_min_max(self.grid.keys().map(|point| point.x).minmax(), buffer);
-        let (min_y, max_y) = get_min_max(self.grid.keys().map(|point| point.y).minmax(), buffer);
+        let (min_x, max_x) = get_min_max(self.grid.keys().map(|point| point.x).minmax());
+        let (min_y, max_y) = get_min_max(self.grid.keys().map(|point| point.y).minmax());
         Bound {
             lower: Point::new(min_x, min_y),
             upper: Point::new(max_x, max_y),
@@ -103,7 +103,7 @@ where
         if self.grid.is_empty() {
             return "".to_string();
         }
-        let bounds = self.bounds(0);
+        let bounds = self.bounds();
         let (bottom_left, top_right) = (bounds.lower, bounds.upper);
         (bottom_left.y..=top_right.y)
             .map(|y| {

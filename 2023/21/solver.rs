@@ -18,7 +18,7 @@ impl Garden {
         Self {
             start: starts[0].clone(),
             walls: grid.points_with_value('#').into_iter().cloned().collect(),
-            len: grid.bounds(0).upper.x + 1,
+            len: grid.bounds().upper.x + 1,
         }
     }
 

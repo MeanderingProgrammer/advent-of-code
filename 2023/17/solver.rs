@@ -100,7 +100,7 @@ fn solution() {
 }
 
 fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i64> {
-    let bounds = grid.bounds(0);
+    let bounds = grid.bounds();
     let start = &Node {
         position: bounds.lower,
         directions: vec![],
