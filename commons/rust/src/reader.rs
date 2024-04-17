@@ -64,7 +64,7 @@ impl Reader {
     }
 
     pub fn read_grid<T>(&self, f: fn(char) -> Option<T>) -> Grid<T> {
-        Grid::from_lines(self.read_lines(), f)
+        Grid::from_lines(&self.read_lines(), |_, ch| f(ch))
     }
 
     pub fn read_int(&self) -> Vec<i64> {

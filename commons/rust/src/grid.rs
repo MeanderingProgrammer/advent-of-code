@@ -18,12 +18,12 @@ impl<T> Default for Grid<T> {
 }
 
 impl<T> Grid<T> {
-    pub fn from_lines(lines: Vec<String>, f: impl Fn(char) -> Option<T>) -> Self {
+    pub fn from_lines(lines: &[String], f: impl Fn(&Point, char) -> Option<T>) -> Self {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
                 let point = Point::new(x as i64, y as i64);
-                if let Some(value) = f(ch) {
+                if let Some(value) = f(&point, ch) {
                     grid.add(point, value);
                 }
             }
