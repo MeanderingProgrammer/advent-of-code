@@ -4,22 +4,11 @@ use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
 use strum::IntoEnumIterator;
 
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 enum Seat {
     Occupied,
     Empty,
-    #[default]
     Floor,
-}
-
-impl ToString for Seat {
-    fn to_string(&self) -> String {
-        match self {
-            Self::Occupied => "#".to_string(),
-            Self::Empty => "L".to_string(),
-            Self::Floor => ".".to_string(),
-        }
-    }
 }
 
 impl Seat {
