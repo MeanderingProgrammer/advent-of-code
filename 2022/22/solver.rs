@@ -311,7 +311,7 @@ fn get_input() -> (Cube, Vec<Instruction>) {
 }
 
 fn parse_cube(lines: &[String]) -> Cube {
-    let grid = Grid::from_lines(lines.to_vec(), |ch| match ch {
+    let grid = Grid::from_lines(lines, |_, ch| match ch {
         '.' => Some(Space::Open),
         '#' => Some(Space::Wall),
         _ => None,
