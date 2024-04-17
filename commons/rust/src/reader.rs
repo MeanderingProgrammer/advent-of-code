@@ -1,4 +1,4 @@
-use crate::grid::{Grid, GridValue};
+use crate::grid::Grid;
 use clap::Parser;
 use std::env;
 use std::fs::File;
@@ -63,7 +63,7 @@ impl Reader {
             .collect()
     }
 
-    pub fn read_grid<T: GridValue>(&self, f: fn(char) -> Option<T>) -> Grid<T> {
+    pub fn read_grid<T>(&self, f: fn(char) -> Option<T>) -> Grid<T> {
         Grid::from_lines(self.read_lines(), f)
     }
 

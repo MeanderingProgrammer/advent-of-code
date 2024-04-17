@@ -4,23 +4,13 @@ use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, PartialEq)]
 enum State {
-    #[default]
     Open,
     Tree,
     Yard,
 }
 
-impl ToString for State {
-    fn to_string(&self) -> String {
-        match self {
-            Self::Open => ".".to_string(),
-            Self::Tree => "|".to_string(),
-            Self::Yard => "#".to_string(),
-        }
-    }
-}
 impl State {
     fn from_ch(ch: char) -> Option<Self> {
         match ch {

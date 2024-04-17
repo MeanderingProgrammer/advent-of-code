@@ -11,24 +11,12 @@ use nom::{
     sequence::separated_pair,
 };
 use std::collections::HashMap;
-use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 enum Space {
-    #[default]
     Open,
     Wall,
-}
-
-impl fmt::Display for Space {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let result = match self {
-            Self::Open => ".",
-            Self::Wall => "#",
-        };
-        write!(f, "{}", result)
-    }
 }
 
 #[derive(Debug, Clone)]

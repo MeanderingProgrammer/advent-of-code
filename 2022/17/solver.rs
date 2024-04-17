@@ -171,7 +171,7 @@ fn simulate<'a>(
 
         let height = grid.height().unwrap() + 1;
 
-        let value = grid.as_string(".", 0);
+        let value = grid.to_string();
         if let Entry::Vacant(entry) = cache.entry(value.clone()) {
             entry.insert((rocks_dropped, height));
         } else {

@@ -2,18 +2,22 @@ use crate::point::Point;
 use fxhash::FxHashMap;
 use itertools::{Itertools, MinMaxResult};
 use std::cmp::PartialEq;
-use std::fmt;
 use std::string::ToString;
 
-pub trait GridValue: Default + PartialEq + ToString {}
-impl<T: Default + PartialEq + ToString> GridValue for T {}
-
-#[derive(Debug, Clone, Default, PartialEq)]
-pub struct Grid<T: GridValue> {
+#[derive(Debug, Clone, PartialEq)]
+pub struct Grid<T> {
     grid: FxHashMap<Point, T>,
 }
 
-impl<T: GridValue> Grid<T> {
+impl<T> Default for Grid<T> {
+    fn default() -> Self {
+        Self {
+            grid: FxHashMap::default(),
+        }
+    }
+}
+
+impl<T> Grid<T> {
     pub fn from_lines(lines: Vec<String>, f: impl Fn(char) -> Option<T>) -> Self {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
@@ -55,14 +59,6 @@ impl<T: GridValue> Grid<T> {
         self.grid.values().collect()
     }
 
-    pub fn points_with_value(&self, target: T) -> Vec<&Point> {
-        self.grid
-            .iter()
-            .filter(|(_, value)| value == &&target)
-            .map(|(point, _)| point)
-            .collect()
-    }
-
     pub fn height(&self) -> Option<i64> {
         self.points().iter().map(|point| point.y).max()
     }
@@ -84,12 +80,30 @@ impl<T: GridValue> Grid<T> {
             upper: Point::new(max_x, max_y),
         }
     }
+}
 
-    pub fn as_string(&self, default: &str, buffer: i64) -> String {
+impl<T> Grid<T>
+where
+    T: PartialEq,
+{
+    pub fn points_with_value(&self, target: T) -> Vec<&Point> {
+        self.grid
+            .iter()
+            .filter(|(_, value)| value == &&target)
+            .map(|(point, _)| point)
+            .collect()
+    }
+}
+
+impl<T> ToString for Grid<T>
+where
+    T: ToString,
+{
+    fn to_string(&self) -> String {
         if self.grid.is_empty() {
             return "".to_string();
         }
-        let bounds = self.bounds(buffer);
+        let bounds = self.bounds(0);
         let (bottom_left, top_right) = (bounds.lower, bounds.upper);
         (bottom_left.y..=top_right.y)
             .map(|y| {
@@ -97,17 +111,11 @@ impl<T: GridValue> Grid<T> {
                     .map(|x| Point::new(x, y))
                     .map(|point| match self.get_or(&point) {
                         Some(value) => value.to_string(),
-                        None => String::from(default),
+                        None => ".".to_string(),
                     })
                     .join("")
             })
             .join("\n")
-    }
-}
-
-impl<T: GridValue> fmt::Display for Grid<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_string(".", 0))
     }
 }
 
