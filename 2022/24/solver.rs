@@ -55,7 +55,7 @@ impl Valley {
                 });
             });
         Self {
-            bounds: grid.bounds(0),
+            bounds: grid.bounds(),
             blizzards,
             blizzard_positions,
         }

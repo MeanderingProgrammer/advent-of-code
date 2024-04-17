@@ -78,7 +78,7 @@ impl Elves {
         self.locations
             .iter()
             .for_each(|point| grid.add(point.clone(), '#'));
-        let total_size = grid.bounds(0).size();
+        let total_size = grid.bounds().size();
         let occupied = grid.points().len() as i64;
         total_size - occupied
     }

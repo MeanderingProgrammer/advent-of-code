@@ -13,7 +13,7 @@ struct SandFlow {
 
 impl SandFlow {
     fn new(grid: Grid<char>, with_floor: bool) -> Self {
-        let bounds = grid.bounds(0);
+        let bounds = grid.bounds();
         Self {
             grid,
             with_floor,

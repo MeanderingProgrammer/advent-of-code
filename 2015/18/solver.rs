@@ -66,7 +66,7 @@ fn solution() {
 }
 
 fn run(grid: &Grid<char>, force_corners: bool) -> usize {
-    let bound = grid.bounds(0);
+    let bound = grid.bounds();
     let mut animator = Animator {
         force_corners,
         on: grid.points_with_value('#').into_iter().cloned().collect(),
