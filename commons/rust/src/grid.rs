@@ -80,6 +80,20 @@ impl<T> Grid<T> {
             upper: Point::new(max_x, max_y),
         }
     }
+
+    pub fn to_graph(&self) -> FxHashMap<Point, Vec<Point>> {
+        self.points()
+            .into_iter()
+            .map(|point| {
+                let neighbors = point
+                    .neighbors()
+                    .into_iter()
+                    .filter(|neighbor| self.contains(neighbor))
+                    .collect();
+                (point.clone(), neighbors)
+            })
+            .collect()
+    }
 }
 
 impl<T> Grid<T>
