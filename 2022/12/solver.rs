@@ -29,8 +29,8 @@ impl Search {
     fn shortest(&self, start_value: i64) -> Option<i64> {
         self.grid
             .points_with_value(start_value)
-            .iter()
-            .filter_map(|start| self.bfs(start))
+            .into_iter()
+            .filter_map(|start| self.bfs(start.clone()))
             .min()
     }
 }
@@ -41,7 +41,7 @@ fn main() {
 
 fn solution() {
     let (search, start) = get_search();
-    answer::part1(472, search.bfs(&start).unwrap());
+    answer::part1(472, search.bfs(start).unwrap());
     answer::part2(465, search.shortest(get_offset('a')).unwrap());
 }
 

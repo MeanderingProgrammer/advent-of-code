@@ -135,7 +135,7 @@ impl Search {
         self.grid
             .iter()
             .filter(|(_, value)| value.is_empty())
-            .map(|(position, _)| self.bfs(position).unwrap())
+            .map(|(position, _)| self.bfs(position.clone()).unwrap())
             .max()
     }
 }
@@ -150,6 +150,6 @@ fn solution() {
     let search = Search {
         grid: computer.bus.grid,
     };
-    answer::part1(224, search.bfs(&Point::default()).unwrap());
+    answer::part1(224, search.bfs(Point::default()).unwrap());
     answer::part1(284, search.time_for_air().unwrap());
 }

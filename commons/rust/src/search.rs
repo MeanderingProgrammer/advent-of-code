@@ -11,17 +11,17 @@ pub trait GraphSearch {
 
     fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = Self::T>;
 
-    fn bfs(&self, start: &Self::T) -> Option<i64> {
+    fn bfs(&self, start: Self::T) -> Option<i64> {
         self.run(start, true)
     }
 
-    fn dfs(&self, start: &Self::T) -> Option<i64> {
+    fn dfs(&self, start: Self::T) -> Option<i64> {
         self.run(start, false)
     }
 
-    fn run(&self, start: &Self::T, front: bool) -> Option<i64> {
+    fn run(&self, start: Self::T, front: bool) -> Option<i64> {
         let mut queue = VecDeque::new();
-        queue.push_back((start.clone(), 0));
+        queue.push_back((start, 0));
         let mut seen = FxHashSet::default();
         while !queue.is_empty() {
             // Remove from either the front (BFS) or back (DFS)
@@ -49,27 +49,50 @@ pub trait GraphSearch {
 
 pub trait Dijkstra {
     type T: Debug + Clone + Hash + Eq;
+    type P: Ord;
 
     fn done(&self, node: &Self::T) -> bool;
 
-    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, i64)>;
+    fn neighbors(
+        &self,
+        node: &Self::T,
+        weight: Self::P,
+    ) -> impl Iterator<Item = (Self::T, Self::P)>;
 
-    fn run(&self, start: &Self::T) -> Option<i64> {
+    fn run_min(&self, start: Self::T, initial: Self::P) -> Option<Self::P> {
+        self.run(start, initial, true)
+    }
+
+    fn run_max(&self, start: Self::T, initial: Self::P) -> Option<Self::P> {
+        self.run(start, initial, false)
+    }
+
+    fn run(&self, start: Self::T, initial: Self::P, min: bool) -> Option<Self::P> {
         let mut queue = DoublePriorityQueue::new();
-        queue.push_decrease(start.clone(), 0);
+        queue.push(start, initial);
         let mut seen = FxHashSet::default();
         while !queue.is_empty() {
-            let (node, weight) = queue.pop_min().unwrap();
+            let (node, weight) = if min {
+                queue.pop_min().unwrap()
+            } else {
+                queue.pop_max().unwrap()
+            };
+
             if seen.contains(&node) {
                 continue;
             }
             seen.insert(node.clone());
+
             if self.done(&node) {
                 return Some(weight);
             }
-            for (adjacent, cost) in self.neighbors(&node) {
+            for (adjacent, cost) in self.neighbors(&node, weight) {
                 if !seen.contains(&adjacent) {
-                    queue.push_decrease(adjacent, weight + cost);
+                    if min {
+                        queue.push_decrease(adjacent, cost);
+                    } else {
+                        queue.push_increase(adjacent, cost);
+                    }
                 }
             }
         }

@@ -211,6 +211,7 @@ struct Board {
 
 impl Dijkstra for Board {
     type T = State;
+    type P = i64;
 
     fn done(&self, state: &State) -> bool {
         state
@@ -219,7 +220,7 @@ impl Dijkstra for Board {
             .all(|(point, character)| character.at_goal(point))
     }
 
-    fn neighbors(&self, state: &State) -> impl Iterator<Item = (State, i64)> {
+    fn neighbors(&self, state: &State, weight: i64) -> impl Iterator<Item = (State, i64)> {
         state
             .characters
             .iter()
@@ -230,6 +231,7 @@ impl Dijkstra for Board {
                     .into_iter()
                     .map(|end| state.apply(start, end))
             })
+            .map(move |(adjacent, cost)| (adjacent, weight + cost))
     }
 }
 
@@ -247,7 +249,7 @@ fn solve(lines: &[String], extend: bool) -> i64 {
     let rows = get_rows(lines, extend);
     let board = get_board(&rows);
     let state = get_state(&rows);
-    board.run(&state).unwrap()
+    board.run_min(state, 0).unwrap()
 }
 
 fn get_rows(rows: &[String], extend: bool) -> Vec<String> {
