@@ -58,17 +58,16 @@ struct Search<'a> {
 
 impl<'a> Dijkstra for Search<'a> {
     type T = Node;
-    type P = i64;
 
     fn done(&self, node: &Node) -> bool {
         &node.position == self.target
     }
 
-    fn neighbors(&self, node: &Node, weight: i64) -> impl Iterator<Item = (Node, i64)> {
+    fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
         node.get_neighbors(self.resistance)
             .into_iter()
             .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
-            .filter_map(move |(direction, is_turn, positions)| {
+            .filter_map(|(direction, is_turn, positions)| {
                 let mut directions = vec![direction.clone(); positions.len()];
                 if !is_turn {
                     directions.append(&mut node.directions.clone());
@@ -78,11 +77,11 @@ impl<'a> Dijkstra for Search<'a> {
                         position: positions.last().unwrap().clone(),
                         directions,
                     };
-                    let cost: i64 = positions
+                    let cost = positions
                         .iter()
                         .map(|position| *self.grid.get(position) as i64)
                         .sum();
-                    Some((next_node, weight + cost))
+                    Some((next_node, cost))
                 } else {
                     None
                 }
@@ -113,5 +112,5 @@ fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i
         resistance,
         max_repeats,
     };
-    search.run_min(start, 0)
+    search.run(start)
 }
