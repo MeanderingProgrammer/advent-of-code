@@ -1,10 +1,8 @@
 package maze.path;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import maze.Edge;
-import maze.Node;
+import maze.*;
 
 /**
  * Path logic here is kind of funny, where we end up, not where we went through

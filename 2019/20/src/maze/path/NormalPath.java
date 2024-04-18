@@ -2,8 +2,7 @@ package maze.path;
 
 import java.util.List;
 
-import maze.Edge;
-import maze.Node;
+import maze.*;
 
 public class NormalPath extends Path {
 

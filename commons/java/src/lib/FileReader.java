@@ -1,19 +1,13 @@
 package lib;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
 
 @AllArgsConstructor
 public class FileReader {
