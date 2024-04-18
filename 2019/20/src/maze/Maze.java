@@ -1,14 +1,8 @@
 package maze;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
-import maze.path.NormalPath;
-import maze.path.Path;
-import maze.path.RecursivePath;
+import maze.path.*;
 
 public class Maze {
 

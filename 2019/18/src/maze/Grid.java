@@ -1,13 +1,9 @@
 package maze;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import lib.Position;
-import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

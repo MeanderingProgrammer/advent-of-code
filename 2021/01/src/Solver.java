@@ -1,7 +1,6 @@
 import java.util.List;
 
-import lib.Answer;
-import lib.FileReader;
+import lib.*;
 
 public class Solver {
 

@@ -1,5 +1,4 @@
-import lib.Answer;
-import lib.FileReader;
+import lib.*;
 import maze.Maze;
 
 public class Solver {
