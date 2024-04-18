@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use aoc_lib::search::GraphTraversal;
+use aoc_lib::search::GraphSearch;
 
 #[derive(Debug)]
 struct Search {
@@ -10,7 +10,7 @@ struct Search {
     end: Point,
 }
 
-impl GraphTraversal for Search {
+impl GraphSearch for Search {
     type T = Point;
 
     fn done(&self, node: &Point) -> bool {
