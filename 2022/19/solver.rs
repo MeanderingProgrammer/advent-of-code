@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use fxhash::FxHashSet;
 use priority_queue::PriorityQueue;
 use std::str::FromStr;
 
@@ -86,9 +87,18 @@ impl Blueprint {
     fn simulate(&self, runtime: i64) -> i64 {
         let mut q = PriorityQueue::new();
         q.push(State::new(), (0, runtime));
+        let mut seen = FxHashSet::default();
+
         let mut max_geodes_seen = 0;
+
         while !q.is_empty() {
             let (state, (num_geods, time_left)) = q.pop().unwrap();
+
+            if seen.contains(&state) {
+                continue;
+            }
+            seen.insert(state.clone());
+
             max_geodes_seen = max_geodes_seen.max(num_geods);
             if time_left == 0 {
                 continue;
@@ -112,6 +122,9 @@ impl Blueprint {
                     let material_cap = self.max_values[material] * 2;
                     let capped = next_state.materials[material].min(material_cap);
                     next_state.materials[material] = capped;
+                }
+                if seen.contains(&next_state) {
+                    continue;
                 }
                 // If we build more of a specific type of robot then we could ever use
                 // If clay robots cost 10 ore, then having > 10 ore robots adds no value
