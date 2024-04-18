@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use aoc_lib::search::GraphTraversal;
+use aoc_lib::search::GraphSearch;
 use fxhash::FxHashMap;
 use std::collections::VecDeque;
 use strum::IntoEnumIterator;
@@ -116,7 +116,7 @@ struct Search {
     grid: FxHashMap<Point, Item>,
 }
 
-impl GraphTraversal for Search {
+impl GraphSearch for Search {
     type T = Point;
 
     fn done(&self, node: &Point) -> bool {

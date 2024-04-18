@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;
 
-pub trait GraphTraversal {
+pub trait GraphSearch {
     type T: Debug + Clone + Hash + Eq;
 
     fn done(&self, node: &Self::T) -> bool;
