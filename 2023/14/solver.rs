@@ -4,7 +4,7 @@ use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Value {
+enum Value {
     Empty,
     Round,
     Cube,
