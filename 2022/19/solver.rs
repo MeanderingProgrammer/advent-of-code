@@ -100,9 +100,11 @@ impl Blueprint {
             seen.insert(state.clone());
 
             max_geodes_seen = max_geodes_seen.max(num_geods);
+
             if time_left == 0 {
                 continue;
             }
+
             let mut valid_instructions: Vec<Option<&Instruction>> = self
                 .instructions
                 .iter()
@@ -110,7 +112,7 @@ impl Blueprint {
                 .map(Some)
                 .collect();
             valid_instructions.push(None);
-            let next_time_left = time_left - 1;
+
             for instruction in valid_instructions {
                 let mut next_state = state.clone();
                 next_state.collect();
@@ -123,6 +125,7 @@ impl Blueprint {
                     let capped = next_state.materials[material].min(material_cap);
                     next_state.materials[material] = capped;
                 }
+
                 if seen.contains(&next_state) {
                     continue;
                 }
@@ -132,11 +135,12 @@ impl Blueprint {
                     continue;
                 }
                 // Prune if there's no way this state can catch up to something we've already seen
-                if Self::max_geodes(&next_state, next_time_left) <= max_geodes_seen {
+                if next_state.max_geodes(time_left - 1) <= max_geodes_seen {
                     continue;
                 }
+
                 let next_num_geods = next_state.geodes();
-                q.push_increase(next_state, (next_num_geods, next_time_left));
+                q.push_increase(next_state, (next_num_geods, time_left - 1));
             }
         }
         max_geodes_seen
@@ -147,11 +151,6 @@ impl Blueprint {
             .iter()
             .enumerate()
             .any(|(material, &max_value)| state.robots[material] > max_value)
-    }
-
-    fn max_geodes(state: &State, time_left: i64) -> i64 {
-        let max_additional = (time_left * (time_left + 1)) / 2;
-        state.geodes() + (state.geode_robots() * time_left) + max_additional
     }
 }
 
@@ -171,10 +170,6 @@ impl State {
 
     fn geodes(&self) -> i64 {
         self.materials[3]
-    }
-
-    fn geode_robots(&self) -> i64 {
-        self.robots[3]
     }
 
     fn can_build(&self, instruction: &Instruction) -> bool {
@@ -199,6 +194,11 @@ impl State {
             .enumerate()
             .for_each(|(material, needed)| self.materials[material] -= needed);
         self.robots[instruction.material] += 1;
+    }
+
+    fn max_geodes(&self, time_left: i64) -> i64 {
+        let max_additional = (time_left * (time_left + 1)) / 2;
+        self.geodes() + (self.robots[3] * time_left) + max_additional
     }
 }
 
