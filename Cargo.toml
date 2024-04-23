@@ -151,6 +151,10 @@ name = "aoc_2019_17"
 path = "2019/17/solver.rs"
 
 [[bin]]
+name = "aoc_2019_18"
+path = "2019/18/solver.rs"
+
+[[bin]]
 name = "aoc_2019_19"
 path = "2019/19/solver.rs"
 
