@@ -1,52 +1,46 @@
+import math
 from collections import defaultdict
+from dataclasses import dataclass, field
 
 from aoc import answer
 from aoc.parser import Parser
 
+type Instruction = tuple[str, list[str]]
 
+
+@dataclass
 class Computer:
-    def __init__(self, instructions):
-        self.regs = defaultdict(int)
-        self.instructions = instructions
-        self.ip = 0
-        self.multiplies = 0
+    instructions: list[Instruction]
+    regs: dict[str, int] = field(default_factory=lambda: defaultdict(int))
+    ip: int = 0
+    multiplies: int = 0
 
     def run(self) -> None:
         while self.ip >= 0 and self.ip < len(self.instructions):
-            instruction = self.instructions[self.ip]
-            self.ip += instruction.run(self)
+            op, args = self.instructions[self.ip]
+            if op == "set":
+                self.regs[args[0]] = self.value(args[1])
+                self.ip += 1
+            elif op == "sub":
+                self.regs[args[0]] -= self.value(args[1])
+                self.ip += 1
+            elif op == "mul":
+                self.regs[args[0]] *= self.value(args[1])
+                self.multiplies += 1
+                self.ip += 1
+            elif op == "jnz":
+                if self.value(args[0]) != 0:
+                    self.ip += self.value(args[1])
+                else:
+                    self.ip += 1
+            else:
+                raise Exception(f"Unknown operation: {op}")
 
     def value(self, arg: str) -> int:
-        try:
-            return int(arg)
-        except ValueError:
+        if arg in ["a", "b", "c", "d", "e", "f", "g", "h"]:
             return self.regs[arg]
-
-
-class Intstruction:
-    def __init__(self, value: str):
-        parts = value.split()
-        self.op = parts[0]
-        self.args = parts[1:]
-
-    def run(self, computer: Computer) -> int:
-        if self.op == "set":
-            computer.regs[self.args[0]] = computer.value(self.args[1])
-            return 1
-        elif self.op == "sub":
-            computer.regs[self.args[0]] -= computer.value(self.args[1])
-            return 1
-        elif self.op == "mul":
-            computer.regs[self.args[0]] *= computer.value(self.args[1])
-            computer.multiplies += 1
-            return 1
-        elif self.op == "jnz":
-            if computer.value(self.args[0]) != 0:
-                return computer.value(self.args[1])
-            else:
-                return 1
         else:
-            raise Exception(f"Unknown operation: {self.op}")
+            return int(arg)
 
 
 @answer.timer
@@ -56,7 +50,11 @@ def main() -> None:
 
 
 def run_computer() -> int:
-    instructions = [Intstruction(line) for line in Parser().lines()]
+    def parse_instruction(line: str) -> Instruction:
+        parts = line.split()
+        return parts[0], parts[1:]
+
+    instructions = [parse_instruction(line) for line in Parser().lines()]
     computer = Computer(instructions)
     computer.run()
     return computer.multiplies
@@ -71,7 +69,7 @@ def count_non_primes(start: int, end: int, step: int) -> int:
 
 
 def is_prime(value: int) -> bool:
-    for i in range(2, value):
+    for i in range(2, math.floor(math.sqrt(value)) + 1):
         if value % i == 0:
             return False
     return True

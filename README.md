@@ -147,12 +147,13 @@ a-run \
 <summary>Process Runtime Output</summary>
 
 ```bash
-jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json
-jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json | sort -nk4
-jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' all.json | sort -nk4 | awk '{ if ($4 > 100) { print $0 } }'
-jq -r '.[]|select(.year == 2015 and .day == 24)' all.json
-jq -r '.[]|.runtime' all.json | awk '{ sum+=$1 } END { print sum, "ms" }'
-jq -r '.[]|select(.year == 2015)|.runtime' all.json | awk '{ sum+=$1 } END { print sum, "ms" }'
+cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv'
+cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' | sort -nk4
+cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' | sort -nk4 | awk '{ if ($4 > 100) { print $0 } }'
+cat all.json | jq -r '.[]|select(.year == 2015 and .day == 24)'
+cat all.json | jq -r '.[]|.runtime' | awk '{ sum+=$1 } END { print sum, "ms" }'
+cat all.json | jq -r '.[]|select(.year == 2015)|.runtime' | awk '{ sum+=$1 } END { print sum, "ms" }'
+cat all.json | jq -r '.[]|[.year, .runtime]|@tsv' | awk '{ data[$1] += $2 } END { for (year in data) { print year, data[year], "ms" } }'
 ```
 
 </details>
