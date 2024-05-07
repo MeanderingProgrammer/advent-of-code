@@ -4,6 +4,10 @@ All Years - Blazingly Fast
 
 ![Years Completed](images/advent-completed.png)
 
+# Runtimes
+
+![Runtimes](images/year_percentage.png)
+
 # History
 
 When I first started Advent in 2020 I wrote everything in `Python` for simplicity
@@ -255,7 +259,3 @@ a-graph \
 | info          | `-i` | Outputs whether graphs would be arhived | `False` | `-i`    |
 
 </details>
-
-# Runtimes
-
-![Runtimes](images/year_percentage.png)

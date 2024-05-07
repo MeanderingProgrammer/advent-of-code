@@ -1,5 +1,4 @@
 import json
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import override
@@ -12,15 +11,23 @@ from command.command import Command
 from component.figure_saver import FigType, FigureSaver
 
 
-@dataclass(frozen=True)
 class Grapher(Command):
-    archive: bool
+
+    def __init__(self, archive: bool) -> None:
+        archive_directory = None
+        if archive:
+            date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
+            archive_directory = Path("images/archive").joinpath(date_directory)
+        self.saver = FigureSaver(
+            archive=archive,
+            archive_directory=archive_directory,
+        )
 
     @override
     def info(self) -> dict:
-        saver = self.saver()
         return dict(
-            archive=saver.archive, archive_directory=str(saver.archive_directory)
+            archive=self.saver.archive,
+            archive_directory=str(self.saver.archive_directory),
         )
 
     @override
@@ -32,42 +39,38 @@ class Grapher(Command):
             raise Exception(f"Runtimes were never determined: {runtimes_file}")
         runtimes = pd.DataFrame(json.loads(runtimes_file.read_text()))
 
-        saver = self.saver()
-        if saver.archive_directory is not None:
-            saver.archive_directory.mkdir(parents=True, exist_ok=False)
+        if self.saver.archive_directory is not None:
+            self.saver.archive_directory.mkdir(parents=True, exist_ok=False)
 
-        runtimes["all"] = "ALL"
-        runtimes["runtime"] = runtimes["runtime"].round(0)
-        self.create_graphs(runtimes, saver)
+        self.create_graphs(runtimes)
 
-    def saver(self) -> FigureSaver:
-        archive_directory = None
-        if self.archive:
-            date_directory = datetime.now().strftime("%Y-%m-%d-%H-%M")
-            archive_directory = Path("images/archive").joinpath(date_directory)
-        return FigureSaver(archive=self.archive, archive_directory=archive_directory)
-
-    def create_graphs(self, runtimes: pd.DataFrame, saver: FigureSaver) -> None:
-        saver.save(
+    def create_graphs(self, runtimes: pd.DataFrame) -> None:
+        self.saver.save(
             name="runtime_language",
             fig=runtimes.boxplot(column="runtime", by="language", figsize=(8, 8)),
             fig_type=FigType.MATPLOTLIB,
         )
-        saver.save(
+        self.saver.save(
             name="runtime_year",
             fig=runtimes.boxplot(column="runtime", by="year", figsize=(10, 8)),
             fig_type=FigType.MATPLOTLIB,
         )
 
+        with_all: pd.DataFrame = runtimes.copy()
+        with_all["all"] = "Time in milliseconds"
+        with_all["runtime"] = runtimes["runtime"].round(0)
         yearly_runtimes = px.sunburst(
-            runtimes,
+            with_all,
             path=["all", "year", "day"],
             values="runtime",
             width=1000,
             height=1000,
         )
-        yearly_runtimes.update_traces(textinfo="label+percent parent+value", sort=False)
-        saver.save(
+        yearly_runtimes.update_traces(
+            textinfo="label+percent parent+value",
+            sort=False,
+        )
+        self.saver.save(
             name="year_percentage",
             fig=yearly_runtimes,
             fig_type=FigType.PLOTLY,
@@ -75,14 +78,14 @@ class Grapher(Command):
 
         runtimes_only: pd.DataFrame = runtimes[["runtime"]]
         sorted_runtimes = runtimes_only.sort_values("runtime").reset_index(drop=True)
-        saver.save(
+        self.saver.save(
             name="cumulative_sum",
             fig=sorted_runtimes.cumsum().plot.line(legend=False, figsize=(8, 6)),
             fig_type=FigType.MATPLOTLIB,
         )
 
         language_counts = runtimes["language"].value_counts()
-        saver.save(
+        self.saver.save(
             name="usage_langauage",
             fig=language_counts.plot.pie(y=1, autopct="%.2f", figsize=(8, 6)),
             fig_type=FigType.MATPLOTLIB,
@@ -96,7 +99,7 @@ class Grapher(Command):
             aggfunc="count",
             fill_value=0,
         )
-        saver.save(
+        self.saver.save(
             name="usage_langauage_yearly",
             fig=yearly_usage.plot.bar(stacked=True, legend=False, figsize=(10, 6)),
             fig_type=FigType.MATPLOTLIB,
