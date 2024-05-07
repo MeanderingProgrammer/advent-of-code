@@ -17,7 +17,11 @@ class FigureSaver:
     archive_directory: Optional[Path]
 
     def save(
-        self, name: str, fig: Any, fig_type: FigType, legend: Optional[dict] = None
+        self,
+        name: str,
+        fig: Any,
+        fig_type: FigType,
+        legend: Optional[dict] = None,
     ) -> None:
         fig_path = Path(f"images/{name}.png")
         self.archive_figure(fig_path)
