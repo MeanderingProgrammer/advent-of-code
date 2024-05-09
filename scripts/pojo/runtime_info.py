@@ -8,14 +8,16 @@ class RuntimeInfo:
     day: Day
     language: str
     runtime: float
+    execution: float
 
     def as_dict(self) -> dict:
-        return {
-            "year": int(self.day.year),
-            "day": int(self.day.day),
-            "language": self.language,
-            "runtime": self.runtime,
-        }
+        return dict(
+            year=int(self.day.year),
+            day=int(self.day.day),
+            language=self.language,
+            runtime=self.runtime,
+            execution=self.execution,
+        )
 
     @staticmethod
     def from_dict(value: dict) -> "RuntimeInfo":
@@ -26,4 +28,5 @@ class RuntimeInfo:
             ),
             language=value["language"],
             runtime=value["runtime"],
+            execution=value["execution"],
         )

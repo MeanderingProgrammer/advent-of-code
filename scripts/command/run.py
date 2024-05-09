@@ -34,16 +34,30 @@ class LanguageRunner:
             f" {self.times} times with {self.name}"
         )
         print(message)
-        runtimes = [LanguageRunner.run_command(self.command) for _ in range(self.times)]
-        return RuntimeInfo(self.day, self.name, sum(runtimes) / self.times)
+
+        runtimes: list[float] = []
+        executions: list[float] = []
+        for _ in range(self.times):
+            runtime, execution = LanguageRunner.run_command(self.command)
+            runtimes.append(runtime)
+            executions.append(execution)
+
+        return RuntimeInfo(
+            day=self.day,
+            language=self.name,
+            runtime=sum(runtimes) / self.times,
+            execution=sum(executions) / self.times,
+        )
 
     @staticmethod
-    def run_command(command: list[str]) -> float:
+    def run_command(command: list[str]) -> tuple[float, float]:
+        start = time.time_ns()
         result = execute(command)
+        execution_ns = float(time.time_ns() - start)
         matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
         assert len(matches) == 1, "Could not find runtime in output"
         runtime_ns = float(matches[0])
-        return runtime_ns / 1_000_000
+        return (runtime_ns / 1_000_000, execution_ns / 1_000_000)
 
 
 @dataclass(frozen=True)
