@@ -8,7 +8,7 @@ import pandas as pd
 import plotly.express as px
 
 from command.command import Command
-from component.figure_saver import FigType, FigureSaver
+from component.figure_saver import FigType, FigureProps, FigureSaver
 
 
 class Grapher(Command):
@@ -45,22 +45,19 @@ class Grapher(Command):
         self.create_graphs(runtimes)
 
     def create_graphs(self, runtimes: pd.DataFrame) -> None:
-        self.saver.save(
-            name="runtime_language",
-            fig=runtimes.boxplot(column="runtime", by="language", figsize=(8, 8)),
-            fig_type=FigType.MATPLOTLIB,
-        )
-        self.saver.save(
-            name="runtime_year",
-            fig=runtimes.boxplot(column="runtime", by="year", figsize=(10, 8)),
-            fig_type=FigType.MATPLOTLIB,
-        )
+        self.saver.save(self.year_percentage(runtimes.copy()))
+        self.saver.save(self.runtime_language(runtimes.copy()))
+        self.saver.save(self.runtime_year(runtimes.copy()))
+        self.saver.save(self.cumulative_sum(runtimes.copy()))
+        self.saver.save(self.usage_langauage(runtimes.copy()))
+        self.saver.save(self.usage_langauage_yearly(runtimes.copy()))
+        self.saver.save(self.overhead(runtimes.copy()))
 
-        with_all: pd.DataFrame = runtimes.copy()
-        with_all["all"] = "Time in milliseconds"
-        with_all["runtime"] = runtimes["runtime"].round(0)
+    def year_percentage(self, runtimes: pd.DataFrame) -> FigureProps:
+        runtimes["all"] = "Time in milliseconds"
+        runtimes["runtime"] = runtimes["runtime"].round(0)
         yearly_runtimes = px.sunburst(
-            with_all,
+            runtimes,
             path=["all", "year", "day"],
             values="runtime",
             width=1000,
@@ -70,27 +67,59 @@ class Grapher(Command):
             textinfo="label+percent parent+value",
             sort=False,
         )
-        self.saver.save(
+        return FigureProps(
             name="year_percentage",
             fig=yearly_runtimes,
             fig_type=FigType.PLOTLY,
         )
 
+    def runtime_language(self, runtimes: pd.DataFrame) -> FigureProps:
+        return FigureProps(
+            name="runtime_language",
+            fig=runtimes.boxplot(
+                column="runtime",
+                by="language",
+                figsize=(8, 8),
+            ),
+            fig_type=FigType.MATPLOTLIB,
+        )
+
+    def runtime_year(self, runtimes: pd.DataFrame) -> FigureProps:
+        return FigureProps(
+            name="runtime_year",
+            fig=runtimes.boxplot(
+                column="runtime",
+                by="year",
+                figsize=(10, 8),
+            ),
+            fig_type=FigType.MATPLOTLIB,
+        )
+
+    def cumulative_sum(self, runtimes: pd.DataFrame) -> FigureProps:
         runtimes_only: pd.DataFrame = runtimes[["runtime"]]
         sorted_runtimes = runtimes_only.sort_values("runtime").reset_index(drop=True)
-        self.saver.save(
+        return FigureProps(
             name="cumulative_sum",
-            fig=sorted_runtimes.cumsum().plot.line(legend=False, figsize=(8, 6)),
+            fig=sorted_runtimes.cumsum().plot.line(
+                legend=False,
+                figsize=(8, 6),
+            ),
             fig_type=FigType.MATPLOTLIB,
         )
 
+    def usage_langauage(self, runtimes: pd.DataFrame) -> FigureProps:
         language_counts = runtimes["language"].value_counts()
-        self.saver.save(
+        return FigureProps(
             name="usage_langauage",
-            fig=language_counts.plot.pie(y=1, autopct="%.2f", figsize=(8, 6)),
+            fig=language_counts.plot.pie(
+                y=1,
+                autopct="%.2f",
+                figsize=(8, 6),
+            ),
             fig_type=FigType.MATPLOTLIB,
         )
 
+    def usage_langauage_yearly(self, runtimes: pd.DataFrame) -> FigureProps:
         yearly_usage = pd.pivot_table(
             runtimes,
             index="year",
@@ -99,9 +128,25 @@ class Grapher(Command):
             aggfunc="count",
             fill_value=0,
         )
-        self.saver.save(
+        return FigureProps(
             name="usage_langauage_yearly",
-            fig=yearly_usage.plot.bar(stacked=True, legend=False, figsize=(10, 6)),
+            fig=yearly_usage.plot.bar(
+                stacked=True,
+                legend=False,
+                figsize=(10, 6),
+            ),
             fig_type=FigType.MATPLOTLIB,
             legend=dict(loc="upper center", ncol=5),
+        )
+
+    def overhead(self, runtimes: pd.DataFrame) -> FigureProps:
+        runtimes["overhead"] = runtimes["execution"] - runtimes["runtime"]
+        return FigureProps(
+            name="overhead_language",
+            fig=runtimes.boxplot(
+                column="overhead",
+                by="language",
+                figsize=(8, 8),
+            ),
+            fig_type=FigType.MATPLOTLIB,
         )
