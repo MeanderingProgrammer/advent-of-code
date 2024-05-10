@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from aoc import answer
 from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
-from aoc.point import Point
 
 
 @dataclass(frozen=True)
