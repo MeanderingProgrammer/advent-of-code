@@ -151,7 +151,7 @@ a-run \
 <summary>Process Runtime Output</summary>
 
 ```bash
-cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv'
+cat all.json | jq -r '.[]|[.year, .day, .language, .runtime, .execution]|@tsv'
 cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' | sort -nk4
 cat all.json | jq -r '.[]|[.year, .day, .language, .runtime]|@tsv' | sort -nk4 | awk '{ if ($4 > 100) { print $0 } }'
 cat all.json | jq -r '.[]|select(.year == 2015 and .day == 24)'
