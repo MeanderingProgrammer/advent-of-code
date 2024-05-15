@@ -1,4 +1,4 @@
-(lang dune 3.11)
+(lang dune 3.15)
 
 (name advent_of_code)
 
