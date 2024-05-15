@@ -8,7 +8,7 @@ homepage: "https://github.com/MeanderingProgrammer/advent-of-code"
 bug-reports: "https://github.com/MeanderingProgrammer/advent-of-code/issues"
 depends: [
   "ocaml"
-  "dune" {>= "3.11"}
+  "dune" {>= "3.15"}
   "core_kernel"
   "ppx_jane"
   "ppx_sexp_conv"
