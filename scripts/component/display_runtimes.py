@@ -1,7 +1,23 @@
+from dataclasses import dataclass
+from typing import Optional
+
 import pandas as pd
-from termcolor import colored
 
 from pojo.runtime_info import RuntimeInfo
+
+
+@dataclass(frozen=True)
+class Color:
+    value: int
+    min: Optional[int] = None
+    max: Optional[int] = None
+
+    def matches(self, value: float) -> bool:
+        if self.min is not None and value < self.min:
+            return False
+        if self.max is not None and value >= self.max:
+            return False
+        return True
 
 
 class Displayer:
@@ -19,16 +35,17 @@ class Displayer:
         rows = markdown.split("\n")
         print("\n".join(rows[:2]))
         for i, row in enumerate(rows[2:]):
-            print(colored(row, self.get_color(df.iloc[i])))
+            color = Displayer.get_color(df.iloc[i])
+            print(f"\033[{color}m{row}\033[0m")
 
     @staticmethod
-    def get_color(row):
-        color_predicates = {
-            "green": lambda x: 0 <= x < 500,
-            "yellow": lambda x: 500 <= x < 1_000,
-            "red": lambda x: 1_000 <= x,
-        }
-        for color, predicate in color_predicates.items():
-            if predicate(row["runtime"]):
-                return color
+    def get_color(row: dict) -> int:
+        colors: list[Color] = [
+            Color(value=32, max=500),
+            Color(value=33, min=500, max=1_000),
+            Color(value=31, min=1_000),
+        ]
+        for color in colors:
+            if color.matches(row["runtime"]):
+                return color.value
         raise Exception(f"Could not find color for: {row}")
