@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use rayon::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
@@ -20,31 +21,36 @@ impl Hasher {
         Self { prefix, n }
     }
 
-    fn next(&self, start: usize) -> HashInfo {
-        let mut i = start;
-        loop {
-            let mut digest = md5::compute(format!("{}{i}", self.prefix));
-            let mut hash = [0; 32];
-            for _ in 0..(self.n - 1) {
-                Self::fill_hash(&mut hash, digest);
-                digest = md5::compute(hash);
-            }
-            Self::fill_hash(&mut hash, digest);
-            if let Some(&triple) = Self::repeats(&hash, 3).first() {
-                return HashInfo {
-                    i,
-                    triple,
-                    cinqs: Self::repeats(&hash, 5),
-                };
-            }
-            i += 1;
+    fn compute_range(&self, start: usize, end: usize) -> VecDeque<HashInfo> {
+        if self.n == 0 || end - start == 0 {
+            (start..=end).filter_map(|i| self.compute(i)).collect()
+        } else {
+            (start..=end)
+                .into_par_iter()
+                .filter_map(|i| self.compute(i))
+                .collect()
         }
+    }
+
+    fn compute(&self, i: usize) -> Option<HashInfo> {
+        let mut digest = md5::compute(format!("{}{i}", self.prefix));
+        let mut hash = [0; 32];
+        for _ in 0..(self.n) {
+            Self::fill_hash(&mut hash, digest);
+            digest = md5::compute(hash);
+        }
+        Self::fill_hash(&mut hash, digest);
+        Self::repeats(&hash, 3).first().map(|&triple| HashInfo {
+            i,
+            triple,
+            cinqs: Self::repeats(&hash, 5),
+        })
     }
 
     fn fill_hash(buffer: &mut [u8; 32], digest: md5::Digest) {
         for i in 0..16 {
             let ch = digest[i];
-            let (v1, v2) = (ch >> 4, ch & 0b0000_1111);
+            let (v1, v2) = (ch >> 4, ch & 0xf);
             buffer[i * 2] = Self::hex_ascii(v1);
             buffer[i * 2 + 1] = Self::hex_ascii(v2);
         }
@@ -77,25 +83,31 @@ fn main() {
 
 fn solution() {
     let prefix = Reader::default().read_line();
-    answer::part1(15168, generate(prefix.clone(), 1));
-    answer::part2(20864, generate(prefix.clone(), 2_017));
+    answer::part1(15168, generate(&prefix, 0));
+    answer::part2(20864, generate(&prefix, 2_016));
 }
 
-fn generate(prefix: String, n: usize) -> usize {
-    let hasher = Hasher::new(prefix, n);
+fn generate(prefix: &str, n: usize) -> usize {
+    let hasher = Hasher::new(prefix.to_string(), n);
 
     let mut hashes = VecDeque::new();
-    hashes.push_back(hasher.next(0));
+    let mut i = 0;
+    while hashes.is_empty() {
+        if let Some(hash) = hasher.compute(i) {
+            hashes.push_back(hash);
+        }
+        i += 1;
+    }
 
     let mut keys = Vec::new();
     while keys.len() < 64 {
-        let hash = hashes.front().unwrap().clone();
-        while hashes.back().unwrap().i < hash.i + 1_000 {
-            hashes.push_back(hasher.next(hashes.back().unwrap().i + 1));
-        }
-        hashes.pop_front().unwrap();
+        let hash = hashes.pop_front().unwrap();
+        let end = hash.i + 1_000;
+
+        hashes.append(&mut hasher.compute_range(i, end));
+
         for other in hashes.iter() {
-            if hash.i + 1000 < other.i {
+            if end < other.i {
                 break;
             }
             if other.cinqs.contains(&hash.triple) {
@@ -103,6 +115,8 @@ fn generate(prefix: String, n: usize) -> usize {
                 break;
             }
         }
+
+        i = end + 1;
     }
-    keys[63]
+    *keys.last().unwrap()
 }
