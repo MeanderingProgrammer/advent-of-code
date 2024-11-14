@@ -1,6 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use itertools::Itertools;
+use std::fmt::Write;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::thread;
@@ -14,9 +15,9 @@ struct State {
 
 #[derive(Debug, Default)]
 struct Password {
-    data: Vec<(usize, char)>,
-    filled: Vec<u32>,
-    result: [char; 8],
+    data: Vec<(usize, u8)>,
+    filled: Vec<u8>,
+    result: [u8; 8],
 }
 
 impl Password {
@@ -24,31 +25,25 @@ impl Password {
         self.filled.len() == self.result.len()
     }
 
-    fn add(&mut self, i: usize, c1: char, c2: char) {
+    fn add(&mut self, i: usize, c1: u8, c2: u8) {
         self.data.push((i, c1));
-        match c1.to_digit(10) {
-            None => (),
-            Some(index) => {
-                if (index as usize) < self.result.len() && !self.filled.contains(&index) {
-                    self.filled.push(index);
-                    self.result[index as usize] = c2;
-                }
-            }
+        if (c1 as usize) < self.result.len() && !self.filled.contains(&c1) {
+            self.filled.push(c1);
+            self.result[c1 as usize] = c2;
         }
     }
 
-    fn part_1(&self) -> String {
+    fn part_1(&self) -> Vec<u8> {
         self.data
-            .clone()
-            .into_iter()
+            .iter()
             .sorted()
             .take(self.result.len())
-            .map(|(_, ch)| ch)
+            .map(|(_, ch)| *ch)
             .collect()
     }
 
-    fn part_2(&self) -> String {
-        self.result.iter().collect()
+    fn part_2(&self) -> Vec<u8> {
+        self.result.to_vec()
     }
 }
 
@@ -58,8 +53,8 @@ fn main() {
 
 fn solution() {
     let password = get_password(Reader::default().read_line());
-    answer::part1("d4cd2ee1", &password.part_1());
-    answer::part2("f2c730e5", &password.part_2());
+    answer::part1("d4cd2ee1", &to_hex(&password.part_1()));
+    answer::part2("f2c730e5", &to_hex(&password.part_2()));
 }
 
 fn get_password(prefix: String) -> Password {
@@ -88,13 +83,23 @@ fn worker(state: &State, mutex: &Mutex<Password>, batch_size: usize) {
 }
 
 fn update_password(state: &State, mutex: &Mutex<Password>, i: usize) {
-    let hash = format!("{:x}", md5::compute(format!("{}{i}", state.prefix)));
-    if &hash[0..5] == "00000" {
+    let digest = md5::compute(format!("{}{i}", state.prefix));
+    // Equivalent to first 5 hex characters == "00000"
+    if digest[0] == 0 && digest[1] == 0 && digest[2] < 16 {
+        // Retrieve characters 6 & 7
+        let (c1, c2) = (digest[2], digest[3] >> 4);
         let mut password = mutex.lock().unwrap();
-        let mut hash_chars = hash.chars().skip(5);
-        password.add(i, hash_chars.next().unwrap(), hash_chars.next().unwrap());
+        password.add(i, c1, c2);
         if password.done() {
             state.done.store(true, Ordering::Relaxed);
         }
     }
+}
+
+fn to_hex(chars: &[u8]) -> String {
+    let mut result = String::new();
+    chars
+        .iter()
+        .for_each(|ch| write!(result, "{:x}", ch).unwrap());
+    result
 }

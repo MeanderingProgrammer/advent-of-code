@@ -24,11 +24,7 @@ class LanguageStrategy:
         if self.name == StrategyName.ALL:
             return options
         elif self.name == StrategyName.FASTEST:
-            # MD5 parallelized solutions are faster in Go, otherwise prefer Rust
-            if day in [Day("2016", "05"), Day("2016", "15")]:
-                speed = dict(go=1, rust=2, java=3, ocaml=4, python=5, ts=6)
-            else:
-                speed = dict(rust=1, go=2, java=3, ocaml=4, python=5, ts=6)
+            speed = dict(rust=1, go=2, java=3, ocaml=4, python=5, ts=6)
             ordered = sorted(options, key=lambda language: speed[language.name])
             return [ordered[0]]
         else:
