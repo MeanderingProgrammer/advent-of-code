@@ -16,7 +16,6 @@ const (
 
 type hashInfo struct {
 	index   int
-	value   string
 	triples []byte
 	cinqs   []byte
 }
