@@ -6,48 +6,70 @@ use rayon::prelude::*;
 use std::thread;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Node<'a> {
-    name: &'a str,
+struct Node {
+    id: usize,
     count: usize,
 }
 
-impl<'a> Node<'a> {
-    fn new(name: &'a str) -> Self {
-        Self { name, count: 1 }
+impl Node {
+    fn new(id: usize) -> Self {
+        Self { id, count: 1 }
     }
 
     fn combine(&self, other: &Self) -> Self {
         Self {
-            name: self.name,
+            id: self.id,
             count: self.count + other.count,
         }
     }
 }
 
 #[derive(Debug, Clone)]
-struct Graph<'a> {
-    graph: FxHashMap<Node<'a>, Vec<Node<'a>>>,
+struct Graph {
+    graph: FxHashMap<Node, Vec<Node>>,
 }
 
-impl<'a> Graph<'a> {
-    fn new(lines: &'a [String]) -> Self {
-        let mut graph = FxHashMap::default();
-        lines.iter().for_each(|line| {
-            let (node, edges) = line.split_once(": ").unwrap();
-            edges.split(' ').for_each(|edge| {
-                let node1 = Node::new(node);
-                let node2 = Node::new(edge);
-                graph
-                    .entry(node1.clone())
-                    .and_modify(|edges: &mut Vec<Node>| edges.push(node2.clone()))
-                    .or_insert(vec![node2.clone()]);
-                graph
-                    .entry(node2.clone())
-                    .and_modify(|edges: &mut Vec<Node>| edges.push(node1.clone()))
-                    .or_insert(vec![node1.clone()]);
+impl Graph {
+    fn new(lines: Vec<String>) -> Self {
+        let data: FxHashMap<&str, Vec<&str>> = lines
+            .iter()
+            .map(|line| {
+                let (node, edges) = line.split_once(": ").unwrap();
+                (node, edges.split(' ').collect())
+            })
+            .collect();
+
+        let mut ids: FxHashMap<&str, usize> = FxHashMap::default();
+        data.iter().for_each(|(node, edges)| {
+            Self::add_node(&mut ids, node);
+            edges.iter().for_each(|edge| {
+                Self::add_node(&mut ids, edge);
             });
         });
+
+        let mut graph: FxHashMap<Node, Vec<Node>> = FxHashMap::default();
+        data.iter().for_each(|(node, edges)| {
+            edges.iter().for_each(|edge| {
+                let (n1, n2) = (Node::new(ids[node]), Node::new(ids[edge]));
+                Self::add_edge(&mut graph, n1.clone(), n2.clone());
+                Self::add_edge(&mut graph, n2.clone(), n1.clone());
+            });
+        });
+
         Self { graph }
+    }
+
+    fn add_node<'a>(ids: &mut FxHashMap<&'a str, usize>, node: &'a str) {
+        if !ids.contains_key(node) {
+            ids.insert(node, ids.len());
+        }
+    }
+
+    fn add_edge(graph: &mut FxHashMap<Node, Vec<Node>>, n1: Node, n2: Node) {
+        graph
+            .entry(n1)
+            .and_modify(|edges| edges.push(n2.clone()))
+            .or_insert(vec![n2]);
     }
 
     fn karger(&mut self) {
@@ -60,25 +82,23 @@ impl<'a> Graph<'a> {
             let edges2 = self.get_and_remove(&n2, &n1);
 
             let combined = n1.combine(&n2);
-            let combined_edges = [edges1.clone(), edges2.clone()].concat();
-            self.graph.insert(combined.clone(), combined_edges);
-
             for edge in &edges1 {
                 self.replace(edge, &n1, &combined);
             }
             for edge in &edges2 {
                 self.replace(edge, &n2, &combined);
             }
+            self.graph.insert(combined, [edges1, edges2].concat());
         }
     }
 
-    fn get_and_remove(&mut self, node: &Node<'a>, remove: &Node<'a>) -> Vec<Node<'a>> {
+    fn get_and_remove(&mut self, node: &Node, remove: &Node) -> Vec<Node> {
         let mut edges = self.graph.remove(node).unwrap();
         edges.retain(|edge| edge != remove);
         edges
     }
 
-    fn replace(&mut self, neighbor: &Node<'a>, old: &Node<'a>, new: &Node<'a>) {
+    fn replace(&mut self, neighbor: &Node, old: &Node, new: &Node) {
         self.graph
             .get_mut(neighbor)
             .unwrap()
@@ -105,7 +125,7 @@ fn main() {
 
 fn solution() {
     let lines = Reader::default().read_lines();
-    let graph = Graph::new(&lines);
+    let graph = Graph::new(lines);
     answer::part1(567606, until_cut_size(graph, 3));
 }
 
