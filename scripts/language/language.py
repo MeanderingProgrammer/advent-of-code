@@ -14,6 +14,10 @@ class Language(abc.ABC):
         return day.dir().joinpath(self.solution_file)
 
     @abc.abstractmethod
+    def cmd(self) -> str:
+        pass
+
+    @abc.abstractmethod
     def test_command(self) -> list[str]:
         pass
 

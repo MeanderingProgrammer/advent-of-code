@@ -12,6 +12,10 @@ class Python(Language):
     commons_path: str = field(default="commons/python", repr=False)
 
     @override
+    def cmd(self) -> str:
+        return "python"
+
+    @override
     def test_command(self) -> list[str]:
         return ["pytest", "-s", self.commons_path]
 

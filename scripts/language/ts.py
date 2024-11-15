@@ -11,6 +11,10 @@ class TypeScript(Language):
     solution_file: str = field(default="solver.ts", repr=False)
 
     @override
+    def cmd(self) -> str:
+        return "bun"
+
+    @override
     def test_command(self) -> list[str]:
         return []
 

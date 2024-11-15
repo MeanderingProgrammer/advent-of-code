@@ -13,6 +13,10 @@ class Rust(Language):
     solution_file: str = field(default="solver.rs", repr=False)
 
     @override
+    def cmd(self) -> str:
+        return "cargo"
+
+    @override
     def test_command(self) -> list[str]:
         return ["cargo", "test", "-r", "--test", "aoc_lib"]
 
