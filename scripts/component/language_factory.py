@@ -1,3 +1,5 @@
+import shutil
+
 from language.go import Go
 from language.java import Java
 from language.language import Language
@@ -9,7 +11,7 @@ from language.ts import TypeScript
 
 class LanguageFactory:
     def __init__(self):
-        self.languages: list[Language] = [
+        languages: list[Language] = [
             Go(),
             Java(),
             Ocaml(),
@@ -17,6 +19,10 @@ class LanguageFactory:
             Rust(),
             TypeScript(),
         ]
+        self.languages: list[Language] = []
+        for language in languages:
+            if shutil.which(language.cmd()) is not None:
+                self.languages.append(language)
 
     def get_names(self) -> list[str]:
         return [language.name for language in self.languages]

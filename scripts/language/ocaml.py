@@ -12,6 +12,10 @@ class Ocaml(Language):
     solution_file: str = field(default="solver.ml", repr=False)
 
     @override
+    def cmd(self) -> str:
+        return "dune"
+
+    @override
     def test_command(self) -> list[str]:
         return ["dune", "test"]
 

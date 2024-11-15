@@ -11,6 +11,10 @@ class Go(Language):
     solution_file: str = field(default="solver.go", repr=False)
 
     @override
+    def cmd(self) -> str:
+        return "go"
+
+    @override
     def test_command(self) -> list[str]:
         return ["go", "test", "-v", "./..."]
 
