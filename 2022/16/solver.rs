@@ -13,7 +13,6 @@ use nom::{
 };
 use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
-use std::collections::BTreeSet;
 
 #[derive(Debug)]
 struct Valve {
@@ -50,26 +49,45 @@ impl Valve {
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct IndividualState {
     location: u8,
-    minutes_left: u16,
+    time_left: u16,
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct BitSet {
+    values: usize,
+}
+
+impl BitSet {
+    fn new(values: usize) -> Self {
+        Self { values }
+    }
+
+    fn contains(&self, value: u8) -> bool {
+        (self.values >> value) & 1 == 1
+    }
+
+    fn add(&mut self, value: u8) {
+        self.values |= 1 << value;
+    }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct FullState {
     individuals: Vec<IndividualState>,
-    valves_opened: BTreeSet<u8>,
+    opened: BitSet,
 }
 
 impl FullState {
-    fn new(starting_time: u16, individuals: usize) -> Self {
+    fn new(time: u16, individuals: usize) -> Self {
         Self {
             individuals: vec![
                 IndividualState {
                     location: 0,
-                    minutes_left: starting_time,
+                    time_left: time,
                 };
                 individuals
             ],
-            valves_opened: [].into(),
+            opened: BitSet::new(0),
         }
     }
 }
@@ -84,9 +102,9 @@ struct Cave {
 }
 
 impl Cave {
-    fn traverse(&self, starting_time: u16, individuals: usize) -> u16 {
+    fn traverse(&self, time: u16, individuals: usize) -> u16 {
         let mut queue = PriorityQueue::new();
-        queue.push(FullState::new(starting_time, individuals), 0);
+        queue.push(FullState::new(time, individuals), 0);
         let mut max_score: u16 = 0;
         while !queue.is_empty() {
             let (state, score) = queue.pop().unwrap();
@@ -97,15 +115,15 @@ impl Cave {
             let next_states = match individuals {
                 1 => self.next_options(&state, score, 0),
                 2 => {
-                    let first_states = self.next_options(&state, score, 0);
-                    let second_states = self.next_options(&state, score, 1);
-                    if first_states.is_empty() {
-                        second_states
-                    } else if second_states.is_empty() {
-                        first_states
+                    let states_1 = self.next_options(&state, score, 0);
+                    let states_2 = self.next_options(&state, score, 1);
+                    if states_1.is_empty() {
+                        states_2
+                    } else if states_2.is_empty() {
+                        states_1
                     } else {
                         let mut result = vec![];
-                        for (next_state, next_score) in first_states.into_iter() {
+                        for (next_state, next_score) in states_1.into_iter() {
                             let mut followup_states = self.next_options(&next_state, next_score, 1);
                             if followup_states.is_empty() {
                                 result.push((next_state, next_score));
@@ -129,22 +147,22 @@ impl Cave {
         let individual = &state.individuals[i];
         self.graph[&individual.location]
             .iter()
-            .filter(|(_, time)| individual.minutes_left > *time)
-            .filter(|(destination, _)| !state.valves_opened.contains(destination))
+            .filter(|(_, time)| individual.time_left > *time)
+            .filter(|(destination, _)| !state.opened.contains(*destination))
             .map(|(destination, time)| {
-                let minutes_left = individual.minutes_left - time - 1;
-                let mut valves_opened = state.valves_opened.clone();
-                valves_opened.insert(*destination);
+                let time_left = individual.time_left - time - 1;
                 let mut individuals = state.individuals.clone();
                 individuals[i] = IndividualState {
                     location: *destination,
-                    minutes_left,
+                    time_left,
                 };
+                let mut opened = state.opened.clone();
+                opened.add(*destination);
                 let next_state = FullState {
                     individuals,
-                    valves_opened,
+                    opened,
                 };
-                let next_score = score + (self.valve_flow[destination] * minutes_left);
+                let next_score = score + (self.valve_flow[destination] * time_left);
                 (next_state, next_score)
             })
             .collect()
@@ -154,7 +172,7 @@ impl Cave {
         let mut highest_values = self
             .valve_flow
             .iter()
-            .filter(|(name, _)| !state.valves_opened.contains(name))
+            .filter(|(name, _)| !state.opened.contains(**name))
             .map(|(_, &flow_rate)| flow_rate)
             .sorted()
             .rev()
@@ -163,7 +181,7 @@ impl Cave {
         let mut times_left: Vec<u16> = state
             .individuals
             .iter()
-            .map(|individual| individual.minutes_left)
+            .map(|individual| individual.time_left)
             .collect();
 
         let mut additional_score = 0;
@@ -217,14 +235,11 @@ fn create_cave(valves: Vec<Valve>, start: &str) -> Cave {
 
     let mut graph: FxHashMap<u8, Vec<(u8, u16)>> = FxHashMap::default();
     (0..ordered.len())
-        .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1 as u8, v2 as u8)))
+        .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1, v2)))
         .filter(|(v1, v2)| v1 != v2)
         .for_each(|(v1, v2)| {
-            graph.entry(v1).or_default();
-            let weight = distances
-                .get(&(&ordered[v1 as usize], &ordered[v2 as usize]))
-                .unwrap();
-            graph.get_mut(&v1).unwrap().push((v2, *weight));
+            let weight = distances.get(&(&ordered[v1], &ordered[v2])).unwrap();
+            graph.entry(v1 as u8).or_default().push((v2 as u8, *weight));
         });
 
     Cave { graph, valve_flow }

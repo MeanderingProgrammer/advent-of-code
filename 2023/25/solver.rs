@@ -51,8 +51,8 @@ impl Graph {
         data.iter().for_each(|(node, edges)| {
             edges.iter().for_each(|edge| {
                 let (n1, n2) = (Node::new(ids[node]), Node::new(ids[edge]));
-                Self::add_edge(&mut graph, n1.clone(), n2.clone());
-                Self::add_edge(&mut graph, n2.clone(), n1.clone());
+                graph.entry(n1.clone()).or_default().push(n2.clone());
+                graph.entry(n2.clone()).or_default().push(n1.clone());
             });
         });
 
@@ -63,13 +63,6 @@ impl Graph {
         if !ids.contains_key(node) {
             ids.insert(node, ids.len());
         }
-    }
-
-    fn add_edge(graph: &mut FxHashMap<Node, Vec<Node>>, n1: Node, n2: Node) {
-        graph
-            .entry(n1)
-            .and_modify(|edges| edges.push(n2.clone()))
-            .or_insert(vec![n2]);
     }
 
     fn karger(&mut self) {
