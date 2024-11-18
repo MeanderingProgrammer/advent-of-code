@@ -1,8 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
+use std::cmp::Ordering;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct Bridge(Vec<(u8, u8)>);
 
 impl Bridge {
@@ -32,28 +33,50 @@ impl Bridge {
     }
 }
 
+#[derive(Debug, Default)]
+struct BridgeData {
+    strongest: usize,
+    longest: usize,
+    longest_strongest: usize,
+}
+
+impl BridgeData {
+    fn update(&mut self, bridge: &Bridge) {
+        let (strength, length) = (bridge.strength(), bridge.len());
+        self.strongest = self.strongest.max(strength);
+        match length.cmp(&self.longest) {
+            Ordering::Greater => {
+                self.longest = length;
+                self.longest_strongest = strength;
+            }
+            Ordering::Equal => {
+                self.longest_strongest = self.longest_strongest.max(strength);
+            }
+            Ordering::Less => (),
+        };
+    }
+}
+
 #[derive(Debug)]
 struct BridgeBuilder {
     components: FxHashMap<u8, Vec<u8>>,
 }
 
 impl BridgeBuilder {
-    fn build(&self) -> Vec<Bridge> {
-        let bridge = Bridge(Vec::new());
-        self.generate(bridge)
+    fn build(&self) -> BridgeData {
+        let mut data = BridgeData::default();
+        self.generate(&mut data, Bridge::default());
+        data
     }
 
-    fn generate(&self, bridge: Bridge) -> Vec<Bridge> {
+    fn generate(&self, data: &mut BridgeData, bridge: Bridge) {
+        data.update(&bridge);
         let start = bridge.last();
-        let mut result: Vec<Bridge> = Vec::new();
         for end in self.components[&start].iter() {
             if !bridge.contains(start, *end) {
-                let new_bridge = bridge.add(start, *end);
-                result.push(new_bridge.clone());
-                result.append(&mut self.generate(new_bridge));
+                self.generate(data, bridge.add(start, *end));
             }
         }
-        result
     }
 }
 
@@ -62,36 +85,19 @@ fn main() {
 }
 
 fn solution() {
+    let data = get_bridge_builder().build();
+    answer::part1(1656, data.strongest);
+    answer::part2(1642, data.longest_strongest);
+}
+
+fn get_bridge_builder() -> BridgeBuilder {
     let mut components: FxHashMap<u8, Vec<u8>> = FxHashMap::default();
     Reader::default().read_lines().iter().for_each(|line| {
         let (p1, p2) = line.split_once('/').unwrap();
         let v1: u8 = p1.parse().unwrap();
         let v2: u8 = p2.parse().unwrap();
-        components.entry(v1).or_default();
-        components.get_mut(&v1).unwrap().push(v2);
-        components.entry(v2).or_default();
-        components.get_mut(&v2).unwrap().push(v1);
+        components.entry(v1).or_default().push(v2);
+        components.entry(v2).or_default().push(v1);
     });
-    let bridge_builder = BridgeBuilder { components };
-    let bridges = bridge_builder.build();
-    answer::part1(1656, strongest(&bridges));
-    answer::part2(1642, longest_strongest(&bridges));
-}
-
-fn strongest(bridges: &[Bridge]) -> usize {
-    bridges
-        .iter()
-        .map(|bridge| bridge.strength())
-        .max()
-        .unwrap()
-}
-
-fn longest_strongest(bridges: &[Bridge]) -> usize {
-    let longest = bridges.iter().map(|bridge| bridge.len()).max().unwrap();
-    let all_longest: Vec<Bridge> = bridges
-        .iter()
-        .filter(|bridge| bridge.len() == longest)
-        .cloned()
-        .collect();
-    strongest(&all_longest)
+    BridgeBuilder { components }
 }
