@@ -7,29 +7,30 @@ use std::collections::VecDeque;
 struct HashInfo {
     i: usize,
     triple: u8,
-    cinqs: Vec<u8>,
+    quintuple: Option<u8>,
 }
 
 #[derive(Debug)]
 struct Hasher {
     prefix: String,
     n: usize,
+    batch: usize,
 }
 
 impl Hasher {
-    fn new(prefix: String, n: usize) -> Self {
-        Self { prefix, n }
+    fn new(prefix: String, n: usize, batch: usize) -> Self {
+        Self { prefix, n, batch }
     }
 
-    fn compute_range(&self, start: usize, end: usize) -> VecDeque<HashInfo> {
-        if self.n == 0 || end - start == 0 {
-            (start..=end).filter_map(|i| self.compute(i)).collect()
-        } else {
-            (start..=end)
+    fn compute_range(&self, start: usize, end: usize) -> (usize, VecDeque<HashInfo>) {
+        let end = end.max(start + self.batch) + 1;
+        (
+            end,
+            (start..end)
                 .into_par_iter()
                 .filter_map(|i| self.compute(i))
-                .collect()
-        }
+                .collect(),
+        )
     }
 
     fn compute(&self, i: usize) -> Option<HashInfo> {
@@ -40,10 +41,10 @@ impl Hasher {
             digest = md5::compute(hash);
         }
         Self::fill_hash(&mut hash, digest);
-        Self::repeats(&hash, 3).first().map(|&triple| HashInfo {
+        Self::repeat(&hash, 3).map(|triple| HashInfo {
             i,
             triple,
-            cinqs: Self::repeats(&hash, 5),
+            quintuple: Self::repeat(&hash, 5),
         })
     }
 
@@ -61,19 +62,18 @@ impl Hasher {
         offset + ch
     }
 
-    fn repeats(hash: &[u8; 32], size: usize) -> Vec<u8> {
-        let mut result = Vec::new();
+    fn repeat(hash: &[u8; 32], size: usize) -> Option<u8> {
         let mut start = 0;
         for i in 1..hash.len() {
             if hash[i] == hash[start] {
                 if i - start == size - 1 {
-                    result.push(hash[i]);
+                    return Some(hash[i]);
                 }
             } else {
                 start = i;
             }
         }
-        result
+        None
     }
 }
 
@@ -88,7 +88,7 @@ fn solution() {
 }
 
 fn generate(prefix: &str, n: usize) -> usize {
-    let hasher = Hasher::new(prefix.to_string(), n);
+    let hasher = Hasher::new(prefix.to_string(), n, 1_000);
 
     let mut hashes = VecDeque::new();
     let mut i = 0;
@@ -102,21 +102,23 @@ fn generate(prefix: &str, n: usize) -> usize {
     let mut keys = Vec::new();
     while keys.len() < 64 {
         let hash = hashes.pop_front().unwrap();
-        let end = hash.i + 1_000;
+        let hash_end = hash.i + 1_000;
 
-        hashes.append(&mut hasher.compute_range(i, end));
+        if i <= hash_end {
+            let (next_start, mut more_hashes) = hasher.compute_range(i, hash_end);
+            i = next_start;
+            hashes.append(&mut more_hashes);
+        }
 
         for other in hashes.iter() {
-            if end < other.i {
+            if other.i > hash_end {
                 break;
             }
-            if other.cinqs.contains(&hash.triple) {
+            if other.quintuple == Some(hash.triple) {
                 keys.push(hash.i);
                 break;
             }
         }
-
-        i = end + 1;
     }
     *keys.last().unwrap()
 }
