@@ -58,7 +58,7 @@ fn solution() {
 }
 
 fn get_password(prefix: String) -> Password {
-    let shared = State {
+    let state = State {
         prefix,
         index: AtomicUsize::new(0),
         done: AtomicBool::new(false),
@@ -67,7 +67,7 @@ fn get_password(prefix: String) -> Password {
     thread::scope(|scope| {
         let threads = thread::available_parallelism().unwrap().get();
         for _ in 0..threads {
-            scope.spawn(|| worker(&shared, &password, 1_000));
+            scope.spawn(|| worker(&state, &password, 1_000));
         }
     });
     password.into_inner().unwrap()
