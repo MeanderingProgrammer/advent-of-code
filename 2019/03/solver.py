@@ -8,14 +8,10 @@ from aoc.point import Direction, Point, PointHelper
 
 @dataclass(frozen=True)
 class Path:
-    points: set[Point]
-    step_counts: dict[Point, int]
+    distances: dict[Point, int]
 
-    def intersection(self, other: Self) -> set[Point]:
-        return self.points & other.points
-
-    def steps(self, location: Point) -> int:
-        return self.step_counts[location]
+    def intersection(self, other: Self) -> list[Point]:
+        return [point for point in self.distances if point in other.distances]
 
 
 @answer.timer
@@ -23,28 +19,26 @@ def main() -> None:
     data = Parser().lines()
     p1, p2 = create_path(data[0]), create_path(data[1])
     intersections = p1.intersection(p2)
-    answer.part1(870, min(list(map(PointHelper.len, intersections))))
+    answer.part1(870, min(map(PointHelper.len, intersections)))
     answer.part2(
-        13698, min([p1.steps(point) + p2.steps(point) for point in intersections])
+        13698,
+        min([p1.distances[point] + p2.distances[point] for point in intersections]),
     )
 
 
 def create_path(line: str) -> Path:
-    points: list[Point] = [(0, 0)]
-    step_counts: dict[Point, int] = dict()
-    steps: int = 0
-    for part in line.split(","):
-        direction = Direction.from_str(part[0])
-        for _ in range(int(part[1:])):
-            steps += 1
-            next_point = PointHelper.go(points[-1], direction)
-            points.append(next_point)
-            if next_point not in step_counts:
-                step_counts[next_point] = steps
-    return Path(
-        points=set(points[1:]),
-        step_counts=step_counts,
-    )
+    point: Point = (0, 0)
+    distance: int = 0
+    distances: dict[Point, int] = dict()
+    for step in line.split(","):
+        direction = Direction.from_str(step[0])
+        amount = int(step[1:])
+        for _ in range(amount):
+            point = PointHelper.go(point, direction)
+            distance += 1
+            if point not in distances:
+                distances[point] = distance
+    return Path(distances=distances)
 
 
 if __name__ == "__main__":
