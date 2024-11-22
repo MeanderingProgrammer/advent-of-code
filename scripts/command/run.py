@@ -82,12 +82,11 @@ class Runner(Command):
         runtimes = [runner.execute() for runner in self.runners()]
         overall_runtime = time.time() - start
 
-        displayer = Displayer()
-        displayer.display("ALL", runtimes)
+        Displayer("ALL", runtimes).display()
         self.save_as("all", runtimes)
 
         slow = list(filter(lambda runtime: runtime.runtime > self.slow, runtimes))
-        displayer.display("SLOW", slow)
+        Displayer("SLOW", slow).display()
         self.save_as("slow", slow)
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")

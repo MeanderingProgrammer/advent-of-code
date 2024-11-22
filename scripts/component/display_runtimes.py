@@ -1,51 +1,61 @@
 from dataclasses import dataclass
-from typing import Optional
-
-import pandas as pd
 
 from pojo.runtime_info import RuntimeInfo
 
 
 @dataclass(frozen=True)
-class Color:
-    value: int
-    min: Optional[int] = None
-    max: Optional[int] = None
-
-    def matches(self, value: float) -> bool:
-        if self.min is not None and value < self.min:
-            return False
-        if self.max is not None and value >= self.max:
-            return False
-        return True
-
-
 class Displayer:
-    def display(self, label: str, runtimes: list[RuntimeInfo]) -> None:
-        if len(runtimes) == 0:
-            print(f"{label}: NONE")
-            return
-        print(label)
-        df = pd.DataFrame([runtime.as_dict() for runtime in runtimes])
-        self.print_df(df)
+    label: str
+    runtimes: list[RuntimeInfo]
 
-    def print_df(self, df: pd.DataFrame) -> None:
-        markdown = df.to_markdown(index=False)
-        assert markdown is not None
-        rows = markdown.split("\n")
-        print("\n".join(rows[:2]))
-        for i, row in enumerate(rows[2:]):
-            color = Displayer.get_color(df.iloc[i])
-            print(f"\033[{color}m{row}\033[0m")
+    def display(self) -> None:
+        if len(self.runtimes) == 0:
+            print(f"{self.label}: NONE")
+            return
+
+        headings: list[str] = ["year", "day", "language", "runtime", "execution"]
+
+        rows: list[list[str]] = []
+        for runtime in self.runtimes:
+            info: dict = runtime.as_dict()
+            row: list[str] = [str(info[name]) for name in headings]
+            rows.append(row)
+
+        widths: list[int] = [len(name) for name in headings]
+        for row in rows:
+            for i in range(len(headings)):
+                widths[i] = max(widths[i], len(row[i]))
+
+        print(self.label)
+        Displayer.delim(widths, "┌", "┬", "┐")
+        Displayer.row(widths, headings, None)
+        Displayer.delim(widths, "├", "┼", "┤")
+        for runtime, row in zip(self.runtimes, rows):
+            Displayer.row(widths, row, runtime.runtime)
+        Displayer.delim(widths, "└", "┴", "┘")
 
     @staticmethod
-    def get_color(row: dict) -> int:
-        colors: list[Color] = [
-            Color(value=32, max=500),
-            Color(value=33, min=500, max=1_000),
-            Color(value=31, min=1_000),
-        ]
-        for color in colors:
-            if color.matches(row["runtime"]):
-                return color.value
-        raise Exception(f"Could not find color for: {row}")
+    def delim(widths: list[int], left: str, center: str, right: str) -> None:
+        sections: list[str] = ["─" * (width + 2) for width in widths]
+        print(left + center.join(sections) + right)
+
+    @staticmethod
+    def row(widths: list[int], cols: list[str], runtime: float | None) -> None:
+        line: list[str] = []
+        for col, width in zip(cols, widths):
+            line.append(col.ljust(width))
+        value = "│ " + " │ ".join(line) + " │"
+        if runtime is None:
+            print(value)
+        else:
+            color = Displayer.color(runtime)
+            print(f"\033[{color}m{value}\033[0m")
+
+    @staticmethod
+    def color(value: float) -> int:
+        if value < 500:
+            return 32
+        elif value < 1_000:
+            return 33
+        else:
+            return 31

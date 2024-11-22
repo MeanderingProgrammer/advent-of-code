@@ -15,8 +15,8 @@ class RuntimeInfo:
             year=int(self.day.year),
             day=int(self.day.day),
             language=self.language,
-            runtime=self.runtime,
-            execution=self.execution,
+            runtime=round(self.runtime, 3),
+            execution=round(self.execution, 3),
         )
 
     @staticmethod
