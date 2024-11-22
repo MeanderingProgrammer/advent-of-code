@@ -9,11 +9,7 @@ from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
 from args.str_enum_type import StrEnumType
-from command.build import Build
 from command.command import Command
-from command.generate import Generator
-from command.graph import Grapher
-from command.run import Runner
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
 from component.language_strategy import LanguageStrategy, StrategyName
@@ -36,6 +32,8 @@ def build(language: tuple[Language, ...], info: bool) -> None:
     """
     Build specified languages
     """
+    from command.build import Build
+
     build = Build(
         languages=LanguageFactory().get_all() if len(language) == 0 else list(language),
     )
@@ -62,6 +60,8 @@ def run(
     """
     Runs specific days / years for either specific or all languages
     """
+    from command.run import Runner
+
     if len(year) == 0 and len(day) == 0:
         template = template or RunName.LATEST
         days = RunTemplate().get(template)
@@ -107,6 +107,8 @@ def generate(
     """
     Generates starting files for a specific day & language
     """
+    from command.generate import Generator
+
     if year is None and day is None:
         template = template or GenerateName.NEXT
         days = [GenerateTemplate().get(template)]
@@ -129,6 +131,8 @@ def graph(archive: bool, info: bool) -> None:
     """
     Creates some fun graphs of runtimes
     """
+    from command.graph import Grapher
+
     grapher = Grapher(archive=archive)
     run_command(grapher, info)
 
