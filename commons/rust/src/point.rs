@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::fmt;
 use std::ops::{Add, Mul};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
@@ -113,9 +114,9 @@ impl FromStr for Point {
     }
 }
 
-impl ToString for Point {
-    fn to_string(&self) -> String {
-        format!("({}, {})", self.x, self.y)
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }
 
@@ -242,9 +243,9 @@ impl FromStr for Point3d {
     }
 }
 
-impl ToString for Point3d {
-    fn to_string(&self) -> String {
-        format!("({}, {}, {})", self.x, self.y, self.z)
+impl fmt::Display for Point3d {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
     }
 }
 

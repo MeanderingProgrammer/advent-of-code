@@ -1,17 +1,19 @@
 use aoc_lib::answer;
+use aoc_lib::bit_set::BitSet;
+use aoc_lib::convert;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
 use fxhash::{FxHashMap, FxHashSet};
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
 enum Element {
     Start,
     Empty,
-    Key(char),
-    Door(char),
+    Key(u8),
+    Door(u8),
 }
 
 impl Element {
@@ -19,13 +21,13 @@ impl Element {
         if ch == '#' {
             None
         } else if ch == '@' {
-            Some(Element::Start)
+            Some(Self::Start)
         } else if ch == '.' {
-            Some(Element::Empty)
+            Some(Self::Empty)
         } else if ch.is_ascii_lowercase() {
-            Some(Element::Key(ch))
+            Some(Self::Key(convert::char_index(ch)))
         } else if ch.is_ascii_uppercase() {
-            Some(Element::Door(ch.to_ascii_lowercase()))
+            Some(Self::Door(convert::char_index(ch)))
         } else {
             None
         }
@@ -47,15 +49,15 @@ impl Element {
 #[derive(Debug)]
 struct Path {
     point: Point,
-    key: char,
-    need: BTreeSet<char>,
+    key: u8,
+    need: BitSet,
     distance: i64,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
     points: Vec<Point>,
-    have: BTreeSet<char>,
+    have: BitSet,
 }
 
 #[derive(Debug)]
@@ -68,20 +70,20 @@ impl<'a> Dijkstra for Maze<'a> {
     type T = State;
 
     fn done(&self, node: &State) -> bool {
-        node.have.len() == self.keys
+        node.have.values().count() == self.keys
     }
 
     fn neighbors(&self, node: &State) -> impl Iterator<Item = (State, i64)> {
         node.points.iter().enumerate().flat_map(move |(i, point)| {
             self.graph[point]
                 .iter()
-                .filter(|path| !node.have.contains(&path.key))
-                .filter(|path| path.need.iter().all(|ch| node.have.contains(ch)))
+                .filter(|path| !node.have.contains(path.key))
+                .filter(|path| path.need.values().all(|key| node.have.contains(key)))
                 .map(move |path| {
                     let mut next_points = node.points.clone();
                     next_points[i] = path.point.clone();
                     let mut next_have = node.have.clone();
-                    next_have.insert(path.key);
+                    next_have.add(path.key);
                     let next_state = State {
                         points: next_points,
                         have: next_have,
@@ -98,8 +100,8 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Element::from_ch);
-    answer::part1(5402, solve(&grid));
-    answer::part2(2138, solve(&split(grid.clone())));
+    answer::part1(5402, solve(grid.clone()));
+    answer::part2(2138, solve(split(grid.clone())));
 }
 
 fn split(mut grid: Grid<Element>) -> Grid<Element> {
@@ -124,13 +126,13 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
     grid
 }
 
-fn solve(grid: &Grid<Element>) -> i64 {
+fn solve(grid: Grid<Element>) -> i64 {
     let mut graph = FxHashMap::default();
     grid.points()
         .into_iter()
         .filter(|point| grid.get(point).is_main())
         .for_each(|point| {
-            let paths = get_paths(grid, point);
+            let paths = get_paths(&grid, point);
             graph.insert(point, paths);
         });
 
@@ -148,14 +150,14 @@ fn solve(grid: &Grid<Element>) -> i64 {
             .filter(|point| grid.get(point).is_start())
             .cloned()
             .collect(),
-        have: BTreeSet::new(),
+        have: BitSet::default(),
     };
     maze.run(start).unwrap()
 }
 
 fn get_paths(grid: &Grid<Element>, start: &Point) -> Vec<Path> {
     let mut queue = VecDeque::new();
-    queue.push_back(((start.clone(), BTreeSet::new()), 0));
+    queue.push_back(((start.clone(), BitSet::default()), 0));
     let mut seen = FxHashSet::default();
     let mut result = Vec::new();
     while !queue.is_empty() {
@@ -167,10 +169,10 @@ fn get_paths(grid: &Grid<Element>, start: &Point) -> Vec<Path> {
         seen.insert(point.clone());
 
         if &point != start {
-            if let Element::Key(ch) = grid.get(&point) {
+            if let Element::Key(key) = grid.get(&point) {
                 result.push(Path {
                     point: point.clone(),
-                    key: *ch,
+                    key: *key,
                     need: need.clone(),
                     distance,
                 });
@@ -180,9 +182,9 @@ fn get_paths(grid: &Grid<Element>, start: &Point) -> Vec<Path> {
         for adjacent in point.neighbors() {
             if !seen.contains(&adjacent) {
                 match grid.get_or(&adjacent) {
-                    Some(Element::Door(ch)) => {
+                    Some(Element::Door(key)) => {
                         let mut next_need = need.clone();
-                        next_need.insert(*ch);
+                        next_need.add(*key);
                         queue.push_back(((adjacent, next_need), distance + 1));
                     }
                     Some(_) => {
