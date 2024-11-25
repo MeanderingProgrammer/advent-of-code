@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::bit_set::BitSet;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
@@ -53,25 +54,6 @@ struct IndividualState {
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct BitSet {
-    values: usize,
-}
-
-impl BitSet {
-    fn new(values: usize) -> Self {
-        Self { values }
-    }
-
-    fn contains(&self, value: u8) -> bool {
-        (self.values >> value) & 1 == 1
-    }
-
-    fn add(&mut self, value: u8) {
-        self.values |= 1 << value;
-    }
-}
-
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct FullState {
     individuals: Vec<IndividualState>,
     opened: BitSet,
@@ -87,7 +69,7 @@ impl FullState {
                 };
                 individuals
             ],
-            opened: BitSet::new(0),
+            opened: BitSet::default(),
         }
     }
 }

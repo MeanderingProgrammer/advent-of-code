@@ -2,6 +2,7 @@ use crate::point::Point;
 use fxhash::FxHashMap;
 use itertools::{Itertools, MinMaxResult};
 use std::cmp::PartialEq;
+use std::fmt;
 use std::string::ToString;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -109,27 +110,29 @@ where
     }
 }
 
-impl<T> ToString for Grid<T>
+impl<T> fmt::Display for Grid<T>
 where
     T: ToString,
 {
-    fn to_string(&self) -> String {
-        if self.grid.is_empty() {
-            return "".to_string();
-        }
-        let bounds = self.bounds();
-        let (bottom_left, top_right) = (bounds.lower, bounds.upper);
-        (bottom_left.y..=top_right.y)
-            .map(|y| {
-                (bottom_left.x..=top_right.x)
-                    .map(|x| Point::new(x, y))
-                    .map(|point| match self.get_or(&point) {
-                        Some(value) => value.to_string(),
-                        None => ".".to_string(),
-                    })
-                    .join("")
-            })
-            .join("\n")
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let value = if self.grid.is_empty() {
+            "".to_string()
+        } else {
+            let bounds = self.bounds();
+            let (bottom_left, top_right) = (bounds.lower, bounds.upper);
+            (bottom_left.y..=top_right.y)
+                .map(|y| {
+                    (bottom_left.x..=top_right.x)
+                        .map(|x| Point::new(x, y))
+                        .map(|point| match self.get_or(&point) {
+                            Some(value) => value.to_string(),
+                            None => ".".to_string(),
+                        })
+                        .join("")
+                })
+                .join("\n")
+        };
+        write!(f, "{}", value)
     }
 }
 

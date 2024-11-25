@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Value {
@@ -21,13 +22,14 @@ impl Value {
     }
 }
 
-impl ToString for Value {
-    fn to_string(&self) -> String {
-        match self {
-            Self::Empty => ".".to_string(),
-            Self::Round => "O".to_string(),
-            Self::Cube => "#".to_string(),
-        }
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let value = match self {
+            Self::Empty => ".",
+            Self::Round => "O",
+            Self::Cube => "#",
+        };
+        write!(f, "{}", value)
     }
 }
 

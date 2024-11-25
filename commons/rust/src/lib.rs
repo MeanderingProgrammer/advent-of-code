@@ -1,4 +1,6 @@
 pub mod answer;
+pub mod bit_set;
+pub mod convert;
 pub mod grid;
 pub mod int_code;
 pub mod math;
