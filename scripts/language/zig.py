@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import override
 
 from language.language import Language
@@ -16,20 +17,27 @@ class Zig(Language):
 
     @override
     def test_command(self) -> list[str]:
-        # TODO - add tests
+        # Currently no unit tests
         return []
 
     @override
     def build_commands(self) -> list[list[str]]:
-        # TODO - separate build command?
+        # For now we use zig build, which both compiles and runs our code
         return []
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        # TODO - use run args
-        return ["zig", "build", "-Doptimize=ReleaseSafe", f"{day.year}_{day.day}"]
+        binary = f"{day.year}_{day.day}"
+        args = [] if len(run_args) == 0 else ["--"] + run_args
+        return ["zig", "build", "-Doptimize=ReleaseSafe", binary] + args
 
     @override
     def template_processing(self, day: Day) -> None:
-        # TODO - update build.zig
-        pass
+        path = Path("build.zig")
+        contents = path.read_text()
+        solutions = contents.split("\n\n")[1].splitlines()[1:-1]
+        old = "\n".join(solutions)
+        solutions.append(f'    .{{ "{day.year}", "{day.day}" }},')
+        solutions.sort()
+        new = "\n".join(solutions)
+        path.write_text(contents.replace(old, new))
