@@ -22,15 +22,13 @@ So far this has been:
 - 2021: [Go](https://go.dev/)
 - 2022: [Rust](https://www.rust-lang.org/)
 - 2023: [OCaml](https://ocaml.org/)
+- 2024: [Zig](https://ziglang.org/)
 
 Sometime after 2022 I decided to go back and optimize every solution with the goal
-of having no single solution take more than 1 second to run.
-
-Sometimes this involves algorithm improvements, other times I decided to re-write
-solutions from `Python` into something like `Rust` or `Go`.
-
-Since there are only a couple outliers and nothing runs longer than 2 seconds I
-consider this goal completed.
+of having no single solution take more than 1 second to run. Sometimes this involves
+algorithm improvements, other times I decided to re-write solutions from `Python`
+into something like `Rust` or `Go`. Currently the slowest solution takes just under
+750 ms, so mission accomplished.
 
 # Input Data
 

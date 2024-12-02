@@ -16,23 +16,17 @@ pub const Reader = struct {
 
     pub fn init() Reader {
         var args = std.process.args();
-        const executable = args.next() orelse "";
-        const test_value = args.next() orelse "";
 
+        const executable = args.next() orelse "";
         var exe_path = std.mem.splitBackwards(u8, executable, "/");
         var year_date = std.mem.splitScalar(u8, exe_path.first(), '_');
         const year = year_date.next() orelse "";
         const day = year_date.next() orelse "";
 
-        var parts = std.ArrayList([]const u8).init(allocator);
-        parts.appendSlice(&[_][]const u8{ "data", year, day }) catch {};
-        if (std.mem.eql(u8, test_value, "--test")) {
-            parts.append("sample.txt") catch {};
-        } else {
-            parts.append("data.txt") catch {};
-        }
+        const test_value = args.next() orelse "";
+        const file = if (std.mem.eql(u8, test_value, "--test")) "sample.txt" else "data.txt";
 
-        const path = std.mem.join(allocator, "/", parts.items) catch "";
+        const path = std.mem.join(allocator, "/", &[_][]const u8{ "data", year, day, file }) catch "";
         return Reader{ .path = path };
     }
 
