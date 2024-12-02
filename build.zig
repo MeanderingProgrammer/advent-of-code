@@ -1,5 +1,10 @@
 const std = @import("std");
 
+const Solutions = [_]struct { []const u8, []const u8 }{
+    .{ "2021", "01" },
+    .{ "2024", "01" },
+};
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -10,12 +15,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const solutions = [_]struct { []const u8, []const u8 }{
-        .{ "2021", "01" },
-        .{ "2024", "01" },
-    };
-
-    inline for (solutions) |solution| {
+    inline for (Solutions) |solution| {
         const year = solution[0];
         const day = solution[1];
         const exe = b.addExecutable(.{
@@ -27,6 +27,9 @@ pub fn build(b: *std.Build) void {
         exe.root_module.addImport("aoc", lib);
         b.installArtifact(exe);
         const run_exe = b.addRunArtifact(exe);
+        if (b.args) |args| {
+            run_exe.addArgs(args);
+        }
         const run_step = b.step(exe.name, "Run " ++ year ++ " " ++ day);
         run_step.dependOn(&run_exe.step);
     }
