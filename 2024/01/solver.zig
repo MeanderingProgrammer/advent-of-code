@@ -41,11 +41,7 @@ fn sum_diff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     for (0..left.items.len) |i| {
         const l = left.items[i];
         const r = right.items[i];
-        if (l > r) {
-            result += (l - r);
-        } else {
-            result += (r - l);
-        }
+        result += if (l > r) l - r else r - l;
     }
     return result;
 }
@@ -62,9 +58,7 @@ fn similarity(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
 fn count(values: std.ArrayList(usize), value: usize) usize {
     var result: usize = 0;
     for (0..values.items.len) |i| {
-        if (value == values.items[i]) {
-            result += 1;
-        }
+        result += if (value == values.items[i]) 1 else 0;
     }
     return result;
 }
