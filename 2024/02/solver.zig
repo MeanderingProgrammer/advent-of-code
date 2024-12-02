@@ -14,35 +14,41 @@ const Report = struct {
         return Report{ .levels = levels };
     }
 
-    fn safe(self: Report, tolerant: bool) !bool {
-        if (tolerant) {
-            for (0..self.levels.items.len) |i| {
-                var clone = try self.levels.clone();
-                _ = clone.orderedRemove(i);
-                if (levels_safe(clone.items)) {
-                    return true;
-                }
-            }
-            return false;
+    fn safe(self: Report, tolerant: bool) bool {
+        if (check_levels(self.levels.items)) |index| {
+            return tolerant and (self.safe_around(index) catch false);
         } else {
-            return levels_safe(self.levels.items);
+            return true;
         }
     }
 
-    fn levels_safe(levels: []usize) bool {
+    fn safe_around(self: Report, index: isize) !bool {
+        const start = @as(usize, @intCast(@max(index - 1, 0)));
+        const end = @min(@as(usize, @intCast(index + 2)), self.levels.items.len);
+        for (start..end) |i| {
+            var clone = try self.levels.clone();
+            _ = clone.orderedRemove(i);
+            if (check_levels(clone.items) == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    fn check_levels(levels: []usize) ?isize {
         const increasing = levels[0] < levels[1];
         for (0..levels.len - 1) |i| {
             const l1 = levels[i];
             const l2 = levels[i + 1];
             if (increasing != (l1 < l2)) {
-                return false;
+                return @intCast(i);
             }
             const differnce = if (increasing) l2 - l1 else l1 - l2;
             if (differnce < 1 or differnce > 3) {
-                return false;
+                return @intCast(i);
             }
         }
-        return true;
+        return null;
     }
 };
 
@@ -59,7 +65,7 @@ fn solution() !void {
 fn count_safe(reports: std.ArrayList(Report), tolerant: bool) usize {
     var result: usize = 0;
     for (reports.items) |report| {
-        result += if (report.safe(tolerant) catch false) 1 else 0;
+        result += if (report.safe(tolerant)) 1 else 0;
     }
     return result;
 }
