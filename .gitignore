@@ -1,36 +1,39 @@
 # IDE
-.idea
-.vscode
-*.iml
-out
+.idea/
+.vscode/
+*.iml/
+out/
 
 # Used by helper scripts
 .adventofcode.session
 all.json
 slow.json
-images/archive
+images/archive/
 
 # Python
-__pycache__
 *.pyc
+__pycache__
 .pytest_cache
 aoc.egg-info
 
 # Java / Gradle
-.gradle
-build
-bin
-kls_database.db
-.settings
-.project
-.classpath
-.factorypath
+*.class
+*.project
+*.classpath
+*.factorypath
+.gradle/
+.settings/
+build/
 
 # Rust
-target
+target/
 
 # OCaml
-_build
+_build/
 
 # Node
-node_modules
+node_modules/
+
+# Zig
+.zig-cache/
+zig-out/
