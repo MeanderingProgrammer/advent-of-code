@@ -25,9 +25,7 @@ pub const Reader = struct {
         const day = year_date.next() orelse "";
 
         var parts = std.ArrayList([]const u8).init(allocator);
-        parts.append("data") catch {};
-        parts.append(year) catch {};
-        parts.append(day) catch {};
+        parts.appendSlice(&[_][]const u8{ "data", year, day }) catch {};
         if (std.mem.eql(u8, test_value, "--test")) {
             parts.append("sample.txt") catch {};
         } else {

@@ -3,6 +3,7 @@ const std = @import("std");
 const Solutions = [_]struct { []const u8, []const u8 }{
     .{ "2021", "01" },
     .{ "2024", "01" },
+    .{ "2024", "02" },
 };
 
 pub fn build(b: *std.Build) void {
