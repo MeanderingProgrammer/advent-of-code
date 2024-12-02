@@ -24,7 +24,7 @@ class LanguageStrategy:
         if self.name == StrategyName.ALL:
             return options
         elif self.name == StrategyName.FASTEST:
-            speed = dict(rust=1, go=2, java=3, ocaml=4, python=5, ts=6)
+            speed = dict(rust=1, go=2, zig=3, java=4, ocaml=5, python=6, ts=7)
             ordered = sorted(options, key=lambda language: speed[language.name])
             return [ordered[0]]
         else:

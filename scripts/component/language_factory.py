@@ -7,6 +7,7 @@ from language.ocaml import Ocaml
 from language.python import Python
 from language.rust import Rust
 from language.ts import TypeScript
+from language.zig import Zig
 
 
 class LanguageFactory:
@@ -18,6 +19,7 @@ class LanguageFactory:
             Python(),
             Rust(),
             TypeScript(),
+            Zig(),
         ]
         self.languages: list[Language] = []
         for language in languages:
