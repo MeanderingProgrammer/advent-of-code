@@ -26,11 +26,8 @@ fn to_pairs(line: []const u8) !Pair {
 fn unzip_sort(values: std.ArrayList(Pair), first: bool) !std.ArrayList(usize) {
     var result = std.ArrayList(usize).init(allocator);
     for (values.items) |value| {
-        if (first) {
-            try result.append(value[0]);
-        } else {
-            try result.append(value[1]);
-        }
+        const item = if (first) value[0] else value[1];
+        try result.append(item);
     }
     std.mem.sort(usize, result.items, {}, std.sort.asc(usize));
     return result;
@@ -41,7 +38,7 @@ fn sum_diff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     for (0..left.items.len) |i| {
         const l = left.items[i];
         const r = right.items[i];
-        result += if (l > r) l - r else r - l;
+        result += @max(l, r) - @min(l, r);
     }
     return result;
 }
@@ -55,10 +52,10 @@ fn similarity(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     return result;
 }
 
-fn count(values: std.ArrayList(usize), value: usize) usize {
+fn count(values: std.ArrayList(usize), target: usize) usize {
     var result: usize = 0;
-    for (0..values.items.len) |i| {
-        result += if (value == values.items[i]) 1 else 0;
+    for (values.items) |value| {
+        result += if (value == target) 1 else 0;
     }
     return result;
 }
