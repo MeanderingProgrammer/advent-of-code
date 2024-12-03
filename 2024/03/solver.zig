@@ -4,17 +4,26 @@ const std = @import("std");
 const State = enum {
     start,
     m,
-    u,
-    l,
+    mu,
+    mul,
     first,
     second,
     d,
-    o,
-    n,
-    apos,
-    t,
     do,
-    dont,
+    don,
+    don_,
+    don_t,
+    on,
+    off,
+};
+
+const Move = struct {
+    from: State,
+    to: State,
+
+    fn init(from: State, to: State) Move {
+        return Move{ .from = from, .to = to };
+    }
 };
 
 const Parser = struct {
@@ -36,85 +45,57 @@ const Parser = struct {
         };
     }
 
-    fn add(self: *Parser, command: []const u8) void {
-        for (command) |ch| {
-            switch (ch) {
-                'm' => self.reset(State.m),
-                'u' => if (self.state == State.m) {
-                    self.set(State.u);
-                } else {
-                    self.reset(State.start);
-                },
-                'l' => if (self.state == State.u) {
-                    self.set(State.l);
-                } else {
-                    self.reset(State.start);
-                },
-                'd' => self.reset(State.d),
-                'o' => if (self.state == State.d) {
-                    self.set(State.o);
-                } else {
-                    self.reset(State.start);
-                },
-                'n' => if (self.state == State.o) {
-                    self.set(State.n);
-                } else {
-                    self.reset(State.start);
-                },
-                '\'' => if (self.state == State.n) {
-                    self.set(State.apos);
-                } else {
-                    self.reset(State.start);
-                },
-                't' => if (self.state == State.apos) {
-                    self.set(State.t);
-                } else {
-                    self.reset(State.start);
-                },
-                ',' => if (self.state == State.first) {
-                    self.set(State.second);
-                } else {
-                    self.reset(State.start);
-                },
-                '(' => if (self.state == State.l) {
-                    self.set(State.first);
-                } else if (self.state == State.o) {
-                    self.set(State.do);
-                } else if (self.state == State.t) {
-                    self.set(State.dont);
-                } else {
-                    self.reset(State.start);
-                },
-                ')' => {
-                    if (self.state == State.second and self.enabled) {
-                        self.result = self.result + (self.first * self.second);
-                    } else if (self.state == State.do and self.toggle) {
-                        self.enabled = true;
-                    } else if (self.state == State.dont and self.toggle) {
-                        self.enabled = false;
-                    }
-                    self.reset(State.start);
-                },
-                '0'...'9' => if (self.state == State.first) {
-                    self.first = self.first * 10 + (ch - '0');
-                } else if (self.state == State.second) {
-                    self.second = self.second * 10 + (ch - '0');
-                } else {
-                    self.reset(State.start);
-                },
-                else => self.reset(State.start),
-            }
+    fn add(self: *Parser, ch: u8) void {
+        switch (ch) {
+            'm' => self.reset(State.m),
+            'u' => self.transition(&.{Move.init(State.m, State.mu)}),
+            'l' => self.transition(&.{Move.init(State.mu, State.mul)}),
+            'd' => self.reset(State.d),
+            'o' => self.transition(&.{Move.init(State.d, State.do)}),
+            'n' => self.transition(&.{Move.init(State.do, State.don)}),
+            '\'' => self.transition(&.{Move.init(State.don, State.don_)}),
+            't' => self.transition(&.{Move.init(State.don_, State.don_t)}),
+            ',' => self.transition(&.{Move.init(State.first, State.second)}),
+            '(' => self.transition(&.{
+                Move.init(State.mul, State.first),
+                Move.init(State.do, State.on),
+                Move.init(State.don_t, State.off),
+            }),
+            ')' => {
+                if (self.state == State.second and self.enabled) {
+                    self.result = self.result + (self.first * self.second);
+                } else if (self.state == State.on and self.toggle) {
+                    self.enabled = true;
+                } else if (self.state == State.off and self.toggle) {
+                    self.enabled = false;
+                }
+                self.reset(State.start);
+            },
+            '0'...'9' => if (self.state == State.first) {
+                self.first = self.first * 10 + (ch - '0');
+            } else if (self.state == State.second) {
+                self.second = self.second * 10 + (ch - '0');
+            } else {
+                self.reset(State.start);
+            },
+            else => self.reset(State.start),
         }
-    }
-
-    fn set(self: *Parser, state: State) void {
-        self.state = state;
     }
 
     fn reset(self: *Parser, state: State) void {
         self.state = state;
         self.first = 0;
         self.second = 0;
+    }
+
+    fn transition(self: *Parser, moves: []const Move) void {
+        for (moves) |move| {
+            if (self.state == move.from) {
+                self.state = move.to;
+                return;
+            }
+        }
+        self.reset(State.start);
     }
 };
 
@@ -131,7 +112,9 @@ fn solution() !void {
 fn parse_commands(commands: std.ArrayList([]const u8), toggle: bool) usize {
     var parser = Parser.init(toggle);
     for (commands.items) |command| {
-        parser.add(command);
+        for (command) |ch| {
+            parser.add(ch);
+        }
     }
     return parser.result;
 }
