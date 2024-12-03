@@ -6,20 +6,29 @@ pub fn timer(solution: fn () anyerror!void) !void {
     write("Runtime (ns): {}\n", .{start.read()});
 }
 
-pub fn part1(expected: anytype, result: anytype) void {
-    part(1, expected, result);
+pub fn part1(comptime T: type, expected: T, result: T) void {
+    part(1, T, expected, result);
 }
 
-pub fn part2(expected: anytype, result: anytype) void {
-    part(2, expected, result);
+pub fn part2(comptime T: type, expected: T, result: T) void {
+    part(2, T, expected, result);
 }
 
-fn part(n: usize, expected: anytype, result: anytype) void {
-    // TODO: Improve how strings are printed out
-    if (expected != result) {
-        std.debug.panic("Part {d} incorrect, expected {any} but got {any}", .{ n, expected, result });
+fn part(n: usize, comptime T: type, expected: T, result: T) void {
+    const fmt = comptime switch (@typeInfo(T)) {
+        .Pointer => "{s}",
+        else => "{any}",
+    };
+    const equal = switch (@typeInfo(T)) {
+        .Pointer => std.mem.eql(u8, expected, result),
+        else => expected == result,
+    };
+    if (!equal) {
+        const format = "Part {d} incorrect, expected " ++ fmt ++ " but got " ++ fmt;
+        std.debug.panic(format, .{ n, expected, result });
     }
-    write("Part {d}: {any}\n", .{ n, result });
+    const format = "Part {d}: " ++ fmt ++ "\n";
+    write(format, .{ n, result });
 }
 
 fn write(comptime format: []const u8, args: anytype) void {
