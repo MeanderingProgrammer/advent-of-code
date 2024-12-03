@@ -58,8 +58,8 @@ pub fn main() !void {
 
 fn solution() !void {
     const reports = try aoc.reader.Reader.init().read(Report, Report.init);
-    aoc.answer.part1(402, count_safe(reports, false));
-    aoc.answer.part2(455, count_safe(reports, true));
+    aoc.answer.part1(usize, 402, count_safe(reports, false));
+    aoc.answer.part2(usize, 455, count_safe(reports, true));
 }
 
 fn count_safe(reports: std.ArrayList(Report), tolerant: bool) usize {

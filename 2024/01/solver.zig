@@ -12,8 +12,8 @@ fn solution() !void {
     const values = try aoc.reader.Reader.init().read(Pair, to_pairs);
     const left = try unzip_sort(values, true);
     const right = try unzip_sort(values, false);
-    aoc.answer.part1(3246517, sum_diff(left, right));
-    aoc.answer.part2(29379307, similarity(left, right));
+    aoc.answer.part1(usize, 3246517, sum_diff(left, right));
+    aoc.answer.part2(usize, 29379307, similarity(left, right));
 }
 
 fn to_pairs(line: []const u8) !Pair {

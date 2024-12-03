@@ -7,8 +7,8 @@ pub fn main() !void {
 
 fn solution() !void {
     const values = try aoc.reader.Reader.init().read_int();
-    aoc.answer.part1(1292, window_increases(values, 1));
-    aoc.answer.part2(1262, window_increases(values, 3));
+    aoc.answer.part1(usize, 1292, window_increases(values, 1));
+    aoc.answer.part2(usize, 1262, window_increases(values, 3));
 }
 
 fn window_increases(values: std.ArrayList(usize), window_size: usize) usize {
