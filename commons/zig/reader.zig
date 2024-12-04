@@ -1,4 +1,5 @@
 const std = @import("std");
+const Grid = @import("grid.zig").Grid;
 const allocator = std.heap.page_allocator;
 
 const Transformers = struct {
@@ -28,6 +29,10 @@ pub const Reader = struct {
 
         const path = std.mem.join(allocator, "/", &[_][]const u8{ "data", year, day, file }) catch "";
         return Reader{ .path = path };
+    }
+
+    pub fn read_grid(self: Reader) !Grid {
+        return Grid.init(try self.read_lines());
     }
 
     pub fn read_lines(self: Reader) !std.ArrayList([]const u8) {

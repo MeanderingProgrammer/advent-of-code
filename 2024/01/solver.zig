@@ -1,19 +1,21 @@
 const aoc = @import("aoc");
+const answer = aoc.answer;
+const Reader = aoc.reader.Reader;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
 const Pair = struct { usize, usize };
 
 pub fn main() !void {
-    try aoc.answer.timer(solution);
+    try answer.timer(solution);
 }
 
 fn solution() !void {
-    const values = try aoc.reader.Reader.init().read(Pair, to_pairs);
+    const values = try Reader.init().read(Pair, to_pairs);
     const left = try unzip_sort(values, true);
     const right = try unzip_sort(values, false);
-    aoc.answer.part1(usize, 3246517, sum_diff(left, right));
-    aoc.answer.part2(usize, 29379307, similarity(left, right));
+    answer.part1(usize, 3246517, sum_diff(left, right));
+    answer.part2(usize, 29379307, similarity(left, right));
 }
 
 fn to_pairs(line: []const u8) !Pair {
