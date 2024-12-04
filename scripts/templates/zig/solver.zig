@@ -1,12 +1,14 @@
 const aoc = @import("aoc");
+const answer = aoc.answer;
+const Reader = aoc.reader.Reader;
 const std = @import("std");
 
 pub fn main() !void {
-    try aoc.answer.timer(solution);
+    try answer.timer(solution);
 }
 
 fn solution() !void {
-    const data = try aoc.reader.Reader.init().read_lines();
-    std.debug.print("{any}", .{data});
-    aoc.answer.part1(usize, 1, 1);
+    const data = try Reader.init().read_lines();
+    std.debug.print("{any}\n", .{data});
+    answer.part1(usize, 1, 1);
 }

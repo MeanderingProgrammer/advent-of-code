@@ -1,4 +1,6 @@
 const aoc = @import("aoc");
+const answer = aoc.answer;
+const Reader = aoc.reader.Reader;
 const std = @import("std");
 
 const State = enum {
@@ -100,13 +102,13 @@ const Parser = struct {
 };
 
 pub fn main() !void {
-    try aoc.answer.timer(solution);
+    try answer.timer(solution);
 }
 
 fn solution() !void {
-    const commands = try aoc.reader.Reader.init().read_lines();
-    aoc.answer.part1(usize, 159892596, parse_commands(commands, false));
-    aoc.answer.part2(usize, 92626942, parse_commands(commands, true));
+    const commands = try Reader.init().read_lines();
+    answer.part1(usize, 159892596, parse_commands(commands, false));
+    answer.part2(usize, 92626942, parse_commands(commands, true));
 }
 
 fn parse_commands(commands: std.ArrayList([]const u8), toggle: bool) usize {

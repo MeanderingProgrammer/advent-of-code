@@ -1,4 +1,6 @@
 const aoc = @import("aoc");
+const answer = aoc.answer;
+const Reader = aoc.reader.Reader;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
@@ -53,13 +55,13 @@ const Report = struct {
 };
 
 pub fn main() !void {
-    try aoc.answer.timer(solution);
+    try answer.timer(solution);
 }
 
 fn solution() !void {
-    const reports = try aoc.reader.Reader.init().read(Report, Report.init);
-    aoc.answer.part1(usize, 402, count_safe(reports, false));
-    aoc.answer.part2(usize, 455, count_safe(reports, true));
+    const reports = try Reader.init().read(Report, Report.init);
+    answer.part1(usize, 402, count_safe(reports, false));
+    answer.part2(usize, 455, count_safe(reports, true));
 }
 
 fn count_safe(reports: std.ArrayList(Report), tolerant: bool) usize {
