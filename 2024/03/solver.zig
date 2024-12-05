@@ -106,7 +106,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const commands = try Reader.init().read_lines();
+    const commands = try Reader.init().string_lines();
     answer.part1(usize, 159892596, parse_commands(commands, false));
     answer.part2(usize, 92626942, parse_commands(commands, true));
 }

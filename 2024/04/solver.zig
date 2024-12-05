@@ -11,7 +11,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const grid = try Reader.init().read_grid();
+    const grid = try Reader.init().grid();
     const points = try grid.points();
     answer.part1(usize, 2543, part1(grid, points));
     answer.part2(usize, 1930, part2(grid, points));

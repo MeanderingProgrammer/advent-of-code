@@ -29,7 +29,7 @@ class Zig(Language):
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         binary = f"{day.year}_{day.day}"
         args = [] if len(run_args) == 0 else ["--"] + run_args
-        return ["zig", "build", "-Doptimize=ReleaseSafe", binary] + args
+        return ["zig", "build", "-Doptimize=ReleaseSmall", binary] + args
 
     @override
     def template_processing(self, day: Day) -> None:

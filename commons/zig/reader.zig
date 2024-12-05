@@ -31,30 +31,53 @@ pub const Reader = struct {
         return Reader{ .path = path };
     }
 
-    pub fn read_grid(self: Reader) !Grid {
-        return Grid.init(try self.read_lines());
+    pub fn grid(self: Reader) !Grid {
+        return Grid.init(try self.string_lines());
     }
 
-    pub fn read_lines(self: Reader) !std.ArrayList([]const u8) {
-        return self.read([]const u8, Transformers.identity);
+    pub fn string_lines(self: Reader) !std.ArrayList([]const u8) {
+        return self.lines([]const u8, Transformers.identity);
     }
 
-    pub fn read_int(self: Reader) !std.ArrayList(usize) {
-        return self.read(usize, Transformers.to_int);
+    pub fn int_lines(self: Reader) !std.ArrayList(usize) {
+        return self.lines(usize, Transformers.to_int);
     }
 
-    pub fn read(self: Reader, comptime T: type, f: fn ([]const u8) anyerror!T) !std.ArrayList(T) {
+    pub fn groups(self: Reader) !std.ArrayList(std.ArrayList([]const u8)) {
+        var result = std.ArrayList(std.ArrayList([]const u8)).init(allocator);
+        for ((try self.read("\n\n")).items) |item| {
+            var group = std.ArrayList([]const u8).init(allocator);
+            var it = std.mem.splitSequence(u8, item, "\n");
+            while (it.next()) |line| {
+                if (line.len > 0) {
+                    try group.append(line);
+                }
+            }
+            try result.append(group);
+        }
+        return result;
+    }
+
+    pub fn lines(self: Reader, comptime T: type, f: fn ([]const u8) anyerror!T) !std.ArrayList(T) {
+        var result = std.ArrayList(T).init(allocator);
+        for ((try self.read("\n")).items) |line| {
+            try result.append(try f(line));
+        }
+        return result;
+    }
+
+    fn read(self: Reader, delimiter: []const u8) !std.ArrayList([]const u8) {
         var file = try std.fs.cwd().openFile(self.path, .{});
         defer file.close();
 
         const buffer = try allocator.alloc(u8, try file.getEndPos());
         _ = try file.readAll(buffer);
-        var it = std.mem.splitScalar(u8, buffer, '\n');
 
-        var result = std.ArrayList(T).init(allocator);
-        while (it.next()) |line| {
-            if (line.len > 0) {
-                try result.append(try f(line));
+        var result = std.ArrayList([]const u8).init(allocator);
+        var it = std.mem.splitSequence(u8, buffer, delimiter);
+        while (it.next()) |item| {
+            if (item.len > 0) {
+                try result.append(item);
             }
         }
         return result;

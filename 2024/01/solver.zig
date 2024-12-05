@@ -11,7 +11,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const values = try Reader.init().read(Pair, to_pairs);
+    const values = try Reader.init().lines(Pair, to_pairs);
     const left = try unzip_sort(values, true);
     const right = try unzip_sort(values, false);
     answer.part1(usize, 3246517, sum_diff(left, right));
