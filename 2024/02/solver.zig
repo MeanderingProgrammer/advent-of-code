@@ -59,7 +59,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const reports = try Reader.init().read(Report, Report.init);
+    const reports = try Reader.init().lines(Report, Report.init);
     answer.part1(usize, 402, count_safe(reports, false));
     answer.part2(usize, 455, count_safe(reports, true));
 }

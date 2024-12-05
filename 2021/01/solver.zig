@@ -8,7 +8,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const values = try Reader.init().read_int();
+    const values = try Reader.init().int_lines();
     answer.part1(usize, 1292, window_increases(values, 1));
     answer.part2(usize, 1262, window_increases(values, 3));
 }
