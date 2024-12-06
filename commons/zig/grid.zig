@@ -2,11 +2,13 @@ const std = @import("std");
 const Point = @import("point.zig").Point;
 const allocator = std.heap.page_allocator;
 
+const Map = std.AutoHashMap(Point, u8);
+
 pub const Grid = struct {
-    grid: std.AutoHashMap(Point, u8),
+    grid: Map,
 
     pub fn init(lines: std.ArrayList([]const u8)) !Grid {
-        var grid = std.AutoHashMap(Point, u8).init(allocator);
+        var grid = Map.init(allocator);
         for (lines.items, 0..) |line, y| {
             for (line, 0..) |value, x| {
                 try grid.put(Point.init(@intCast(x), @intCast(y)), value);
@@ -19,12 +21,11 @@ pub const Grid = struct {
         return self.grid.get(point);
     }
 
-    pub fn points(self: Grid) !std.ArrayList(Point) {
-        var result = std.ArrayList(Point).init(allocator);
-        var it = self.grid.iterator();
-        while (it.next()) |entry| {
-            try result.append(entry.key_ptr.*);
-        }
-        return result;
+    pub fn set(self: *Grid, point: Point, value: u8) !void {
+        try self.grid.put(point, value);
+    }
+
+    pub fn points(self: Grid) Map.KeyIterator {
+        return self.grid.keyIterator();
     }
 };

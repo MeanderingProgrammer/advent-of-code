@@ -1,3 +1,18 @@
+pub const Direction = enum {
+    n,
+    e,
+    s,
+    w,
+    pub fn clockwise(self: Direction) Direction {
+        return switch (self) {
+            Direction.n => Direction.e,
+            Direction.e => Direction.s,
+            Direction.s => Direction.w,
+            Direction.w => Direction.n,
+        };
+    }
+};
+
 pub const Heading = enum {
     w,
     nw,
@@ -15,6 +30,15 @@ pub const Point = struct {
 
     pub fn init(x: i64, y: i64) Point {
         return Point{ .x = x, .y = y };
+    }
+
+    pub fn go(self: Point, direction: Direction) Point {
+        return switch (direction) {
+            Direction.n => self.add(0, -1),
+            Direction.e => self.add(1, 0),
+            Direction.s => self.add(0, 1),
+            Direction.w => self.add(-1, 0),
+        };
     }
 
     pub fn head(self: Point, heading: Heading) Point {
