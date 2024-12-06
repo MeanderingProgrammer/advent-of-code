@@ -3,6 +3,7 @@ use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
+use rayon::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Element {
@@ -25,10 +26,16 @@ impl Element {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
     point: Point,
     direction: Direction,
+}
+
+impl State {
+    fn next(&self) -> Point {
+        &self.point + &self.direction
+    }
 }
 
 fn main() {
@@ -43,44 +50,42 @@ fn solution() {
         .find(|point| grid.get(point) == &Element::Start)
         .unwrap()
         .clone();
-    let path = follow(&grid, &start).unwrap();
+    let path = follow(&grid, &start, None).unwrap();
     answer::part1(5516, path.len());
-    answer::part2(2008, obstacles(grid, &start, path));
+    answer::part2(2008, obstacles(&grid, &start, path));
 }
 
-fn follow(grid: &Grid<Element>, start: &Point) -> Option<FxHashSet<Point>> {
+fn follow(
+    grid: &Grid<Element>,
+    start: &Point,
+    obstacle: Option<&Point>,
+) -> Option<FxHashSet<Point>> {
     let mut seen: FxHashSet<State> = FxHashSet::default();
-    let mut point: Point = start.clone();
-    let mut direction = Direction::Up;
-    while grid.contains(&point) {
-        let state = State {
-            point: point.clone(),
-            direction: direction.clone(),
-        };
+    let mut state = State {
+        point: start.clone(),
+        direction: Direction::Up,
+    };
+    while grid.contains(&state.point) {
         if seen.contains(&state) {
             return None;
         }
-        seen.insert(state);
-        let next_point = &point + &direction;
-        if grid.get_or(&next_point).unwrap_or(&Element::Empty) == &Element::Obstacle {
-            direction = direction.right();
+        seen.insert(state.clone());
+        let next = state.next();
+        if Some(&next) == obstacle || grid.get_or(&next) == Some(&Element::Obstacle) {
+            state.direction = state.direction.right();
         } else {
-            point = next_point;
+            state.point = next;
         }
     }
     Some(seen.into_iter().map(|state| state.point).collect())
 }
 
-fn obstacles(mut grid: Grid<Element>, start: &Point, options: FxHashSet<Point>) -> usize {
-    let mut result = 0;
-    for point in options.iter() {
-        if grid.get_or(point).unwrap_or(&Element::Obstacle) != &Element::Start {
-            grid.add(point.clone(), Element::Obstacle);
-            if follow(&grid, start).is_none() {
-                result += 1;
-            }
-            grid.add(point.clone(), Element::Empty);
-        }
-    }
-    result
+fn obstacles(grid: &Grid<Element>, start: &Point, options: FxHashSet<Point>) -> usize {
+    options
+        .into_par_iter()
+        .filter(|point| match grid.get(point) {
+            Element::Start => false,
+            _ => follow(grid, start, Some(point)).is_none(),
+        })
+        .count()
 }
