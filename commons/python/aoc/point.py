@@ -17,8 +17,6 @@ class Direction(Enum):
             return Direction.RIGHT
         elif direction == Direction.RIGHT:
             return Direction.UP
-        else:
-            raise Exception(f"Unknown direction: {direction}")
 
     @staticmethod
     def from_str(s: str) -> "Direction":
@@ -56,8 +54,6 @@ class PointHelper:
             return (p[0] - 1, p[1])
         elif direction == Direction.RIGHT:
             return (p[0] + 1, p[1])
-        else:
-            raise Exception(f"Unknown direction: {direction}")
 
     @staticmethod
     def rotate(p: Point) -> Point:
