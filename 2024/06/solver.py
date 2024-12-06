@@ -1,0 +1,43 @@
+from aoc import answer
+from aoc.grid import Grid
+from aoc.parser import Parser
+from aoc.point import Direction, Point, PointHelper
+
+
+@answer.timer
+def main() -> None:
+    grid = Parser().as_grid()
+    start = [point for point, value in grid.items() if value == "^"][0]
+    answer.part1(5516, follow(grid, start))
+    answer.part2(2008, obstacles(grid, start))
+
+
+def follow(grid: Grid[str], point: Point) -> int | None:
+    seen: set[tuple[Point, Direction]] = set()
+    direction = Direction.UP
+    while point in grid:
+        if (point, direction) in seen:
+            return None
+        seen.add((point, direction))
+        next_point = PointHelper.go(point, direction)
+        if grid.get(next_point, ".") == "#":
+            direction = Direction.clockwise(direction)
+        else:
+            point = next_point
+    return len(set([p for p, _ in seen]))
+
+
+def obstacles(grid: Grid[str], start: Point) -> int:
+    result: int = 0
+    for point in grid:
+        if grid[point] != ".":
+            continue
+        grid[point] = "#"
+        if follow(grid, start) is None:
+            result += 1
+        grid[point] = "."
+    return result
+
+
+if __name__ == "__main__":
+    main()
