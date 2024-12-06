@@ -8,6 +8,17 @@ class Direction(Enum):
     RIGHT = auto()
 
     @staticmethod
+    def clockwise(direction: "Direction") -> "Direction":
+        if direction == Direction.UP:
+            return Direction.RIGHT
+        elif direction == Direction.RIGHT:
+            return Direction.DOWN
+        elif direction == Direction.DOWN:
+            return Direction.LEFT
+        elif direction == Direction.LEFT:
+            return Direction.UP
+
+    @staticmethod
     def counter_clockwise(direction: "Direction") -> "Direction":
         if direction == Direction.UP:
             return Direction.LEFT
