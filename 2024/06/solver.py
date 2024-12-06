@@ -8,11 +8,13 @@ from aoc.point import Direction, Point, PointHelper
 def main() -> None:
     grid = Parser().as_grid()
     start = [point for point, value in grid.items() if value == "^"][0]
-    answer.part1(5516, follow(grid, start))
-    answer.part2(2008, obstacles(grid, start))
+    path = follow(grid, start)
+    assert path is not None
+    answer.part1(5516, len(path))
+    answer.part2(2008, obstacles(grid, start, path))
 
 
-def follow(grid: Grid[str], point: Point) -> int | None:
+def follow(grid: Grid[str], point: Point) -> set[Point] | None:
     seen: set[tuple[Point, Direction]] = set()
     direction = Direction.UP
     while point in grid:
@@ -24,13 +26,13 @@ def follow(grid: Grid[str], point: Point) -> int | None:
             direction = Direction.clockwise(direction)
         else:
             point = next_point
-    return len(set([p for p, _ in seen]))
+    return set([p for p, _ in seen])
 
 
-def obstacles(grid: Grid[str], start: Point) -> int:
+def obstacles(grid: Grid[str], start: Point, options: set[Point]) -> int:
     result: int = 0
-    for point in grid:
-        if grid[point] != ".":
+    for point in options:
+        if grid.get(point, "#") == "^":
             continue
         grid[point] = "#"
         if follow(grid, start) is None:
