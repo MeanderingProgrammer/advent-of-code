@@ -48,7 +48,7 @@ fn follow(grid: *Grid, start: Point) !?std.AutoHashMap(Point, bool) {
             return null;
         }
         try seen.put(state, true);
-        const next_point = point.go(direction);
+        const next_point = point.plus(direction.point());
         if ((grid.get(next_point) orelse '.') == '#') {
             direction = direction.clockwise();
         } else {

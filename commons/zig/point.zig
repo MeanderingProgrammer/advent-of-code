@@ -3,6 +3,16 @@ pub const Direction = enum {
     e,
     s,
     w,
+
+    pub fn point(self: Direction) Point {
+        return switch (self) {
+            Direction.n => Point.init(0, -1),
+            Direction.e => Point.init(1, 0),
+            Direction.s => Point.init(0, 1),
+            Direction.w => Point.init(-1, 0),
+        };
+    }
+
     pub fn clockwise(self: Direction) Direction {
         return switch (self) {
             Direction.n => Direction.e,
@@ -22,6 +32,19 @@ pub const Heading = enum {
     se,
     s,
     sw,
+
+    pub fn point(self: Heading) Point {
+        return switch (self) {
+            Heading.w => Point.init(-1, 0),
+            Heading.nw => Point.init(-1, -1),
+            Heading.n => Point.init(0, -1),
+            Heading.ne => Point.init(1, -1),
+            Heading.e => Point.init(1, 0),
+            Heading.se => Point.init(1, 1),
+            Heading.s => Point.init(0, 1),
+            Heading.sw => Point.init(-1, 1),
+        };
+    }
 };
 
 pub const Point = struct {
@@ -32,29 +55,19 @@ pub const Point = struct {
         return Point{ .x = x, .y = y };
     }
 
-    pub fn go(self: Point, direction: Direction) Point {
-        return switch (direction) {
-            Direction.n => self.add(0, -1),
-            Direction.e => self.add(1, 0),
-            Direction.s => self.add(0, 1),
-            Direction.w => self.add(-1, 0),
-        };
+    pub fn negate(self: Point) Point {
+        return Point.init(-self.x, -self.y);
     }
 
-    pub fn head(self: Point, heading: Heading) Point {
-        return switch (heading) {
-            Heading.w => self.add(-1, 0),
-            Heading.nw => self.add(-1, -1),
-            Heading.n => self.add(0, -1),
-            Heading.ne => self.add(1, -1),
-            Heading.e => self.add(1, 0),
-            Heading.se => self.add(1, 1),
-            Heading.s => self.add(0, 1),
-            Heading.sw => self.add(-1, 1),
-        };
+    pub fn times(self: Point, scalar: i64) Point {
+        return Point.init(self.x * scalar, self.y * scalar);
     }
 
-    pub fn add(self: Point, dx: i64, dy: i64) Point {
-        return Point.init(self.x + dx, self.y + dy);
+    pub fn plus(self: Point, other: Point) Point {
+        return Point.init(self.x + other.x, self.y + other.y);
+    }
+
+    pub fn minus(self: Point, other: Point) Point {
+        return Point.init(self.x - other.x, self.y - other.y);
     }
 };

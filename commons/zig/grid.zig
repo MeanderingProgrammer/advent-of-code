@@ -17,15 +17,15 @@ pub const Grid = struct {
         return Grid{ .grid = grid };
     }
 
+    pub fn points(self: Grid) Map.KeyIterator {
+        return self.grid.keyIterator();
+    }
+
     pub fn get(self: Grid, point: Point) ?u8 {
         return self.grid.get(point);
     }
 
     pub fn set(self: *Grid, point: Point, value: u8) !void {
         try self.grid.put(point, value);
-    }
-
-    pub fn points(self: Grid) Map.KeyIterator {
-        return self.grid.keyIterator();
     }
 };
