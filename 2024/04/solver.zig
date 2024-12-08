@@ -31,9 +31,10 @@ fn part1(grid: Grid) usize {
 fn part2(grid: Grid) usize {
     var result: usize = 0;
     var points = grid.points();
-    while (points.next()) |point| {
-        const sw = mas(grid, point, Heading.sw);
-        const nw = mas(grid, &point.add(0, 2), Heading.nw);
+    while (points.next()) |p1| {
+        const p2 = p1.plus(Heading.s.point().times(2));
+        const sw = mas(grid, p1, Heading.sw);
+        const nw = mas(grid, &p2, Heading.nw);
         result += if (sw and nw) 1 else 0;
     }
     return result;
@@ -50,7 +51,7 @@ fn has(grid: Grid, start: *const Point, heading: Heading, goal: []const u8) bool
         if (!matches) {
             return false;
         }
-        point = point.head(heading);
+        point = point.plus(heading.point());
     }
     return true;
 }
