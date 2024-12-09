@@ -8,7 +8,6 @@ const Disk = std.ArrayList(usize);
 const Files = std.ArrayList(File);
 const File = struct {
     id: usize,
-    index: usize,
     size: usize,
     free: usize,
 };
@@ -27,17 +26,13 @@ fn solution() !void {
 fn get_files(data: Disk) !Files {
     var result = Files.init(allocator);
     var i: usize = 0;
-    var index: usize = 0;
-    while (i < data.items.len) {
+    while (i < data.items.len) : (i += 2) {
         const file = File{
-            .id = (i / 2) + 1,
-            .index = index,
+            .id = i / 2,
             .size = data.items[i],
             .free = if ((i + 1) < data.items.len) data.items[i + 1] else 0,
         };
         try result.append(file);
-        i += 2;
-        index += (file.size + file.free);
     }
     return result;
 }
@@ -46,11 +41,9 @@ fn part1(input: Files) !Disk {
     var files = try input.clone();
     var i: usize = 0;
     var result = Disk.init(allocator);
-    while (i < files.items.len) {
+    while (i < files.items.len) : (i += 1) {
         const file = files.items[i];
-        for (0..file.size) |_| {
-            try result.append(file.id);
-        }
+        try result.appendNTimes(file.id, file.size);
         for (0..file.free) |_| {
             var last = &files.items[files.items.len - 1];
             if (file.id != last.id) {
@@ -61,66 +54,55 @@ fn part1(input: Files) !Disk {
                 }
             }
         }
-        i += 1;
     }
     return result;
 }
 
 fn part2(input: Files) !Disk {
-    const files = try input.clone();
-    const result = try initialize_disk(files);
+    var files = try input.clone();
     for (0..files.items.len) |i| {
-        const index = files.items.len - (i + 1);
-        const file = files.items[index];
-        if (find_free(result, file)) |location| {
-            for (location..(location + file.size)) |j| {
-                result.items[j] = file.id;
-            }
-            for (file.index..(file.index + file.size)) |j| {
-                result.items[j] = 0;
-            }
+        const id = files.items.len - (i + 1);
+        const index = id_to_index(files, id).?;
+        if (first_fit(files, index)) |location| {
+            var file = files.orderedRemove(index);
+            var before = &files.items[index - 1];
+            var new_before = &files.items[location];
+            before.free = before.free + file.size + file.free;
+            file.free = new_before.free - file.size;
+            new_before.free = 0;
+            try files.insert(location + 1, file);
         }
     }
-    return result;
-}
-
-fn initialize_disk(files: Files) !Disk {
     var result = Disk.init(allocator);
     for (files.items) |file| {
-        for (0..file.size) |_| {
-            try result.append(file.id);
-        }
-        for (0..file.free) |_| {
-            try result.append(0);
-        }
+        try result.appendNTimes(file.id, file.size);
+        try result.appendNTimes(0, file.free);
     }
     return result;
 }
 
-fn find_free(disk: Disk, file: File) ?usize {
-    for (0..file.index) |i| {
-        if (all_free(disk, file, i)) {
+fn id_to_index(files: Files, id: usize) ?usize {
+    for (files.items, 0..) |file, i| {
+        if (file.id == id) {
             return i;
         }
     }
     return null;
 }
 
-fn all_free(disk: Disk, file: File, start: usize) bool {
-    for (start..(start + file.size)) |i| {
-        if (disk.items[i] != 0) {
-            return false;
+fn first_fit(files: Files, index: usize) ?usize {
+    for (0..index) |i| {
+        if (files.items[i].free >= files.items[index].size) {
+            return i;
         }
     }
-    return true;
+    return null;
 }
 
 fn checksum(disk: Disk) usize {
     var result: usize = 0;
     for (disk.items, 0..) |id, position| {
-        if (id > 1) {
-            result += ((id - 1) * position);
-        }
+        result += (id * position);
     }
     return result;
 }
