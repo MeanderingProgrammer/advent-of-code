@@ -35,6 +35,15 @@ pub const Reader = struct {
         return Grid.init(try self.string_lines());
     }
 
+    pub fn ints(self: Reader) !std.ArrayList(usize) {
+        const line = (try self.string_lines()).items[0];
+        var result = std.ArrayList(usize).init(allocator);
+        for (line) |ch| {
+            try result.append(ch - '0');
+        }
+        return result;
+    }
+
     pub fn string_lines(self: Reader) !std.ArrayList([]const u8) {
         return self.lines([]const u8, Transformers.identity);
     }
