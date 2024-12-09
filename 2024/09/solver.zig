@@ -8,6 +8,7 @@ const Disk = std.ArrayList(usize);
 const Files = std.ArrayList(File);
 const File = struct {
     id: usize,
+    index: usize,
     size: usize,
     free: usize,
 };
@@ -26,20 +27,24 @@ fn solution() !void {
 fn get_files(data: Disk) !Files {
     var result = Files.init(allocator);
     var i: usize = 0;
+    var index: usize = 0;
     while (i < data.items.len) {
-        try result.append(File{
+        const file = File{
             .id = (i / 2) + 1,
+            .index = index,
             .size = data.items[i],
             .free = if ((i + 1) < data.items.len) data.items[i + 1] else 0,
-        });
+        };
+        try result.append(file);
         i += 2;
+        index += (file.size + file.free);
     }
     return result;
 }
 
 fn part1(input: Files) !Disk {
-    var i: usize = 0;
     var files = try input.clone();
+    var i: usize = 0;
     var result = Disk.init(allocator);
     while (i < files.items.len) {
         const file = files.items[i];
@@ -71,10 +76,8 @@ fn part2(input: Files) !Disk {
             for (location..(location + file.size)) |j| {
                 result.items[j] = file.id;
             }
-            for ((location + file.size)..result.items.len) |j| {
-                if (result.items[j] == file.id) {
-                    result.items[j] = 0;
-                }
+            for (file.index..(file.index + file.size)) |j| {
+                result.items[j] = 0;
             }
         }
     }
@@ -95,10 +98,7 @@ fn initialize_disk(files: Files) !Disk {
 }
 
 fn find_free(disk: Disk, file: File) ?usize {
-    for (0..(disk.items.len - file.size)) |i| {
-        if (disk.items[i] == file.id) {
-            break;
-        }
+    for (0..file.index) |i| {
         if (all_free(disk, file, i)) {
             return i;
         }
