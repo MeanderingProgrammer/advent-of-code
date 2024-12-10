@@ -6,7 +6,6 @@ from typing import override
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
-
 from command.command import Command
 from component.figure_saver import FigType, FigureProps, FigureSaver
 

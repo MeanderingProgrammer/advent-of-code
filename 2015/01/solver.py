@@ -10,12 +10,9 @@ def main() -> None:
 
 
 def get_floor(value: str, stop_at_basement: bool) -> int:
-    floor = 0
+    floor: int = 0
     for i, ch in enumerate(value):
-        if ch == "(":
-            floor += 1
-        else:
-            floor -= 1
+        floor += 1 if ch == "(" else -1
         if stop_at_basement and floor < 0:
             return i + 1
     return floor

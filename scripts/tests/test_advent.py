@@ -1,6 +1,5 @@
-from click.testing import CliRunner
-
 from advent import run
+from click.testing import CliRunner
 
 
 def test_run_int_code() -> None:

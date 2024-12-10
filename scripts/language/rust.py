@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import override
 
 import toml
-
 from language.language import Language
 from pojo.day import Day
 

@@ -23,15 +23,13 @@ class RunTemplate:
         elif name == RunName.PREVIOUS:
             latest_day = DayFactory().get_latest()
             return [latest_day.add(-1)]
-        elif name in [RunName.ALL, RunName.DAYS]:
+        elif name == RunName.ALL or name == RunName.DAYS:
             return DayFactory().get_days()
         elif name == RunName.LANGUAGES:
             # Single day implemented in all languages
             return [Day("2021", "01")]
         elif name == RunName.SLOW:
             return RunTemplate.slow()
-        else:
-            raise Exception(f"Unhandled name: {name}")
 
     @staticmethod
     def slow() -> list[Day]:
