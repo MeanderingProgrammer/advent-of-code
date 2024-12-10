@@ -16,5 +16,3 @@ class GenerateTemplate:
             return latest_day.add(1)
         elif name == GenerateName.CURRENT:
             return DayFactory().get_latest()
-        else:
-            raise Exception(f"Unhandled name: {name}")

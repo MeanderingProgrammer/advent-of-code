@@ -1,7 +1,6 @@
 from typing import override
 
 import click
-
 from component.language_factory import LanguageFactory
 from language.language import Language
 

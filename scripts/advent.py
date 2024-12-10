@@ -4,7 +4,6 @@ import json
 from typing import Optional
 
 import click
-
 from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
