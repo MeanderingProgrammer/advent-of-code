@@ -11,6 +11,7 @@ const Solutions = [_]struct { []const u8, []const u8 }{
     .{ "2024", "07" },
     .{ "2024", "08" },
     .{ "2024", "09" },
+    .{ "2024", "10" },
 };
 
 pub fn build(b: *std.Build) void {
