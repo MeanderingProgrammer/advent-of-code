@@ -36,12 +36,16 @@ pub const Reader = struct {
     }
 
     pub fn ints(self: Reader) !std.ArrayList(usize) {
-        const line = (try self.string_lines()).items[0];
+        const line = try self.string();
         var result = std.ArrayList(usize).init(allocator);
         for (line) |ch| {
             try result.append(ch - '0');
         }
         return result;
+    }
+
+    pub fn string(self: Reader) ![]const u8 {
+        return (try self.string_lines()).items[0];
     }
 
     pub fn string_lines(self: Reader) !std.ArrayList([]const u8) {
