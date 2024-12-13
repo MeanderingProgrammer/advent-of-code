@@ -17,7 +17,7 @@ const Order = struct {
         while (it.next()) |page| {
             try pages.append(try to_int(page));
         }
-        return Order{ .pages = pages };
+        return .{ .pages = pages };
     }
 
     fn middle(self: Order) usize {

@@ -11,7 +11,7 @@ pub const Machine = struct {
     prize: Point,
 
     fn init(lines: std.ArrayList([]const u8)) !Machine {
-        return Machine{
+        return .{
             // Button A: X+94, Y+34
             .a = try parse_point(lines.items[0]),
             // Button B: X+22, Y+67

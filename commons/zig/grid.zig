@@ -15,7 +15,7 @@ pub const Grid = struct {
                 try grid.put(Point.init(@intCast(x), @intCast(y)), value);
             }
         }
-        return Grid{
+        return .{
             .height = lines.items.len,
             .width = lines.items[0].len,
             .grid = grid,

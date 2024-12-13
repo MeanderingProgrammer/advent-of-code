@@ -14,7 +14,7 @@ const Group = struct {
     points: Points,
 
     fn init(grid: Grid) Group {
-        return Group{ .grid = grid, .points = Points.init(allocator) };
+        return .{ .grid = grid, .points = Points.init(allocator) };
     }
 
     fn append(self: *Group, point: Point) !void {

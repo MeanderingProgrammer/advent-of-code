@@ -13,7 +13,7 @@ const Region = struct {
     points: Set(Point),
 
     fn init(plant: u8) Region {
-        return Region{
+        return .{
             .plant = plant,
             .points = Set(Point).init(allocator),
         };

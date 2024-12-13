@@ -13,7 +13,7 @@ const Report = struct {
         while (it.next()) |item| {
             try levels.append(try std.fmt.parseInt(usize, item, 10));
         }
-        return Report{ .levels = levels };
+        return .{ .levels = levels };
     }
 
     fn safe(self: Report, tolerant: bool) bool {

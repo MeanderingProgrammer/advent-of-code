@@ -28,7 +28,7 @@ pub const Reader = struct {
         const file = if (std.mem.eql(u8, test_value, "--test")) "sample.txt" else "data.txt";
 
         const path = std.mem.join(allocator, "/", &[_][]const u8{ "data", year, day, file }) catch "";
-        return Reader{ .path = path };
+        return .{ .path = path };
     }
 
     pub fn grid(self: Reader) !Grid {

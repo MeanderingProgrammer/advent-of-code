@@ -24,7 +24,7 @@ const Move = struct {
     to: State,
 
     fn init(from: State, to: State) Move {
-        return Move{ .from = from, .to = to };
+        return .{ .from = from, .to = to };
     }
 };
 
@@ -37,7 +37,7 @@ const Parser = struct {
     toggle: bool,
 
     fn init(toggle: bool) Parser {
-        return Parser{
+        return .{
             .state = State.start,
             .first = 0,
             .second = 0,

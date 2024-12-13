@@ -16,7 +16,7 @@ const Equation = struct {
         while (values_it.next()) |value| {
             try values.append(try to_int(value));
         }
-        return Equation{ .target = target, .values = values };
+        return .{ .target = target, .values = values };
     }
 
     fn valid(self: Equation, concat: bool) !bool {
