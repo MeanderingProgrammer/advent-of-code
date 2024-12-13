@@ -26,13 +26,13 @@ class LanguageFactory:
             if shutil.which(language.cmd()) is not None:
                 self.languages.append(language)
 
-    def get_names(self) -> list[str]:
+    def names(self) -> list[str]:
         return [language.name for language in self.languages]
 
-    def get_all(self) -> list[Language]:
-        return self.languages
+    def resolve(self, languages: tuple[Language, ...]) -> list[Language]:
+        return self.languages if len(languages) == 0 else list(languages)
 
-    def get_by_name(self, name: str) -> Language:
+    def from_name(self, name: str) -> Language:
         for language in self.languages:
             if language.name == name:
                 return language

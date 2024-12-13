@@ -125,6 +125,8 @@ a-run \
   (--year <year>)* \
   (--day <day>)* \
   (--language <language>)* \
+  --strategy <strategy>? \
+  --slow <time>? \
   --test? \
   --info?
 ```
@@ -135,7 +137,8 @@ a-run \
 | year          | `-y` | List of years to run                    | None     | `-y 2021 -y 2022` |
 | day           | `-d` | List of days to run                     | None     | `-d 1 -d 3 -d 5`  |
 | language      | `-l` | Limit runs to the specified languages   | None     | `-l go`           |
-| slow          | `-s` | Defines the runtime (in ms) for slow    | 500      | `-s 100`          |
+| strategy      | `-s` | A way to select which languages to run  | None     | `-s fastest`      |
+| slow          | `-S` | Defines the runtime (in ms) for slow    | 100      | `-S 500`          |
 | test          | `-T` | Passes test flag to each day            | `False`  | `-T`              |
 | info          | `-i` | Outputs which days would run            | `False`  | `-i`              |
 
