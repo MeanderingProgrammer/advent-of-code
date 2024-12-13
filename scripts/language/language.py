@@ -30,5 +30,5 @@ class Language(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
         pass

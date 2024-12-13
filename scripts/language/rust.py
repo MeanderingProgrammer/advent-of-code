@@ -29,7 +29,7 @@ class Rust(Language):
         return ["cargo", "run", "-rq", "--bin", Rust.binary(day)] + args
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
         cargo_file = "Cargo.toml"
         cargo = toml.load(cargo_file)
         bin_config = dict(

@@ -28,6 +28,6 @@ class Python(Language):
         return ["python", str(self.solution_path(day))] + run_args
 
     @override
-    def template_processing(self, day: Day) -> None:
-        # No additional template processing needed
+    def add_build(self, day: Day) -> None:
+        # No additional build work needed
         pass

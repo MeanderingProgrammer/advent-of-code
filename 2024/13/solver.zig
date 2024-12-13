@@ -37,25 +37,29 @@ pub const Machine = struct {
     }
 
     fn tokens(self: Machine, offset: i64) i64 {
-        // X1a + X2b = PX
-        // Y1a + Y2b = PY -> a = (PY/Y1) - (Y2b/Y1)
-        // X1((PY/Y1) - (Y2b/Y1)) + X2b = PX
-        // (X1*PY/Y1) - (X1*Y2/Y1) + X2b = PX
-        // (X2 - (X1*Y2/Y1))b = PX - (X1*PY/Y1)
-        // ((X2*Y1-X1*Y2)/Y1)b = (PX*Y1-X1*PY)/Y1
-        // b = ((PX*Y1-X1*PY)/Y1)/((X2*Y1-X1*Y2/Y1)
-        // b = (PX*Y1-X1*PY)/(X2*Y1-X1*Y2)
-        // a = (PX - X2b)/X1
+        // ax*a + bx*b = px
+        // ay*a + by*b = py
+        // Solution 1:
+        // a = (py/ay) - (by*b/ay)
+        // ax[(py/ay) - (by*b/ay)] + bx*b = px
+        // (ax*py/ay) - (ax*by*b/ay) + bx*b = px
+        // [bx - (ax*by/ay)]b = px - (ax*py/ay)
+        // [(bx*ay-ax*by)/ay]b = (px*ay-ax*py)/ay
+        // b = [(px*ay-ax*py)/ay]/[(bx*ay-ax*by/ay]
+        // b = (px*ay-ax*py)/(bx*ay-ax*by)
+        // Solution 2:
+        // ax*a = px - bx*b
+        // a = (px - bx*b)/ax
 
-        const x1: f64 = @floatFromInt(self.a.x);
-        const x2: f64 = @floatFromInt(self.b.x);
+        const ax: f64 = @floatFromInt(self.a.x);
+        const bx: f64 = @floatFromInt(self.b.x);
         const px: f64 = @floatFromInt(self.prize.x + offset);
-        const y1: f64 = @floatFromInt(self.a.y);
-        const y2: f64 = @floatFromInt(self.b.y);
+        const ay: f64 = @floatFromInt(self.a.y);
+        const by: f64 = @floatFromInt(self.b.y);
         const py: f64 = @floatFromInt(self.prize.y + offset);
 
-        const bf = ((px * y1) - (x1 * py)) / ((x2 * y1) - (x1 * y2));
-        const af = (px - (x2 * bf)) / x1;
+        const bf = ((px * ay) - (ax * py)) / ((bx * ay) - (ax * by));
+        const af = (px - (bx * bf)) / ax;
         const a: i64 = @intFromFloat(af);
         const b: i64 = @intFromFloat(bf);
 

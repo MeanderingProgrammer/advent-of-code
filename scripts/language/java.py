@@ -29,7 +29,7 @@ class Java(Language):
         return ["./gradlew", f":{Java.task(day)}:run", "-q"] + args
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
         f = open("settings.gradle.kts", "a")
         f.write("\n")
         f.write(f'include("{Java.task(day)}")\n')

@@ -38,7 +38,7 @@ class Generator(Command):
             print(f"Solution already exists under: {solution_path}")
             return
         self.copy_template()
-        self.language.template_processing(self.day)
+        self.language.add_build(self.day)
 
     def copy_template(self) -> None:
         template_dir = Path(f"scripts/templates/{self.language.name}")

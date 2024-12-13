@@ -31,7 +31,7 @@ class Ocaml(Language):
         return ["dune", "exec", "--", Ocaml.binary(day)] + run_args
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
         dune_path = day.dir().joinpath("dune")
         os.system(f"sed -i '' -e 's/EXEC/{Ocaml.binary(day)}/g' {dune_path}")
 

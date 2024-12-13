@@ -27,5 +27,6 @@ class TypeScript(Language):
         return ["bun", "run", str(self.solution_path(day))] + run_args
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
+        # No additional build work needed
         pass

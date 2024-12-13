@@ -32,7 +32,7 @@ class Zig(Language):
         return ["zig", "build", "-Doptimize=ReleaseSmall", binary] + args
 
     @override
-    def template_processing(self, day: Day) -> None:
+    def add_build(self, day: Day) -> None:
         path = Path("build.zig")
         contents = path.read_text()
         solutions = contents.split("\n\n")[1].splitlines()[1:-1]
