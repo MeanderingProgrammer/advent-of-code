@@ -53,7 +53,7 @@ const Region = struct {
             if (self.has(point, heading)) {
                 return 0;
             }
-            heading = heading.clockwise();
+            heading = heading.right();
         }
         return 1;
     }

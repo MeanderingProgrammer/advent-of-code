@@ -51,7 +51,7 @@ fn follow(grid: *Grid, start: Point) !?Set(Point) {
         try seen.add(state);
         const next_point = point.plus(direction.point());
         if ((grid.get(next_point) orelse '.') == '#') {
-            direction = direction.clockwise();
+            direction = direction.right();
         } else {
             point = next_point;
         }

@@ -13,7 +13,7 @@ pub const Direction = enum {
         };
     }
 
-    pub fn clockwise(self: Direction) Direction {
+    pub fn right(self: Direction) Direction {
         return switch (self) {
             Direction.n => Direction.e,
             Direction.e => Direction.s,
@@ -46,7 +46,7 @@ pub const Heading = enum {
         };
     }
 
-    pub fn clockwise(self: Heading) Heading {
+    pub fn right(self: Heading) Heading {
         return switch (self) {
             Heading.n => Heading.ne,
             Heading.ne => Heading.e,
