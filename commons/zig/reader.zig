@@ -19,7 +19,7 @@ pub const Reader = struct {
         var args = std.process.args();
 
         const executable = args.next() orelse "";
-        var exe_path = std.mem.splitBackwards(u8, executable, "/");
+        var exe_path = std.mem.splitBackwardsScalar(u8, executable, '/');
         var year_date = std.mem.splitScalar(u8, exe_path.first(), '_');
         const year = year_date.next() orelse "";
         const day = year_date.next() orelse "";
