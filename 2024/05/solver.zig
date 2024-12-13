@@ -1,6 +1,7 @@
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
+const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
@@ -24,12 +25,12 @@ const Order = struct {
     }
 
     fn valid(self: Order, rules: Rules) !bool {
-        var seen = std.AutoHashMap(usize, bool).init(allocator);
+        var seen = Set(usize).init(allocator);
         for (self.pages.items) |page| {
-            try seen.put(page, true);
+            try seen.add(page);
             if (rules.get(page)) |illegal| {
                 for (illegal.items) |p| {
-                    if (seen.get(p) orelse false) {
+                    if (seen.contains(p)) {
                         return false;
                     }
                 }

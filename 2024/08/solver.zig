@@ -3,10 +3,12 @@ const answer = aoc.answer;
 const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
+const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
 const Points = std.ArrayList(Point);
+const Groups = std.AutoHashMap(u8, Group);
 const Group = struct {
     grid: Grid,
     points: Points,
@@ -68,8 +70,8 @@ fn solution() !void {
     answer.part2(usize, 1157, try num_antinodes(groups, true));
 }
 
-fn group(grid: Grid) !std.AutoHashMap(u8, Group) {
-    var result = std.AutoHashMap(u8, Group).init(allocator);
+fn group(grid: Grid) !Groups {
+    var result = Groups.init(allocator);
     var points = grid.points();
     while (points.next()) |point| {
         const value = grid.get(point.*).?;
@@ -84,14 +86,14 @@ fn group(grid: Grid) !std.AutoHashMap(u8, Group) {
     return result;
 }
 
-fn num_antinodes(groups: std.AutoHashMap(u8, Group), resonate: bool) !usize {
-    var result = std.AutoHashMap(Point, bool).init(allocator);
+fn num_antinodes(groups: Groups, resonate: bool) !usize {
+    var result = Set(Point).init(allocator);
     var it = groups.iterator();
     while (it.next()) |entry| {
         const antinodes = try entry.value_ptr.antinodes(resonate);
         for (antinodes.items) |point| {
-            try result.put(point, true);
+            try result.add(point);
         }
     }
-    return result.count();
+    return result.size();
 }

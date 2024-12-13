@@ -3,7 +3,6 @@ const Point = @import("point.zig").Point;
 const allocator = std.heap.page_allocator;
 
 const Map = std.AutoHashMap(Point, u8);
-
 pub const Grid = struct {
     height: usize,
     width: usize,

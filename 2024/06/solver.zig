@@ -4,6 +4,7 @@ const Grid = aoc.grid.Grid;
 const Direction = aoc.point.Direction;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
+const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
@@ -20,7 +21,7 @@ fn solution() !void {
     var grid = try Reader.init().grid();
     const start = get_start(grid).?;
     var path = (try follow(&grid, start)).?;
-    answer.part1(usize, 5516, path.count());
+    answer.part1(usize, 5516, path.size());
     answer.part2(usize, 2008, try obstacles(&grid, start, path));
 }
 
@@ -34,8 +35,8 @@ fn get_start(grid: Grid) ?Point {
     return null;
 }
 
-fn follow(grid: *Grid, start: Point) !?std.AutoHashMap(Point, bool) {
-    var seen = std.AutoHashMap(State, bool).init(allocator);
+fn follow(grid: *Grid, start: Point) !?Set(Point) {
+    var seen = Set(State).init(allocator);
     defer seen.deinit();
     var point = start;
     var direction = Direction.n;
@@ -47,7 +48,7 @@ fn follow(grid: *Grid, start: Point) !?std.AutoHashMap(Point, bool) {
         if (seen.contains(state)) {
             return null;
         }
-        try seen.put(state, true);
+        try seen.add(state);
         const next_point = point.plus(direction.point());
         if ((grid.get(next_point) orelse '.') == '#') {
             direction = direction.clockwise();
@@ -55,17 +56,17 @@ fn follow(grid: *Grid, start: Point) !?std.AutoHashMap(Point, bool) {
             point = next_point;
         }
     }
-    var points = std.AutoHashMap(Point, bool).init(allocator);
-    var it = seen.keyIterator();
+    var points = Set(Point).init(allocator);
+    var it = seen.iterator();
     while (it.next()) |state| {
-        try points.put(state.point, true);
+        try points.add(state.point);
     }
     return points;
 }
 
-fn obstacles(grid: *Grid, start: Point, options: std.AutoHashMap(Point, bool)) !usize {
+fn obstacles(grid: *Grid, start: Point, options: Set(Point)) !usize {
     var result: usize = 0;
-    var it = options.keyIterator();
+    var it = options.iterator();
     while (it.next()) |point| {
         const p = point.*;
         if ((grid.get(p) orelse '#') != '^') {

@@ -4,33 +4,33 @@ const Grid = aoc.grid.Grid;
 const Heading = aoc.point.Heading;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
+const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
-const Points = std.AutoHashMap(Point, bool);
 const Region = struct {
     plant: u8,
-    points: Points,
+    points: Set(Point),
 
     fn init(plant: u8) Region {
         return Region{
             .plant = plant,
-            .points = Points.init(allocator),
+            .points = Set(Point).init(allocator),
         };
     }
 
     fn add(self: *Region, point: Point) !void {
-        try self.points.put(point, true);
+        try self.points.add(point);
     }
 
     fn price(self: Region, bulk: bool) usize {
-        const area: usize = self.points.count();
+        const area: usize = self.points.size();
         return area * if (bulk) self.sides() else self.perimeter();
     }
 
     fn sides(self: Region) usize {
         var corners: usize = 0;
-        var points = self.points.keyIterator();
+        var points = self.points.iterator();
         while (points.next()) |point| {
             if (self.neighbors(point) == 4) {
                 continue;
@@ -68,7 +68,7 @@ const Region = struct {
 
     fn perimeter(self: Region) usize {
         var result: usize = 0;
-        var points = self.points.keyIterator();
+        var points = self.points.iterator();
         while (points.next()) |point| {
             result += (4 - self.neighbors(point));
         }
@@ -99,7 +99,7 @@ fn solution() !void {
 
 fn split_regions(grid: Grid) !std.ArrayList(Region) {
     var regions = std.ArrayList(Region).init(allocator);
-    var seen = Points.init(allocator);
+    var seen = Set(Point).init(allocator);
     var points = grid.points();
     while (points.next()) |p| {
         const point = p.*;
@@ -114,7 +114,7 @@ fn split_regions(grid: Grid) !std.ArrayList(Region) {
             if (seen.contains(current)) {
                 continue;
             }
-            try seen.put(current, true);
+            try seen.add(current);
             try region.add(current);
             for (current.neighbors()) |next| {
                 if (grid.get(next)) |plant| {
