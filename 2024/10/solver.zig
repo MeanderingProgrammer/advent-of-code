@@ -1,6 +1,5 @@
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Direction = aoc.point.Direction;
 const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
@@ -49,9 +48,7 @@ fn process(grid: Grid, head: Point) !Info {
         const count = if (seen.get(point)) |current| current else 0;
         try seen.put(point, count + 1);
         const value = grid.get(point).?;
-        inline for (std.meta.fields(Direction)) |direction| {
-            const dir: Direction = @enumFromInt(direction.value);
-            const next_point = point.plus(dir.point());
+        for (point.neighbors()) |next_point| {
             if (grid.get(next_point)) |next_value| {
                 if ((value + 1) == next_value) {
                     try queue.append(next_point);

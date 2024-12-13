@@ -5,6 +5,8 @@ const allocator = std.heap.page_allocator;
 const Map = std.AutoHashMap(Point, u8);
 
 pub const Grid = struct {
+    height: usize,
+    width: usize,
     grid: Map,
 
     pub fn init(lines: std.ArrayList([]const u8)) !Grid {
@@ -14,7 +16,11 @@ pub const Grid = struct {
                 try grid.put(Point.init(@intCast(x), @intCast(y)), value);
             }
         }
-        return Grid{ .grid = grid };
+        return Grid{
+            .height = lines.items.len,
+            .width = lines.items[0].len,
+            .grid = grid,
+        };
     }
 
     pub fn points(self: Grid) Map.KeyIterator {

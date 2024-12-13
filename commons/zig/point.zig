@@ -45,6 +45,19 @@ pub const Heading = enum {
             Heading.sw => Point.init(-1, 1),
         };
     }
+
+    pub fn clockwise(self: Heading) Heading {
+        return switch (self) {
+            Heading.n => Heading.ne,
+            Heading.ne => Heading.e,
+            Heading.e => Heading.se,
+            Heading.se => Heading.s,
+            Heading.s => Heading.sw,
+            Heading.sw => Heading.w,
+            Heading.w => Heading.nw,
+            Heading.nw => Heading.n,
+        };
+    }
 };
 
 pub const Point = struct {
@@ -69,5 +82,14 @@ pub const Point = struct {
 
     pub fn minus(self: Point, other: Point) Point {
         return Point.init(self.x - other.x, self.y - other.y);
+    }
+
+    pub fn neighbors(self: Point) [4]Point {
+        return .{
+            self.plus(Direction.n.point()),
+            self.plus(Direction.e.point()),
+            self.plus(Direction.s.point()),
+            self.plus(Direction.w.point()),
+        };
     }
 };
