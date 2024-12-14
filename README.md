@@ -2,11 +2,11 @@
 
 All Years - Blazingly Fast
 
-![Years Completed](images/advent-completed.png)
+![Years Completed](https://github.com/MeanderingProgrammer/advent-of-code-images/blob/main/advent-completed.png)
 
 # Runtimes
 
-![Runtimes](images/year_percentage.png)
+![Runtimes](https://github.com/MeanderingProgrammer/advent-of-code-images/blob/main/year_percentage.png)
 
 # History
 
