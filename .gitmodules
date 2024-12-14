@@ -2,3 +2,8 @@
 	path = data
 	url = ../advent-of-code-data.git
 	branch = main
+
+[submodule "images"]
+	path = images
+	url = ../advent-of-code-images.git
+	branch = main

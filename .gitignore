@@ -8,7 +8,6 @@ out/
 .adventofcode.session
 all.json
 slow.json
-images/archive/
 
 # Python
 *.pyc
