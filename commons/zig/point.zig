@@ -4,6 +4,20 @@ pub const Direction = enum {
     s,
     w,
 
+    pub fn init(ch: u8) ?Direction {
+        if (ch == '^') {
+            return Direction.n;
+        } else if (ch == '>') {
+            return Direction.e;
+        } else if (ch == 'v') {
+            return Direction.s;
+        } else if (ch == '<') {
+            return Direction.w;
+        } else {
+            return null;
+        }
+    }
+
     pub fn point(self: Direction) Point {
         return switch (self) {
             Direction.n => Point.init(0, -1),

@@ -1,7 +1,7 @@
 const std = @import("std");
 
 pub fn Set(comptime T: type) type {
-    const Map = std.AutoHashMap(T, bool);
+    const Map = std.AutoHashMap(T, void);
     return struct {
         map: Map,
 
@@ -17,8 +17,12 @@ pub fn Set(comptime T: type) type {
             self.map.deinit();
         }
 
+        pub fn clear(self: *Self) void {
+            self.map.clearRetainingCapacity();
+        }
+
         pub fn add(self: *Self, value: T) !void {
-            try self.map.put(value, true);
+            try self.map.put(value, {});
         }
 
         pub fn contains(self: Self, value: T) bool {

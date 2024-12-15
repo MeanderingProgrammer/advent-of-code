@@ -12,7 +12,8 @@ pub const Grid = struct {
         var grid = Map.init(allocator);
         for (lines.items, 0..) |line, y| {
             for (line, 0..) |value, x| {
-                try grid.put(Point.init(@intCast(x), @intCast(y)), value);
+                const point = Point.init(@intCast(x), @intCast(y));
+                try grid.put(point, value);
             }
         }
         return .{
@@ -32,5 +33,17 @@ pub const Grid = struct {
 
     pub fn set(self: *Grid, point: Point, value: u8) !void {
         try self.grid.put(point, value);
+    }
+
+    pub fn string(self: Grid) ![]const u8 {
+        var result = std.ArrayList(u8).init(allocator);
+        for (0..self.height) |y| {
+            for (0..self.width) |x| {
+                const point = Point.init(@intCast(x), @intCast(y));
+                try result.append(self.get(point).?);
+            }
+            try result.append('\n');
+        }
+        return result.items;
     }
 };
