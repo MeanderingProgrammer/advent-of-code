@@ -35,6 +35,15 @@ pub const Direction = enum {
             Direction.w => Direction.n,
         };
     }
+
+    pub fn left(self: Direction) Direction {
+        return switch (self) {
+            Direction.n => Direction.w,
+            Direction.w => Direction.s,
+            Direction.s => Direction.e,
+            Direction.e => Direction.n,
+        };
+    }
 };
 
 pub const Heading = enum {
@@ -105,5 +114,9 @@ pub const Point = struct {
             self.plus(Direction.s.point()),
             self.plus(Direction.w.point()),
         };
+    }
+
+    pub fn eql(self: Point, other: Point) bool {
+        return self.x == other.x and self.y == other.y;
     }
 };

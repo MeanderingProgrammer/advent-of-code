@@ -8,9 +8,7 @@ pub fn Set(comptime T: type) type {
         const Self = @This();
 
         pub fn init(allocator: std.mem.Allocator) Self {
-            return .{
-                .map = Map.init(allocator),
-            };
+            return .{ .map = Map.init(allocator) };
         }
 
         pub fn deinit(self: *Self) void {
@@ -19,6 +17,11 @@ pub fn Set(comptime T: type) type {
 
         pub fn clear(self: *Self) void {
             self.map.clearRetainingCapacity();
+        }
+
+        pub fn clone(self: Self) !Self {
+            const map = try self.map.clone();
+            return .{ .map = map };
         }
 
         pub fn add(self: *Self, value: T) !void {

@@ -17,7 +17,7 @@ pub fn main() !void {
 
 fn solution() !void {
     const grid = try Reader.init().grid();
-    const heads = try trail_heads(grid);
+    const heads = try grid.get_values('0');
     var info = Info{ .score = 0, .rating = 0 };
     for (heads.items) |head| {
         const head_info = try process(grid, head);
@@ -26,17 +26,6 @@ fn solution() !void {
     }
     answer.part1(usize, 717, info.score);
     answer.part2(usize, 1686, info.rating);
-}
-
-fn trail_heads(grid: Grid) !std.ArrayList(Point) {
-    var result = std.ArrayList(Point).init(allocator);
-    var points = grid.points();
-    while (points.next()) |point| {
-        if (grid.get(point.*).? == '0') {
-            try result.append(point.*);
-        }
-    }
-    return result;
 }
 
 fn process(grid: Grid, head: Point) !Info {

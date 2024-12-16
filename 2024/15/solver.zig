@@ -14,7 +14,7 @@ const Warehouse = struct {
 
     fn init(lines: std.ArrayList([]const u8), wide: bool) !Warehouse {
         var grid = try Grid.init(if (wide) try enlarge(lines) else lines);
-        const start = get_start(grid).?;
+        const start = (try grid.get_values('@')).getLast();
         try grid.set(start, '.');
         return .{
             .grid = grid,
@@ -40,16 +40,6 @@ const Warehouse = struct {
             try result.append(l.items);
         }
         return result;
-    }
-
-    fn get_start(grid: Grid) ?Point {
-        var points = grid.points();
-        while (points.next()) |point| {
-            if (grid.get(point.*).? == '@') {
-                return point.*;
-            }
-        }
-        return null;
     }
 
     fn go(self: *Warehouse, direction: Direction) !void {

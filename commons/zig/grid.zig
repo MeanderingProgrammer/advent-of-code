@@ -35,6 +35,17 @@ pub const Grid = struct {
         try self.grid.put(point, value);
     }
 
+    pub fn get_values(self: Grid, value: u8) !std.ArrayList(Point) {
+        var result = std.ArrayList(Point).init(allocator);
+        var it = self.grid.iterator();
+        while (it.next()) |entry| {
+            if (entry.value_ptr.* == value) {
+                try result.append(entry.key_ptr.*);
+            }
+        }
+        return result;
+    }
+
     pub fn string(self: Grid) ![]const u8 {
         var result = std.ArrayList(u8).init(allocator);
         for (0..self.height) |y| {

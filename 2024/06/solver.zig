@@ -19,20 +19,10 @@ pub fn main() !void {
 
 fn solution() !void {
     var grid = try Reader.init().grid();
-    const start = get_start(grid).?;
+    const start = (try grid.get_values('^')).getLast();
     var path = (try follow(&grid, start)).?;
     answer.part1(usize, 5516, path.size());
     answer.part2(usize, 2008, try obstacles(&grid, start, path));
-}
-
-fn get_start(grid: Grid) ?Point {
-    var points = grid.points();
-    while (points.next()) |point| {
-        if (grid.get(point.*).? == '^') {
-            return point.*;
-        }
-    }
-    return null;
 }
 
 fn follow(grid: *Grid, start: Point) !?Set(Point) {
