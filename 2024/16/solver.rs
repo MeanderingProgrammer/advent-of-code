@@ -47,14 +47,18 @@ impl Maze {
     }
 
     fn solve(&self) -> (usize, usize) {
-        let start = State::new(self.start.clone(), Direction::Right);
         let mut min_cost = 0;
+        let mut end_seen = FxHashSet::default();
+
+        let start = State::new(self.start.clone(), Direction::Right);
 
         let mut distances = FxHashMap::default();
         distances.insert(start.clone(), 0);
 
-        let mut state_paths = FxHashMap::default();
-        state_paths.insert(start.clone(), vec![vec![start.point.clone()]]);
+        let mut start_seen = FxHashSet::default();
+        start_seen.insert(start.point.clone());
+        let mut state_seen = FxHashMap::default();
+        state_seen.insert(start.clone(), start_seen);
 
         let mut queue = DoublePriorityQueue::new();
         queue.push(start, 0);
@@ -66,6 +70,7 @@ impl Maze {
             }
             if current.point == self.end {
                 min_cost = current_cost;
+                end_seen.extend(state_seen[&current].clone());
                 continue;
             }
             let neighbors = vec![
@@ -81,37 +86,18 @@ impl Maze {
                 if !distances.contains_key(&next) || cost < distances[&next] {
                     distances.insert(next.clone(), cost);
                     queue.push(next.clone(), cost);
-                    let mut paths = vec![];
-                    for path in state_paths[&current].iter() {
-                        let mut path = path.clone();
-                        path.push(next.point.clone());
-                        paths.push(path);
-                    }
-                    state_paths.insert(next, paths);
+                    let mut seen = state_seen[&current].clone();
+                    seen.insert(next.point.clone());
+                    state_seen.insert(next, seen);
                 } else if cost == distances[&next] {
-                    let mut paths = vec![];
-                    for path in state_paths[&current].iter() {
-                        let mut path = path.clone();
-                        path.push(next.point.clone());
-                        paths.push(path);
-                    }
-                    state_paths.get_mut(&next).unwrap().append(&mut paths);
+                    let mut seen = state_seen[&current].clone();
+                    seen.insert(next.point.clone());
+                    state_seen.get_mut(&next).unwrap().extend(seen);
                 }
             }
         }
 
-        let mut seen = FxHashSet::default();
-        for (state, paths) in state_paths.into_iter() {
-            if state.point != self.end {
-                continue;
-            }
-            for path in paths.iter() {
-                for point in path.iter() {
-                    seen.insert(point.clone());
-                }
-            }
-        }
-        (min_cost, seen.len())
+        (min_cost, end_seen.len())
     }
 }
 

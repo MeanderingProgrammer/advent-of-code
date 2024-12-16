@@ -28,6 +28,13 @@ pub fn Set(comptime T: type) type {
             try self.map.put(value, {});
         }
 
+        pub fn extend(self: *Self, other: Self) !void {
+            var it = other.iterator();
+            while (it.next()) |value| {
+                try self.add(value.*);
+            }
+        }
+
         pub fn contains(self: Self, value: T) bool {
             return self.map.contains(value);
         }
