@@ -1,12 +1,20 @@
 import os
 import shutil
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import StrEnum, auto
 from pathlib import Path
 from typing import override
 
 from command.command import Command
 from language.language import Language
 from pojo.day import Day
+
+
+class DownloadStatus(StrEnum):
+    SUCCESS = auto()
+    FAILED = auto()
+    EXISTS = auto()
 
 
 @dataclass(frozen=True)
@@ -26,8 +34,20 @@ class Generator(Command):
 
     @override
     def run(self) -> None:
-        self.setup_solution()
-        self.setup_data()
+        current = datetime.now(timezone.utc)
+        release = self.release_time()
+        if current < release:
+            minutes = (release - current).seconds // 60
+            print("Problem not released yet")
+            print(f"Check back in {minutes // 60} hours {minutes % 60} minutes")
+        else:
+            self.setup_solution()
+            self.setup_data()
+
+    def release_time(self) -> datetime:
+        # Problems release at 12:00AM EST -> 5:00AM UTC
+        year, day = int(self.day.year), int(self.day.day)
+        return datetime(year, 12, day, 5, tzinfo=timezone.utc)
 
     def setup_solution(self) -> None:
         # Create day directory, okay if it already exists
@@ -60,10 +80,12 @@ class Generator(Command):
         # Create data directory, okay if it already exists
         data_dir = Path("data").joinpath(self.day.dir())
         data_dir.mkdir(parents=True, exist_ok=True)
-        # Download the necessary files
-        created = self.pull_aoc_file("-I -i", data_dir.joinpath("data.txt"))
-        if created:
+
+        # Download data
+        status = self.aoc_file("-I -i", data_dir.joinpath("data.txt"))
+        if status != DownloadStatus.EXISTS:
             Generator.empty_file(data_dir.joinpath("sample.txt"))
+        if status == DownloadStatus.SUCCESS:
             push: list[str] = [
                 "cd data",
                 "git add .",
@@ -71,13 +93,15 @@ class Generator(Command):
                 "git push",
             ]
             os.system(" && ".join(push))
-        if self.puzzle:
-            self.pull_aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
 
-    def pull_aoc_file(self, flags: str, file: Path) -> bool:
+        # Download puzzle
+        if self.puzzle:
+            self.aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
+
+    def aoc_file(self, flags: str, file: Path) -> DownloadStatus:
         if file.exists():
             print(f"{file} already exists, leaving as is")
-            return False
+            return DownloadStatus.EXISTS
         print(f"Creating file at: {file}")
         cookie = ".adventofcode.session"
         if Path(cookie).exists() and shutil.which("aoc") is not None:
@@ -90,10 +114,11 @@ class Generator(Command):
                 f"{flags} {file}",
             ]
             os.system(" ".join(download))
+            return DownloadStatus.SUCCESS
         else:
             print("aoc-cli is not setup")
             Generator.empty_file(file)
-        return True
+            return DownloadStatus.FAILED
 
     @staticmethod
     def empty_file(file: Path) -> None:
