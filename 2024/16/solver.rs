@@ -53,8 +53,8 @@ impl Maze {
         let mut distances = FxHashMap::default();
         distances.insert(start.clone(), 0);
 
-        let mut paths = FxHashMap::default();
-        paths.insert(start.clone(), vec![vec![start.point.clone()]]);
+        let mut state_paths = FxHashMap::default();
+        state_paths.insert(start.clone(), vec![vec![start.point.clone()]]);
 
         let mut queue = DoublePriorityQueue::new();
         queue.push(start, 0);
@@ -81,31 +81,31 @@ impl Maze {
                 if !distances.contains_key(&next) || cost < distances[&next] {
                     distances.insert(next.clone(), cost);
                     queue.push(next.clone(), cost);
-                    let mut next_paths = vec![];
-                    for path in paths[&current].iter() {
+                    let mut paths = vec![];
+                    for path in state_paths[&current].iter() {
                         let mut path = path.clone();
                         path.push(next.point.clone());
-                        next_paths.push(path);
+                        paths.push(path);
                     }
-                    paths.insert(next, next_paths);
+                    state_paths.insert(next, paths);
                 } else if cost == distances[&next] {
-                    let mut next_paths = vec![];
-                    for path in paths[&current].iter() {
+                    let mut paths = vec![];
+                    for path in state_paths[&current].iter() {
                         let mut path = path.clone();
                         path.push(next.point.clone());
-                        next_paths.push(path);
+                        paths.push(path);
                     }
-                    paths.get_mut(&next).unwrap().append(&mut next_paths);
+                    state_paths.get_mut(&next).unwrap().append(&mut paths);
                 }
             }
         }
 
         let mut seen = FxHashSet::default();
-        for (state, state_paths) in paths.into_iter() {
+        for (state, paths) in state_paths.into_iter() {
             if state.point != self.end {
                 continue;
             }
-            for path in state_paths.iter() {
+            for path in paths.iter() {
                 for point in path.iter() {
                     seen.insert(point.clone());
                 }

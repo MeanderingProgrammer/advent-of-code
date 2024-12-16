@@ -8,59 +8,35 @@ const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
-const Position = struct {
+const State = struct {
     point: Point,
     direction: Direction,
 
-    fn init(point: Point, direction: Direction) Position {
+    fn init(point: Point, direction: Direction) State {
         return .{ .point = point, .direction = direction };
     }
 
-    fn next(self: Position) Position {
-        return Position.init(self.point.plus(self.direction.point()), self.direction);
+    fn next(self: State) State {
+        return State.init(self.point.plus(self.direction.point()), self.direction);
+    }
+
+    fn turn(self: State, left: bool) State {
+        const direction = if (left) self.direction.left() else self.direction.right();
+        return State.init(self.point, direction);
     }
 };
 
-const State = struct {
-    position: Position,
+const Node = struct {
+    state: State,
     cost: usize,
-    path: std.ArrayList(Point),
 
-    fn init(point: Point, direction: Direction) !State {
-        var path = std.ArrayList(Point).init(allocator);
-        try path.append(point);
-        return .{
-            .position = Position.init(point, direction),
-            .cost = 0,
-            .path = path,
-        };
-    }
-
-    fn forward(self: State) !State {
-        const position = self.position.next();
-        var path = try self.path.clone();
-        try path.append(position.point);
-        return .{
-            .position = position,
-            .cost = self.cost + 1,
-            .path = path,
-        };
-    }
-
-    fn turn(self: State, direction: Direction) !State {
-        const state = State{
-            .position = Position.init(self.position.point, direction),
-            .cost = self.cost + 1000,
-            .path = self.path,
-        };
-        return try state.forward();
+    fn init(state: State, cost: usize) Node {
+        return .{ .state = state, .cost = cost };
     }
 };
 
-const Solution = struct {
-    cost: usize,
-    seen: Set(Point),
-};
+const Path = std.ArrayList(Point);
+const Paths = std.ArrayList(Path);
 
 const Maze = struct {
     grid: Grid,
@@ -80,54 +56,85 @@ const Maze = struct {
         };
     }
 
-    fn solve(self: Maze) !Solution {
-        var result = Solution{
-            .cost = 0,
-            .seen = Set(Point).init(allocator),
-        };
-        var seen = std.AutoHashMap(Position, usize).init(allocator);
-        var q = std.ArrayList(State).init(allocator);
-        try q.append(try State.init(self.start, Direction.e));
+    fn solve(self: Maze) !struct { usize, Set(Point) } {
+        const start = State.init(self.start, Direction.e);
+        var min_cost: usize = 0;
+
+        var distances = std.AutoHashMap(State, usize).init(allocator);
+        try distances.put(start, 0);
+
+        var start_path = Path.init(allocator);
+        try start_path.append(start.point);
+        var start_paths = Paths.init(allocator);
+        try start_paths.append(start_path);
+        var state_paths = std.AutoHashMap(State, Paths).init(allocator);
+        try state_paths.put(start, start_paths);
+
+        var q = std.ArrayList(Node).init(allocator);
+        try q.append(Node.init(start, 0));
+
         while (q.items.len > 0) {
-            const state = q.pop();
-            if (result.cost > 0 and state.cost > result.cost) {
+            const current = q.pop();
+            if (min_cost > 0 and current.cost > min_cost) {
                 continue;
             }
-            if (seen.get(state.position)) |cost| {
-                if (cost < state.cost) {
+            if (current.state.point.eql(self.end)) {
+                min_cost = current.cost;
+                continue;
+            }
+            const neightbors = [3]Node{
+                Node.init(current.state.next(), current.cost + 1),
+                Node.init(current.state.turn(true).next(), current.cost + 1001),
+                Node.init(current.state.turn(false).next(), current.cost + 1001),
+            };
+            for (neightbors) |next| {
+                if (self.grid.get(next.state.point).? != '.') {
                     continue;
                 }
-            } else {
-                try seen.put(state.position, state.cost);
-            }
-            if (state.position.point.eql(self.end)) {
-                result.cost = state.cost;
-                for (state.path.items) |point| {
-                    try result.seen.add(point);
+                const entry = try distances.getOrPut(next.state);
+                if (!entry.found_existing or next.cost < entry.value_ptr.*) {
+                    entry.value_ptr.* = next.cost;
+                    try q.insert(get_index(&q, next.cost), next);
+                    var paths = Paths.init(allocator);
+                    for (state_paths.get(current.state).?.items) |p| {
+                        var path = try p.clone();
+                        try path.append(next.state.point);
+                        try paths.append(path);
+                    }
+                    try state_paths.put(next.state, paths);
+                } else if (next.cost == entry.value_ptr.*) {
+                    var paths = state_paths.getPtr(next.state).?;
+                    for (state_paths.get(current.state).?.items) |p| {
+                        var path = try p.clone();
+                        try path.append(next.state.point);
+                        try paths.append(path);
+                    }
                 }
-            } else {
-                try self.append(&q, try state.forward());
-                try self.append(&q, try state.turn(state.position.direction.left()));
-                try self.append(&q, try state.turn(state.position.direction.right()));
             }
         }
-        return result;
-    }
 
-    fn append(self: Maze, q: *std.ArrayList(State), state: State) !void {
-        if (self.grid.get(state.position.point).? != '.') {
-            return {};
+        var seen = Set(Point).init(allocator);
+        var it = state_paths.iterator();
+        while (it.next()) |entry| {
+            if (!entry.key_ptr.point.eql(self.end)) {
+                continue;
+            }
+            for (entry.value_ptr.items) |path| {
+                for (path.items) |point| {
+                    try seen.add(point);
+                }
+            }
         }
-        try q.insert(get_index(q, state), state);
+        return .{ min_cost, seen };
     }
 
-    fn get_index(q: *std.ArrayList(State), state: State) usize {
+    fn get_index(q: *std.ArrayList(Node), cost: usize) usize {
         var lo: usize = 0;
         var hi: usize = q.items.len;
         while (lo < hi) {
             const mid = (lo + hi) / 2;
             const value = q.items[mid].cost;
-            if (value < state.cost) {
+            if (value < cost) {
                 hi = mid;
             } else {
                 lo = mid + 1;
@@ -145,6 +152,6 @@ fn solution() !void {
     const lines = try Reader.init().string_lines();
     const maze = try Maze.init(lines);
     const result = try maze.solve();
-    answer.part1(usize, 107512, result.cost);
-    answer.part2(usize, 561, result.seen.size());
+    answer.part1(usize, 107512, result[0]);
+    answer.part2(usize, 561, result[1].size());
 }
