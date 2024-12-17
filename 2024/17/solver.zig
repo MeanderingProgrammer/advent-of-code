@@ -132,8 +132,8 @@ fn recursive_backtracking(computer: *Computer, a: usize, i: usize) !?usize {
     //  1) 5,5 -> out.add(b % 8)        add bottom 3 bits of "b" to the output
     //  2) 2,4 -> b = a % 8             bottom 3 bits of "b" are determined by bottom 3 bits
     //                                  of "a" + some math on the other bits of "a" not shown
-    //  1) 3,0 -> if (a != 0): ip = 0   loop program until "a" == 0
-    //  2) 0,3 -> a = a / 8             on each iteration bottom 3 bits of "a" are removed
+    //  3) 0,3 -> a = a / 8             on each iteration bottom 3 bits of "a" are removed
+    //  4) 3,0 -> if (a != 0): ip = 0   loop program until "a" == 0
     //
     // Putting this altogether it means that the last value in the output depends only on
     // the top 3 bits of "a", the second to last value depends depends on the top 6 bits,
