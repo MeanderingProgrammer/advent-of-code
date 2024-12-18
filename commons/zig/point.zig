@@ -116,7 +116,11 @@ pub const Point = struct {
         };
     }
 
-    pub fn eql(self: Point, other: Point) bool {
-        return self.x == other.x and self.y == other.y;
+    pub fn eql(self: Point, other: ?Point) bool {
+        if (other == null) {
+            return false;
+        }
+        const o = other.?;
+        return self.x == o.x and self.y == o.y;
     }
 };

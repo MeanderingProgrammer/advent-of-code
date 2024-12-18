@@ -77,7 +77,11 @@ fn follow(
             state.point = next;
         }
     }
-    Some(seen.into_iter().map(|state| state.point).collect())
+    Some(if obstacle.is_none() {
+        seen.into_iter().map(|state| state.point).collect()
+    } else {
+        FxHashSet::default()
+    })
 }
 
 fn obstacles(grid: &Grid<Element>, start: &Point, options: FxHashSet<Point>) -> usize {
