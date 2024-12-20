@@ -75,14 +75,14 @@ const Maze = struct {
                 try end_seen.extend(current_seen);
                 continue;
             }
-            const neightbors = [3]struct { State, usize }{
+            const neighbors = [3]struct { State, usize }{
                 .{ current.next(), 1 },
                 .{ current.turn(true).next(), 1001 },
                 .{ current.turn(false).next(), 1001 },
             };
-            for (neightbors) |neightbor| {
-                const next = neightbor[0];
-                const cost = current_cost + neightbor[1];
+            for (neighbors) |neighbor| {
+                const next = neighbor[0];
+                const cost = current_cost + neighbor[1];
                 if (self.grid.get(next.point).? != '.') {
                     continue;
                 }

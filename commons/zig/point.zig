@@ -123,4 +123,8 @@ pub const Point = struct {
         const o = other.?;
         return self.x == o.x and self.y == o.y;
     }
+
+    pub fn manhattan(self: Point, other: Point) u64 {
+        return @abs(self.x - other.x) + @abs(self.y - other.y);
+    }
 };
