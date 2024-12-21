@@ -101,11 +101,11 @@ impl<T> Grid<T>
 where
     T: PartialEq,
 {
-    pub fn points_with_value(&self, target: T) -> Vec<&Point> {
+    pub fn get_values(&self, target: T) -> Vec<Point> {
         self.grid
             .iter()
             .filter(|(_, value)| value == &&target)
-            .map(|(point, _)| point)
+            .map(|(point, _)| point.clone())
             .collect()
     }
 }

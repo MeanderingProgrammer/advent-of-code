@@ -108,7 +108,7 @@ fn simulate_until_end() -> (i64, usize) {
 fn get_elves() -> Elves {
     let grid = Reader::default().read_grid(Some);
     Elves {
-        locations: grid.points_with_value('#').into_iter().cloned().collect(),
+        locations: grid.get_values('#').into_iter().collect(),
         round: 0,
     }
 }

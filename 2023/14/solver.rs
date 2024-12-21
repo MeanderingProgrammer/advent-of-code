@@ -95,11 +95,7 @@ impl Platform {
     }
 
     fn rocks(&self) -> Vec<Point> {
-        self.grid
-            .points_with_value(Value::Round)
-            .into_iter()
-            .cloned()
-            .collect()
+        self.grid.get_values(Value::Round)
     }
 }
 

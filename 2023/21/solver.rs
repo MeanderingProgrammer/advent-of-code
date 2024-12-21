@@ -14,10 +14,9 @@ struct Garden {
 
 impl Garden {
     fn new(grid: Grid<char>) -> Self {
-        let starts = grid.points_with_value('S');
         Self {
-            start: starts[0].clone(),
-            walls: grid.points_with_value('#').into_iter().cloned().collect(),
+            start: grid.get_values('S')[0].clone(),
+            walls: grid.get_values('#').into_iter().collect(),
             len: grid.bounds().upper.x + 1,
         }
     }

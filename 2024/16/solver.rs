@@ -39,8 +39,8 @@ struct Maze {
 
 impl Maze {
     fn new(mut grid: Grid<char>) -> Self {
-        let start = grid.points_with_value('S')[0].clone();
-        let end = grid.points_with_value('E')[0].clone();
+        let start = grid.get_values('S')[0].clone();
+        let end = grid.get_values('E')[0].clone();
         grid.add(start.clone(), '.');
         grid.add(end.clone(), '.');
         Self { grid, start, end }

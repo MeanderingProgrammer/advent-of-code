@@ -28,9 +28,9 @@ impl GraphSearch for Search {
 impl Search {
     fn shortest(&self, start_value: i64) -> Option<i64> {
         self.grid
-            .points_with_value(start_value)
+            .get_values(start_value)
             .into_iter()
-            .filter_map(|start| self.bfs(start.clone()))
+            .filter_map(|start| self.bfs(start))
             .min()
     }
 }
@@ -48,10 +48,10 @@ fn solution() {
 fn get_search() -> (Search, Point) {
     let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
 
-    let start = grid.points_with_value(get_offset('S'))[0].clone();
+    let start = grid.get_values(get_offset('S'))[0].clone();
     grid.add(start.clone(), get_offset('a'));
 
-    let end = grid.points_with_value(get_offset('E'))[0].clone();
+    let end = grid.get_values(get_offset('E'))[0].clone();
     grid.add(end.clone(), get_offset('z'));
 
     (Search { grid, end }, start)

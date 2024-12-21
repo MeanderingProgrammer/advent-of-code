@@ -33,7 +33,7 @@ struct Game {
 }
 
 impl Game {
-    fn add(&mut self, positions: Vec<&Point>, character: Character) {
+    fn add(&mut self, positions: Vec<Point>, character: Character) {
         positions.into_iter().for_each(|position| {
             self.characters.insert(position.clone(), character.clone());
             self.open_paths.insert(position.clone());
@@ -195,11 +195,11 @@ fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
     let grid = Reader::default().read_grid(Some);
     let mut game = Game {
         characters: FxHashMap::default(),
-        open_paths: grid.points_with_value('.').into_iter().cloned().collect(),
+        open_paths: grid.get_values('.').into_iter().collect(),
         until_elf_death,
     };
     game.add(
-        grid.points_with_value('G'),
+        grid.get_values('G'),
         Character {
             team: Team::Goblin,
             damage: 3,
@@ -207,7 +207,7 @@ fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
         },
     );
     game.add(
-        grid.points_with_value('E'),
+        grid.get_values('E'),
         Character {
             team: Team::Elf,
             damage: elf_damage,

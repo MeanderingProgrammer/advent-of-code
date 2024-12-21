@@ -45,7 +45,7 @@ impl SandFlow {
     }
 
     fn amount_sand(&self) -> usize {
-        self.grid.points_with_value('O').len()
+        self.grid.get_values('O').len()
     }
 }
 
