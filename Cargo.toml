@@ -362,6 +362,10 @@ path = "2024/16/solver.rs"
 name = "aoc_2024_20"
 path = "2024/20/solver.rs"
 
+[[bin]]
+name = "aoc_2024_22"
+path = "2024/22/solver.rs"
+
 [[test]]
 name = "aoc_lib"
 path = "commons/rust/tests/lib.rs"

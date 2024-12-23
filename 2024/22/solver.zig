@@ -29,7 +29,7 @@ const Secret = struct {
                     self.changes.items[i - 3],
                     self.changes.items[i - 2],
                     self.changes.items[i - 1],
-                    self.changes.items[i - 0],
+                    self.changes.items[i],
                 };
                 if (!self.sequences.contains(sequence)) {
                     try self.sequences.put(sequence, @intCast(end));
