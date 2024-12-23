@@ -9,11 +9,13 @@ const Strings = Set([]const u8);
 const Graph = struct {
     nodes: Strings,
     edges: std.StringHashMap(Strings),
+    cliques: std.ArrayList(Strings),
 
     fn init() Graph {
         return .{
             .nodes = Strings.init(allocator),
             .edges = std.StringHashMap(Strings).init(allocator),
+            .cliques = std.ArrayList(Strings).init(allocator),
         };
     }
 
@@ -34,30 +36,37 @@ const Graph = struct {
         try entry.value_ptr.add(to);
     }
 
-    fn bron_kerbosch(self: Graph, r: Strings, p: *Strings, x: *Strings, result: *std.ArrayList(Strings)) !void {
+    // https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+    fn bron_kerbosch(self: *Graph, r: Strings, p: *Strings, x: *Strings) !void {
+        // if P and X are both empty then
         if (p.size() == 0 and x.size() == 0) {
-            try result.append(r);
+            // report R as a maximal clique
+            try self.cliques.append(r);
             return;
         }
-
-        // Choose an arbitrary node as the pivot
-        var joined = try p.clone();
-        try joined.extend(x.*);
-        const pivot = joined.next();
-
-        // Only consider nodes not connected to the pivot
-        var difference = try p.clone();
-        difference.difference(self.edges.get(pivot).?);
-
-        var it = difference.iterator();
-        while (it.next()) |node| {
-            const v = node.*;
-            var rc = try r.clone();
-            try rc.add(v);
-            var pc = try p.intersection(self.edges.get(v).?);
-            var xc = try x.intersection(self.edges.get(v).?);
-            try self.bron_kerbosch(rc, &pc, &xc, result);
+        // choose a pivot vertex u in P ⋃ X
+        var p_x = try p.clone();
+        try p_x.extend(x.*);
+        const u = p_x.next();
+        // P \ N(u)
+        var p_nu = try p.clone();
+        p_nu.difference(self.edges.get(u).?);
+        // for each vertex v in P \ N(u) do
+        var it = p_nu.iterator();
+        while (it.next()) |vertex| {
+            const v = vertex.*;
+            // R ⋃ {v}
+            var r_v = try r.clone();
+            try r_v.add(v);
+            // P ⋂ N(v)
+            var p_nv = try p.intersection(self.edges.get(v).?);
+            // X ⋂ N(v)
+            var x_nv = try x.intersection(self.edges.get(v).?);
+            // BronKerbosch(R ⋃ {v}, P ⋂ N(v), X ⋂ N(v))
+            try self.bron_kerbosch(r_v, &p_nv, &x_nv);
+            // P := P \ {v}
             p.remove(v);
+            // X := X ⋃ {v}
             try x.add(v);
         }
     }
@@ -82,19 +91,28 @@ fn get_cliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
     const r = Strings.init(allocator);
     var p = try graph.nodes.clone();
     var x = Strings.init(allocator);
-    var result = std.ArrayList(Strings).init(allocator);
-    try graph.bron_kerbosch(r, &p, &x, &result);
-    return result;
+    try graph.bron_kerbosch(r, &p, &x);
+    return graph.cliques;
 }
 
 fn part1(cliques: std.ArrayList(Strings)) !usize {
     var result = Strings.init(allocator);
     for (cliques.items) |clique| {
-        if (clique.size() >= 3) {
+        if (clique.size() >= 3 and has_chief(clique)) {
             try combinations(&result, try clique.list());
         }
     }
     return result.size();
+}
+
+fn has_chief(clique: Strings) bool {
+    var it = clique.iterator();
+    while (it.next()) |v| {
+        if (v.*[0] == 't') {
+            return true;
+        }
+    }
+    return false;
 }
 
 fn combinations(result: *Strings, clique: std.ArrayList([]const u8)) !void {
