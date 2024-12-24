@@ -1,7 +1,6 @@
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
 
