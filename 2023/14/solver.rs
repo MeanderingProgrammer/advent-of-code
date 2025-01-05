@@ -108,5 +108,5 @@ fn solution() {
         grid: Reader::default().read_grid(Value::from_ch),
     };
     answer::part1(109654, grid.clone().run_once());
-    answer::part1(94876, grid.clone().run_n(1000000000));
+    answer::part2(94876, grid.clone().run_n(1000000000));
 }
