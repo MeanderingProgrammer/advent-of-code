@@ -1,32 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-
-#[derive(Debug, Clone)]
-struct Stats {
-    latest: usize,
-    previous: Option<usize>,
-}
-
-impl Stats {
-    fn new(turn: usize) -> Self {
-        Self {
-            latest: turn,
-            previous: None,
-        }
-    }
-
-    fn next(&self) -> usize {
-        match self.previous {
-            Some(value) => self.latest - value,
-            None => 0,
-        }
-    }
-
-    fn said(&mut self, turn: usize) {
-        self.previous = Some(self.latest);
-        self.latest = turn;
-    }
-}
+use std::collections::HashMap;
 
 fn main() {
     answer::timer(solution);
@@ -38,22 +12,26 @@ fn solution() {
         .into_iter()
         .map(|value| value as usize)
         .collect();
-    answer::part1(240, run(&values, 2_020));
-    answer::part2(505, run(&values, 30_000_000));
+    answer::part1(240, run(&values, 2_020, 1_000));
+    answer::part2(505, run(&values, 30_000_000, 5_000_000));
 }
 
-fn run(values: &[usize], n: usize) -> usize {
-    let mut number_stats: Vec<Option<Stats>> = vec![None; n];
-    values.iter().enumerate().for_each(|(i, value)| {
-        number_stats[*value] = Some(Stats::new(i));
-    });
-    let mut number: usize = *values.last().unwrap();
-    for i in values.len()..n {
-        number = number_stats.get(number).unwrap().as_ref().unwrap().next();
-        match number_stats.get_mut(number).unwrap() {
-            Some(stats) => stats.said(i),
-            None => number_stats[number] = Some(Stats::new(i)),
-        };
+fn run(values: &[usize], n: usize, split: usize) -> usize {
+    let mut small: Vec<u32> = vec![0; split];
+    let mut large: HashMap<usize, u32> = HashMap::default();
+    for i in 0..values.len() - 1 {
+        small[values[i]] = (i + 1) as u32;
     }
-    number
+    let mut current: usize = *values.last().unwrap();
+    for i in values.len()..n {
+        let previous = if current < split {
+            let value = small[current];
+            small[current] = i as u32;
+            value as usize
+        } else {
+            large.insert(current, i as u32).unwrap_or(0) as usize
+        };
+        current = if previous == 0 { 0 } else { i - previous };
+    }
+    current
 }

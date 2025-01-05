@@ -18,18 +18,8 @@ enum Value {
     D,
 }
 
-impl Value {
-    fn from_char(ch: char) -> Option<Self> {
-        match ch {
-            'A' => Some(Self::A),
-            'B' => Some(Self::B),
-            'C' => Some(Self::C),
-            'D' => Some(Self::D),
-            _ => None,
-        }
-    }
-
-    fn from_point(point: &Point) -> Self {
+impl From<&Point> for Value {
+    fn from(point: &Point) -> Self {
         let alley = match point.x {
             3 => Self::A,
             5 => Self::B,
@@ -41,6 +31,18 @@ impl Value {
             Self::Doorway
         } else {
             alley
+        }
+    }
+}
+
+impl Value {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            'A' => Some(Self::A),
+            'B' => Some(Self::B),
+            'C' => Some(Self::C),
+            'D' => Some(Self::D),
+            _ => None,
         }
     }
 
@@ -55,7 +57,7 @@ impl Value {
         .unwrap()
     }
 
-    fn cost(&self) -> i64 {
+    fn cost(&self) -> Option<i64> {
         match self {
             Self::A => Some(1),
             Self::B => Some(10),
@@ -63,173 +65,172 @@ impl Value {
             Self::D => Some(1000),
             _ => None,
         }
-        .unwrap()
     }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct Character {
+struct Pod {
     value: Value,
-    moved: bool,
+    start: bool,
 }
 
-impl Character {
+impl Pod {
     fn new(value: Value) -> Self {
-        Self {
-            value,
-            moved: false,
-        }
+        Self { value, start: true }
     }
 
-    fn at_goal(&self, p: &Point) -> bool {
+    fn done(&self, p: &Point) -> bool {
         self.value.x() == p.x
     }
 
-    fn hallway_to_goal(&self, x1: i64) -> impl Iterator<Item = i64> {
-        x1.min(self.value.x()) + 1..x1.max(self.value.x())
+    fn crosses(&self, x1: i64) -> impl Iterator<Item = i64> {
+        let x2 = self.value.x();
+        x1.min(x2) + 1..x1.max(x2)
     }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
-    characters: BTreeMap<Point, Character>,
+    pods: BTreeMap<Point, Pod>,
 }
 
 impl State {
     fn apply(&self, start: &Point, end: Point) -> (Self, i64) {
-        let mut result = self.characters.clone();
+        let mut pods = self.pods.clone();
+        let mut pod = pods.remove(start).unwrap();
 
-        let mut character = result.remove(start).unwrap();
-        character.moved = true;
-
-        let cost = character.value.cost();
-        // Movements along x-axis work as usual. However, along the y-axis we know we
-        // need to go up to the Hallway, then back down to our desired level.
-        // So if the hallway is at y = 1, and we move from y = 4 to y = 2, what really
-        // happens is we go from 4 -> 1, then 1 -> 2.
+        let cost = pod.value.cost().unwrap();
+        // Movement along x-axis work as usual. However, along the y-axis we need
+        // to go up to the hallway, then back down to our desired level.
+        // So if the hallway is at y = 1, and we move from y = 4 to y = 2, what
+        // really happens is we go from 4 -> 1 then 1 -> 2.
         let distance = (start.x - end.x).abs() + (start.y - HALLWAY) + (end.y - HALLWAY);
 
-        result.insert(end, character);
+        pod.start = false;
+        pods.insert(end, pod);
 
-        (State { characters: result }, cost * distance)
+        (Self { pods }, cost * distance)
     }
 
-    fn destinations(&self, board: &Board, start: &Point) -> Vec<Point> {
-        let character = &self.characters[start];
-
-        let mut queue = VecDeque::new();
-        queue.push_back(start.clone());
-        let mut seen = FxHashSet::default();
-
-        let mut destinations = Vec::new();
-        while let Some(destination) = queue.pop_back() {
-            if seen.contains(&destination) {
-                continue;
-            }
-            seen.insert(destination.clone());
-
-            let valid = self.valid(character, &destination, board.room_size);
-            if valid {
-                if destination.y > HALLWAY {
-                    // If we can get into the room always pick just this move
-                    return vec![destination];
+    fn room(&self, x: i64) -> Option<i64> {
+        let mut count = 0;
+        for (point, pod) in self.pods.iter() {
+            if point.x == x {
+                if pod.value.x() != x {
+                    return None;
                 } else {
-                    destinations.push(destination.clone());
-                }
-            }
-
-            for adjacent in &board.graph[&destination] {
-                if !self.characters.contains_key(adjacent) {
-                    queue.push_back(adjacent.clone());
+                    count += 1;
                 }
             }
         }
-        destinations
-    }
-
-    fn valid(&self, character: &Character, end: &Point, room_size: i64) -> bool {
-        let end_value = Value::from_point(end);
-        match end_value {
-            // Can never stop outside of a room
-            Value::Doorway => false,
-            Value::Hallway => {
-                if character.moved {
-                    // Can not move to hallway once we have already been moved
-                    false
-                } else {
-                    // Here we detect "deadlock", which occurs when we put our character in the Hallway
-                    // and this blocks a character from reaching their room who is in turn blocking us
-                    character.hallway_to_goal(end.x).all(|x| {
-                        self.characters
-                            .get(&Point { x, y: HALLWAY })
-                            .map(|other| !other.hallway_to_goal(x).any(|value| value == end.x))
-                            .unwrap_or(true)
-                    })
-                }
-            }
-            _ => {
-                if character.value != end_value {
-                    // If this room is for another character then we cannot enter
-                    false
-                } else {
-                    // Otherwise it is the room for this character, we need to make sure that:
-                    // 1) Only valid characters are in the room
-                    // 2) That we go to the correct point in the room, i.e. as far back as possible
-                    let in_room = self.in_room(&character.value);
-                    let num_in_room = in_room.len() as i64;
-                    let need_to_wait = in_room.into_iter().any(|other| other != &character.value);
-                    if need_to_wait {
-                        // At least one character in the room needs to leave
-                        false
-                    } else {
-                        end.y == room_size - num_in_room + 1
-                    }
-                }
-            }
-        }
-    }
-
-    fn in_room(&self, value: &Value) -> Vec<&Value> {
-        self.characters
-            .iter()
-            .filter_map(|(point, character)| {
-                if point.x == value.x() {
-                    Some(&character.value)
-                } else {
-                    None
-                }
-            })
-            .collect()
+        Some(count)
     }
 }
 
 #[derive(Debug)]
 struct Board {
     graph: FxHashMap<Point, Vec<Point>>,
-    room_size: i64,
+    size: i64,
 }
 
 impl Dijkstra for Board {
     type T = State;
 
     fn done(&self, state: &State) -> bool {
-        state
-            .characters
-            .iter()
-            .all(|(point, character)| character.at_goal(point))
+        state.pods.iter().all(|(point, pod)| pod.done(point))
     }
 
     fn neighbors(&self, state: &State) -> impl Iterator<Item = (State, i64)> {
         state
-            .characters
+            .pods
             .iter()
-            .filter(|(point, character)| !character.at_goal(point) || !character.moved)
+            .filter(|(start, pod)| !pod.done(start) || pod.start)
             .flat_map(|(start, _)| {
-                state
-                    .destinations(self, start)
+                self.options(state, start)
                     .into_iter()
                     .map(|end| state.apply(start, end))
             })
+    }
+}
+
+impl Board {
+    fn options(&self, state: &State, start: &Point) -> Vec<Point> {
+        let pod = &state.pods[start];
+        let valid_rooms = [start.x, pod.value.x()];
+
+        let mut seen = FxHashSet::default();
+        let mut options = Vec::new();
+
+        let mut queue = VecDeque::new();
+        queue.push_back(start.clone());
+        while let Some(end) = queue.pop_back() {
+            let in_room = end.y != HALLWAY;
+
+            // Prune branches going into invalid rooms
+            if in_room && !valid_rooms.contains(&end.x) {
+                continue;
+            }
+
+            if seen.contains(&end) {
+                continue;
+            }
+            seen.insert(end.clone());
+
+            if self.valid(state, pod, &end) {
+                if in_room {
+                    // If we can get into the room pick this move
+                    return vec![end];
+                } else {
+                    options.push(end.clone());
+                }
+            }
+
+            for next in &self.graph[&end] {
+                if !state.pods.contains_key(next) {
+                    queue.push_back(next.clone());
+                }
+            }
+        }
+        options
+    }
+
+    fn valid(&self, state: &State, pod: &Pod, end: &Point) -> bool {
+        let end_value = end.into();
+        match end_value {
+            // Never stop outside of a room
+            Value::Doorway => false,
+            Value::Hallway => {
+                if !pod.start {
+                    // Can not move to hallway once we have already been moved
+                    false
+                } else {
+                    // Here we detect "deadlock", which occurs when we put our amphipod
+                    // in the Hallway and this blocks an amphipod from reaching their
+                    // room who is in turn blocking us
+                    pod.crosses(end.x).all(|x| {
+                        state
+                            .pods
+                            .get(&Point::new(x, HALLWAY))
+                            .map(|o| !o.crosses(x).any(|o_x| o_x == end.x))
+                            .unwrap_or(true)
+                    })
+                }
+            }
+            _ => {
+                if pod.value != end_value {
+                    // If this room is for another amphipod then we cannot enter
+                    false
+                } else {
+                    // Must be the room for this amphipod, need to make sure that:
+                    // 1) Only valid amphipods are in the room
+                    // 2) We go to the correct point in the room, as far back as possible
+                    match state.room(pod.value.x()) {
+                        None => false,
+                        Some(count) => end.y == self.size + HALLWAY - count,
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -272,14 +273,14 @@ fn get_board(rows: &[String]) -> Board {
     });
     Board {
         graph: grid.to_graph(),
-        room_size: grid.bounds().upper.y - 1,
+        size: grid.bounds().upper.y - 1,
     }
 }
 
 fn get_state(rows: &[String]) -> State {
-    let grid = Grid::from_lines(rows, |_, ch| Value::from_char(ch).map(Character::new));
+    let grid = Grid::from_lines(rows, |_, ch| Value::from_char(ch).map(Pod::new));
     State {
-        characters: grid
+        pods: grid
             .points()
             .into_iter()
             .map(|point| (point.clone(), grid.get(point).clone()))

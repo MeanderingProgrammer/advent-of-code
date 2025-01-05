@@ -40,34 +40,29 @@ type Rotation func(Point) Point
 
 var rotations = []Rotation{
 	func(point Point) Point { return Point{+point.x, +point.y, +point.z} },
-	func(point Point) Point { return Point{-point.x, -point.y, +point.z} },
-	func(point Point) Point { return Point{+point.y, -point.x, +point.z} },
-	func(point Point) Point { return Point{-point.y, +point.x, +point.z} },
-
-	func(point Point) Point { return Point{-point.x, +point.y, -point.z} },
 	func(point Point) Point { return Point{+point.x, -point.y, -point.z} },
-	func(point Point) Point { return Point{+point.y, +point.x, -point.z} },
-	func(point Point) Point { return Point{-point.y, -point.x, -point.z} },
-
 	func(point Point) Point { return Point{+point.x, +point.z, -point.y} },
-	func(point Point) Point { return Point{-point.x, +point.z, +point.y} },
-	func(point Point) Point { return Point{+point.y, +point.z, +point.x} },
-	func(point Point) Point { return Point{-point.y, +point.z, -point.x} },
-
 	func(point Point) Point { return Point{+point.x, -point.z, +point.y} },
+	func(point Point) Point { return Point{-point.x, +point.y, -point.z} },
+	func(point Point) Point { return Point{-point.x, -point.y, +point.z} },
+	func(point Point) Point { return Point{-point.x, +point.z, +point.y} },
 	func(point Point) Point { return Point{-point.x, -point.z, -point.y} },
-	func(point Point) Point { return Point{-point.y, -point.z, +point.x} },
+	func(point Point) Point { return Point{+point.y, -point.x, +point.z} },
+	func(point Point) Point { return Point{+point.y, +point.x, -point.z} },
+	func(point Point) Point { return Point{+point.y, +point.z, +point.x} },
 	func(point Point) Point { return Point{+point.y, -point.z, -point.x} },
-
-	func(point Point) Point { return Point{+point.z, -point.x, -point.y} },
-	func(point Point) Point { return Point{+point.z, +point.x, +point.y} },
+	func(point Point) Point { return Point{-point.y, +point.x, +point.z} },
+	func(point Point) Point { return Point{-point.y, -point.x, -point.z} },
+	func(point Point) Point { return Point{-point.y, +point.z, -point.x} },
+	func(point Point) Point { return Point{-point.y, -point.z, +point.x} },
 	func(point Point) Point { return Point{+point.z, +point.y, -point.x} },
 	func(point Point) Point { return Point{+point.z, -point.y, +point.x} },
-
-	func(point Point) Point { return Point{-point.z, +point.x, -point.y} },
-	func(point Point) Point { return Point{-point.z, -point.x, +point.y} },
+	func(point Point) Point { return Point{+point.z, +point.x, +point.y} },
+	func(point Point) Point { return Point{+point.z, -point.x, -point.y} },
 	func(point Point) Point { return Point{-point.z, +point.y, +point.x} },
 	func(point Point) Point { return Point{-point.z, -point.y, -point.x} },
+	func(point Point) Point { return Point{-point.z, +point.x, -point.y} },
+	func(point Point) Point { return Point{-point.z, -point.x, +point.y} },
 }
 
 type Points map[Point]bool
@@ -185,7 +180,7 @@ func getScanners() []Scanner {
 			points[point] = true
 		}
 		scanner := Scanner{
-			// Each scanner is assumed to be at the origin relative to itself
+			// Each scanner is assumed to be at the origin initially
 			positions: Points{{0, 0, 0}: true},
 			points:    points,
 		}

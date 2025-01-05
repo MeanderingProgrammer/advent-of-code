@@ -269,6 +269,18 @@ impl Add<&Direction3d> for &Point3d {
     }
 }
 
+impl Mul<i64> for &Point3d {
+    type Output = Point3d;
+
+    fn mul(self, rhs: i64) -> Point3d {
+        Point3d {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
 impl Point3d {
     pub fn new(x: i64, y: i64, z: i64) -> Self {
         Self { x, y, z }
