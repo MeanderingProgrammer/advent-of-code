@@ -12,6 +12,8 @@ class Java(Language):
 
     @override
     def cmd(self) -> str:
+        # Supports color with --console=rich
+        # However it destroys the output
         return "gradle"
 
     @override

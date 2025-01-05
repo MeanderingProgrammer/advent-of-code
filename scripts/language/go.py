@@ -12,6 +12,7 @@ class Go(Language):
 
     @override
     def cmd(self) -> str:
+        # Does not support color output
         return "go"
 
     @override
