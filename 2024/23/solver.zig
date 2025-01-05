@@ -4,6 +4,7 @@ const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
 const allocator = std.heap.page_allocator;
+const rand = std.crypto.random;
 
 const Strings = Set([]const u8);
 const Graph = struct {
@@ -45,9 +46,8 @@ const Graph = struct {
             return;
         }
         // choose a pivot vertex u in P ⋃ X
-        var p_x = try p.clone();
-        try p_x.extend(x.*);
-        const u = p_x.next();
+        const i = rand.uintLessThan(usize, p.size() + x.size());
+        const u = if (i < p.size()) p.nth(i) else x.nth(i - p.size());
         // P \ N(u)
         var p_nu = try p.clone();
         p_nu.difference(self.edges.get(u).?);

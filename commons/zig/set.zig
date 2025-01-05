@@ -73,8 +73,11 @@ pub fn Set(comptime T: type) type {
             return self.map.keyIterator();
         }
 
-        pub fn next(self: Self) T {
+        pub fn nth(self: Self, n: usize) T {
             var it = self.iterator();
+            for (0..n) |_| {
+                _ = it.next();
+            }
             return it.next().?.*;
         }
 
