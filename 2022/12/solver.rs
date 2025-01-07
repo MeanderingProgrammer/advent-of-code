@@ -13,6 +13,10 @@ struct Search {
 impl GraphSearch for Search {
     type T = Point;
 
+    fn first(&self) -> bool {
+        true
+    }
+
     fn done(&self, node: &Point) -> bool {
         node == &self.end
     }
@@ -30,7 +34,7 @@ impl Search {
         self.grid
             .get_values(start_value)
             .into_iter()
-            .filter_map(|start| self.bfs(start))
+            .filter_map(|start| self.bfs(start).first().cloned())
             .min()
     }
 }
@@ -41,7 +45,7 @@ fn main() {
 
 fn solution() {
     let (search, start) = get_search();
-    answer::part1(472, search.bfs(start).unwrap());
+    answer::part1(472, search.bfs(start).first().cloned().unwrap());
     answer::part2(465, search.shortest(get_offset('a')).unwrap());
 }
 

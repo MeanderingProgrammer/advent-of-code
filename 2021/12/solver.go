@@ -49,14 +49,14 @@ func (path Path) contains(destination Cave) bool {
 	return util.Contains(path.caves, destination)
 }
 
-func (path Path) containsLower() bool {
-	lowerCounts := make(map[Cave]int)
+func (path Path) duplicate() bool {
+	lower := make(map[Cave]bool)
 	for _, cave := range path.caves {
 		if !cave.isBig() {
-			lowerCounts[cave]++
-			if lowerCounts[cave] > 1 {
+			if lower[cave] {
 				return true
 			}
+			lower[cave] = true
 		}
 	}
 	return false
@@ -114,7 +114,7 @@ func part2(path Path, destination Cave) bool {
 		return true
 	} else if destination == "start" {
 		return false
-	} else if !path.containsLower() {
+	} else if !path.duplicate() {
 		return true
 	} else {
 		return !path.contains(destination)

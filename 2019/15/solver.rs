@@ -119,6 +119,10 @@ struct Search {
 impl GraphSearch for Search {
     type T = Point;
 
+    fn first(&self) -> bool {
+        true
+    }
+
     fn done(&self, node: &Point) -> bool {
         self.grid.get(node).unwrap().is_oxygen()
     }
@@ -135,7 +139,7 @@ impl Search {
         self.grid
             .iter()
             .filter(|(_, value)| value.is_empty())
-            .map(|(position, _)| self.bfs(position.clone()).unwrap())
+            .map(|(position, _)| self.bfs(position.clone()).first().cloned().unwrap())
             .max()
     }
 }
@@ -150,6 +154,6 @@ fn solution() {
     let search = Search {
         grid: computer.bus.grid,
     };
-    answer::part1(224, search.bfs(Point::default()).unwrap());
+    answer::part1(224, search.bfs(Point::default()).first().cloned().unwrap());
     answer::part1(284, search.time_for_air().unwrap());
 }
