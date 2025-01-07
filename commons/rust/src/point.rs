@@ -28,6 +28,16 @@ impl FromStr for Direction {
 }
 
 impl Direction {
+    pub fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '^' => Some(Self::Up),
+            'v' => Some(Self::Down),
+            '<' => Some(Self::Left),
+            '>' => Some(Self::Right),
+            _ => None,
+        }
+    }
+
     pub fn to_point(&self) -> Point {
         match self {
             Self::Up => Point::new(0, -1),
