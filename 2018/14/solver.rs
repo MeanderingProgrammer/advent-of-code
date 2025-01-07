@@ -3,57 +3,67 @@ use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Recipes {
+    e1: usize,
+    e2: usize,
     scores: Vec<u8>,
-    elf_1: usize,
-    elf_2: usize,
-    digits: Vec<u8>,
+    goal: Vec<u8>,
 }
 
 impl Recipes {
-    fn new(goal: usize) -> Self {
-        let digits = goal
-            .to_string()
-            .chars()
-            .map(|ch| ch.to_digit(10).unwrap() as u8)
-            .collect();
+    fn new(goal: &str) -> Self {
         Self {
+            e1: 0,
+            e2: 1,
             scores: vec![3, 7],
-            elf_1: 0,
-            elf_2: 1,
-            digits,
+            goal: goal
+                .chars()
+                .map(|ch| ch.to_digit(10).unwrap() as u8)
+                .collect(),
         }
     }
 
-    fn evolve(&mut self) -> String {
-        while !self.found(0) && !self.found(1) {
-            self.step();
-        }
-        self.scores.iter().map(|score| score.to_string()).collect()
+    fn evolve(&mut self) {
+        while !self.step() {}
     }
 
-    fn found(&self, offset: usize) -> bool {
-        let num_scores = self.scores.len();
-        let num_digits = self.digits.len();
-        if num_scores < num_digits + offset {
-            false
+    fn step(&mut self) -> bool {
+        let total = self.scores[self.e1] + self.scores[self.e2];
+        if (total >= 10 && self.append(1)) || self.append(total % 10) {
+            true
         } else {
-            self.digits == self.scores[num_scores - num_digits - offset..num_scores - offset]
+            self.e1 = self.next(self.e1);
+            self.e2 = self.next(self.e2);
+            false
         }
     }
 
-    fn step(&mut self) {
-        let total = self.scores[self.elf_1] + self.scores[self.elf_2];
-        if total >= 10 {
-            self.scores.push(1);
-        }
-        self.scores.push(total % 10);
-        self.elf_1 = self.new_position(self.elf_1);
-        self.elf_2 = self.new_position(self.elf_2);
+    fn append(&mut self, score: u8) -> bool {
+        self.scores.push(score);
+        let (scores, goal) = (self.scores.len(), self.goal.len());
+        scores >= goal && self.goal == self.scores[scores - goal..]
     }
 
-    fn new_position(&self, position: usize) -> usize {
-        let score = self.scores[position] as usize;
-        (position + score + 1) % self.scores.len()
+    fn next(&self, current: usize) -> usize {
+        let (score, scores) = (self.scores[current] as usize, self.scores.len());
+        let result = current + score + 1;
+        if result >= scores {
+            result % scores
+        } else {
+            result
+        }
+    }
+
+    fn part1(&self, start: usize) -> String {
+        self.scores
+            .iter()
+            .skip(start)
+            .take(10)
+            .map(|score| score.to_string())
+            .collect()
+    }
+
+    fn part2(&self) -> usize {
+        self.scores.len() - self.goal.len()
     }
 }
 
@@ -62,9 +72,9 @@ fn main() {
 }
 
 fn solution() {
-    let goal = Reader::default().read_int()[0] as usize;
-    let mut recipes = Recipes::new(goal);
-    let sequence = recipes.evolve();
-    answer::part1("2103141159", &sequence[goal..goal + 10]);
-    answer::part2(20165733, sequence.find(&goal.to_string()).unwrap());
+    let goal = Reader::default().read_line();
+    let mut recipes = Recipes::new(&goal);
+    recipes.evolve();
+    answer::part1("2103141159", &recipes.part1(goal.parse().unwrap()));
+    answer::part2(20165733, recipes.part2());
 }
