@@ -49,18 +49,18 @@ impl Node {
 }
 
 #[derive(Debug)]
-struct Search<'a> {
-    grid: &'a Grid<u32>,
-    target: &'a Point,
+struct Search {
+    grid: Grid<u32>,
+    target: Point,
     resistance: usize,
     max_repeats: usize,
 }
 
-impl<'a> Dijkstra for Search<'a> {
+impl Dijkstra for Search {
     type T = Node;
 
     fn done(&self, node: &Node) -> bool {
-        &node.position == self.target
+        node.position == self.target
     }
 
     fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
@@ -105,10 +105,9 @@ fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i
         position: bounds.lower,
         directions: vec![],
     };
-    let target = &bounds.upper;
     let search = Search {
-        grid,
-        target,
+        grid: grid.clone(),
+        target: bounds.upper,
         resistance,
         max_repeats,
     };

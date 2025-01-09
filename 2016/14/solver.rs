@@ -63,17 +63,14 @@ impl Hasher {
     }
 
     fn repeat(hash: &[u8; 32], size: usize) -> Option<u8> {
-        let mut start = 0;
-        for i in 1..hash.len() {
-            if hash[i] == hash[start] {
-                if i - start == size - 1 {
-                    return Some(hash[i]);
-                }
+        hash.windows(size).find_map(|window| {
+            let first = window[0];
+            if window.iter().all(|&ch| ch == first) {
+                Some(first)
             } else {
-                start = i;
+                None
             }
-        }
-        None
+        })
     }
 }
 
