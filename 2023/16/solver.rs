@@ -3,7 +3,7 @@ use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
-use queues::{IsQueue, Queue};
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
@@ -57,13 +57,13 @@ impl State {
 fn energized(grid: &Grid<char>, start: State) -> usize {
     let mut explored = FxHashSet::default();
     explored.insert(start.clone());
-    let mut q: Queue<State> = Queue::new();
-    q.add(start).unwrap();
-    while q.size() > 0 {
-        let state = q.remove().unwrap();
+    let mut q: VecDeque<State> = VecDeque::default();
+    q.push_back(start);
+    while !q.is_empty() {
+        let state = q.pop_front().unwrap();
         state.next_states(grid).for_each(|state| {
             if explored.insert(state.clone()) {
-                q.add(state).unwrap();
+                q.push_back(state);
             }
         });
     }

@@ -1,8 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point3d;
 use aoc_lib::reader::Reader;
-use queues::{IsQueue, Queue};
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 #[derive(Debug)]
 struct Bound {
@@ -32,14 +31,14 @@ impl Grid {
     fn fill(&self) -> HashSet<Point3d> {
         let mut seen = HashSet::new();
         let bound = self.get_bound();
-        let mut q = Queue::new();
-        q.add(bound.lower.clone()).unwrap();
-        while q.size() != 0 {
-            let point = q.remove().unwrap();
+        let mut q = VecDeque::default();
+        q.push_back(bound.lower.clone());
+        while !q.is_empty() {
+            let point = q.pop_front().unwrap();
             for neighbor in point.neighbors() {
                 if !seen.contains(&neighbor) && self.missing(&neighbor) && bound.contains(&neighbor)
                 {
-                    q.add(neighbor.clone()).unwrap();
+                    q.push_back(neighbor.clone());
                     seen.insert(neighbor.clone());
                 }
             }

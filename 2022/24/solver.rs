@@ -3,7 +3,7 @@ use aoc_lib::grid::{Bound, Grid};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
-use queues::{IsQueue, Queue};
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Blizzard {
@@ -70,14 +70,14 @@ impl Valley {
     }
 
     fn search(&mut self, start: &Point, end: &Point) -> Option<i64> {
-        let mut q: Queue<Point> = Queue::new();
-        q.add(start.clone()).unwrap();
+        let mut q: VecDeque<Point> = VecDeque::default();
+        q.push_back(start.clone());
 
         let mut minutes = 0;
-        while q.size() > 0 {
+        while !q.is_empty() {
             let mut next_states: FxHashSet<Point> = FxHashSet::default();
-            while q.size() > 0 {
-                let current = q.remove().unwrap();
+            while !q.is_empty() {
+                let current = q.pop_front().unwrap();
                 if &current == end {
                     return Some(minutes);
                 }
@@ -97,7 +97,7 @@ impl Valley {
                 .into_iter()
                 .filter(|next_state| !self.hits_blizzard(next_state))
                 .for_each(|next_state| {
-                    q.add(next_state).unwrap();
+                    q.push_back(next_state);
                 });
             minutes += 1;
         }
