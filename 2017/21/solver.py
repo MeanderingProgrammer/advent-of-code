@@ -48,7 +48,7 @@ def get_patterns() -> dict[str, list[str]]:
     return patterns
 
 
-def run_iterations(patterns: dict[str, list[str]], n: int):
+def run_iterations(patterns: dict[str, list[str]], n: int) -> int:
     art = Art([".#.", "..#", "###"])
     for _ in range(n):
         rows: list[str] = []

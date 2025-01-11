@@ -110,6 +110,19 @@ where
     }
 }
 
+impl<T> Grid<T>
+where
+    T: Clone,
+{
+    pub fn transform(&self, f: impl Fn(&Point) -> Point) -> Self {
+        let mut result = Self::default();
+        for (point, value) in self.grid.iter() {
+            result.add(f(point), value.clone());
+        }
+        result
+    }
+}
+
 impl<T> fmt::Display for Grid<T>
 where
     T: ToString,
