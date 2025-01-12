@@ -12,14 +12,13 @@ use nom::{
     sequence::tuple,
     IResult,
 };
-use petgraph::{algo::floyd_warshall::floyd_warshall, graphmap::DiGraphMap};
 use priority_queue::PriorityQueue;
 
 #[derive(Debug)]
 struct Valve {
-    name: String,
+    name: u32,
     flow_rate: u16,
-    leads_to: Vec<String>,
+    leads_to: Vec<u32>,
 }
 
 impl Valve {
@@ -39,11 +38,17 @@ impl Valve {
         Ok((
             input,
             Self {
-                name: name.1.to_string(),
+                name: Self::index(name.1),
                 flow_rate: flow_rate.1,
-                leads_to: valves.iter().map(|valve| valve.to_string()).collect(),
+                leads_to: valves.into_iter().map(Self::index).collect(),
             },
         ))
+    }
+
+    fn index(name: &str) -> u32 {
+        name.char_indices()
+            .map(|(i, ch)| 26u32.pow(i as u32) * ((ch as u32) - ('A' as u32)))
+            .sum()
     }
 }
 
@@ -116,7 +121,7 @@ impl Cave {
                         result
                     }
                 }
-                _ => panic!("Failure"),
+                _ => unreachable!(),
             };
             for (next_state, next_score) in next_states {
                 queue.push_increase(next_state, next_score);
@@ -188,23 +193,18 @@ fn main() {
 
 fn solution() {
     let valves = Reader::default().read(|line| Valve::from_str(line).unwrap().1);
-    let cave = create_cave(valves, "AA");
+    let cave = create_cave(valves, Valve::index("AA"));
     answer::part1(1873, cave.traverse(30, 1));
     answer::part2(2425, cave.traverse(26, 2));
 }
 
-fn create_cave(valves: Vec<Valve>, start: &str) -> Cave {
-    let distance_graph = DiGraphMap::from_edges(valves.iter().flat_map(|valve| {
-        let start = &valve.name;
-        let ends = &valve.leads_to;
-        ends.iter().map(|end| (start.as_str(), end.as_str(), ()))
-    }));
-    let distances = floyd_warshall(&distance_graph, |_| 1).unwrap();
+fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
+    let distances = floyd_warshall(&valves);
 
-    let ordered: Vec<String> = valves
+    let ordered: Vec<u32> = valves
         .iter()
         .filter(|valve| valve.name == start || valve.flow_rate > 0)
-        .map(|valve| valve.name.to_string())
+        .map(|valve| valve.name)
         .sorted()
         .collect();
 
@@ -220,9 +220,40 @@ fn create_cave(valves: Vec<Valve>, start: &str) -> Cave {
         .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1, v2)))
         .filter(|(v1, v2)| v1 != v2)
         .for_each(|(v1, v2)| {
-            let weight = distances.get(&(&ordered[v1], &ordered[v2])).unwrap();
+            let weight = distances.get(&(ordered[v1], ordered[v2])).unwrap();
             graph.entry(v1 as u8).or_default().push((v2 as u8, *weight));
         });
 
     Cave { graph, valve_flow }
+}
+
+fn floyd_warshall(valves: &[Valve]) -> FxHashMap<(u32, u32), u16> {
+    let mut dist = FxHashMap::default();
+    for v1 in valves.iter() {
+        for v2 in valves.iter() {
+            dist.insert((v1.name, v2.name), u16::MAX);
+        }
+    }
+    for v in valves.iter() {
+        dist.insert((v.name, v.name), 0);
+    }
+    for v in valves.iter() {
+        for e in v.leads_to.iter() {
+            dist.insert((v.name, *e), 1);
+        }
+    }
+    for k in valves.iter() {
+        for i in valves.iter() {
+            for j in valves.iter() {
+                let ik = *dist.get(&(i.name, k.name)).unwrap();
+                let kj = *dist.get(&(k.name, j.name)).unwrap();
+                let ij = *dist.get(&(i.name, j.name)).unwrap();
+                let (result, overflow) = ik.overflowing_add(kj);
+                if !overflow && ij > result {
+                    dist.insert((i.name, j.name), result);
+                }
+            }
+        }
+    }
+    dist
 }
