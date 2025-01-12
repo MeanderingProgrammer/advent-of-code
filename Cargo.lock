@@ -8,7 +8,6 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "fxhash",
- "id_tree",
  "itertools",
  "md5",
  "nom",
@@ -235,15 +234,6 @@ name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
-
-[[package]]
-name = "id_tree"
-version = "1.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bcd9db8dd5be8bde5a2624ed4b2dfb74368fe7999eb9c4940fd3ca344b61071a"
-dependencies = [
- "snowflake",
-]
 
 [[package]]
 name = "indexmap"
@@ -495,12 +485,6 @@ dependencies = [
  "ryu",
  "serde",
 ]
-
-[[package]]
-name = "snowflake"
-version = "1.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27207bb65232eda1f588cf46db2fee75c0808d557f6b3cf19a75f5d6d7c94df1"
 
 [[package]]
 name = "strsim"

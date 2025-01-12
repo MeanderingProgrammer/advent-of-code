@@ -1,54 +1,78 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use id_tree::InsertBehavior;
-use id_tree::{Node, NodeId, Tree};
+use fxhash::FxHashMap;
+
+#[derive(Debug, Default)]
+struct Node {
+    size: usize,
+    parent: Option<usize>,
+    children: Vec<usize>,
+}
+
+impl Node {
+    fn new(size: usize, parent: usize) -> Self {
+        Self {
+            size,
+            parent: Some(parent),
+            children: Vec::default(),
+        }
+    }
+
+    fn add(&mut self, child: usize) {
+        self.children.push(child);
+    }
+
+    fn directory(&self) -> bool {
+        !self.children.is_empty()
+    }
+}
 
 #[derive(Debug)]
 struct FileSystem {
-    tree: Tree<i64>,
-    current: NodeId,
+    id: usize,
+    tree: FxHashMap<usize, Node>,
 }
 
 impl FileSystem {
     fn new() -> Self {
-        let mut tree = Tree::<i64>::new();
-        let current = tree.insert(Node::new(0), InsertBehavior::AsRoot).unwrap();
-        Self { tree, current }
+        let mut tree = FxHashMap::default();
+        tree.insert(0, Node::default());
+        Self { id: 0, tree }
     }
 
-    fn move_up(&mut self) {
-        let current_node = self.tree.get(&self.current).unwrap();
-        self.current = current_node.parent().unwrap().clone();
+    fn up(&mut self) {
+        self.id = self.tree[&self.id].parent.unwrap();
     }
 
-    fn move_down(&mut self) {
-        self.current = self.insert(0);
+    fn down(&mut self) {
+        self.id = self.insert(0);
     }
 
-    fn insert_file(&mut self, size: i64) {
+    fn file(&mut self, size: usize) {
         self.insert(size);
     }
 
-    fn insert(&mut self, size: i64) -> NodeId {
-        let behavior = InsertBehavior::UnderNode(&self.current);
-        self.tree.insert(Node::new(size), behavior).unwrap()
+    fn insert(&mut self, size: usize) -> usize {
+        let id = self.tree.len();
+        self.tree.get_mut(&self.id).unwrap().add(id);
+        self.tree.insert(id, Node::new(size, self.id));
+        id
     }
 
-    fn directories(&self) -> Vec<i64> {
+    fn directories(&self) -> impl Iterator<Item = usize> + '_ {
         self.tree
-            .traverse_pre_order(self.tree.root_node_id().unwrap())
-            .unwrap()
-            .filter(|node| !node.children().is_empty())
+            .values()
+            .filter(|node| node.directory())
             .map(|node| self.get_size(node))
-            .collect()
     }
 
-    fn get_size(&self, node: &Node<i64>) -> i64 {
-        let mut total_size = *node.data();
-        for child in node.children() {
-            total_size += self.get_size(self.tree.get(child).unwrap());
-        }
-        total_size
+    fn get_size(&self, node: &Node) -> usize {
+        let size: usize = node
+            .children
+            .iter()
+            .map(|child| self.get_size(&self.tree[child]))
+            .sum();
+        node.size + size
     }
 }
 
@@ -57,30 +81,30 @@ fn main() {
 }
 
 fn solution() {
-    // Heavily inspired by https://fasterthanli.me/series/advent-of-code-2022/part-7
-    let fs = get_file_system();
-    let directories = fs.directories();
+    // Originally inspired by https://fasterthanli.me/series/advent-of-code-2022/part-7
+    let lines = Reader::default().read_lines();
+    let fs = get_file_system(&lines);
 
-    let p1_directories = directories.iter().filter(|&&size| size <= 100_000);
-    answer::part1(1141028, p1_directories.sum());
+    let part1 = fs.directories().filter(|size| *size <= 100_000).sum();
+    answer::part1(1141028, part1);
 
-    let size_used = directories.iter().max().unwrap();
+    let size_used = fs.directories().max().unwrap();
     let space_needed = 30_000_000 - (70_000_000 - size_used);
-    let p2_directories = directories.iter().filter(|&&size| size >= space_needed);
-    answer::part2(8278005, *p2_directories.min().unwrap());
+    let part2 = fs.directories().filter(|size| *size >= space_needed).min();
+    answer::part2(8278005, part2.unwrap());
 }
 
-fn get_file_system() -> FileSystem {
+fn get_file_system(lines: &[String]) -> FileSystem {
     let mut fs = FileSystem::new();
-    Reader::default().read_lines().iter().for_each(|line| {
+    lines.iter().for_each(|line| {
         let parts: Vec<&str> = line.split(' ').collect();
         match (parts[0], parts[1]) {
             ("$", "cd") => match parts[2] {
                 "/" => {
-                    // Do not support going back to root
+                    // No support for going to root, happens on first line
                 }
-                ".." => fs.move_up(),
-                _ => fs.move_down(),
+                ".." => fs.up(),
+                _ => fs.down(),
             },
             ("$", "ls") => {
                 // Nothing to do when we see an ls, we just know that the
@@ -90,7 +114,7 @@ fn get_file_system() -> FileSystem {
                 // A directory in a list does nothing, will process it when
                 // we change into the directory
             }
-            (file_size, _) => fs.insert_file(file_size.parse().unwrap()),
+            (size, _) => fs.file(size.parse().unwrap()),
         };
     });
     fs
