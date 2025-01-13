@@ -11,8 +11,10 @@
 
 (maintainers "MeanderingProgrammer <meanderingprogrammer@gmail.com>")
 
+(license MIT)
+
 (package
  (name advent_of_code)
- (synopsis "Public Repo for Advent of Code Solutions")
- (description "Public Repo for Advent of Code Solutions")
+ (synopsis "Advent of Code - All Years - Blazingly Fast")
+ (description "Advent of Code - All Years - Blazingly Fast")
  (depends ocaml dune core_kernel ppx_jane ppx_sexp_conv ppx_expect))
