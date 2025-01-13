@@ -1,20 +1,27 @@
 use crate::grid::Grid;
-use clap::Parser;
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-#[derive(Debug, Parser)]
-struct Cli {
-    #[clap(long, short, action)]
-    test: bool,
+#[derive(Debug)]
+struct Cli<'a> {
+    file_name: &'a str,
 }
 
-impl Cli {
+impl<'a> Cli<'a> {
+    fn parse() -> Self {
+        let test = match env::args().nth(1) {
+            None => false,
+            Some(value) => value == "--test",
+        };
+        Self {
+            file_name: if test { "sample.txt" } else { "data.txt" },
+        }
+    }
+
     fn file_path(&self) -> String {
         let (year, day) = Self::get_year_day();
-        let file_name = if self.test { "sample.txt" } else { "data.txt" };
-        format!("data/{year}/{day}/{file_name}")
+        format!("data/{year}/{day}/{}", self.file_name)
     }
 
     fn get_year_day() -> (String, String) {
