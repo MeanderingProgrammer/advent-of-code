@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use rayon::prelude::*;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Secret {
@@ -10,15 +11,19 @@ struct Secret {
     sequences: FxHashMap<[i64; 4], usize>,
 }
 
-impl Secret {
-    fn new(line: &str) -> Self {
-        Self {
-            value: line.parse().unwrap(),
+impl FromStr for Secret {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            value: s.parse().unwrap(),
             changes: Vec::default(),
             sequences: FxHashMap::default(),
-        }
+        })
     }
+}
 
+impl Secret {
     fn evolve(&mut self, n: usize) {
         for i in 0..n {
             let start = (self.value % 10) as i64;
@@ -54,7 +59,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut secrets = Reader::default().read(Secret::new);
+    let mut secrets = Reader::default().read_from_str();
     answer::part1(15608699004, part1(&mut secrets, 2000));
     answer::part2(1791, part2(&secrets));
 }

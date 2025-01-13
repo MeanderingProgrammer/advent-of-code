@@ -1,6 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point3d;
 use aoc_lib::reader::Reader;
+use std::str::FromStr;
 
 #[derive(Debug)]
 enum Direction {
@@ -9,13 +10,15 @@ enum Direction {
     Up,
 }
 
-impl Direction {
-    fn from_str(direction: &str) -> Option<Self> {
-        match direction {
-            "forward" => Some(Self::Forward),
-            "down" => Some(Self::Down),
-            "up" => Some(Self::Up),
-            _ => None,
+impl FromStr for Direction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "forward" => Ok(Self::Forward),
+            "down" => Ok(Self::Down),
+            "up" => Ok(Self::Up),
+            _ => Err(format!("Unknow direction: {s}")),
         }
     }
 }
@@ -26,13 +29,15 @@ struct Instruction {
     amount: i64,
 }
 
-impl Instruction {
-    fn from_str(line: &str) -> Self {
-        let (direction, amount) = line.split_once(' ').unwrap();
-        Instruction {
-            direction: Direction::from_str(direction).unwrap(),
+impl FromStr for Instruction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (direction, amount) = s.split_once(' ').unwrap();
+        Ok(Self {
+            direction: direction.parse()?,
             amount: amount.parse().unwrap(),
-        }
+        })
     }
 }
 
@@ -41,7 +46,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = Reader::default().read(Instruction::from_str);
+    let instructions: Vec<Instruction> = Reader::default().read_from_str();
 
     let mut p = Point3d::default();
     instructions.iter().for_each(|instruction| {

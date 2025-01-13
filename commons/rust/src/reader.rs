@@ -75,7 +75,7 @@ impl Reader {
     }
 
     pub fn read_int(&self) -> Vec<i64> {
-        self.read(|line| line.parse::<i64>().unwrap())
+        self.read_from_str()
     }
 
     pub fn read_lines(&self) -> Vec<String> {
@@ -94,7 +94,15 @@ impl Reader {
         self.read_line().chars().collect()
     }
 
-    pub fn read<T>(&self, f: fn(&str) -> T) -> Vec<T> {
+    pub fn read_from_str<T>(&self) -> Vec<T>
+    where
+        T: std::str::FromStr,
+        T::Err: std::fmt::Debug,
+    {
+        self.read(|line| line.parse().unwrap())
+    }
+
+    fn read<T>(&self, f: fn(&str) -> T) -> Vec<T> {
         match File::open(&self.path) {
             Ok(file) => BufReader::new(file)
                 .lines()

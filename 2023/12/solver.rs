@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use std::collections::VecDeque;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Spring {
@@ -27,16 +28,20 @@ struct Row {
     groups: VecDeque<u8>,
 }
 
-impl Row {
-    fn new(line: &str) -> Self {
+impl FromStr for Row {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         // ???.### 1,1,3
-        let (springs, groups) = line.split_once(' ').unwrap();
-        Self {
+        let (springs, groups) = s.split_once(' ').unwrap();
+        Ok(Self {
             springs: springs.chars().map(Spring::new).collect(),
             groups: groups.split(',').map(|ch| ch.parse().unwrap()).collect(),
-        }
+        })
     }
+}
 
+impl Row {
     fn multiply(&self, n: usize) -> Self {
         let mut result = self.clone();
         for _ in 0..n - 1 {
@@ -106,7 +111,7 @@ fn main() {
 }
 
 fn solution() {
-    let rows = Reader::default().read(Row::new);
+    let rows = Reader::default().read_from_str();
     let mut cache = FxHashMap::default();
     answer::part1(8075, run(&rows, &mut cache, 1));
     answer::part2(4232520187524, run(&rows, &mut cache, 5));

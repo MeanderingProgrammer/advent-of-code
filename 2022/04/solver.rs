@@ -65,7 +65,7 @@ fn main() {
 }
 
 fn solution() {
-    let assignments = Reader::default().read(|line| line.parse::<Assignment>().unwrap());
+    let assignments = Reader::default().read_from_str();
     answer::part1(532, get_count(&assignments, Assignment::full_overlap));
     answer::part2(854, get_count(&assignments, Assignment::any_overlap));
 }

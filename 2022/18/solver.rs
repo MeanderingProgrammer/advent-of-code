@@ -78,15 +78,11 @@ fn main() {
 }
 
 fn solution() {
-    let grid = get_grid();
+    let points: Vec<Point3d> = Reader::default().read_from_str();
+    let grid = Grid {
+        points: points.into_iter().collect(),
+    };
     let boundary = grid.fill();
     answer::part1(4288, grid.surface_area(|point| grid.missing(point)));
     answer::part2(2494, grid.surface_area(|point| boundary.contains(point)));
-}
-
-fn get_grid() -> Grid {
-    let points: Vec<Point3d> = Reader::default().read(|line| line.parse().unwrap());
-    Grid {
-        points: points.into_iter().collect(),
-    }
 }

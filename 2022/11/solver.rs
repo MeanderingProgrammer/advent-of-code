@@ -1,13 +1,5 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use nom::{
-    bytes::complete::{tag, take},
-    character::complete::{alphanumeric1, digit1, newline},
-    combinator::map_res,
-    multi::separated_list1,
-    sequence::tuple,
-    IResult,
-};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -55,8 +47,10 @@ struct Monkey {
     inspections: i64,
 }
 
-impl Monkey {
-    fn from_str(input: &str) -> IResult<&str, Self> {
+impl FromStr for Monkey {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Monkey 0:
         //  Starting items: 97, 81, 57, 57, 91, 61
         //  Operation: new = old * 7
@@ -64,47 +58,31 @@ impl Monkey {
         //    If true: throw to monkey 5
         //    If false: throw to monkey 6
 
-        let (input, _) = tuple((tag("Monkey "), digit1, tag(":"), newline))(input)?;
-        let (input, items) = tuple((
-            tag("  Starting items: "),
-            separated_list1(tag(", "), map_res(digit1, |s: &str| s.parse())),
-            newline,
-        ))(input)?;
-        let (input, operation) = tuple((
-            tag("  Operation: new = old "),
-            map_res(take(1usize), |s: &str| s.parse()),
-            tag(" "),
-            map_res(alphanumeric1, |s: &str| s.parse()),
-            newline,
-        ))(input)?;
-        let (input, divisible_by) = tuple((
-            tag("  Test: divisible by "),
-            map_res(digit1, |s: &str| s.parse()),
-            newline,
-        ))(input)?;
-        let (input, true_monkey) = tuple((
-            tag("    If true: throw to monkey "),
-            map_res(digit1, |s: &str| s.parse()),
-            newline,
-        ))(input)?;
-        let (input, false_monkey) = tuple((
-            tag("    If false: throw to monkey "),
-            map_res(digit1, |s: &str| s.parse()),
-        ))(input)?;
+        let lines: Vec<&str> = s.lines().collect();
+        let (_, items) = lines[1].split_once(": ").unwrap();
+        let op_val: Vec<&str> = lines[2].split_whitespace().collect();
+        let divisible_by = lines[3].split_whitespace().last().unwrap();
+        let true_monkey = lines[4].split_whitespace().last().unwrap();
+        let false_monkey = lines[5].split_whitespace().last().unwrap();
 
-        Ok((
-            input,
-            Self {
-                items: items.1,
-                operation: (operation.1, operation.3),
-                divisible_by: divisible_by.1,
-                true_monkey: true_monkey.1,
-                false_monkey: false_monkey.1,
-                inspections: 0,
-            },
-        ))
+        Ok(Self {
+            items: items
+                .split(", ")
+                .map(|item| item.parse().unwrap())
+                .collect(),
+            operation: (
+                op_val[op_val.len() - 2].parse().unwrap(),
+                op_val[op_val.len() - 1].parse().unwrap(),
+            ),
+            divisible_by: divisible_by.parse().unwrap(),
+            true_monkey: true_monkey.parse().unwrap(),
+            false_monkey: false_monkey.parse().unwrap(),
+            inspections: 0,
+        })
     }
+}
 
+impl Monkey {
     fn apply_operation(&self, item: i64) -> i64 {
         let v2 = match self.operation.1 {
             Value::Old => item,
@@ -136,7 +114,7 @@ fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
     let mut monkeys: Vec<Monkey> = Reader::default()
         .read_full_groups()
         .iter()
-        .map(|group| Monkey::from_str(group).unwrap().1)
+        .map(|group| group.parse().unwrap())
         .collect();
 
     // This can be the least common multiple, but doesn't need to be to work

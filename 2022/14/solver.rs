@@ -2,6 +2,42 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
+use std::str::FromStr;
+
+#[derive(Debug)]
+struct RockFormation {
+    points: Vec<Point>,
+}
+
+impl FromStr for RockFormation {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            points: s
+                .split(" -> ")
+                .map(|point| point.parse().unwrap())
+                .collect(),
+        })
+    }
+}
+
+impl RockFormation {
+    fn fill(&self) -> Vec<Point> {
+        (1..self.points.len())
+            .flat_map(|i| self.before(i))
+            .collect()
+    }
+
+    fn before(&self, i: usize) -> Vec<Point> {
+        let (p1, p2) = (&self.points[i - 1], &self.points[i]);
+        let (x1, x2) = (p1.x, p2.x);
+        let (y1, y2) = (p1.y, p2.y);
+        (x1.min(x2)..=x1.max(x2))
+            .flat_map(move |x| (y1.min(y2)..=y1.max(y2)).map(move |y| Point::new(x, y)))
+            .collect()
+    }
+}
 
 #[derive(Debug)]
 struct SandFlow {
@@ -54,44 +90,22 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(610, fill(false));
-    answer::part2(27194, fill(true));
+    let rock_formations: Vec<RockFormation> = Reader::default().read_from_str();
+    let mut grid: Grid<char> = Grid::default();
+    rock_formations
+        .iter()
+        .flat_map(|rock_formation| rock_formation.fill())
+        .for_each(|point| grid.add(point, '#'));
+
+    answer::part1(610, fill(grid.clone(), false));
+    answer::part2(27194, fill(grid.clone(), true));
 }
 
-fn fill(with_floor: bool) -> usize {
-    let mut sand_flow = SandFlow::new(get_grid(), with_floor);
+fn fill(grid: Grid<char>, with_floor: bool) -> usize {
+    let mut sand_flow = SandFlow::new(grid, with_floor);
     let mut full = false;
     while !full {
         full |= sand_flow.drop_grain();
     }
     sand_flow.amount_sand()
-}
-
-fn get_grid() -> Grid<char> {
-    let rock_formations: Vec<Vec<Point>> = Reader::default().read(|line| {
-        line.split(" -> ")
-            .map(|point| match point.split_once(',') {
-                Some((x, y)) => Point::new(x.parse().unwrap(), y.parse().unwrap()),
-                None => panic!(),
-            })
-            .collect()
-    });
-
-    let mut grid: Grid<char> = Grid::default();
-    rock_formations
-        .iter()
-        .flat_map(|rock_formation| {
-            (1..rock_formation.len())
-                .flat_map(|i| get_points(&rock_formation[i - 1], &rock_formation[i]))
-        })
-        .for_each(|point| grid.add(point, '#'));
-    grid
-}
-
-fn get_points(p1: &Point, p2: &Point) -> Vec<Point> {
-    let (x1, x2) = (p1.x, p2.x);
-    let (y1, y2) = (p1.y, p2.y);
-    (x1.min(x2)..=x1.max(x2))
-        .flat_map(move |x| (y1.min(y2)..=y1.max(y2)).map(move |y| Point::new(x, y)))
-        .collect()
 }

@@ -1,6 +1,5 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use nom::{bytes::complete::tag, character::complete::digit0, IResult};
 
 fn main() {
     answer::timer(solution);
@@ -8,19 +7,18 @@ fn main() {
 
 fn solution() {
     let line = Reader::default().read_line();
-    let (row, column) = parse_line(&line).unwrap().1;
+    let (row, column) = parse_line(&line);
     let index = get_index(row, column);
     answer::part1(19980801, get_password(index));
 }
 
-fn parse_line(input: &str) -> IResult<&str, (i64, i64)> {
-    let (input, _) = tag("To continue, please consult the code grid in the manual.  ")(input)?;
-    let (input, _) = tag("Enter the code at row ")(input)?;
-    let (input, row) = digit0(input)?;
-    let (input, _) = tag(", column ")(input)?;
-    let (input, column) = digit0(input)?;
-    let (input, _) = tag(".")(input)?;
-    Ok((input, (row.parse().unwrap(), column.parse().unwrap())))
+fn parse_line(s: &str) -> (i64, i64) {
+    let words: Vec<&str> = s.split_whitespace().collect();
+    let (row, column) = (words[words.len() - 3], words[words.len() - 1]);
+    (
+        row[..row.len() - 1].parse().unwrap(),
+        column[..column.len() - 1].parse().unwrap(),
+    )
 }
 
 fn get_index(row: i64, column: i64) -> i64 {

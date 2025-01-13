@@ -2,7 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
-use std::collections::hash_map::Entry;
 
 #[derive(Debug)]
 struct PointGrid {
@@ -41,11 +40,8 @@ impl PointGrid {
         let mut regions: FxHashMap<Point, Vec<Point>> = FxHashMap::default();
         for point in self.distances.keys() {
             if let Some(closest) = self.get_closest(point) {
-                if let Entry::Vacant(entry) = regions.entry(closest.clone()) {
-                    entry.insert(vec![point.clone()]);
-                } else {
-                    regions.get_mut(&closest).unwrap().push(point.clone());
-                }
+                let region = regions.entry(closest.clone()).or_default();
+                region.push(point.clone());
             }
         }
         regions
@@ -95,7 +91,7 @@ fn main() {
 }
 
 fn solution() {
-    let points: Vec<Point> = Reader::default().read(|line| line.parse().unwrap());
+    let points = Reader::default().read_from_str();
     let point_grid = PointGrid::new(points);
     answer::part1(3251, point_grid.largest_finite());
     answer::part2(47841, point_grid.within_distance(10_000));

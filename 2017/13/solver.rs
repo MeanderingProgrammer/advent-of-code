@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let scanners: Vec<Scanner> = Reader::default().read(|line| line.parse().unwrap());
+    let scanners = Reader::default().read_from_str();
     answer::part1(632, trip_severity(&scanners));
     answer::part2(3849742, find_wait(&scanners));
 }

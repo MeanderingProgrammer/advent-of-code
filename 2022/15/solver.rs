@@ -2,13 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use itertools::{Itertools, MinMaxResult};
-use nom::{
-    bytes::complete::tag,
-    character::complete::digit0,
-    combinator::{map_res, opt},
-    sequence::tuple,
-    IResult,
-};
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Line {
@@ -57,48 +51,41 @@ struct CoverageZone {
     y_range: Range,
 }
 
-impl CoverageZone {
-    fn from_str(input: &str) -> IResult<&str, Self> {
-        fn parse_number(input: &str) -> IResult<&str, i64> {
-            map_res(
-                tuple((opt(tag("-")), digit0)),
-                |(sign, s): (Option<&str>, &str)| (sign.unwrap_or("").to_string() + s).parse(),
-            )(input)
+impl FromStr for CoverageZone {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn parse_point(s: &str) -> Point {
+            // at x=2389280, y=2368338
+            let (_, point) = s.split_once("at ").unwrap();
+            let (x, y) = point.split_once(", ").unwrap();
+            let (_, x) = x.split_once('=').unwrap();
+            let (_, y) = y.split_once('=').unwrap();
+            Point::new(x.parse().unwrap(), y.parse().unwrap())
         }
 
-        fn parse_point(input: &str) -> IResult<&str, Point> {
-            // x=2389280, y=2368338
-            let (input, _) = tag("x=")(input)?;
-            let (input, x) = parse_number(input)?;
-            let (input, _) = tag(", y=")(input)?;
-            let (input, y) = parse_number(input)?;
-            Ok((input, Point::new(x, y)))
-        }
-
-        // Sensor at <point>: closest beacon is at <point>
-        let (input, _) = tag("Sensor at ")(input)?;
-        let (input, center) = parse_point(input)?;
-        let (input, _) = tag(": closest beacon is at ")(input)?;
-        let (input, beacon) = parse_point(input)?;
+        // Sensor <point>: closest beacon is <point>
+        let (sensor, beacon) = s.split_once(": ").unwrap();
+        let center = parse_point(sensor);
+        let beacon = parse_point(beacon);
 
         let (x, y) = (center.x, center.y);
         let radius = center.manhattan_distance(&beacon);
 
-        Ok((
-            input,
-            Self {
-                lines: vec![
-                    Line::new(-1, y + x + radius),
-                    Line::new(1, y - x + radius),
-                    Line::new(1, y - x - radius),
-                    Line::new(-1, y + x - radius),
-                ],
-                x_range: Range::new(x - radius, x + radius),
-                y_range: Range::new(y - radius, y + radius),
-            },
-        ))
+        Ok(Self {
+            lines: vec![
+                Line::new(-1, y + x + radius),
+                Line::new(1, y - x + radius),
+                Line::new(1, y - x - radius),
+                Line::new(-1, y + x - radius),
+            ],
+            x_range: Range::new(x - radius, x + radius),
+            y_range: Range::new(y - radius, y + radius),
+        })
     }
+}
 
+impl CoverageZone {
     fn overlap_at_y(&self, y: i64) -> Option<Range> {
         if !self.y_range.contains(y) {
             return None;
@@ -121,7 +108,7 @@ fn main() {
 }
 
 fn solution() {
-    let coverage = Reader::default().read(|line| CoverageZone::from_str(line).unwrap().1);
+    let coverage = Reader::default().read_from_str();
     answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }

@@ -2,13 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use nom::{
-    bytes::complete::tag,
-    character::complete::{digit0, space0},
-    combinator::{map_res, opt},
-    sequence::tuple,
-    IResult,
-};
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Particle {
@@ -16,35 +10,26 @@ struct Particle {
     velocity: Point,
 }
 
-impl Particle {
-    fn from_str(input: &str) -> IResult<&str, Self> {
-        fn parse_number(input: &str) -> IResult<&str, i64> {
-            let (input, _) = space0(input)?;
-            map_res(
-                tuple((opt(tag("-")), digit0)),
-                |(sign, s): (Option<&str>, &str)| (sign.unwrap_or("").to_string() + s).parse(),
-            )(input)
-        }
+impl FromStr for Particle {
+    type Err = String;
 
-        fn parse_point(input: &str) -> IResult<&str, Point> {
-            // < 10749, -20904> | <-1,  2>
-            let (input, _) = tag("<")(input)?;
-            let (input, x) = parse_number(input)?;
-            let (input, _) = tag(",")(input)?;
-            let (input, y) = parse_number(input)?;
-            let (input, _) = tag(">")(input)?;
-            Ok((input, Point::new(x, y)))
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn parse_point(s: &str) -> Point {
+            // =< 10749, -20904> | =<-1,  2>
+            let (_, position) = s.split_once('=').unwrap();
+            let position = &position[1..position.len() - 1];
+            position.parse().unwrap()
         }
-
         // position=<point> velocity=<point>
-        let (input, _) = tag("position=")(input)?;
-        let (input, position) = parse_point(input)?;
-        let (input, _) = tag(" velocity=")(input)?;
-        let (input, velocity) = parse_point(input)?;
-
-        Ok((input, Self { position, velocity }))
+        let (position, velocity) = s.split_once(" velocity").unwrap();
+        Ok(Self {
+            position: parse_point(position),
+            velocity: parse_point(velocity),
+        })
     }
+}
 
+impl Particle {
     fn at(&self, time: i64) -> Point {
         &self.position + &(&self.velocity * time)
     }
@@ -99,7 +84,7 @@ fn main() {
 
 fn solution() {
     let particles = Particles {
-        particles: Reader::default().read(|line| Particle::from_str(line).unwrap().1),
+        particles: Reader::default().read_from_str(),
     };
     let time = particles.min_area().unwrap();
     let expected = [

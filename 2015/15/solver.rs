@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 use std::ops::{AddAssign, Mul};
+use std::str::FromStr;
 
 #[derive(Debug, Default)]
 struct Properties {
@@ -49,15 +50,17 @@ struct Ingredient {
     properties: Properties,
 }
 
-impl Ingredient {
-    fn from_str(line: &str) -> Self {
-        let (name, components_string) = line.split_once(": ").unwrap();
+impl FromStr for Ingredient {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (name, components_string) = s.split_once(": ").unwrap();
         let components: HashMap<&str, i64> = components_string
             .split(", ")
             .map(|component| component.split_once(' ').unwrap())
             .map(|(property, quantity)| (property, quantity.parse().unwrap()))
             .collect();
-        Self {
+        Ok(Self {
             name: name.to_string(),
             properties: Properties {
                 capacity: components["capacity"],
@@ -66,7 +69,7 @@ impl Ingredient {
                 texture: components["texture"],
                 calories: components["calories"],
             },
-        }
+        })
     }
 }
 
@@ -112,7 +115,7 @@ fn main() {
 }
 
 fn solution() {
-    let ingredients = Reader::default().read(Ingredient::from_str);
+    let ingredients = Reader::default().read_from_str();
     assert_eq!(ingredients.len(), 4);
     let recipe = Recipe {
         ingredients,

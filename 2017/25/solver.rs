@@ -1,13 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
-use nom::{
-    bytes::complete::tag,
-    character::complete::{alpha0, digit0, newline},
-    combinator::map_res,
-    sequence::tuple,
-    IResult,
-};
+use std::str::FromStr;
 
 #[derive(Debug)]
 enum Direction {
@@ -15,15 +10,19 @@ enum Direction {
     Right,
 }
 
-impl Direction {
-    fn from_str(input: &str) -> Result<Self, String> {
-        match input {
+impl FromStr for Direction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
             "left" => Ok(Self::Left),
             "right" => Ok(Self::Right),
             _ => Err(String::from("unhandled input")),
         }
     }
+}
 
+impl Direction {
     fn value(&self) -> i64 {
         match self {
             Self::Left => -1,
@@ -36,35 +35,22 @@ impl Direction {
 struct Behavior {
     write: u8,
     direction: Direction,
-    next: String,
+    next: u8,
 }
 
-impl Behavior {
-    fn from_str(input: &str) -> IResult<&str, Self> {
+impl FromStr for Behavior {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         //    - Write the value 1.
         //    - Move one slot to the right.
         //    - Continue with state B.
-        let (input, write) = tuple((
-            tag("    - Write the value "),
-            map_res(digit0, |s: &str| s.parse::<u8>()),
-            tag("."),
-            newline,
-        ))(input)?;
-        let (input, direction) = tuple((
-            tag("    - Move one slot to the "),
-            map_res(alpha0, Direction::from_str),
-            tag("."),
-            newline,
-        ))(input)?;
-        let (input, next) = tuple((tag("    - Continue with state "), alpha0, tag(".")))(input)?;
-        Ok((
-            input,
-            Self {
-                write: write.1,
-                direction: direction.1,
-                next: next.1.to_string(),
-            },
-        ))
+        let lines: Vec<&str> = s.lines().collect();
+        Ok(Self {
+            write: last_word(lines[0]).parse().unwrap(),
+            direction: last_word(lines[1]).parse()?,
+            next: to_state(lines[2]),
+        })
     }
 }
 
@@ -74,20 +60,22 @@ struct Rule {
     one: Behavior,
 }
 
-impl Rule {
-    fn from_str(input: &str) -> IResult<&str, Self> {
+impl FromStr for Rule {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         //  If the current value is 0:
         //  <Behavior>
         //  If the current value is 1:
         //  <Behavior>
-        let (input, _) = tuple((tag("  If the current value is 0:"), newline))(input)?;
-        let (input, zero) = Behavior::from_str(input)?;
-        let (input, _) = newline(input)?;
-        let (input, _) = tuple((tag("  If the current value is 1:"), newline))(input)?;
-        let (input, one) = Behavior::from_str(input)?;
-        Ok((input, Self { zero, one }))
+        let lines: Vec<&str> = s.lines().collect();
+        let zero = Behavior::from_str(&lines[1..4].join("\n"))?;
+        let one = Behavior::from_str(&lines[5..8].join("\n"))?;
+        Ok(Self { zero, one })
     }
+}
 
+impl Rule {
     fn get(&self, value: &u8) -> &Behavior {
         match value {
             0 => &self.zero,
@@ -99,8 +87,8 @@ impl Rule {
 
 #[derive(Debug)]
 struct TuringMachine {
-    state: String,
-    rules: FxHashMap<String, Rule>,
+    state: u8,
+    rules: FxHashMap<u8, Rule>,
     position: i64,
     tape: FxHashMap<i64, u8>,
 }
@@ -111,11 +99,11 @@ impl TuringMachine {
         let behavior = self.rules[&self.state].get(value);
         self.tape.insert(self.position, behavior.write);
         self.position += behavior.direction.value();
-        self.state = behavior.next.clone();
+        self.state = behavior.next;
     }
 
-    fn checksum(&self) -> i64 {
-        self.tape.values().map(|value| *value as i64).sum()
+    fn checksum(&self) -> usize {
+        self.tape.values().filter(|value| **value == 1).count()
     }
 }
 
@@ -125,14 +113,10 @@ fn main() {
 
 fn solution() {
     let groups = Reader::default().read_full_groups();
-    let (state, steps) = get_state(&groups[0]).unwrap().1;
+    let (state, steps) = get_state(&groups[0]);
     let mut machine = TuringMachine {
         state,
-        rules: groups
-            .iter()
-            .skip(1)
-            .map(|group| get_rule(group).unwrap().1)
-            .collect(),
+        rules: groups.iter().skip(1).map(|group| get_rule(group)).collect(),
         position: 0,
         tape: FxHashMap::default(),
     };
@@ -142,22 +126,26 @@ fn solution() {
     answer::part1(3099, machine.checksum());
 }
 
-fn get_state(input: &str) -> IResult<&str, (String, usize)> {
+fn get_state(s: &str) -> (u8, usize) {
     // Begin in state A.
     // Perform a diagnostic checksum after 12425180 steps.
-    let (input, start_state) = tuple((tag("Begin in state "), alpha0, tag("."), newline))(input)?;
-    let (input, steps) = tuple((
-        tag("Perform a diagnostic checksum after "),
-        map_res(digit0, |s: &str| s.parse::<usize>()),
-        tag(" steps."),
-    ))(input)?;
-    Ok((input, (start_state.1.to_string(), steps.1)))
+    let lines: Vec<&str> = s.lines().collect();
+    let steps = lines[1].split_whitespace().nth(5).unwrap();
+    (to_state(lines[0]), steps.parse().unwrap())
 }
 
-fn get_rule(input: &str) -> IResult<&str, (String, Rule)> {
+fn get_rule(s: &str) -> (u8, Rule) {
     // In state A:
     // <Rule>
-    let (input, state) = tuple((tag("In state "), alpha0, tag(":"), newline))(input)?;
-    let (input, rule) = Rule::from_str(input)?;
-    Ok((input, (state.1.to_string(), rule)))
+    let (state, rule) = s.split_once('\n').unwrap();
+    (to_state(state), rule.parse().unwrap())
+}
+
+fn to_state(s: &str) -> u8 {
+    Base::ch_upper(last_word(s).chars().next().unwrap())
+}
+
+fn last_word(s: &str) -> &str {
+    let word = s.split_whitespace().last().unwrap();
+    &word[..word.len() - 1]
 }

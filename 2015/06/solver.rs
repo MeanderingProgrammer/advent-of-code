@@ -1,11 +1,5 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
-use nom::{
-    bytes::complete::{tag, take_till},
-    character::complete::digit1,
-    sequence::separated_pair,
-    IResult,
-};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -20,9 +14,9 @@ impl FromStr for Action {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "turn on " => Ok(Self::TurnOn),
-            "turn off " => Ok(Self::TurnOff),
-            "toggle " => Ok(Self::Toggle),
+            "on" => Ok(Self::TurnOn),
+            "off" => Ok(Self::TurnOff),
+            "toggle" => Ok(Self::Toggle),
             _ => Err(format!("Unknow action: {s}")),
         }
     }
@@ -53,28 +47,26 @@ struct Direction {
     end: (usize, usize),
 }
 
-impl Direction {
-    fn from_str(input: &str) -> IResult<&str, Self> {
-        fn parse_point(input: &str) -> IResult<&str, (usize, usize)> {
+impl FromStr for Direction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        fn parse_point(s: &str) -> (usize, usize) {
             // 660,55
-            let (input, (x, y)) = separated_pair(digit1, tag(","), digit1)(input)?;
-            Ok((input, (x.parse().unwrap(), y.parse().unwrap())))
+            let (x, y) = s.split_once(',').unwrap();
+            (x.parse().unwrap(), y.parse().unwrap())
         }
         // <action> <point> through <point>
-        let (input, action) = take_till(|ch: char| ch.is_ascii_digit())(input)?;
-        let (input, start) = parse_point(input)?;
-        let (input, _) = tag(" through ")(input)?;
-        let (input, end) = parse_point(input)?;
-        Ok((
-            input,
-            Self {
-                action: Action::from_str(action).unwrap(),
-                start,
-                end,
-            },
-        ))
+        let words: Vec<&str> = s.split_whitespace().collect();
+        Ok(Self {
+            action: words[words.len() - 4].parse()?,
+            start: parse_point(words[words.len() - 3]),
+            end: parse_point(words[words.len() - 1]),
+        })
     }
+}
 
+impl Direction {
     fn apply(&self, grid: &mut [i64], f: fn(&Action, i64) -> i64) {
         for x in self.start.0..=self.end.0 {
             for y in self.start.1..=self.end.1 {
@@ -90,7 +82,7 @@ fn main() {
 }
 
 fn solution() {
-    let directions = Reader::default().read(|line| Direction::from_str(line).unwrap().1);
+    let directions = Reader::default().read_from_str();
     answer::part1(400410, apply_all(&directions, Action::single));
     answer::part2(15343601, apply_all(&directions, Action::dimable));
 }

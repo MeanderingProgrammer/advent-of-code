@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
-use regex::Regex;
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -167,10 +166,11 @@ fn part_2() -> Option<i64> {
 
 fn get_battle(boost: i64) -> Battle {
     fn parse_group(id: usize, category: Category, raw: &str, boost: i64) -> Group {
-        let re = Regex::new(r"\((.*)\)").unwrap();
         let mut traits: FxHashMap<String, FxHashSet<String>> = FxHashMap::default();
-        if let Some(captures) = re.captures(raw) {
-            for raw_trait in captures.get(1).unwrap().as_str().split("; ") {
+        if raw.contains('(') && raw.contains(')') {
+            let (_, raw_traits) = raw.split_once('(').unwrap();
+            let (raw_traits, _) = raw_traits.split_once(')').unwrap();
+            for raw_trait in raw_traits.split("; ") {
                 let (trait_type, trait_values) = raw_trait.split_once(" to ").unwrap();
                 traits.insert(
                     trait_type.to_string(),

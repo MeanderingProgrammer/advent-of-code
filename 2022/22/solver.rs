@@ -2,14 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use nom::{
-    bytes::complete::tag,
-    character::complete::{alpha0, digit0},
-    combinator::map_res,
-    error::Error,
-    multi::separated_list0,
-    sequence::separated_pair,
-};
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -25,9 +17,15 @@ struct Edge {
     rotations: usize,
 }
 
-impl Edge {
-    fn new(block: Block, rotations: usize) -> Result<Self, String> {
-        Ok(Self { block, rotations })
+impl FromStr for Edge {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (block, rotations) = s.split_once(':').unwrap();
+        Ok(Self {
+            block: block.parse()?,
+            rotations: rotations.parse().unwrap(),
+        })
     }
 }
 
@@ -190,7 +188,7 @@ impl State {
         Self {
             block: Block::A,
             size: cube.size,
-            relative: Point::new(0, 0),
+            relative: Point::default(),
             direction: Direction::Right,
         }
     }
@@ -271,28 +269,11 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
 }
 
 fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
-    let mut parser = separated_pair::<_, _, _, _, Error<_>, _, _, _>(
-        map_res(alpha0, |s: &str| s.parse()),
-        tag(" -> "),
-        separated_list0(
-            tag(" "),
-            map_res(
-                separated_pair(
-                    map_res(alpha0, |s: &str| s.parse()),
-                    tag(":"),
-                    map_res(digit0, |s: &str| s.parse()),
-                ),
-                |(block, rotations)| Edge::new(block, rotations),
-            ),
-        ),
-    );
-
-    let mut result = HashMap::new();
     edge_mappings
         .iter()
-        .map(|edge_mapping| parser(edge_mapping).unwrap().1)
-        .for_each(|(block, edges)| {
-            result.insert(
+        .map(|edge_mapping| parse_edge_mapping(edge_mapping))
+        .map(|(block, edges)| {
+            (
                 block,
                 Edges {
                     above: edges[0].clone(),
@@ -300,9 +281,18 @@ fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
                     below: edges[2].clone(),
                     left: edges[3].clone(),
                 },
-            );
-        });
-    result
+            )
+        })
+        .collect()
+}
+
+fn parse_edge_mapping(s: &str) -> (Block, Vec<Edge>) {
+    // A -> F:1 B:0 C:0 D:2
+    let (block, edges) = s.split_once(" -> ").unwrap();
+    (
+        block.parse().unwrap(),
+        edges.split(' ').map(|edge| edge.parse().unwrap()).collect(),
+    )
 }
 
 fn get_input() -> (Cube, Vec<Instruction>) {

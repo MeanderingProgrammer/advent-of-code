@@ -1,18 +1,23 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Backpack {
     content: String,
 }
 
-impl Backpack {
-    fn new(line: &str) -> Self {
-        Self {
-            content: line.to_string(),
-        }
-    }
+impl FromStr for Backpack {
+    type Err = String;
 
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            content: s.to_string(),
+        })
+    }
+}
+
+impl Backpack {
     fn compartment_1(&self) -> &str {
         &self.content[..self.content.len() / 2]
     }
@@ -39,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let backpacks = Reader::default().read(Backpack::new);
+    let backpacks: Vec<Backpack> = Reader::default().read_from_str();
 
     let p1_items = backpacks.iter().map(|backpack| backpack.shared());
     answer::part1(8298, p1_items.map(priority).sum());

@@ -2,11 +2,10 @@ use aoc_lib::answer;
 use aoc_lib::math;
 use aoc_lib::reader::Reader;
 use itertools::Itertools;
-use regex::Regex;
 use std::cmp::Ordering;
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct Vector(i64, i64, i64);
 
 impl Vector {
@@ -66,12 +65,15 @@ impl FromStr for Body {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let re = Regex::new(r"<x=(?P<x>.*), y=(?P<y>.*), z=(?P<z>.*)>").unwrap();
-        let caps = re.captures(s).unwrap();
-        let (x, y, z) = (&caps["x"], &caps["y"], &caps["z"]);
+        // <x=4, y=12, z=13>
+        let values: Vec<i64> = s[1..s.len() - 1]
+            .split(", ")
+            .map(|value| value.split_once('=').unwrap().1)
+            .map(|value| value.parse().unwrap())
+            .collect();
         Ok(Self {
-            position: Vector(x.parse().unwrap(), y.parse().unwrap(), z.parse().unwrap()),
-            velocity: Vector(0, 0, 0),
+            position: Vector(values[0], values[1], values[2]),
+            velocity: Vector::default(),
         })
     }
 }
@@ -130,7 +132,7 @@ fn main() {
 
 fn solution() {
     let system = System {
-        bodies: Reader::default().read(|line| line.parse().unwrap()),
+        bodies: Reader::default().read_from_str(),
     };
     answer::part1(5350, run_for(system.clone(), 1_000));
     answer::part2(467034091553512, system_period(system.clone()));

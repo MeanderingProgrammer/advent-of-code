@@ -207,7 +207,7 @@ fn main() {
 }
 
 fn solution() {
-    let bps: Vec<Blueprint> = Reader::default().read(|line| line.parse().unwrap());
+    let bps: Vec<Blueprint> = Reader::default().read_from_str();
     answer::part1(1599, bps.iter().map(|bp| bp.simulate(24) * bp.id).sum());
     answer::part2(
         14112,

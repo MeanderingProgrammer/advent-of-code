@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let paths = Reader::default().read(|line| Path::from_str(line).unwrap());
+    let paths: Vec<Path> = Reader::default().read_from_str();
     let (p1, p2) = (&paths[0], &paths[1]);
     let intersection = p1.intersection(p2);
     answer::part1(870, min_value(&intersection, |point| point.length()));

@@ -125,7 +125,7 @@ fn main() {
 }
 
 fn solution() {
-    let rounds = Reader::default().read(|line| line.parse::<Round>().unwrap());
+    let rounds: Vec<Round> = Reader::default().read_from_str();
     answer::part1(9651, rounds.iter().map(|round| round.score_play()).sum());
     answer::part2(10560, rounds.iter().map(|round| round.score_result()).sum());
 }

@@ -4,16 +4,8 @@ use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
-use nom::{
-    branch::alt,
-    bytes::complete::tag,
-    character::complete::{alpha0, digit0},
-    combinator::map_res,
-    multi::separated_list0,
-    sequence::tuple,
-    IResult,
-};
 use priority_queue::PriorityQueue;
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Valve {
@@ -22,30 +14,26 @@ struct Valve {
     leads_to: Vec<u32>,
 }
 
-impl Valve {
-    fn from_str(input: &str) -> IResult<&str, Self> {
-        // Valve OM has flow rate=0; tunnels lead to valves AA, EZ
-        let (input, name) = tuple((tag("Valve "), alpha0))(input)?;
-        let (input, flow_rate) = tuple((
-            tag(" has flow rate="),
-            map_res(digit0, |s: &str| s.parse()),
-            tag("; "),
-        ))(input)?;
-        let (input, _) = alt((
-            tag("tunnel leads to valve "),
-            tag("tunnels lead to valves "),
-        ))(input)?;
-        let (input, valves) = separated_list0(tag(", "), alpha0)(input)?;
-        Ok((
-            input,
-            Self {
-                name: Self::index(name.1),
-                flow_rate: flow_rate.1,
-                leads_to: valves.into_iter().map(Self::index).collect(),
-            },
-        ))
-    }
+impl FromStr for Valve {
+    type Err = String;
 
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // Valve OM has flow rate=0; tunnels lead to valves AA, EZ
+        let (valve_rate, tunnels) = s.split_once("; ").unwrap();
+        let name = valve_rate.split_whitespace().nth(1).unwrap();
+        let (_, flow_rate) = valve_rate.split_once('=').unwrap();
+        let plural = tunnels.split_whitespace().next().unwrap() == "tunnels";
+        let delim = if plural { "valves " } else { "valve " };
+        let (_, tunnels) = tunnels.split_once(delim).unwrap();
+        Ok(Self {
+            name: Self::index(name),
+            flow_rate: flow_rate.parse().unwrap(),
+            leads_to: tunnels.split(", ").map(Self::index).collect(),
+        })
+    }
+}
+
+impl Valve {
     fn index(name: &str) -> u32 {
         Base::str_insensitive(name)
     }
@@ -191,7 +179,7 @@ fn main() {
 }
 
 fn solution() {
-    let valves = Reader::default().read(|line| Valve::from_str(line).unwrap().1);
+    let valves = Reader::default().read_from_str();
     let cave = create_cave(valves, Valve::index("AA"));
     answer::part1(1873, cave.traverse(30, 1));
     answer::part2(2425, cave.traverse(26, 2));
