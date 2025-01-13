@@ -8,7 +8,7 @@ fn main() {
 
 fn solution() {
     answer::part1(6627023, run(12, 2));
-    answer::part1(4019, get_goal().unwrap());
+    answer::part2(4019, get_goal().unwrap());
 }
 
 fn run(v1: i64, v2: i64) -> i64 {

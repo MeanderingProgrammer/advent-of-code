@@ -14,4 +14,5 @@ func solution() {
 	data := file.Default[string]().ReadLines()
 	fmt.Println(data)
 	answer.Part1(1, 1)
+	answer.Part2(1, 1)
 }

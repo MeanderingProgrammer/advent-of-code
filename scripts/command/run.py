@@ -38,7 +38,7 @@ class LanguageRunner:
         runtimes: list[float] = []
         executions: list[float] = []
         for _ in range(self.times):
-            runtime, execution = LanguageRunner.run_command(self.command)
+            runtime, execution = self.run_command(self.command)
             runtimes.append(runtime)
             executions.append(execution)
 
@@ -49,14 +49,19 @@ class LanguageRunner:
             execution=sum(executions) / self.times,
         )
 
-    @staticmethod
-    def run_command(command: list[str]) -> tuple[float, float]:
+    def run_command(self, command: list[str]) -> tuple[float, float]:
         start = time.time_ns()
         result = execute(command)
         execution_ns = float(time.time_ns() - start)
+
+        assert "Part 1:" in result, "Must have answer to part 1"
+        if int(self.day.day) < 25:
+            assert "Part 2:" in result, "Must have answer to part 2"
+
         matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
         assert len(matches) == 1, "Could not find runtime in output"
         runtime_ns = float(matches[0])
+
         return (runtime_ns / 1_000_000, execution_ns / 1_000_000)
 
 

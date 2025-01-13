@@ -155,5 +155,5 @@ fn solution() {
         grid: computer.bus.grid,
     };
     answer::part1(224, search.bfs(Point::default()).first().cloned().unwrap());
-    answer::part1(284, search.time_for_air().unwrap());
+    answer::part2(284, search.time_for_air().unwrap());
 }

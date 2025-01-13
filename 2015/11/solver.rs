@@ -80,7 +80,7 @@ fn main() {
 fn solution() {
     let mut generator = PasswordGenerator::new(Reader::default().read_line());
     answer::part1("hxbxxyzz", &run(&mut generator));
-    answer::part1("hxcaabcc", &run(&mut generator));
+    answer::part2("hxcaabcc", &run(&mut generator));
 }
 
 fn run(generator: &mut PasswordGenerator) -> String {

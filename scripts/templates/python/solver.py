@@ -7,6 +7,7 @@ def main() -> None:
     data = Parser().string()
     print(data)
     answer.part1(1, 1)
+    answer.part2(1, 1)
 
 
 if __name__ == "__main__":
