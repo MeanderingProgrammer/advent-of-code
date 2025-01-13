@@ -2,7 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
-use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Seat {
@@ -62,8 +61,9 @@ impl SeatingChart {
     }
 
     fn adjacent_occupied(&self, p: &Point) -> usize {
-        Heading::iter()
-            .map(|heading| self.explore_direction(p, &heading))
+        Heading::values()
+            .iter()
+            .map(|heading| self.explore_direction(p, heading))
             .filter(|&seat| seat == Some(&Seat::Occupied))
             .count()
     }

@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
-use aoc_lib::convert;
 use aoc_lib::grid::Grid;
+use aoc_lib::ids::{Base, Ids};
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
@@ -25,9 +25,9 @@ impl Element {
         } else if ch == '.' {
             Some(Self::Empty)
         } else if ch.is_ascii_lowercase() {
-            Some(Self::Key(convert::char_index(ch)))
+            Some(Self::Key(Base::ch_lower(ch)))
         } else if ch.is_ascii_uppercase() {
-            Some(Self::Door(convert::char_index(ch)))
+            Some(Self::Door(Base::ch_upper(ch)))
         } else {
             None
         }
@@ -48,7 +48,7 @@ impl Element {
 
 #[derive(Debug)]
 struct Path {
-    point: Point,
+    point: usize,
     key: u8,
     need: BitSet,
     distance: i64,
@@ -56,17 +56,17 @@ struct Path {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
-    points: Vec<Point>,
+    points: Vec<usize>,
     have: BitSet,
 }
 
 #[derive(Debug)]
-struct Maze<'a> {
-    graph: FxHashMap<&'a Point, Vec<Path>>,
+struct Maze {
+    graph: FxHashMap<usize, Vec<Path>>,
     keys: usize,
 }
 
-impl<'a> Dijkstra for Maze<'a> {
+impl Dijkstra for Maze {
     type T = State;
 
     fn done(&self, node: &State) -> bool {
@@ -81,7 +81,7 @@ impl<'a> Dijkstra for Maze<'a> {
                 .filter(|path| path.need.values().all(|key| node.have.contains(key)))
                 .map(move |path| {
                     let mut next_points = node.points.clone();
-                    next_points[i] = path.point.clone();
+                    next_points[i] = path.point;
                     let mut next_have = node.have.clone();
                     next_have.add(path.key);
                     let next_state = State {
@@ -100,6 +100,7 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Element::from_ch);
+    println!("{:?}", grid.bounds());
     answer::part1(5402, solve(grid.clone()));
     answer::part2(2138, solve(split(grid.clone())));
 }
@@ -127,13 +128,14 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
 }
 
 fn solve(grid: Grid<Element>) -> i64 {
+    let mut ids = Ids::default();
     let mut graph = FxHashMap::default();
     grid.points()
         .into_iter()
         .filter(|point| grid.get(point).is_main())
         .for_each(|point| {
-            let paths = get_paths(&grid, point);
-            graph.insert(point, paths);
+            let paths = get_paths(&grid, point, &mut ids);
+            graph.insert(ids.get(point), paths);
         });
 
     let keys = grid
@@ -148,14 +150,14 @@ fn solve(grid: Grid<Element>) -> i64 {
             .points()
             .into_iter()
             .filter(|point| grid.get(point).is_start())
-            .cloned()
+            .map(|point| ids.get(point))
             .collect(),
         have: BitSet::default(),
     };
     maze.run(start).unwrap()
 }
 
-fn get_paths(grid: &Grid<Element>, start: &Point) -> Vec<Path> {
+fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<Path> {
     let mut queue = VecDeque::new();
     queue.push_back(((start.clone(), BitSet::default()), 0));
     let mut seen = FxHashSet::default();
@@ -171,7 +173,7 @@ fn get_paths(grid: &Grid<Element>, start: &Point) -> Vec<Path> {
         if &point != start {
             if let Element::Key(key) = grid.get(&point) {
                 result.push(Path {
-                    point: point.clone(),
+                    point: ids.get(&point),
                     key: *key,
                     need: need.clone(),
                     distance,

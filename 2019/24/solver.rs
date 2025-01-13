@@ -2,7 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
-use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Location {
@@ -52,8 +51,8 @@ impl Layout {
     }
 
     fn neighbors<'a>(&'a self, location: &'a Location) -> impl Iterator<Item = Location> + 'a {
-        Direction::iter().flat_map(|direction| {
-            let neighbor = &location.point + &direction;
+        Direction::values().iter().flat_map(|direction| {
+            let neighbor = &location.point + direction;
             if self.recursive && neighbor == self.middle {
                 (0..self.size)
                     .map(|i| match direction {
@@ -65,7 +64,7 @@ impl Layout {
                     .map(|p| Location::new(p, location.depth - 1))
                     .collect()
             } else if self.recursive && !self.valid(&neighbor) {
-                vec![Location::new(&self.middle + &direction, location.depth + 1)]
+                vec![Location::new(&self.middle + direction, location.depth + 1)]
             } else {
                 vec![Location::new(neighbor, location.depth)]
             }

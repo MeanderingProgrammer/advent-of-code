@@ -5,7 +5,6 @@ use aoc_lib::reader::Reader;
 use aoc_lib::search::GraphSearch;
 use fxhash::FxHashMap;
 use std::collections::VecDeque;
-use strum::IntoEnumIterator;
 
 #[derive(Debug, Clone)]
 enum Item {
@@ -68,7 +67,10 @@ impl RepairDroid {
     }
 
     fn get_unexplored(&self) -> Option<Direction> {
-        Direction::iter().find(|direction| !self.grid.contains_key(&(&self.position + direction)))
+        Direction::values()
+            .iter()
+            .find(|&direction| !self.grid.contains_key(&(&self.position + direction)))
+            .cloned()
     }
 
     fn get_code(direction: &Direction) -> i64 {

@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use aoc_lib::search::GraphSearch;
 use fxhash::FxHashMap;
@@ -21,10 +22,7 @@ impl Cave {
             } else if s == "end" {
                 END
             } else {
-                s.to_lowercase()
-                    .char_indices()
-                    .map(|(i, ch)| 26u32.pow(i as u32) * ((ch as u32) - ('a' as u32)))
-                    .sum()
+                Base::str_insensitive(s)
             },
         }
     }

@@ -4,11 +4,9 @@ use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use std::ops::Add;
 use std::str::FromStr;
-use strum::IntoEnumIterator;
-use strum_macros::EnumIter;
 
-#[derive(Debug, EnumIter)]
-pub enum HexHeading {
+#[derive(Debug)]
+enum HexHeading {
     East,
     West,
     NorthEast,
@@ -34,6 +32,17 @@ impl FromStr for HexHeading {
 }
 
 impl HexHeading {
+    fn values() -> &'static [Self] {
+        &[
+            Self::East,
+            Self::West,
+            Self::NorthEast,
+            Self::NorthWest,
+            Self::SouthEast,
+            Self::SouthWest,
+        ]
+    }
+
     fn to_point(&self) -> Point {
         match self {
             Self::East => Point::new(2, 0),
@@ -75,7 +84,7 @@ impl Floor {
         for (point, tile) in self.floor.iter() {
             counts.entry(point.clone()).or_insert(0);
             if !tile {
-                for neighbor in HexHeading::iter().map(|heading| point + &heading) {
+                for neighbor in HexHeading::values().iter().map(|heading| point + heading) {
                     counts
                         .entry(neighbor)
                         .and_modify(|count| *count += 1)

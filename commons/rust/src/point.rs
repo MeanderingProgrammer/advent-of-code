@@ -2,10 +2,8 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::ops::{Add, Mul};
 use std::str::FromStr;
-use strum::IntoEnumIterator;
-use strum_macros::EnumIter;
 
-#[derive(Debug, EnumIter, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Direction {
     Up,
     Down,
@@ -36,6 +34,10 @@ impl Direction {
             '>' => Some(Self::Right),
             _ => None,
         }
+    }
+
+    pub fn values() -> &'static [Self] {
+        &[Self::Up, Self::Down, Self::Left, Self::Right]
     }
 
     pub fn to_point(&self) -> Point {
@@ -75,7 +77,7 @@ impl Direction {
     }
 }
 
-#[derive(Debug, EnumIter)]
+#[derive(Debug)]
 pub enum Heading {
     SouthEast,
     East,
@@ -88,6 +90,19 @@ pub enum Heading {
 }
 
 impl Heading {
+    pub fn values() -> &'static [Self] {
+        &[
+            Self::SouthEast,
+            Self::East,
+            Self::NorthEast,
+            Self::SouthWest,
+            Self::West,
+            Self::NorthWest,
+            Self::South,
+            Self::North,
+        ]
+    }
+
     pub fn to_point(&self) -> Point {
         match self {
             Self::SouthEast => Point::new(1, 1),
@@ -186,11 +201,11 @@ impl Point {
     }
 
     pub fn neighbors(&self) -> Vec<Self> {
-        Direction::iter().map(|dir| self + &dir).collect()
+        Direction::values().iter().map(|dir| self + dir).collect()
     }
 
     pub fn diagonal_neighbors(&self) -> Vec<Self> {
-        Heading::iter().map(|heading| self + &heading).collect()
+        Heading::values().iter().map(|head| self + head).collect()
     }
 
     pub fn distance(&self, other: &Self) -> f64 {
@@ -207,7 +222,7 @@ impl Point {
     }
 }
 
-#[derive(Debug, EnumIter)]
+#[derive(Debug)]
 pub enum Direction3d {
     Up,
     Down,
@@ -218,6 +233,17 @@ pub enum Direction3d {
 }
 
 impl Direction3d {
+    pub fn values() -> &'static [Self] {
+        &[
+            Self::Up,
+            Self::Down,
+            Self::Left,
+            Self::Right,
+            Self::Forward,
+            Self::Backward,
+        ]
+    }
+
     pub fn to_point(&self) -> Point3d {
         match self {
             Self::Up => Point3d::new(0, 0, 1),
@@ -297,7 +323,7 @@ impl Point3d {
     }
 
     pub fn neighbors(&self) -> Vec<Self> {
-        Direction3d::iter().map(|dir| self + &dir).collect()
+        Direction3d::values().iter().map(|dir| self + dir).collect()
     }
 
     pub fn length(&self) -> i64 {

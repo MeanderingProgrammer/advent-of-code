@@ -4,7 +4,6 @@ use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use std::collections::VecDeque;
-use strum::IntoEnumIterator;
 
 #[derive(Debug, PartialEq)]
 struct Trace {
@@ -114,9 +113,10 @@ impl Compress {
     fn neighbors(&self, trace: &Trace) -> Vec<(Point, Direction, bool)> {
         let last = trace.path.last().unwrap();
         let value = *self.grid.get(last);
-        Direction::iter()
+        Direction::values()
+            .iter()
             // Continue path in all directions from last point on our path
-            .map(|dir| (last + &dir, dir))
+            .map(|dir| (last + dir, dir.clone()))
             // Remove anything that's off the grid or goes into a forest
             .filter(|(point, _)| *self.grid.get_or(point).unwrap_or(&'#') != '#')
             // Remove direction going back the way we traveled

@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
+use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
@@ -46,9 +47,7 @@ impl Valve {
     }
 
     fn index(name: &str) -> u32 {
-        name.char_indices()
-            .map(|(i, ch)| 26u32.pow(i as u32) * ((ch as u32) - ('A' as u32)))
-            .sum()
+        Base::str_insensitive(name)
     }
 }
 
