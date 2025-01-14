@@ -8,11 +8,12 @@ def main() -> None:
 
 
 def factor_sum(value: int) -> int:
-    result = 0
-    for i in range(1, value + 1):
+    factors: set[int] = set()
+    for i in range(1, int(value**0.5) + 1):
         if value % i == 0:
-            result += i
-    return result
+            factors.add(i)
+            factors.add(value // i)
+    return sum(factors)
 
 
 if __name__ == "__main__":

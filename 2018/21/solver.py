@@ -3,18 +3,20 @@ from aoc import answer
 
 @answer.timer
 def main() -> None:
-    halt_values = run()
-    answer.part1(6619857, halt_values[0])
-    answer.part2(9547924, halt_values[-1])
+    first, last = run()
+    answer.part1(6619857, first)
+    answer.part2(9547924, last)
 
 
-def run() -> list[int]:
-    seen: list[int] = []
+def run() -> tuple[int, int]:
+    seen: set[int] = set()
     current = run_inner(0)
+    first, last = current, current
     while current not in seen:
-        seen.append(current)
+        last = current
+        seen.add(current)
         current = run_inner(current)
-    return seen
+    return first, last
 
 
 def run_inner(previous: int) -> int:

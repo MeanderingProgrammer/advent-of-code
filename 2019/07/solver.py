@@ -7,23 +7,21 @@ from aoc.parser import Parser
 
 
 class Amplifier(Bus):
-    def __init__(self, memory: list[int], setting: int, pause_on_load: bool):
+    def __init__(self, memory: list[int], setting: int, pause: bool):
         self.computer = Computer(bus=self, memory=memory)
         self.inputs = [setting]
         self.outputs = []
         self.load = False
-        self.pause_on_load = pause_on_load
+        self.pause = pause
 
     def run(self) -> bool:
         self.load = False
         self.computer.run()
-        return self.computer.has_next()
+        return not self.active()
 
     @override
     def active(self) -> bool:
-        if not self.pause_on_load:
-            return True
-        return not self.load
+        return not self.pause or not self.load
 
     @override
     def get_input(self) -> int:
@@ -37,20 +35,21 @@ class Amplifier(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(38834, run_permutations([0, 1, 2, 3, 4], False))
-    answer.part2(69113332, run_permutations([5, 6, 7, 8, 9], True))
+    memory = Parser().int_csv()
+    answer.part1(38834, run(memory, [0, 1, 2, 3, 4], False))
+    answer.part2(69113332, run(memory, [5, 6, 7, 8, 9], True))
 
 
-def run_permutations(sequence: list[int], pause_on_load: bool) -> int:
+def run(memory: list[int], sequence: list[int], pause: bool) -> int:
     values = []
     for possibility in permutations(sequence):
-        value = run_sequence(possibility, pause_on_load)
+        value = check(memory, possibility, pause)
         values.append(value)
     return max(values)
 
 
-def run_sequence(sequence: tuple[int, ...], pause_on_load: bool):
-    amplifiers = [Amplifier(get_memory(), entry, pause_on_load) for entry in sequence]
+def check(memory: list[int], sequence: tuple[int, ...], pause: bool) -> int:
+    amplifiers = [Amplifier(memory.copy(), entry, pause) for entry in sequence]
     output, state = 0, True
     while state:
         for amplifier in amplifiers:
@@ -58,10 +57,6 @@ def run_sequence(sequence: tuple[int, ...], pause_on_load: bool):
             state &= amplifier.run()
             output = amplifier.outputs[-1]
     return output
-
-
-def get_memory():
-    return Parser().int_csv()
 
 
 if __name__ == "__main__":

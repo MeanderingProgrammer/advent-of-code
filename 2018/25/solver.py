@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from aoc import answer
 from aoc.parser import Parser
@@ -11,33 +11,42 @@ def diff(p1: Point, p2: Point) -> int:
 
 
 @dataclass(frozen=True)
-class Constallation:
-    points: set[Point]
+class UnionFind:
+    parents: dict[Point, Point] = field(default_factory=dict)
+    ranks: dict[Point, int] = field(default_factory=dict)
 
-    def add(self, points: list[Point]) -> None:
-        [self.points.add(point) for point in points]
+    def run(self, points: list[Point]) -> int:
+        for n in points:
+            self.parents[n] = n
+            self.ranks[n] = 1
 
-    def fits(self, p: Point) -> bool:
-        for point in self.points:
-            if diff(point, p) <= 3:
-                return True
-        return False
+        components = len(points)
+        for i in range(len(points)):
+            for j in range(i + 1, len(points)):
+                p1, p2 = points[i], points[j]
+                if diff(p1, p2) <= 3 and self.union(p1, p2):
+                    components -= 1
+        return components
+
+    def union(self, n1: Point, n2: Point) -> bool:
+        p1, p2 = self.find(n1), self.find(n2)
+        if p1 == p2:
+            return False
+        r1, r2 = self.ranks[p1], self.ranks[p2]
+        parent, child = (p1, p2) if r1 >= r2 else (p2, p1)
+        self.parents[child] = parent
+        self.ranks[parent] += self.ranks[child]
+        return True
+
+    def find(self, n: Point) -> Point:
+        while self.parents[n] != n:
+            n = self.parents[n]
+        return n
 
 
 @answer.timer
 def main() -> None:
-    constallations: list[Constallation] = []
-    for point in get_points():
-        options = get_options(point, constallations)
-        if len(options) == 0:
-            constallations.append(Constallation(points=set([point])))
-        elif len(options) == 1:
-            options[0].add([point])
-        else:
-            to_delete = merge(point, options)
-            for option in to_delete:
-                constallations.remove(option)
-    answer.part1(375, len(constallations))
+    answer.part1(375, UnionFind().run(get_points()))
 
 
 def get_points() -> list[Point]:
@@ -47,25 +56,6 @@ def get_points() -> list[Point]:
         point = (int(x), int(y), int(z), int(w))
         points.append(point)
     return points
-
-
-def get_options(
-    point: Point, constallations: list[Constallation]
-) -> list[Constallation]:
-    options: list[Constallation] = []
-    for constallation in constallations:
-        if constallation.fits(point):
-            options.append(constallation)
-    return options
-
-
-def merge(point: Point, options: list[Constallation]):
-    merged: Constallation = options[0]
-    merged.add([point])
-    to_delete = options[1:]
-    for constallation in to_delete:
-        merged.add(list(constallation.points))
-    return to_delete
 
 
 if __name__ == "__main__":
