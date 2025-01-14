@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
-use priority_queue::PriorityQueue;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -85,7 +85,7 @@ impl FromStr for Blueprint {
 
 impl Blueprint {
     fn simulate(&self, runtime: i64) -> i64 {
-        let mut q = PriorityQueue::new();
+        let mut q = PriorityQueue::new(HeapVariant::Max);
         q.push(State::new(), (0, runtime));
         let mut seen = FxHashSet::default();
 
@@ -140,7 +140,7 @@ impl Blueprint {
                 }
 
                 let next_num_geods = next_state.geodes();
-                q.push_increase(next_state, (next_num_geods, time_left - 1));
+                q.push(next_state, (next_num_geods, time_left - 1));
             }
         }
         max_geodes_seen

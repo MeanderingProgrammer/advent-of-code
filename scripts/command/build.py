@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import override
 
 from command.command import Command
-from component.command import execute
+from component.command import Executor
 from language.language import Language
 
 
@@ -11,6 +11,7 @@ class LanguageBuild:
     name: str
     build: list[list[str]]
     test: list[str]
+    executor: Executor
 
     def key(self) -> str:
         return self.name
@@ -24,9 +25,9 @@ class LanguageBuild:
     def execute(self) -> None:
         print(f"Setting up: {self.name}")
         print("Building")
-        [execute(command) for command in self.build]
+        [self.executor.run(command) for command in self.build]
         print("Testing")
-        execute(self.test)
+        self.executor.run(self.test)
 
 
 @dataclass(frozen=True)
@@ -42,11 +43,13 @@ class Build(Command):
         [build.execute() for build in self.builds()]
 
     def builds(self) -> list[LanguageBuild]:
+        executor = Executor()
         return [
             LanguageBuild(
                 name=language.name,
                 build=language.build_commands(),
                 test=language.test_command(),
+                executor=executor,
             )
             for language in self.languages
         ]

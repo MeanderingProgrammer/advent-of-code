@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
+use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
-use priority_queue::DoublePriorityQueue;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
@@ -60,11 +60,11 @@ impl Maze {
         let mut state_seen = FxHashMap::default();
         state_seen.insert(start.clone(), start_seen);
 
-        let mut queue = DoublePriorityQueue::new();
+        let mut queue = PriorityQueue::new(HeapVariant::Min);
         queue.push(start, 0);
 
         while !queue.is_empty() {
-            let (current, current_cost) = queue.pop_min().unwrap();
+            let (current, current_cost) = queue.pop().unwrap();
             if min_cost > 0 && current_cost > min_cost {
                 continue;
             }

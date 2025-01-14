@@ -1,10 +1,10 @@
-import json
 from enum import StrEnum, auto
 from pathlib import Path
 
+from component.command import Executor
 from component.day_factory import DayFactory
+from component.history import History
 from pojo.day import Day
-from pojo.runtime_info import RuntimeInfo
 
 
 class RunName(StrEnum):
@@ -14,6 +14,7 @@ class RunName(StrEnum):
     DAYS = auto()
     LANGUAGES = auto()
     SLOW = auto()
+    CHANGED = auto()
 
 
 class RunTemplate:
@@ -30,14 +31,25 @@ class RunTemplate:
             return [Day("2021", "01")]
         elif name == RunName.SLOW:
             return RunTemplate.slow()
+        elif name == RunName.CHANGED:
+            return RunTemplate.changed()
 
     @staticmethod
     def slow() -> list[Day]:
-        slow_file = Path("slow.json")
-        if not slow_file.is_file():
-            raise Exception("Looks like slow runtimes were never determined")
-        days = set()
-        for runtime in json.loads(slow_file.read_text()):
-            runtime_info = RuntimeInfo.from_dict(runtime)
-            days.add(runtime_info.day)
+        days: set[Day] = set()
+        for runtime in History("slow").load(True):
+            days.add(runtime.day)
         return sorted(list(days))
+
+    @staticmethod
+    def changed() -> list[Day]:
+        candidates: set[Path] = set()
+        modified = Executor(False).run(["git", "diff", "--name-only", "--staged"])
+        for line in modified.splitlines():
+            path = Path(*Path(line).parts[:2])
+            candidates.add(path)
+        result: list[Day] = []
+        for day in DayFactory().get_days():
+            if day.dir() in candidates:
+                result.append(day)
+        return result

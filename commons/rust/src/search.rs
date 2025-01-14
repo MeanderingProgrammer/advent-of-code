@@ -1,5 +1,5 @@
+use crate::queue::{HeapVariant, PriorityQueue};
 use fxhash::FxHashSet;
-use priority_queue::DoublePriorityQueue;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -62,11 +62,11 @@ pub trait Dijkstra {
     fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, i64)>;
 
     fn run(&self, start: Self::T) -> Option<i64> {
-        let mut queue = DoublePriorityQueue::new();
+        let mut queue = PriorityQueue::new(HeapVariant::Min);
         queue.push(start, 0);
         let mut seen = FxHashSet::default();
         while !queue.is_empty() {
-            let (node, weight) = queue.pop_min().unwrap();
+            let (node, weight) = queue.pop().unwrap();
 
             if seen.contains(&node) {
                 continue;
@@ -78,7 +78,7 @@ pub trait Dijkstra {
             }
             for (adjacent, cost) in self.neighbors(&node) {
                 if !seen.contains(&adjacent) {
-                    queue.push_decrease(adjacent, weight + cost);
+                    queue.push(adjacent, weight + cost);
                 }
             }
         }

@@ -48,7 +48,7 @@ impl Element {
 
 #[derive(Debug)]
 struct Path {
-    point: usize,
+    point: u8,
     key: u8,
     need: BitSet,
     distance: i64,
@@ -56,13 +56,13 @@ struct Path {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
-    points: Vec<usize>,
+    points: Vec<u8>,
     have: BitSet,
 }
 
 #[derive(Debug)]
 struct Maze {
-    graph: FxHashMap<usize, Vec<Path>>,
+    graph: FxHashMap<u8, Vec<Path>>,
     keys: usize,
 }
 
@@ -100,7 +100,6 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Element::from_ch);
-    println!("{:?}", grid.bounds());
     answer::part1(5402, solve(grid.clone()));
     answer::part2(2138, solve(split(grid.clone())));
 }
@@ -135,7 +134,7 @@ fn solve(grid: Grid<Element>) -> i64 {
         .filter(|point| grid.get(point).is_main())
         .for_each(|point| {
             let paths = get_paths(&grid, point, &mut ids);
-            graph.insert(ids.get(point), paths);
+            graph.insert(ids.set(point) as u8, paths);
         });
 
     let keys = grid
@@ -150,7 +149,7 @@ fn solve(grid: Grid<Element>) -> i64 {
             .points()
             .into_iter()
             .filter(|point| grid.get(point).is_start())
-            .map(|point| ids.get(point))
+            .map(|point| ids.set(point) as u8)
             .collect(),
         have: BitSet::default(),
     };
@@ -173,7 +172,7 @@ fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<P
         if &point != start {
             if let Element::Key(key) = grid.get(&point) {
                 result.push(Path {
-                    point: ids.get(&point),
+                    point: ids.set(&point) as u8,
                     key: *key,
                     need: need.clone(),
                     distance,

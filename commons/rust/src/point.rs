@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::fmt;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -181,6 +181,17 @@ impl Add<&Heading> for &Point {
 
     fn add(self, rhs: &Heading) -> Point {
         self + &rhs.to_point()
+    }
+}
+
+impl Sub for &Point {
+    type Output = Point;
+
+    fn sub(self, rhs: &Point) -> Point {
+        Point {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }
 

@@ -1,12 +1,12 @@
-import json
 import re
 import time
 from dataclasses import dataclass
 from typing import override
 
 from command.command import Command
-from component.command import execute
+from component.command import Executor
 from component.display_runtimes import Displayer
+from component.history import History
 from component.language_strategy import LanguageStrategy
 from pojo.day import Day
 from pojo.runtime_info import RuntimeInfo
@@ -18,6 +18,7 @@ class LanguageRunner:
     name: str
     times: int
     command: list[str]
+    executor: Executor
 
     def as_dict(self) -> dict:
         return dict(
@@ -51,7 +52,7 @@ class LanguageRunner:
 
     def run_command(self, command: list[str]) -> tuple[float, float]:
         start = time.time_ns()
-        result = execute(command)
+        result = self.executor.run(command)
         execution_ns = float(time.time_ns() - start)
 
         assert "Part 1:" in result, "Must have answer to part 1"
@@ -87,16 +88,19 @@ class Runner(Command):
         runtimes = [runner.execute() for runner in self.runners()]
         overall_runtime = time.time() - start
 
-        Displayer("ALL", runtimes).display()
-        self.save_as("all", runtimes)
-
         slow = list(filter(lambda runtime: runtime.runtime > self.slow, runtimes))
-        Displayer("SLOW", slow).display()
-        self.save_as("slow", slow)
+        previous = History("all").load(False)
+        Displayer("all", runtimes, previous).display()
+        Displayer("slow", slow, previous).display()
+
+        if self.save:
+            History("all").save(runtimes)
+            History("slow").save(slow)
 
         print(f"Overall runtime: {overall_runtime:.3f} seconds")
 
     def runners(self) -> list[LanguageRunner]:
+        executor = Executor()
         result: list[LanguageRunner] = []
         for day in self.days:
             for language in self.language_strategy.get(day):
@@ -108,13 +112,7 @@ class Runner(Command):
                     name=language.name,
                     times=times,
                     command=language.run_command(day, self.run_args),
+                    executor=executor,
                 )
                 result.append(runner)
         return result
-
-    def save_as(self, name: str, runtimes: list[RuntimeInfo]) -> None:
-        if not self.save:
-            return
-        with open(f"{name}.json", "w") as f:
-            value = [runtime.as_dict() for runtime in runtimes]
-            f.write(json.dumps(value))

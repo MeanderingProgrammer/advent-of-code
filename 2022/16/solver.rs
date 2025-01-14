@@ -1,10 +1,10 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
 use aoc_lib::ids::Base;
+use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
-use priority_queue::PriorityQueue;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -77,7 +77,7 @@ struct Cave {
 
 impl Cave {
     fn traverse(&self, time: u16, individuals: usize) -> u16 {
-        let mut queue = PriorityQueue::new();
+        let mut queue = PriorityQueue::new(HeapVariant::Max);
         queue.push(FullState::new(time, individuals), 0);
         let mut max_score: u16 = 0;
         while !queue.is_empty() {
@@ -111,7 +111,7 @@ impl Cave {
                 _ => unreachable!(),
             };
             for (next_state, next_score) in next_states {
-                queue.push_increase(next_state, next_score);
+                queue.push(next_state, next_score);
             }
         }
         max_score

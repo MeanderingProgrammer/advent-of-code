@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::point::Point;
+use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
-use priority_queue::DoublePriorityQueue;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Team {
@@ -149,11 +149,11 @@ impl Game {
     }
 
     fn distances(&self, start: &Point) -> FxHashMap<Point, (u16, Point)> {
-        let mut queue = DoublePriorityQueue::new();
-        queue.push_decrease(start.clone(), (0, start.clone()));
+        let mut queue = PriorityQueue::new(HeapVariant::Min);
+        queue.push(start.clone(), (0, start.clone()));
         let mut distances = FxHashMap::default();
         while !queue.is_empty() {
-            let (position, (length, parent)) = queue.pop_min().unwrap();
+            let (position, (length, parent)) = queue.pop().unwrap();
             if !distances.contains_key(&position) {
                 distances.insert(position.clone(), (length, parent.clone()));
                 position
@@ -163,7 +163,7 @@ impl Game {
                     .filter(|neighbor| !self.characters.contains_key(neighbor))
                     .filter(|neighbor| !distances.contains_key(neighbor))
                     .for_each(|neighbor| {
-                        queue.push_decrease(neighbor, (length + 1, position.clone()));
+                        queue.push(neighbor, (length + 1, position.clone()));
                     });
             }
         }

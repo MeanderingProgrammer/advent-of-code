@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::grid::Grid;
+use aoc_lib::grid::{Bound, Grid};
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
@@ -91,20 +91,21 @@ impl Pod {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
-    pods: BTreeMap<Point, Pod>,
+    pods: BTreeMap<u8, Pod>,
 }
 
 impl State {
-    fn apply(&self, start: &Point, end: Point) -> (Self, i64) {
+    fn apply(&self, id: &Id, start: u8, end: u8) -> (Self, i64) {
         let mut pods = self.pods.clone();
-        let mut pod = pods.remove(start).unwrap();
+        let mut pod = pods.remove(&start).unwrap();
 
         let cost = pod.value.cost().unwrap();
         // Movement along x-axis work as usual. However, along the y-axis we need
         // to go up to the hallway, then back down to our desired level.
         // So if the hallway is at y = 1, and we move from y = 4 to y = 2, what
         // really happens is we go from 4 -> 1 then 1 -> 2.
-        let distance = (start.x - end.x).abs() + (start.y - HALLWAY) + (end.y - HALLWAY);
+        let (p1, p2) = (id.from(start), id.from(end));
+        let distance = (p1.x - p2.x).abs() + (p1.y - HALLWAY) + (p2.y - HALLWAY);
 
         pod.start = false;
         pods.insert(end, pod);
@@ -112,10 +113,10 @@ impl State {
         (Self { pods }, cost * distance)
     }
 
-    fn room(&self, x: i64) -> Option<i64> {
+    fn room(&self, id: &Id, x: i64) -> Option<i64> {
         let mut count = 0;
-        for (point, pod) in self.pods.iter() {
-            if point.x == x {
+        for (index, pod) in self.pods.iter() {
+            if id.from(*index).x == x {
                 if pod.value.x() != x {
                     return None;
                 } else {
@@ -128,66 +129,110 @@ impl State {
 }
 
 #[derive(Debug)]
+struct Id {
+    offset: Point,
+    width: u8,
+}
+
+impl Id {
+    fn new(bound: &Bound) -> Self {
+        Self {
+            offset: bound.lower.clone(),
+            width: (&bound.upper - &bound.lower).x as u8 + 1,
+        }
+    }
+
+    fn to(&self, p: &Point) -> u8 {
+        let p = p - &self.offset;
+        (p.y as u8) * self.width + (p.x as u8)
+    }
+
+    fn from(&self, i: u8) -> Point {
+        let (x, y) = (i % self.width, i / self.width);
+        &Point::new(x as i64, y as i64) + &self.offset
+    }
+}
+
+#[derive(Debug)]
 struct Board {
-    graph: FxHashMap<Point, Vec<Point>>,
-    size: i64,
+    graph: FxHashMap<u8, Vec<u8>>,
+    id: Id,
+    height: i64,
 }
 
 impl Dijkstra for Board {
     type T = State;
 
     fn done(&self, state: &State) -> bool {
-        state.pods.iter().all(|(point, pod)| pod.done(point))
+        state
+            .pods
+            .iter()
+            .all(|(index, pod)| pod.done(&self.id.from(*index)))
     }
 
     fn neighbors(&self, state: &State) -> impl Iterator<Item = (State, i64)> {
         state
             .pods
             .iter()
-            .filter(|(start, pod)| !pod.done(start) || pod.start)
+            .filter(|(start, pod)| !pod.done(&self.id.from(**start)) || pod.start)
             .flat_map(|(start, _)| {
-                self.options(state, start)
+                self.options(state, *start)
                     .into_iter()
-                    .map(|end| state.apply(start, end))
+                    .map(|end| state.apply(&self.id, *start, end))
             })
     }
 }
 
 impl Board {
-    fn options(&self, state: &State, start: &Point) -> Vec<Point> {
-        let pod = &state.pods[start];
-        let valid_rooms = [start.x, pod.value.x()];
+    fn new(grid: Grid<char>) -> Self {
+        let bound = grid.bounds();
+        let id = Id::new(&bound);
+        Self {
+            graph: grid
+                .to_graph()
+                .iter()
+                .map(|(from, to)| (id.to(from), to.iter().map(|e| id.to(e)).collect()))
+                .collect(),
+            id,
+            height: bound.upper.y - 1,
+        }
+    }
+
+    fn options(&self, state: &State, start: u8) -> Vec<u8> {
+        let pod = &state.pods[&start];
+        let valid_rooms = [self.id.from(start).x, pod.value.x()];
 
         let mut seen = FxHashSet::default();
         let mut options = Vec::new();
 
         let mut queue = VecDeque::new();
-        queue.push_back(start.clone());
+        queue.push_back(start);
         while let Some(end) = queue.pop_back() {
-            let in_room = end.y != HALLWAY;
+            let end_point = self.id.from(end);
+            let in_room = end_point.y != HALLWAY;
 
             // Prune branches going into invalid rooms
-            if in_room && !valid_rooms.contains(&end.x) {
+            if in_room && !valid_rooms.contains(&end_point.x) {
                 continue;
             }
 
             if seen.contains(&end) {
                 continue;
             }
-            seen.insert(end.clone());
+            seen.insert(end);
 
-            if self.valid(state, pod, &end) {
+            if self.valid(state, pod, &end_point) {
                 if in_room {
                     // If we can get into the room pick this move
                     return vec![end];
                 } else {
-                    options.push(end.clone());
+                    options.push(end);
                 }
             }
 
             for next in &self.graph[&end] {
                 if !state.pods.contains_key(next) {
-                    queue.push_back(next.clone());
+                    queue.push_back(*next);
                 }
             }
         }
@@ -210,7 +255,7 @@ impl Board {
                     pod.crosses(end.x).all(|x| {
                         state
                             .pods
-                            .get(&Point::new(x, HALLWAY))
+                            .get(&self.id.to(&Point::new(x, HALLWAY)))
                             .map(|o| !o.crosses(x).any(|o_x| o_x == end.x))
                             .unwrap_or(true)
                     })
@@ -224,9 +269,9 @@ impl Board {
                     // Must be the room for this amphipod, need to make sure that:
                     // 1) Only valid amphipods are in the room
                     // 2) We go to the correct point in the room, as far back as possible
-                    match state.room(pod.value.x()) {
+                    match state.room(&self.id, pod.value.x()) {
                         None => false,
-                        Some(count) => end.y == self.size + HALLWAY - count,
+                        Some(count) => end.y == self.height + HALLWAY - count,
                     }
                 }
             }
@@ -247,7 +292,7 @@ fn solution() {
 fn solve(lines: &[String], extend: bool) -> i64 {
     let rows = get_rows(lines, extend);
     let board = get_board(&rows);
-    let state = get_state(&rows);
+    let state = get_state(&board.id, &rows);
     board.run(state).unwrap()
 }
 
@@ -271,19 +316,16 @@ fn get_board(rows: &[String]) -> Board {
         '#' | ' ' => None,
         _ => Some(ch),
     });
-    Board {
-        graph: grid.to_graph(),
-        size: grid.bounds().upper.y - 1,
-    }
+    Board::new(grid)
 }
 
-fn get_state(rows: &[String]) -> State {
+fn get_state(id: &Id, rows: &[String]) -> State {
     let grid = Grid::from_lines(rows, |_, ch| Value::from_char(ch).map(Pod::new));
     State {
         pods: grid
             .points()
             .into_iter()
-            .map(|point| (point.clone(), grid.get(point).clone()))
+            .map(|point| (id.to(point), grid.get(point).clone()))
             .collect(),
     }
 }

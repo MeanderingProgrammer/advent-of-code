@@ -29,8 +29,20 @@ impl<K> Ids<K>
 where
     K: Clone + std::hash::Hash + std::cmp::Eq,
 {
-    pub fn get(&mut self, key: &K) -> usize {
+    pub fn set(&mut self, key: &K) -> usize {
         let n = self.values.len();
         *self.values.entry(key.clone()).or_insert(n)
+    }
+
+    pub fn get(&self, key: &K) -> usize {
+        *self.values.get(key).unwrap()
+    }
+
+    pub fn reverse(&self, value: usize) -> &K {
+        self.values
+            .iter()
+            .find(|(_, v)| **v == value)
+            .map(|(k, _)| k)
+            .unwrap()
     }
 }

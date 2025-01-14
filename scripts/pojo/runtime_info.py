@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from pojo.day import Day
 
@@ -10,7 +11,7 @@ class RuntimeInfo:
     runtime: float
     execution: float
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> dict[str, Any]:
         return dict(
             year=int(self.day.year),
             day=int(self.day.day),
