@@ -14,39 +14,34 @@ VALID_TOOL: dict[int, set[str]] = {
 }
 
 
-@dataclass(slots=True)
+@dataclass
 class Region:
-    depth: int
-    target: Point
-    location: Point
-    left: Optional[Self]
-    below: Optional[Self]
-    cached_index: Optional[int] = None
-    cached_erosion: Optional[int] = None
+    erosion: int
+    kind: int
+    tools: set[str]
 
-    def tools(self) -> set[str]:
-        return VALID_TOOL[self.kind()]
+    def __init__(
+        self,
+        depth: int,
+        target: Point,
+        location: Point,
+        left: Optional[Self],
+        above: Optional[Self],
+    ) -> None:
+        index = None
+        if location in [(0, 0), target]:
+            index = 0
+        elif location[1] == 0:
+            index = location[0] * 16_807
+        elif location[0] == 0:
+            index = location[1] * 48_271
+        else:
+            assert left is not None and above is not None
+            index = left.erosion * above.erosion
 
-    def kind(self) -> int:
-        return self.erosion() % 3
-
-    def erosion(self) -> int:
-        if self.cached_erosion is None:
-            self.cached_erosion = (self.index() + self.depth) % 20_183
-        return self.cached_erosion
-
-    def index(self) -> int:
-        if self.cached_index is None:
-            if self.location in [(0, 0), self.target]:
-                self.cached_index = 0
-            elif self.location[1] == 0:
-                self.cached_index = self.location[0] * 16_807
-            elif self.location[0] == 0:
-                self.cached_index = self.location[1] * 48_271
-            else:
-                assert self.left is not None and self.below is not None
-                self.cached_index = self.left.erosion() * self.below.erosion()
-        return self.cached_index
+        self.erosion = (index + depth) % 20_183
+        self.kind = self.erosion % 3
+        self.tools = VALID_TOOL[self.kind]
 
 
 Grid = dict[Point, Region]
@@ -78,11 +73,11 @@ def risk_within(cave: Grid, target: Point) -> int:
     risk_levels = []
     for point, region in cave.items():
         if point[0] <= target[0] and point[1] <= target[1]:
-            risk_levels.append(region.kind())
+            risk_levels.append(region.kind)
     return sum(risk_levels)
 
 
-def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> int:
+def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> Optional[int]:
     queue: list[tuple[int, tuple[Point, str]]] = []
     seen: set[tuple[Point, str]] = set()
 
@@ -104,12 +99,12 @@ def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> int:
             for neighbor in PointHelper.neighbors(location):
                 if neighbor not in cave:
                     continue
-                if item in cave[neighbor].tools():
+                if item in cave[neighbor].tools:
                     add_item(time + 1, neighbor, item)
                 else:
-                    for next_item in cave[neighbor].tools() & cave[location].tools():
+                    for next_item in cave[neighbor].tools & cave[location].tools:
                         add_item(time + 8, neighbor, next_item)
-    raise Exception("Failed")
+    return None
 
 
 if __name__ == "__main__":

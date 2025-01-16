@@ -196,7 +196,6 @@ impl DroidBus {
     }
 
     fn get_key(&self) -> i64 {
-        println!("{:?}", self.bag.index);
         let lines = self.instruction.split('\n').filter(|s| !s.is_empty());
         let last_line = lines.last().unwrap().split_whitespace().collect_vec();
         last_line[last_line.len() - 8].parse().unwrap()

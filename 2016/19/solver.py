@@ -26,11 +26,11 @@ def solve_by_pattern(num_elves: int, increment: bool) -> int:
 # It is not needed after the patterns are found but leaving it here for reference.
 def get_patterns() -> None:
     # Part 1 pattern:
-    # Winning elve inceases by 2 for each elve we add.
+    # Winning elve increases by 2 for each elve we add.
     # If the winning elve > the total number of elves we start the pattern over.
     run_for_pattern(location_v1)
     # Part 2 pattern:
-    # Winning elve inceases by 1 for each elve we add.
+    # Winning elve increases by 1 for each elve we add.
     # If the winning elve > half the total number of elves we increase by 2.
     run_for_pattern(location_v2)
 

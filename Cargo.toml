@@ -59,6 +59,10 @@ name = "aoc_2016_18"
 path = "2016/18/solver.rs"
 
 [[bin]]
+name = "aoc_2016_19"
+path = "2016/19/solver.rs"
+
+[[bin]]
 name = "aoc_2016_25"
 path = "2016/25/solver.rs"
 
@@ -133,6 +137,10 @@ path = "2018/15/solver.rs"
 [[bin]]
 name = "aoc_2018_18"
 path = "2018/18/solver.rs"
+
+[[bin]]
+name = "aoc_2018_22"
+path = "2018/22/solver.rs"
 
 [[bin]]
 name = "aoc_2018_24"
