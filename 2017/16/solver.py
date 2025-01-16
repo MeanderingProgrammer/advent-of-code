@@ -1,3 +1,4 @@
+from collections import deque
 from dataclasses import dataclass
 
 from aoc import answer
@@ -6,10 +7,10 @@ from aoc.parser import Parser
 
 @dataclass
 class Dance:
-    dancers: list[str]
+    dancers: deque[str]
 
     def spin(self, n: int) -> None:
-        self.dancers = self.dancers[-n:] + self.dancers[:-n]
+        self.dancers.rotate(n)
 
     def exchange(self, i1: int, i2: int) -> None:
         temp = self.dancers[i1]
@@ -27,16 +28,16 @@ class Dance:
 
 @answer.timer
 def main() -> None:
-    pattern = get_pattern()
+    moves: list[str] = Parser().csv()
+    pattern = get_pattern(moves)
     answer.part1("eojfmbpkldghncia", pattern[1])
     answer.part2("iecopnahgdflmkjb", pattern[1_000_000_000 % len(pattern)])
 
 
-def get_pattern() -> list[str]:
+def get_pattern(moves: list[str]) -> list[str]:
     dance: Dance = Dance(
-        dancers=[chr(ord("a") + i) for i in range(16)],
+        dancers=deque([chr(ord("a") + i) for i in range(16)]),
     )
-    moves: list[str] = Parser().csv()
     # Pattern happens to repeat from start immediately once we see
     # a value that is the same
     pattern: list[str] = []

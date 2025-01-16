@@ -161,10 +161,7 @@ impl Add for &Point {
     type Output = Point;
 
     fn add(self, rhs: &Point) -> Point {
-        Point {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-        }
+        Point::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
@@ -188,10 +185,7 @@ impl Sub for &Point {
     type Output = Point;
 
     fn sub(self, rhs: &Point) -> Point {
-        Point {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
+        Point::new(self.x - rhs.x, self.y - rhs.y)
     }
 }
 
@@ -199,10 +193,7 @@ impl Mul<i64> for &Point {
     type Output = Point;
 
     fn mul(self, rhs: i64) -> Point {
-        Point {
-            x: self.x * rhs,
-            y: self.y * rhs,
-        }
+        Point::new(self.x * rhs, self.y * rhs)
     }
 }
 
@@ -300,11 +291,7 @@ impl Add for &Point3d {
     type Output = Point3d;
 
     fn add(self, rhs: &Point3d) -> Point3d {
-        Point3d {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-        }
+        Point3d::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
@@ -320,11 +307,7 @@ impl Mul<i64> for &Point3d {
     type Output = Point3d;
 
     fn mul(self, rhs: i64) -> Point3d {
-        Point3d {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs,
-        }
+        Point3d::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 

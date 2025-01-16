@@ -65,21 +65,7 @@ impl<T> Grid<T> {
     }
 
     pub fn bounds(&self) -> Bound {
-        if self.grid.is_empty() {
-            panic!("Can't get the bounds of an empty grid");
-        }
-        fn get_min_max(min_max: MinMaxResult<i64>) -> (i64, i64) {
-            match min_max {
-                MinMaxResult::MinMax(min, max) => (min, max),
-                _ => panic!("Could not find min max"),
-            }
-        }
-        let (min_x, max_x) = get_min_max(self.grid.keys().map(|point| point.x).minmax());
-        let (min_y, max_y) = get_min_max(self.grid.keys().map(|point| point.y).minmax());
-        Bound {
-            lower: Point::new(min_x, min_y),
-            upper: Point::new(max_x, max_y),
-        }
+        Bound::new(&self.points())
     }
 
     pub fn to_graph(&self) -> FxHashMap<Point, Vec<Point>> {
@@ -156,6 +142,24 @@ pub struct Bound {
 }
 
 impl Bound {
+    pub fn new(points: &[&Point]) -> Bound {
+        if points.is_empty() {
+            panic!("Can't get the bounds of an empty area");
+        }
+        fn get_min_max(min_max: MinMaxResult<i64>) -> (i64, i64) {
+            match min_max {
+                MinMaxResult::MinMax(min, max) => (min, max),
+                _ => panic!("Could not find min max"),
+            }
+        }
+        let (min_x, max_x) = get_min_max(points.iter().map(|point| point.x).minmax());
+        let (min_y, max_y) = get_min_max(points.iter().map(|point| point.y).minmax());
+        Bound {
+            lower: Point::new(min_x, min_y),
+            upper: Point::new(max_x, max_y),
+        }
+    }
+
     pub fn size(&self) -> i64 {
         let width = self.upper.x - self.lower.x + 1;
         let height = self.upper.y - self.lower.y + 1;
