@@ -21,7 +21,7 @@ impl Network {
         let nodes = (0..50)
             .map(|i| {
                 let mut node = Node {
-                    computer: Computer::new(NodeBus::new(i), memory.clone()),
+                    computer: Computer::new(NodeBus::new(i), &memory),
                 };
                 let packets = node.run();
                 assert!(packets.is_empty());
@@ -140,7 +140,8 @@ fn main() {
 }
 
 fn solution() {
-    let mut network = Network::new(Reader::default().read_csv());
+    let memory = Reader::default().read_csv();
+    let mut network = Network::new(memory);
     let history = network.run_until_repeat();
     answer::part1(16549, *history.first().unwrap());
     answer::part2(11462, *history.last().unwrap());

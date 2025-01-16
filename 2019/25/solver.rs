@@ -3,10 +3,9 @@ use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::Direction;
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
-use itertools::{Combinations, Itertools};
+use itertools::Itertools;
 use std::collections::VecDeque;
 use std::str::FromStr;
-use std::vec::IntoIter;
 
 const BAD_ITEMS: [&str; 5] = [
     "giant electromagnet",
@@ -16,7 +15,7 @@ const BAD_ITEMS: [&str; 5] = [
     "infinite loop",
 ];
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct View {
     name: String,
     directions: Vec<Direction>,
@@ -27,11 +26,7 @@ impl FromStr for View {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut view = View {
-            name: String::new(),
-            directions: Vec::new(),
-            items: Vec::new(),
-        };
+        let mut view = View::default();
         for group in s.split("\n\n") {
             let values: Vec<&str> = group.split('\n').filter(|s| !s.is_empty()).collect();
             if values.is_empty() {
@@ -51,26 +46,17 @@ impl FromStr for View {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Graph {
     graph: FxHashMap<String, FxHashSet<Direction>>,
 }
 
 impl Graph {
-    fn add_node(&mut self, name: &str) {
-        if !self.graph.contains_key(name) {
-            self.graph.insert(name.to_string(), FxHashSet::default());
-        }
+    fn node(&mut self, name: &str) -> &mut FxHashSet<Direction> {
+        self.graph.entry(name.to_string()).or_default()
     }
 
-    fn add_edge(&mut self, start: &str, direction: &Direction, end: &str) {
-        let from_start = self.graph.get_mut(start).unwrap();
-        from_start.insert(direction.clone());
-        let from_end = self.graph.get_mut(end).unwrap();
-        from_end.insert(direction.opposite());
-    }
-
-    fn get_unexplored(&self, name: &str, directions: &[Direction]) -> Option<Direction> {
+    fn unexplored(&self, name: &str, directions: &[Direction]) -> Option<Direction> {
         let explored = &self.graph[name];
         directions
             .iter()
@@ -79,51 +65,53 @@ impl Graph {
     }
 }
 
-#[derive(Debug)]
-struct ItemBag {
+#[derive(Debug, Default)]
+struct Bag {
     items: Vec<String>,
     index: usize,
-    current: Option<Combinations<IntoIter<String>>>,
+    combinations: Option<Vec<Vec<String>>>,
 }
 
-impl ItemBag {
-    fn new() -> Self {
-        Self {
-            items: Vec::new(),
-            index: 1,
-            current: None,
-        }
-    }
-
+impl Bag {
     fn add(&mut self, item: &str) {
         self.items.push(item.to_string());
     }
-}
 
-impl Iterator for ItemBag {
-    type Item = Vec<String>;
+    fn inventory(&mut self) -> Vec<String> {
+        if self.index == 0 {
+            self.items.clone()
+        } else {
+            self.nth(self.index - 1)
+        }
+    }
 
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.current.is_none() {
-            self.current = Some(self.items.clone().into_iter().combinations(self.index));
+    fn next(&mut self) -> Vec<String> {
+        self.index += 1;
+        self.nth(self.index - 1)
+    }
+
+    fn nth(&mut self, n: usize) -> Vec<String> {
+        match &self.combinations {
+            None => {
+                let combinations: Vec<Vec<String>> = (1..=self.items.len())
+                    .flat_map(|size| self.items.iter().cloned().combinations(size))
+                    .collect();
+                self.combinations = Some(combinations);
+                self.next()
+            }
+            Some(combinations) => combinations[n].clone(),
         }
-        let mut next_value = self.current.as_mut().unwrap().next();
-        if next_value.is_none() {
-            self.index += 1;
-            self.current = Some(self.items.clone().into_iter().combinations(self.index));
-            next_value = self.current.as_mut().unwrap().next();
-        }
-        next_value
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 enum State {
+    #[default]
     Exploring,
     Solving,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct DroidBus {
     instruction: String,
     commands: VecDeque<char>,
@@ -131,79 +119,68 @@ struct DroidBus {
     grid: Graph,
     previous: Option<(String, Direction)>,
     history: Vec<Direction>,
-    path_to_checkpoint: Vec<Direction>,
-    item_bag: ItemBag,
+    path: Vec<Direction>,
+    bag: Bag,
 }
 
 impl DroidBus {
-    fn new() -> Self {
-        Self {
-            instruction: String::new(),
-            commands: VecDeque::new(),
-            state: State::Exploring,
-            grid: Graph {
-                graph: FxHashMap::default(),
-            },
-            previous: None,
-            history: Vec::new(),
-            path_to_checkpoint: Vec::new(),
-            item_bag: ItemBag::new(),
-        }
-    }
-
-    fn continue_exploring(&mut self) -> bool {
+    fn explored(&mut self) -> bool {
         let view = View::from_str(&self.instruction).unwrap();
         self.instruction = String::new();
 
         let location = view.name;
-        self.grid.add_node(&location);
         match &self.previous {
-            Some(prev) => self.grid.add_edge(&prev.0, &prev.1, &location),
-            None => (),
+            None => {
+                self.grid.node(&location);
+            }
+            Some(prev) => {
+                self.grid.node(&prev.0).insert(prev.1.clone());
+                self.grid.node(&location).insert(prev.1.opposite());
+            }
         }
 
         view.items
             .iter()
             .filter(|item| !BAD_ITEMS.contains(&item.as_str()))
             .for_each(|item| {
-                self.item_bag.add(item);
+                self.bag.add(item);
                 self.add_command(&format!("take {item}"));
             });
 
         let directions = if location == "Security Checkpoint" {
-            self.path_to_checkpoint = self.history.clone();
+            self.path = self.history.clone();
             // Remove direction which takes us to analyzer, for initial traversal
             view.directions.into_iter().skip(1).collect()
         } else {
             view.directions
         };
-        if let Some(command) = self.grid.get_unexplored(&location, &directions) {
+
+        if let Some(command) = self.grid.unexplored(&location, &directions) {
             self.history.push(command.clone());
-            self.previous = Some((location, command.clone()));
-            self.add_direction(command);
-            true
-        } else if !self.history.is_empty() {
-            let command = self.history.pop().unwrap().opposite();
-            self.previous = Some((location, command.clone()));
-            self.add_direction(command);
-            true
-        } else {
+            self.add_direction(&command);
+            self.previous = Some((location, command));
             false
+        } else if let Some(command) = self.history.pop() {
+            let command = command.opposite();
+            self.add_direction(&command);
+            self.previous = Some((location, command));
+            false
+        } else {
+            true
         }
     }
 
-    fn attempt_solve(&mut self) {
-        let items_to_drop = self.item_bag.items.clone();
-        items_to_drop.iter().for_each(|item| {
+    fn next_solution(&mut self) {
+        self.bag.inventory().iter().for_each(|item| {
             self.add_command(&format!("drop {item}"));
         });
-        self.item_bag.next().unwrap().iter().for_each(|item| {
+        self.bag.next().iter().for_each(|item| {
             self.add_command(&format!("take {item}"));
         });
-        self.add_direction(Direction::Down);
+        self.add_direction(&Direction::Down);
     }
 
-    fn add_direction(&mut self, direction: Direction) {
+    fn add_direction(&mut self, direction: &Direction) {
         let command = match direction {
             Direction::Up => "north",
             Direction::Down => "south",
@@ -214,11 +191,12 @@ impl DroidBus {
     }
 
     fn add_command(&mut self, command: &str) {
-        let as_string = command.to_string() + "\n";
-        self.commands.append(&mut as_string.chars().collect());
+        self.commands.append(&mut command.chars().collect());
+        self.commands.push_back('\n');
     }
 
     fn get_key(&self) -> i64 {
+        println!("{:?}", self.bag.index);
         let lines = self.instruction.split('\n').filter(|s| !s.is_empty());
         let last_line = lines.last().unwrap().split_whitespace().collect_vec();
         last_line[last_line.len() - 8].parse().unwrap()
@@ -235,21 +213,23 @@ impl Bus for DroidBus {
     }
 
     fn get_input(&mut self) -> i64 {
-        if self.commands.is_empty() {
+        if let Some(command) = self.commands.pop_front() {
+            command as i64
+        } else {
             match self.state {
                 State::Exploring => {
-                    if !self.continue_exploring() {
-                        let path = self.path_to_checkpoint.clone();
-                        path.into_iter()
+                    if self.explored() {
+                        let path = self.path.clone();
+                        path.iter()
                             .for_each(|direction| self.add_direction(direction));
-                        self.add_direction(Direction::Down);
+                        self.add_direction(&Direction::Down);
                         self.state = State::Solving;
                     }
                 }
-                State::Solving => self.attempt_solve(),
+                State::Solving => self.next_solution(),
             }
+            self.get_input()
         }
-        self.commands.pop_front().unwrap() as i64
     }
 }
 
@@ -258,7 +238,8 @@ fn main() {
 }
 
 fn solution() {
-    let mut computer = Computer::new(DroidBus::new(), Reader::default().read_csv());
+    let memory = Reader::default().read_csv();
+    let mut computer: Computer<DroidBus> = Computer::default(&memory);
     computer.run();
     answer::part1(2622472, computer.bus.get_key());
 }

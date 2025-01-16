@@ -3,23 +3,12 @@ use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::reader::Reader;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Game {
     tile_buffer: Vec<i64>,
     tile_freq: HashMap<String, i64>,
     tile_x: HashMap<String, i64>,
     score: i64,
-}
-
-impl Game {
-    fn new() -> Self {
-        Self {
-            tile_buffer: Vec::new(),
-            tile_freq: HashMap::new(),
-            tile_x: HashMap::new(),
-            score: 0,
-        }
-    }
 }
 
 impl Bus for Game {
@@ -62,16 +51,17 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(363, play_game(false));
-    answer::part2(17159, play_game(true));
+    let memory = Reader::default().read_csv();
+    answer::part1(363, play_game(&memory, false));
+    answer::part2(17159, play_game(&memory, true));
 }
 
-fn play_game(play_for_free: bool) -> i64 {
-    let mut memory = Reader::default().read_csv();
+fn play_game(memory: &[i64], play_for_free: bool) -> i64 {
+    let mut memory = memory.to_vec();
     if play_for_free {
         memory[0] = 2;
     }
-    let mut computer = Computer::new(Game::new(), memory);
+    let mut computer: Computer<Game> = Computer::default(&memory);
     computer.run();
     if play_for_free {
         computer.bus.score

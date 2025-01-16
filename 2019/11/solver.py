@@ -55,7 +55,8 @@ class PaintBot(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(1909, len(run(0).grid))
+    memory = Parser().int_csv()
+    answer.part1(1909, len(run(memory, 0).grid))
     expected = [
         "...##.#..#.####.####.#..#.#..#.###..#..#...",
         "....#.#..#.#....#....#.#..#..#.#..#.#..#...",
@@ -64,16 +65,16 @@ def main() -> None:
         ".#..#.#..#.#....#....#.#..#..#.#....#..#...",
         "..##...##..#....####.#..#.#..#.#....#..#...",
     ]
-    answer.part2("\n" + "\n".join(expected), "\n" + run(1).grid_str())
+    answer.part2("\n" + "\n".join(expected), "\n" + run(memory, 1).grid_str())
 
 
-def run(setting: int) -> PaintBot:
+def run(memory: list[int], setting: int) -> PaintBot:
     bot = PaintBot(
         direction=Direction(),
         position=(0, 0),
         grid={(0, 0): setting},
     )
-    Computer(bus=bot, memory=Parser().int_csv()).run()
+    Computer(bus=bot, memory=memory.copy()).run()
     return bot
 
 

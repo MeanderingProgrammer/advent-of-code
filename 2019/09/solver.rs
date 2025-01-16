@@ -27,18 +27,17 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(3512778005, run(1));
-    answer::part2(35920, run(2));
+    let memory = Reader::default().read_csv();
+    answer::part1(3512778005, run(&memory, 1));
+    answer::part2(35920, run(&memory, 2));
 }
 
-fn run(setting: i64) -> i64 {
-    let mut computer = Computer::new(
-        BoostProgram {
-            input: setting,
-            output: None,
-        },
-        Reader::default().read_csv(),
-    );
+fn run(memory: &[i64], input: i64) -> i64 {
+    let program = BoostProgram {
+        input,
+        output: None,
+    };
+    let mut computer = Computer::new(program, memory);
     computer.run();
     computer.bus.output.unwrap()
 }

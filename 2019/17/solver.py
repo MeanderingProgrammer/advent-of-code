@@ -198,26 +198,27 @@ class VacuumDroid(Bus):
 
 @answer.timer
 def main() -> None:
+    memory = Parser().int_csv()
     droid = VacuumDroid(current=(0, 0))
-    answer.part1(9876, total_alignment(droid))
-    answer.part2(1234055, dust_collected(droid))
+    answer.part1(9876, total_alignment(memory, droid))
+    answer.part2(1234055, dust_collected(memory, droid))
 
 
-def total_alignment(droid: VacuumDroid) -> int:
-    run_droid(droid, False)
+def total_alignment(memory: list[int], droid: VacuumDroid) -> int:
+    run_droid(memory, droid, False)
     intersections = droid.get_intersections()
     return sum([point[0] * point[1] for point in intersections])
 
 
-def dust_collected(droid: VacuumDroid) -> Optional[int]:
+def dust_collected(memory: list[int], droid: VacuumDroid) -> Optional[int]:
     droid.create_path()
     droid.running = True
-    run_droid(droid, True)
+    run_droid(memory, droid, True)
     return droid.value
 
 
-def run_droid(droid: VacuumDroid, prompt: bool) -> None:
-    memory = Parser().int_csv()
+def run_droid(memory: list[int], droid: VacuumDroid, prompt: bool) -> None:
+    memory = memory.copy()
     memory[0] = 2 if prompt else memory[0]
     Computer(bus=droid, memory=memory).run()
 

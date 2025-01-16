@@ -44,7 +44,7 @@ struct AmplifierCpu {
 }
 
 impl AmplifierCpu {
-    fn new(memory: Vec<i64>, setting: i64, pause: bool) -> Self {
+    fn new(memory: &[i64], setting: i64, pause: bool) -> Self {
         let amplifier = Amplifier::new(setting, pause);
         let computer = Computer::new(amplifier, memory);
         Self { computer }
@@ -84,7 +84,7 @@ fn run(memory: &[i64], sequence: &[i64], pause: bool) -> i64 {
 fn check(memory: &[i64], sequence: Vec<&i64>, pause: bool) -> i64 {
     let mut amplifiers: Vec<_> = sequence
         .into_iter()
-        .map(|entry| AmplifierCpu::new(memory.to_vec(), *entry, pause))
+        .map(|entry| AmplifierCpu::new(memory, *entry, pause))
         .collect();
     let (mut output, mut state) = (0, true);
     while state {

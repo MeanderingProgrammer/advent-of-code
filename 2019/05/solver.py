@@ -26,13 +26,14 @@ class BasicProgram(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(12234644, run_program(1))
-    answer.part2(3508186, run_program(5))
+    memory = Parser().int_csv()
+    answer.part1(12234644, run_program(memory, 1))
+    answer.part2(3508186, run_program(memory, 5))
 
 
-def run_program(system_id: int) -> Optional[int]:
+def run_program(memory: list[int], system_id: int) -> Optional[int]:
     program = BasicProgram(system_id)
-    Computer(bus=program, memory=Parser().int_csv()).run()
+    Computer(bus=program, memory=memory.copy()).run()
     return program.diagnostic_code
 
 

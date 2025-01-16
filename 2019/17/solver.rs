@@ -265,18 +265,19 @@ fn main() {
 }
 
 fn solution() {
+    let memory = Reader::default().read_csv();
     let droid = VacuumDroid::default();
-    let mut droid = run_droid(droid, false);
+    let mut droid = run_droid(&memory, droid, false);
     droid.create_path();
-    let droid = run_droid(droid, true);
+    let droid = run_droid(&memory, droid, true);
     answer::part1(9876, droid.dust_collect());
     answer::part2(1234055, droid.value.unwrap());
 }
 
-fn run_droid(droid: VacuumDroid, prompt: bool) -> VacuumDroid {
-    let mut memory = Reader::default().read_csv();
+fn run_droid(memory: &[i64], droid: VacuumDroid, prompt: bool) -> VacuumDroid {
+    let mut memory = memory.to_vec();
     memory[0] = if prompt { 2 } else { memory[0] };
-    let mut computer = Computer::new(droid, memory);
+    let mut computer = Computer::new(droid, &memory);
     computer.run();
     computer.bus
 }

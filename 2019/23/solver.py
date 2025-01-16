@@ -17,7 +17,7 @@ class Network:
     def __init__(self, memory: list[int]):
         self.nat: Optional[Packet] = None
         self.network: list[Node] = [
-            Node(Computer(bus=NodeBus(network=self, packets=[i]), memory=list(memory)))
+            Node(Computer(bus=NodeBus(network=self, packets=[i]), memory=memory.copy()))
             for i in range(50)
         ]
 
@@ -92,7 +92,8 @@ class NodeBus(Bus):
 
 @answer.timer
 def main() -> None:
-    network = Network(Parser().int_csv())
+    memory = Parser().int_csv()
+    network = Network(memory)
     history = network.run_until_repeat()
     answer.part1(16549, history[0])
     answer.part2(11462, history[-1])

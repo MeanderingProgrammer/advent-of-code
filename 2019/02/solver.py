@@ -21,12 +21,13 @@ class NoopBus(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(6627023, run(12, 2))
-    answer.part2(4019, get_goal())
-
-
-def run(v1: int, v2: int) -> int:
     memory = Parser().int_csv()
+    answer.part1(6627023, run(memory, 12, 2))
+    answer.part2(4019, get_goal(memory))
+
+
+def run(memory: list[int], v1: int, v2: int) -> int:
+    memory = memory.copy()
     memory[1] = v1
     memory[2] = v2
     computer = Computer(NoopBus(), memory)
@@ -34,10 +35,10 @@ def run(v1: int, v2: int) -> int:
     return memory[0]
 
 
-def get_goal() -> Optional[int]:
+def get_goal(memory: list[int]) -> Optional[int]:
     for noun in range(100):
         for verb in range(100):
-            if run(noun, verb) == 19_690_720:
+            if run(memory, noun, verb) == 19_690_720:
                 return 100 * noun + verb
     return None
 

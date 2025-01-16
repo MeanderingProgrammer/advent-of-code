@@ -41,12 +41,13 @@ class Game(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(363, play_game(False))
-    answer.part2(17159, play_game(True))
-
-
-def play_game(play_for_free: bool) -> int:
     memory = Parser().int_csv()
+    answer.part1(363, play_game(memory, False))
+    answer.part2(17159, play_game(memory, True))
+
+
+def play_game(memory: list[int], play_for_free: bool) -> int:
+    memory = memory.copy()
     if play_for_free:
         memory[0] = 2
     game = Game([], defaultdict(int), dict())

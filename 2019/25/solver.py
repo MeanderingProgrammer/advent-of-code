@@ -204,8 +204,9 @@ class DroidBus(Bus):
 
 @answer.timer
 def main() -> None:
+    memory = Parser().int_csv()
     droid = DroidBus()
-    computer = Computer(bus=droid, memory=Parser().int_csv())
+    computer = Computer(bus=droid, memory=memory)
     computer.run()
     answer.part1(2622472, droid.game.get_key())
 

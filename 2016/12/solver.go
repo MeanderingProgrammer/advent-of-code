@@ -55,12 +55,12 @@ func (i *Copy) run(computer *Computer) int {
 	return 1
 }
 
-type Increment struct {
+type Add struct {
 	register string
 	value    int
 }
 
-func (i *Increment) run(computer *Computer) int {
+func (i *Add) run(computer *Computer) int {
 	computer.set(i.register, computer.get(i.register)+i.value)
 	return 1
 }
@@ -106,12 +106,12 @@ func parseInstruction(line string) Instruction {
 			value:    parts[1],
 		}
 	} else if op == "inc" {
-		return &Increment{
+		return &Add{
 			register: parts[1],
 			value:    1,
 		}
 	} else if op == "dec" {
-		return &Increment{
+		return &Add{
 			register: parts[1],
 			value:    -1,
 		}

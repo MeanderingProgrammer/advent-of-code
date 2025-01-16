@@ -46,7 +46,7 @@ struct Tester {
 
 impl Tester {
     fn test(&self, x: i64, y: i64) -> i64 {
-        let mut computer = Computer::new(Beam::new(x, y), self.memory.clone());
+        let mut computer = Computer::new(Beam::new(x, y), &self.memory);
         computer.run();
         computer.bus.value.unwrap()
     }
@@ -71,8 +71,9 @@ fn main() {
 }
 
 fn solution() {
+    let memory = Reader::default().read_csv();
     let mut tester = Tester {
-        memory: Reader::default().read_csv(),
+        memory,
         beam_starts: FxHashMap::default(),
     };
     answer::part1(160, affected_points(&mut tester, 50));

@@ -35,7 +35,7 @@ class Tester:
 
     def test(self, point: Point) -> int:
         beam = Beam(point)
-        Computer(bus=beam, memory=list(self.memory)).run()
+        Computer(bus=beam, memory=self.memory.copy()).run()
         result = beam.value
         assert result is not None
         return result
@@ -54,7 +54,8 @@ class Tester:
 
 @answer.timer
 def main() -> None:
-    tester = Tester(memory=Parser().int_csv(), beam_starts=dict())
+    memory = Parser().int_csv()
+    tester = Tester(memory=memory, beam_starts=dict())
     answer.part1(160, affected_points(tester, 50))
     answer.part2(9441282, bounding_point(tester, 100))
 

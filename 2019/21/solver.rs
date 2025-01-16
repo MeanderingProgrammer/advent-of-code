@@ -10,7 +10,7 @@ struct JumpDroid {
 }
 
 impl JumpDroid {
-    fn new(actions: Vec<String>) -> Self {
+    fn new(actions: Vec<&str>) -> Self {
         let mut program: Vec<char> = Vec::new();
         actions.into_iter().for_each(|action| {
             program.append(&mut action.chars().collect());
@@ -42,36 +42,40 @@ fn main() {
 }
 
 fn solution() {
+    let memory = Reader::default().read_csv();
     answer::part1(
         19357761,
-        run_droid(vec![
-            "NOT A J", // If one ahead is missing always Jump
-            "NOT C T", "OR T J", // If 3 ahead is missing
-            "NOT B T", "OR T J",  // If 2 ahead is missing
-            "AND D J", // Must always have thing 4 tiles ahead
-            "NOT A T", "AND A T", // Force T to False
-            "WALK",    // Start the script
-        ]),
+        run_droid(
+            &memory,
+            vec![
+                "NOT A J", // If one ahead is missing always Jump
+                "NOT C T", "OR T J", // If 3 ahead is missing
+                "NOT B T", "OR T J",  // If 2 ahead is missing
+                "AND D J", // Must always have thing 4 tiles ahead
+                "NOT A T", "AND A T", // Force T to False
+                "WALK",    // Start the script
+            ],
+        ),
     );
     answer::part2(
         1142249706,
-        run_droid(vec![
-            "NOT A J", // If one ahead is missing always Jump
-            "NOT C T", "OR T J", // If 3 ahead is missing
-            "NOT B T", "OR T J",  // If 2 ahead is missing
-            "AND D J", // Must always have thing 4 tiles ahead
-            "NOT A T", "AND A T", // Force T to False
-            "OR E T", "OR H T", "AND T J", // If after we land is blank
-            "RUN",     // Start the script
-        ]),
+        run_droid(
+            &memory,
+            vec![
+                "NOT A J", // If one ahead is missing always Jump
+                "NOT C T", "OR T J", // If 3 ahead is missing
+                "NOT B T", "OR T J",  // If 2 ahead is missing
+                "AND D J", // Must always have thing 4 tiles ahead
+                "NOT A T", "AND A T", // Force T to False
+                "OR E T", "OR H T", "AND T J", // If after we land is blank
+                "RUN",     // Start the script
+            ],
+        ),
     );
 }
 
-fn run_droid(actions: Vec<&str>) -> i64 {
-    let mut computer = Computer::new(
-        JumpDroid::new(actions.iter().map(|s| s.to_string()).collect()),
-        Reader::default().read_csv(),
-    );
+fn run_droid(memory: &[i64], actions: Vec<&str>) -> i64 {
+    let mut computer = Computer::new(JumpDroid::new(actions), memory);
     computer.run();
     computer.bus.value.unwrap()
 }

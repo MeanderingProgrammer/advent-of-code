@@ -54,8 +54,8 @@ struct RepairDroid {
     grid: FxHashMap<Point, Item>,
 }
 
-impl RepairDroid {
-    fn new() -> Self {
+impl Default for RepairDroid {
+    fn default() -> Self {
         Self {
             completed: false,
             position: Point::default(),
@@ -65,7 +65,9 @@ impl RepairDroid {
             grid: [(Point::default(), Item::Empty)].into_iter().collect(),
         }
     }
+}
 
+impl RepairDroid {
     fn get_unexplored(&self) -> Option<Direction> {
         Direction::values()
             .iter()
@@ -151,7 +153,8 @@ fn main() {
 }
 
 fn solution() {
-    let mut computer = Computer::new(RepairDroid::new(), Reader::default().read_csv());
+    let memory = Reader::default().read_csv();
+    let mut computer: Computer<RepairDroid> = Computer::default(&memory);
     computer.run();
     let search = Search {
         grid: computer.bus.grid,

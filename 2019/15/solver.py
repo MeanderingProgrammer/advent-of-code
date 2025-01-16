@@ -86,8 +86,9 @@ class Traverser:
 
 @answer.timer
 def main() -> None:
+    memory = Parser().int_csv()
     droid = RepairDroid()
-    Computer(bus=droid, memory=Parser().int_csv()).run()
+    Computer(bus=droid, memory=memory).run()
     traverser = Traverser(grid=droid.grid)
     answer.part1(224, traverser.bfs((0, 0)))
     answer.part2(284, traverser.time_for_air())

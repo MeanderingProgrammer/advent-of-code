@@ -62,7 +62,8 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(1909, run(0).grid.len());
+    let memory = Reader::default().read_csv();
+    answer::part1(1909, run(&memory, 0).grid.len());
     let expected = [
         "..##.#..#.####.####.#..#.#..#.###..#..#",
         "...#.#..#.#....#....#.#..#..#.#..#.#..#",
@@ -73,12 +74,12 @@ fn solution() {
     ];
     answer::part2(
         "\n".to_owned() + &expected.join("\n"),
-        "\n".to_owned() + &run(1).grid_str(),
+        "\n".to_owned() + &run(&memory, 1).grid_str(),
     );
 }
 
-fn run(settting: i64) -> PaintBot {
-    let mut computer = Computer::new(PaintBot::new(settting), Reader::default().read_csv());
+fn run(memory: &[i64], settting: i64) -> PaintBot {
+    let mut computer = Computer::new(PaintBot::new(settting), memory);
     computer.run();
     computer.bus
 }

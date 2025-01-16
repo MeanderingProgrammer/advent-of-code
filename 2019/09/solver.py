@@ -26,13 +26,14 @@ class BoostProgram(Bus):
 
 @answer.timer
 def main() -> None:
-    answer.part1(3512778005, run(1))
-    answer.part2(35920, run(2))
+    memory = Parser().int_csv()
+    answer.part1(3512778005, run(memory, 1))
+    answer.part2(35920, run(memory, 2))
 
 
-def run(setting: int) -> Optional[int]:
-    program = BoostProgram(setting, None)
-    Computer(bus=program, memory=Parser().int_csv()).run()
+def run(memory: list[int], input: int) -> Optional[int]:
+    program = BoostProgram(input, None)
+    Computer(bus=program, memory=memory.copy()).run()
     return program.output
 
 

@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 #[derive(Debug)]
 struct Parameter {
     value: i64,
@@ -11,7 +9,7 @@ impl Parameter {
         Self { value, mode }
     }
 
-    fn get<T: Bus + Debug>(&self, computer: &Computer<T>) -> i64 {
+    fn get<T>(&self, computer: &Computer<T>) -> i64 {
         match self.mode {
             0 | 2 => computer.get(self.index(computer)),
             1 => self.value,
@@ -19,7 +17,7 @@ impl Parameter {
         }
     }
 
-    fn index<T: Bus + Debug>(&self, computer: &Computer<T>) -> usize {
+    fn index<T>(&self, computer: &Computer<T>) -> usize {
         match self.mode {
             0 => self.value as usize,
             2 => computer.base + (self.value as usize),
@@ -69,17 +67,10 @@ pub struct Computer<T> {
     base: usize,
 }
 
-impl<T: Bus + Debug> Computer<T> {
-    pub fn new(bus: T, memory: Vec<i64>) -> Self {
-        Self {
-            bus,
-            memory,
-            code: 0,
-            pointer: 0,
-            base: 0,
-        }
-    }
-
+impl<T> Computer<T>
+where
+    T: Bus,
+{
     pub fn run(&mut self) {
         while self.bus.active() && self.run_next() {}
     }
@@ -108,6 +99,27 @@ impl<T: Bus + Debug> Computer<T> {
         };
         // Whether or not to Halt
         !matches!(response, Response::Halt)
+    }
+}
+
+impl<T> Computer<T>
+where
+    T: Default,
+{
+    pub fn default(memory: &[i64]) -> Self {
+        Self::new(T::default(), memory)
+    }
+}
+
+impl<T> Computer<T> {
+    pub fn new(bus: T, memory: &[i64]) -> Self {
+        Self {
+            bus,
+            memory: memory.to_vec(),
+            code: 0,
+            pointer: 0,
+            base: 0,
+        }
     }
 
     fn next(&mut self) -> Response {
