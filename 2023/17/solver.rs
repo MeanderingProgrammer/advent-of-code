@@ -7,7 +7,8 @@ use aoc_lib::search::Dijkstra;
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Node {
     position: Point,
-    directions: Vec<Direction>,
+    direction: Option<Direction>,
+    length: usize,
 }
 
 impl Node {
@@ -15,7 +16,7 @@ impl Node {
         // Handle turning directions which must extend out to the specified length
         // Initially all directions are considered a turn, afterwards it is the
         // directions which are not straight or backwards
-        let turns = match self.directions.first() {
+        let turns = match &self.direction {
             None => vec![
                 Direction::Up,
                 Direction::Down,
@@ -37,7 +38,7 @@ impl Node {
             })
             .collect();
         // Add in the forward direction which does not need to extend to the length
-        match self.directions.first() {
+        match &self.direction {
             None => (),
             Some(direction) => {
                 let position = &self.position + direction;
@@ -68,14 +69,15 @@ impl Dijkstra for Search {
             .into_iter()
             .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
             .filter_map(|(direction, is_turn, positions)| {
-                let mut directions = vec![direction.clone(); positions.len()];
+                let mut length = positions.len();
                 if !is_turn {
-                    directions.append(&mut node.directions.clone());
+                    length += node.length;
                 }
-                if directions.len() <= self.max_repeats {
+                if length <= self.max_repeats {
                     let next_node = Node {
                         position: positions.last().unwrap().clone(),
-                        directions,
+                        direction: Some(direction),
+                        length,
                     };
                     let cost = positions
                         .iter()
@@ -103,7 +105,8 @@ fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i
     let bounds = grid.bounds();
     let start = Node {
         position: bounds.lower,
-        directions: vec![],
+        direction: None,
+        length: 0,
     };
     let search = Search {
         grid: grid.clone(),
