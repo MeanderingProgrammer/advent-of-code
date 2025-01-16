@@ -12,6 +12,7 @@ VALID_TOOL: dict[int, set[str]] = {
     1: set([GEAR, NEITHER]),
     2: set([TORCH, NEITHER]),
 }
+type State = tuple[Point, str]
 
 
 @dataclass
@@ -55,7 +56,7 @@ def main() -> None:
     cave = build_out_cave(int(lines[0].split()[-1]), target)
 
     answer.part1(11575, risk_within(cave, target))
-    answer.part2(1068, traverse(cave, (0, 0), target, TORCH))
+    answer.part2(1068, traverse(cave, ((0, 0), TORCH), target))
 
 
 def build_out_cave(depth: int, target: Point) -> Grid:
@@ -77,15 +78,15 @@ def risk_within(cave: Grid, target: Point) -> int:
     return sum(risk_levels)
 
 
-def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> Optional[int]:
-    queue: list[tuple[int, tuple[Point, str]]] = []
-    seen: set[tuple[Point, str]] = set()
+def traverse(cave: Grid, start: State, end: Point) -> Optional[int]:
+    queue: list[tuple[int, State]] = []
+    seen: set[State] = set()
 
-    def add_item(time: int, location: Point, item: str) -> None:
-        if (location, item) not in seen:
-            heapq.heappush(queue, (time, (location, item)))
+    def add_item(time: int, state: State) -> None:
+        if state not in seen:
+            heapq.heappush(queue, (time, state))
 
-    add_item(0, start, equipped)
+    add_item(0, start)
     while len(queue) > 0:
         time, (location, item) = heapq.heappop(queue)
         if (location, item) in seen:
@@ -94,16 +95,16 @@ def traverse(cave: Grid, start: Point, end: Point, equipped: str) -> Optional[in
         if location == end and item == TORCH:
             return time
         elif location == end:
-            add_item(time + 7, location, TORCH)
+            add_item(time + 7, (location, TORCH))
         else:
             for neighbor in PointHelper.neighbors(location):
                 if neighbor not in cave:
                     continue
                 if item in cave[neighbor].tools:
-                    add_item(time + 1, neighbor, item)
+                    add_item(time + 1, (neighbor, item))
                 else:
                     for next_item in cave[neighbor].tools & cave[location].tools:
-                        add_item(time + 8, neighbor, next_item)
+                        add_item(time + 8, (neighbor, next_item))
     return None
 
 

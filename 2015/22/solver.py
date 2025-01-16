@@ -1,9 +1,9 @@
-import heapq
 from dataclasses import dataclass
 from typing import Optional, Self
 
 from aoc import answer
 from aoc.parser import Parser
+from aoc.search import Dijkstra
 
 
 @dataclass(frozen=True, order=True, slots=True)
@@ -31,7 +31,7 @@ class Stats:
 
 
 @dataclass(frozen=True)
-class SpellEffect:
+class Effect:
     cost: int
     boost: Stats = Stats()
     player: Stats = Stats()
@@ -47,12 +47,12 @@ class SpellEffect:
         return player.subtract(self.boost)
 
 
-EFFECTS: dict[str, SpellEffect] = {
-    "Magic Missile": SpellEffect(cost=53, enemy=Stats(hp=-4)),
-    "Drain": SpellEffect(cost=73, player=Stats(hp=2), enemy=Stats(hp=-2)),
-    "Shield": SpellEffect(cost=113, boost=Stats(armor=7)),
-    "Poison": SpellEffect(cost=173, enemy=Stats(hp=-3)),
-    "Recharge": SpellEffect(cost=229, player=Stats(attack=101)),
+EFFECTS: dict[str, Effect] = {
+    "Magic Missile": Effect(cost=53, enemy=Stats(hp=-4)),
+    "Drain": Effect(cost=73, player=Stats(hp=2), enemy=Stats(hp=-2)),
+    "Shield": Effect(cost=113, boost=Stats(armor=7)),
+    "Poison": Effect(cost=173, enemy=Stats(hp=-3)),
+    "Recharge": Effect(cost=229, player=Stats(attack=101)),
 }
 
 
@@ -61,7 +61,7 @@ class Spell:
     name: str
     turns: int
 
-    def effect(self) -> SpellEffect:
+    def effect(self) -> Effect:
         return EFFECTS[self.name]
 
     def move(self) -> Self:
@@ -87,11 +87,11 @@ class Game:
     def get_moves(self) -> list[tuple[int, Self]]:
         if self.player.dead():
             return []
-        return [
-            (spell.effect().cost, self.move(spell))
-            for spell in SPELLS
-            if self.can_perform(spell)
-        ]
+        result: list[tuple[int, Self]] = []
+        for spell in SPELLS:
+            if self.can_perform(spell):
+                result.append((spell.effect().cost, self.move(spell)))
+        return result
 
     def can_perform(self, spell: Spell) -> bool:
         if self.player.attack < spell.effect().cost:
@@ -142,29 +142,18 @@ def main() -> None:
 
 
 def play_game(hp: int, attack: int, damage: int) -> Optional[int]:
-    game = Game(
+    start = Game(
         player=Stats(hp=50, attack=500),
         enemy=Stats(hp=hp, attack=attack),
         damage=Stats(hp=damage),
         spells=frozenset(),
     )
-    return dijkstra(game)
-
-
-def dijkstra(start: Game) -> Optional[int]:
-    queue: list[tuple[int, Game]] = [(0, start)]
-    seen: set[Game] = set()
-    while len(queue) > 0:
-        mana_used, game = heapq.heappop(queue)
-        if game in seen:
-            continue
-        seen.add(game)
-        if game.enemy.dead():
-            return mana_used
-        for cost, next_game in game.get_moves():
-            if next_game not in seen:
-                heapq.heappush(queue, (mana_used + cost, next_game))
-    return None
+    search: Dijkstra[Game] = Dijkstra(
+        start=start,
+        done=lambda game: game.enemy.dead(),
+        neighbors=lambda game: game.get_moves(),
+    )
+    return search.run()
 
 
 if __name__ == "__main__":
