@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 #[derive(Debug, PartialEq)]
 enum State {
@@ -29,7 +29,7 @@ struct Landscape {
 
 impl Landscape {
     fn step(&mut self) {
-        let mut updates: HashMap<Point, State> = HashMap::new();
+        let mut updates: FxHashMap<Point, State> = FxHashMap::default();
         for point in self.grid.points() {
             match self.grid.get(point) {
                 State::Open => {

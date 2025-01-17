@@ -1,13 +1,13 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::reader::Reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 #[derive(Debug, Default)]
 struct Game {
     tile_buffer: Vec<i64>,
-    tile_freq: HashMap<String, i64>,
-    tile_x: HashMap<String, i64>,
+    tile_freq: FxHashMap<String, i64>,
+    tile_x: FxHashMap<String, i64>,
     score: i64,
 }
 

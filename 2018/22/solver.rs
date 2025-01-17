@@ -3,7 +3,7 @@ use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
-use std::collections::HashSet;
+use fxhash::FxHashSet;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 enum Tool {
@@ -17,7 +17,7 @@ enum Tool {
 struct Region {
     erosion: usize,
     kind: usize,
-    tools: HashSet<Tool>,
+    tools: FxHashSet<Tool>,
 }
 
 impl Region {
@@ -27,9 +27,9 @@ impl Region {
             erosion,
             kind,
             tools: match kind {
-                0 => [Tool::Gear, Tool::Torch].into(),
-                1 => [Tool::Gear, Tool::Neither].into(),
-                2 => [Tool::Torch, Tool::Neither].into(),
+                0 => FxHashSet::from_iter([Tool::Gear, Tool::Torch]),
+                1 => FxHashSet::from_iter([Tool::Gear, Tool::Neither]),
+                2 => FxHashSet::from_iter([Tool::Torch, Tool::Neither]),
                 _ => unreachable!(),
             },
         }

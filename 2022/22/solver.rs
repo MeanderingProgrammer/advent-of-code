@@ -2,7 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -63,7 +63,7 @@ impl Cube {
         Self { grid, size }
     }
 
-    fn next(&self, current: &mut State, edges: &HashMap<Block, Edges>) {
+    fn next(&self, current: &mut State, edges: &FxHashMap<Block, Edges>) {
         let mut next_relative_position = current.next();
         if self.in_relative_bounds(&next_relative_position) {
             if self.legal(&current.block.absolute(self.size, &next_relative_position)) {
@@ -251,7 +251,7 @@ fn solution() {
     );
 }
 
-fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, Edges>) -> i64 {
+fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: FxHashMap<Block, Edges>) -> i64 {
     let mut state = State::new(cube);
     for instruction in instructions {
         match instruction {
@@ -268,7 +268,7 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
     state.score()
 }
 
-fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
+fn parse_mappings(edge_mappings: Vec<&str>) -> FxHashMap<Block, Edges> {
     edge_mappings
         .iter()
         .map(|edge_mapping| parse_edge_mapping(edge_mapping))

@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use std::collections::HashSet;
+use fxhash::FxHashSet;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -34,7 +34,7 @@ fn solution() {
 
 fn follow_trail(motions: &[Motion], length: usize) -> usize {
     let mut rope = vec![Point::default(); length];
-    let mut tail_locations: HashSet<Point> = HashSet::new();
+    let mut tail_locations: FxHashSet<Point> = FxHashSet::default();
 
     motions.iter().for_each(|motion| {
         for _ in 0..motion.amount {
