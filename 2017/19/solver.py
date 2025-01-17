@@ -25,16 +25,16 @@ class Traverser:
             options = self.get_options()
             if len(options) == 0:
                 done = True
-            elif len(options) > 1:
-                raise Exception(f"No Idea: {self.pos} -> {options}")
-            else:
+            elif len(options) == 1:
                 self.direction, self.pos = options[0]
                 self.seen.append(self.pos)
+            else:
+                raise Exception(f"No Idea: {self.pos} -> {options}")
 
     def get_options(self) -> list[tuple[Point, Point]]:
-        same_direction = PointHelper.add(self.pos, self.direction)
-        if same_direction in self.grid:
-            return [(self.direction, same_direction)]
+        forward = PointHelper.add(self.pos, self.direction)
+        if forward in self.grid:
+            return [(self.direction, forward)]
         else:
             options = []
             for direction in DIRECTIONS:
