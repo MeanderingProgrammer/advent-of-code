@@ -21,7 +21,7 @@ impl State {
 
     fn next_states<'a>(&'a self, grid: &'a Grid<char>) -> impl Iterator<Item = State> + 'a {
         self.next_directions(grid)
-            .map(|direction| Self::new(&self.position + &direction, direction))
+            .map(|direction| Self::new(self.position.add(&direction.to_point()), direction))
             .filter(|state| grid.contains(&state.position))
     }
 

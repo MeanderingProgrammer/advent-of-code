@@ -17,7 +17,10 @@ impl State {
     }
 
     fn next(&self) -> Self {
-        Self::new(&self.point + &self.direction, self.direction.clone())
+        Self::new(
+            self.point.add(&self.direction.to_point()),
+            self.direction.clone(),
+        )
     }
 
     fn turn(&self, left: bool) -> Self {

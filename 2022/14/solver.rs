@@ -63,7 +63,7 @@ impl SandFlow {
         while grain.y < self.max_height {
             let next = vec![Heading::South, Heading::SouthWest, Heading::SouthEast]
                 .into_iter()
-                .map(|heading| &grain + &heading)
+                .map(|heading| grain.add(&heading.to_point()))
                 .find(|point| !self.grid.contains(point));
             if next.is_none() {
                 break;

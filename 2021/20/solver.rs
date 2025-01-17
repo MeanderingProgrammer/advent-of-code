@@ -28,7 +28,8 @@ impl Image {
     fn enhance(&mut self) {
         let mut on = FxHashSet::default();
         let bounds = Bound::new(&self.on.iter().collect::<Vec<_>>());
-        let (start, end) = (&bounds.lower - &self.border, &bounds.upper + &self.border);
+        let start = bounds.lower.sub(&self.border);
+        let end = bounds.upper.add(&self.border);
         for y in start.y..=end.y {
             for x in start.x..=end.x {
                 let point = Point::new(x, y);
@@ -45,7 +46,7 @@ impl Image {
         let mut binary = String::default();
         for dy in -1..=1 {
             for dx in -1..=1 {
-                let neighbor = point + &Point::new(dx, dy);
+                let neighbor = point.add(&Point::new(dx, dy));
                 let on = if bounds.contain(&neighbor) {
                     self.on.contains(&neighbor)
                 } else {

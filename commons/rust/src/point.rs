@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 use std::fmt;
-use std::ops::{Add, Mul, Sub};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -157,57 +156,35 @@ impl PartialOrd for Point {
     }
 }
 
-impl Add for &Point {
-    type Output = Point;
-
-    fn add(self, rhs: &Point) -> Point {
-        Point::new(self.x + rhs.x, self.y + rhs.y)
-    }
-}
-
-impl Add<&Direction> for &Point {
-    type Output = Point;
-
-    fn add(self, rhs: &Direction) -> Point {
-        self + &rhs.to_point()
-    }
-}
-
-impl Add<&Heading> for &Point {
-    type Output = Point;
-
-    fn add(self, rhs: &Heading) -> Point {
-        self + &rhs.to_point()
-    }
-}
-
-impl Sub for &Point {
-    type Output = Point;
-
-    fn sub(self, rhs: &Point) -> Point {
-        Point::new(self.x - rhs.x, self.y - rhs.y)
-    }
-}
-
-impl Mul<i64> for &Point {
-    type Output = Point;
-
-    fn mul(self, rhs: i64) -> Point {
-        Point::new(self.x * rhs, self.y * rhs)
-    }
-}
-
 impl Point {
     pub fn new(x: i64, y: i64) -> Self {
         Self { x, y }
     }
 
+    pub fn add(&self, rhs: &Self) -> Self {
+        Self::new(self.x + rhs.x, self.y + rhs.y)
+    }
+
+    pub fn sub(&self, rhs: &Self) -> Self {
+        Self::new(self.x - rhs.x, self.y - rhs.y)
+    }
+
+    pub fn mul(&self, rhs: i64) -> Self {
+        Self::new(self.x * rhs, self.y * rhs)
+    }
+
     pub fn neighbors(&self) -> Vec<Self> {
-        Direction::values().iter().map(|dir| self + dir).collect()
+        Direction::values()
+            .iter()
+            .map(|dir| self.add(&dir.to_point()))
+            .collect()
     }
 
     pub fn diagonal_neighbors(&self) -> Vec<Self> {
-        Heading::values().iter().map(|head| self + head).collect()
+        Heading::values()
+            .iter()
+            .map(|head| self.add(&head.to_point()))
+            .collect()
     }
 
     pub fn distance(&self, other: &Self) -> f64 {
@@ -287,37 +264,28 @@ impl fmt::Display for Point3d {
     }
 }
 
-impl Add for &Point3d {
-    type Output = Point3d;
-
-    fn add(self, rhs: &Point3d) -> Point3d {
-        Point3d::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
-    }
-}
-
-impl Add<&Direction3d> for &Point3d {
-    type Output = Point3d;
-
-    fn add(self, rhs: &Direction3d) -> Point3d {
-        self + &rhs.to_point()
-    }
-}
-
-impl Mul<i64> for &Point3d {
-    type Output = Point3d;
-
-    fn mul(self, rhs: i64) -> Point3d {
-        Point3d::new(self.x * rhs, self.y * rhs, self.z * rhs)
-    }
-}
-
 impl Point3d {
     pub fn new(x: i64, y: i64, z: i64) -> Self {
         Self { x, y, z }
     }
 
+    pub fn add(&self, rhs: &Self) -> Self {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+
+    pub fn sub(&self, rhs: &Self) -> Self {
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+
+    pub fn mul(&self, rhs: i64) -> Self {
+        Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
+    }
+
     pub fn neighbors(&self) -> Vec<Self> {
-        Direction3d::values().iter().map(|dir| self + dir).collect()
+        Direction3d::values()
+            .iter()
+            .map(|dir| self.add(&dir.to_point()))
+            .collect()
     }
 
     pub fn length(&self) -> i64 {

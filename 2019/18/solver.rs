@@ -113,15 +113,21 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
         .clone();
 
     grid.remove(&start);
-    grid.remove(&(&start + &Heading::North));
-    grid.remove(&(&start + &Heading::South));
-    grid.remove(&(&start + &Heading::East));
-    grid.remove(&(&start + &Heading::West));
+    start
+        .neighbors()
+        .iter()
+        .for_each(|point| grid.remove(point));
 
-    grid.add(&start + &Heading::NorthEast, Element::Start);
-    grid.add(&start + &Heading::NorthWest, Element::Start);
-    grid.add(&start + &Heading::SouthEast, Element::Start);
-    grid.add(&start + &Heading::SouthWest, Element::Start);
+    let starts = [
+        Heading::NorthEast,
+        Heading::NorthWest,
+        Heading::SouthEast,
+        Heading::SouthWest,
+    ];
+    starts
+        .iter()
+        .map(|heading| start.add(&heading.to_point()))
+        .for_each(|point| grid.add(point, Element::Start));
 
     grid
 }

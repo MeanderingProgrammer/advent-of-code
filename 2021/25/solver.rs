@@ -78,7 +78,7 @@ impl Seafloor {
         };
         let (mut next, mut moved) = (FxHashSet::default(), false);
         for start in current {
-            let mut point = start + &cucumber.to_point();
+            let mut point = start.add(&cucumber.to_point());
             point.x %= self.limit.x + 1;
             point.y %= self.limit.y + 1;
             if !current.contains(&point) && !other.contains(&point) {

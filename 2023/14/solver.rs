@@ -79,8 +79,8 @@ impl Platform {
         });
         rocks.into_iter().for_each(|rock| {
             let mut next = rock.clone();
-            while self.grid.get_or(&(&next + direction)) == Some(&Value::Empty) {
-                next = &next + direction;
+            while self.grid.get_or(&next.add(&direction.to_point())) == Some(&Value::Empty) {
+                next = next.add(&direction.to_point());
             }
             if rock != next {
                 self.grid.add(rock, Value::Empty);

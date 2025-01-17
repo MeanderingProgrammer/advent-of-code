@@ -36,8 +36,8 @@ impl Compress {
     // of this information into a dense representation
     fn collapse(&self) -> Search {
         let bounds = self.grid.bounds();
-        let start = &bounds.lower + &Direction::Right;
-        let target = &bounds.upper + &Direction::Left;
+        let start = bounds.lower.add(&Direction::Right.to_point());
+        let target = bounds.upper.add(&Direction::Left.to_point());
 
         // Save space and make lookups faster by mapping points to an integer
         let mut ids: FxHashMap<Point, u8> = FxHashMap::default();
@@ -116,7 +116,7 @@ impl Compress {
         Direction::values()
             .iter()
             // Continue path in all directions from last point on our path
-            .map(|dir| (last + dir, dir.clone()))
+            .map(|dir| (last.add(&dir.to_point()), dir.clone()))
             // Remove anything that's off the grid or goes into a forest
             .filter(|(point, _)| *self.grid.get_or(point).unwrap_or(&'#') != '#')
             // Remove direction going back the way we traveled

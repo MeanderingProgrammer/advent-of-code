@@ -32,7 +32,7 @@ impl Node {
             .into_iter()
             .map(|turn| {
                 let positions = (1..=length)
-                    .map(|i| &self.position + &(&turn.to_point() * (i as i64)))
+                    .map(|i| self.position.add(&turn.to_point().mul(i as i64)))
                     .collect();
                 (turn, true, positions)
             })
@@ -41,7 +41,7 @@ impl Node {
         match &self.direction {
             None => (),
             Some(direction) => {
-                let position = &self.position + direction;
+                let position = self.position.add(&direction.to_point());
                 neighbors.push((direction.clone(), false, vec![position]));
             }
         };

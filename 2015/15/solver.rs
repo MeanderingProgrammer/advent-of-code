@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use std::collections::HashMap;
-use std::ops::{AddAssign, Mul};
 use std::str::FromStr;
 
 #[derive(Debug, Default)]
@@ -17,13 +16,9 @@ impl Properties {
     fn score(&self) -> i64 {
         self.capacity.max(0) * self.durability.max(0) * self.flavor.max(0) * self.texture.max(0)
     }
-}
 
-impl Mul<usize> for &Properties {
-    type Output = Properties;
-
-    fn mul(self, rhs: usize) -> Properties {
-        Properties {
+    fn mul(&self, rhs: usize) -> Self {
+        Self {
             capacity: self.capacity * (rhs as i64),
             durability: self.durability * (rhs as i64),
             flavor: self.flavor * (rhs as i64),
@@ -31,10 +26,8 @@ impl Mul<usize> for &Properties {
             calories: self.calories * (rhs as i64),
         }
     }
-}
 
-impl AddAssign for Properties {
-    fn add_assign(&mut self, rhs: Self) {
+    fn add(&mut self, rhs: &Self) {
         self.capacity += rhs.capacity;
         self.durability += rhs.durability;
         self.flavor += rhs.flavor;
@@ -104,7 +97,7 @@ impl Recipe {
     fn get_values(&self, proportion: Vec<usize>) -> Properties {
         let mut properties = Properties::default();
         for (ingredient, amount) in self.ingredients.iter().zip(proportion.into_iter()) {
-            properties += &ingredient.properties * amount;
+            properties.add(&ingredient.properties.mul(amount));
         }
         properties
     }

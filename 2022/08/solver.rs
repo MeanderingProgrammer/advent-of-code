@@ -34,7 +34,7 @@ fn distance_to_block(
     value: &i64,
     direction: &Direction,
 ) -> (i64, bool) {
-    let next_point = point + direction;
+    let next_point = point.add(&direction.to_point());
     if grid.contains(&next_point) {
         if grid.get(&next_point) >= value {
             (1, false)

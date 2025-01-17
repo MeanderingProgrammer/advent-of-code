@@ -20,7 +20,7 @@ impl FromStr for Path {
             let direction = Direction::from_str(&step[..1]).unwrap();
             let amount: usize = step[1..].parse().unwrap();
             (0..amount).for_each(|_| {
-                point = &point + &direction;
+                point = point.add(&direction.to_point());
                 distance += 1;
                 distances.entry(point.clone()).or_insert(distance);
             });

@@ -76,8 +76,8 @@ impl Cave {
         } else if point.x == 0 {
             (point.y as usize) * 48_271
         } else {
-            let left = self.cave.get(&(point + &Direction::Left));
-            let above = self.cave.get(&(point + &Direction::Up));
+            let left = self.cave.get(&point.add(&Direction::Left.to_point()));
+            let above = self.cave.get(&point.add(&Direction::Up.to_point()));
             left.erosion * above.erosion
         };
         Region::new((index + self.depth) % 20_183)

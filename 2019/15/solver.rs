@@ -71,7 +71,11 @@ impl RepairDroid {
     fn get_unexplored(&self) -> Option<Direction> {
         Direction::values()
             .iter()
-            .find(|&direction| !self.grid.contains_key(&(&self.position + direction)))
+            .find(|&direction| {
+                !self
+                    .grid
+                    .contains_key(&self.position.add(&direction.to_point()))
+            })
             .cloned()
     }
 
@@ -92,7 +96,8 @@ impl Bus for RepairDroid {
 
     fn get_input(&mut self) -> i64 {
         if let Some(direction) = self.get_unexplored() {
-            self.next_position = Some((direction.clone(), &self.position + &direction));
+            self.next_position =
+                Some((direction.clone(), self.position.add(&direction.to_point())));
             Self::get_code(&direction)
         } else if self.path.len() > 1 {
             let (previous, _) = self.path.pop_back().unwrap();

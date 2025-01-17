@@ -13,7 +13,7 @@ struct Join {
 
 impl Join {
     fn apply(&self, p: &Point3d) -> Point3d {
-        &rotate(p, self.rotation) + &self.offset
+        rotate(p, self.rotation).add(&self.offset)
     }
 }
 
@@ -46,7 +46,7 @@ impl Scanner {
         let mut offsets: FxHashMap<Point3d, usize> = FxHashMap::default();
         for p1 in &self.points {
             for p2 in &other.points {
-                let offset = p1 + &(&rotate(p2, rotation) * -1);
+                let offset = p1.sub(&rotate(p2, rotation));
                 let counter = offsets.entry(offset.clone()).or_insert(0);
                 *counter += 1;
                 if *counter >= overlap {
@@ -71,7 +71,7 @@ impl Scanner {
         let mut result: i64 = 0;
         for i in 0..self.positions.len() - 1 {
             for j in i + 1..self.positions.len() {
-                let difference = &self.positions[i] + &(&self.positions[j] * -1);
+                let difference = self.positions[i].sub(&self.positions[j]);
                 result = result.max(difference.length());
             }
         }

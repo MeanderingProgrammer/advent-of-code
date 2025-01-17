@@ -61,7 +61,13 @@ impl Elves {
                 .cycle()
                 .skip(self.round % 4)
                 .take(4)
-                .map(|(n1, n2, n3)| (location + n1, location + n2, location + n3))
+                .map(|(n1, n2, n3)| {
+                    (
+                        location.add(&n1.to_point()),
+                        location.add(&n2.to_point()),
+                        location.add(&n3.to_point()),
+                    )
+                })
                 .filter(|(l1, l2, l3)| {
                     !self.locations.contains(l1)
                         && !self.locations.contains(l2)

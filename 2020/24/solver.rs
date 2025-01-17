@@ -2,7 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
-use std::ops::Add;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -55,14 +54,6 @@ impl HexHeading {
     }
 }
 
-impl Add<&HexHeading> for &Point {
-    type Output = Point;
-
-    fn add(self, rhs: &HexHeading) -> Point {
-        self + &rhs.to_point()
-    }
-}
-
 #[derive(Debug, Default)]
 struct Floor {
     floor: FxHashMap<Point, bool>,
@@ -74,7 +65,7 @@ impl Floor {
         let path = path.replace('e', "e,").replace('w', "w,");
         for instruction in path.split(',').take_while(|value| !value.is_empty()) {
             let heading = HexHeading::from_str(instruction).unwrap();
-            point = &point + &heading.to_point();
+            point = point.add(&heading.to_point());
         }
         self.flip(point);
     }
@@ -84,7 +75,10 @@ impl Floor {
         for (point, tile) in self.floor.iter() {
             counts.entry(point.clone()).or_insert(0);
             if !tile {
-                for neighbor in HexHeading::values().iter().map(|heading| point + heading) {
+                for neighbor in HexHeading::values()
+                    .iter()
+                    .map(|heading| point.add(&heading.to_point()))
+                {
                     counts
                         .entry(neighbor)
                         .and_modify(|count| *count += 1)

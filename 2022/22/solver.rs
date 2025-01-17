@@ -170,7 +170,7 @@ impl Block {
     }
 
     fn absolute(&self, size: i64, relative: &Point) -> Point {
-        &self.top_left(size) + relative
+        self.top_left(size).add(relative)
     }
 }
 
@@ -194,7 +194,7 @@ impl State {
     }
 
     fn next(&self) -> Point {
-        &self.relative + &self.direction
+        self.relative.add(&self.direction.to_point())
     }
 
     fn score(&self) -> i64 {

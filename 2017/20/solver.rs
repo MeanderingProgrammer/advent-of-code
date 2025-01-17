@@ -28,10 +28,10 @@ impl Particle {
     }
 
     fn step(&self) -> Self {
-        let velocity = &self.velocity + &self.acceleration;
+        let velocity = self.velocity.add(&self.acceleration);
         Self {
             id: self.id,
-            position: &self.position + &velocity,
+            position: self.position.add(&velocity),
             velocity,
             acceleration: self.acceleration.clone(),
         }
