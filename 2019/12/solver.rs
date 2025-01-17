@@ -145,14 +145,14 @@ fn run_for(mut system: System, n: usize) -> i64 {
     system.energy()
 }
 
-fn system_period(system: System) -> i64 {
+fn system_period(system: System) -> usize {
     let x_period = component_period(system.clone(), &Component::X);
     let y_period = component_period(system.clone(), &Component::Y);
     let z_period = component_period(system.clone(), &Component::Z);
-    math::lcm(math::lcm(x_period, y_period), z_period)
+    math::lcm(vec![x_period, y_period, z_period])
 }
 
-fn component_period(mut system: System, component: &Component) -> i64 {
+fn component_period(mut system: System, component: &Component) -> usize {
     let goal = system.extract(component);
     let mut step = 0;
     loop {
