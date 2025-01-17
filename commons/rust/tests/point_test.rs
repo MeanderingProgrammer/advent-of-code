@@ -19,20 +19,17 @@ fn test_str_3d() {
 #[test]
 fn test_math() {
     let point = Point::new(1, 2);
-    assert_eq!(Point::new(-3, 6), point.add(&Point::new(-4, 4)));
-    assert_eq!(Point::new(1, 1), point.add(&Direction::Up.to_point()));
-    assert_eq!(Point::new(2, 1), point.add(&Heading::NorthEast.to_point()));
+    assert_eq!(Point::new(-3, 6), point.add(Point::new(-4, 4)));
+    assert_eq!(Point::new(1, 1), point.add(&Direction::Up));
+    assert_eq!(Point::new(2, 1), point.add(&Heading::NorthEast));
     assert_eq!(Point::new(-5, -10), point.mul(-5));
 }
 
 #[test]
 fn test_math_3d() {
     let point = Point3d::new(1, 0, 5);
-    assert_eq!(Point3d::new(-3, 4, 7), point.add(&Point3d::new(-4, 4, 2)));
-    assert_eq!(
-        Point3d::new(1, 0, 6),
-        point.add(&Direction3d::Up.to_point())
-    );
+    assert_eq!(Point3d::new(-3, 4, 7), point.add(Point3d::new(-4, 4, 2)));
+    assert_eq!(Point3d::new(1, 0, 6), point.add(&Direction3d::Up));
 }
 
 #[test]

@@ -51,7 +51,7 @@ impl Bus for PaintBot {
                 1 => self.direction.right(),
                 _ => panic!("Unhandled input: {value}"),
             };
-            self.position = self.position.add(&self.direction.to_point());
+            self.position = self.position.add(&self.direction);
         }
         self.color = !self.color;
     }

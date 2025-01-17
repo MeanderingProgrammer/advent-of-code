@@ -27,7 +27,7 @@ impl Default for Context {
 
 impl Context {
     fn next(&mut self, part1: bool) {
-        self.point = self.point.add(&self.direction.to_point());
+        self.point = self.point.add(&self.direction);
         self.value = if part1 {
             self.value + 1
         } else {
@@ -39,10 +39,7 @@ impl Context {
         };
         self.grid.add(self.point.clone(), self.value);
         let next_direction = self.direction.left();
-        if !self
-            .grid
-            .contains(&self.point.add(&next_direction.to_point()))
-        {
+        if !self.grid.contains(&self.point.add(&next_direction)) {
             self.direction = next_direction;
         }
     }

@@ -126,7 +126,7 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
     ];
     starts
         .iter()
-        .map(|heading| start.add(&heading.to_point()))
+        .map(|heading| start.add(heading))
         .for_each(|point| grid.add(point, Element::Start));
 
     grid

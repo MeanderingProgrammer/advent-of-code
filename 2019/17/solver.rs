@@ -42,9 +42,9 @@ impl DroidState {
     }
 
     fn get_turn(&self, scaffolding: &[Point]) -> Option<Turn> {
-        if scaffolding.contains(&self.location.add(&self.direction.left().to_point())) {
+        if scaffolding.contains(&self.location.add(&self.direction.left())) {
             Some(Turn::Left)
-        } else if scaffolding.contains(&self.location.add(&self.direction.right().to_point())) {
+        } else if scaffolding.contains(&self.location.add(&self.direction.right())) {
             Some(Turn::Right)
         } else {
             None
@@ -53,8 +53,8 @@ impl DroidState {
 
     fn move_until_end(&mut self, scaffolding: &[Point]) -> usize {
         let mut amount = 0;
-        while scaffolding.contains(&self.location.add(&self.direction.to_point())) {
-            self.location = self.location.add(&self.direction.to_point());
+        while scaffolding.contains(&self.location.add(&self.direction)) {
+            self.location = self.location.add(&self.direction);
             amount += 1;
         }
         amount
@@ -208,10 +208,10 @@ impl VacuumDroid {
     fn update_scaffolding(&mut self, value: char) -> Point {
         match value {
             '\n' => Point::new(0, self.current.y + 1),
-            '.' => self.current.add(&Direction::Right.to_point()),
+            '.' => self.current.add(&Direction::Right),
             '#' => {
                 self.scaffolding.push(self.current.clone());
-                self.current.add(&Direction::Right.to_point())
+                self.current.add(&Direction::Right)
             }
             value => {
                 self.state = Some(DroidState {
@@ -219,7 +219,7 @@ impl VacuumDroid {
                     direction: value.to_string().parse().unwrap(),
                 });
                 self.scaffolding.push(self.current.clone());
-                self.current.add(&Direction::Right.to_point())
+                self.current.add(&Direction::Right)
             }
         }
     }

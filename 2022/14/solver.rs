@@ -61,9 +61,9 @@ impl SandFlow {
     fn drop_grain(&mut self) -> bool {
         let mut grain = self.start.clone();
         while grain.y < self.max_height {
-            let next = vec![Heading::South, Heading::SouthWest, Heading::SouthEast]
-                .into_iter()
-                .map(|heading| grain.add(&heading.to_point()))
+            let next = [Heading::South, Heading::SouthWest, Heading::SouthEast]
+                .iter()
+                .map(|heading| grain.add(heading))
                 .find(|point| !self.grid.contains(point));
             if next.is_none() {
                 break;

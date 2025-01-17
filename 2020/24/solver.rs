@@ -30,6 +30,19 @@ impl FromStr for HexHeading {
     }
 }
 
+impl From<&HexHeading> for Point {
+    fn from(value: &HexHeading) -> Self {
+        match value {
+            HexHeading::East => Self::new(2, 0),
+            HexHeading::West => Self::new(-2, 0),
+            HexHeading::NorthEast => Self::new(1, 1),
+            HexHeading::NorthWest => Self::new(-1, 1),
+            HexHeading::SouthEast => Self::new(1, -1),
+            HexHeading::SouthWest => Self::new(-1, -1),
+        }
+    }
+}
+
 impl HexHeading {
     fn values() -> &'static [Self] {
         &[
@@ -40,17 +53,6 @@ impl HexHeading {
             Self::SouthEast,
             Self::SouthWest,
         ]
-    }
-
-    fn to_point(&self) -> Point {
-        match self {
-            Self::East => Point::new(2, 0),
-            Self::West => Point::new(-2, 0),
-            Self::NorthEast => Point::new(1, 1),
-            Self::NorthWest => Point::new(-1, 1),
-            Self::SouthEast => Point::new(1, -1),
-            Self::SouthWest => Point::new(-1, -1),
-        }
     }
 }
 
@@ -65,7 +67,7 @@ impl Floor {
         let path = path.replace('e', "e,").replace('w', "w,");
         for instruction in path.split(',').take_while(|value| !value.is_empty()) {
             let heading = HexHeading::from_str(instruction).unwrap();
-            point = point.add(&heading.to_point());
+            point = point.add(&heading);
         }
         self.flip(point);
     }
@@ -77,7 +79,7 @@ impl Floor {
             if !tile {
                 for neighbor in HexHeading::values()
                     .iter()
-                    .map(|heading| point.add(&heading.to_point()))
+                    .map(|heading| point.add(heading))
                 {
                     counts
                         .entry(neighbor)

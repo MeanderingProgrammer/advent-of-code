@@ -52,7 +52,7 @@ impl Layout {
 
     fn neighbors<'a>(&'a self, location: &'a Location) -> impl Iterator<Item = Location> + 'a {
         Direction::values().iter().flat_map(|direction| {
-            let neighbor = location.point.add(&direction.to_point());
+            let neighbor = location.point.add(direction);
             if self.recursive && neighbor == self.middle {
                 (0..self.size)
                     .map(|i| match direction {
@@ -65,7 +65,7 @@ impl Layout {
                     .collect()
             } else if self.recursive && !self.valid(&neighbor) {
                 vec![Location::new(
-                    self.middle.add(&direction.to_point()),
+                    self.middle.add(direction),
                     location.depth + 1,
                 )]
             } else {

@@ -34,7 +34,7 @@ struct State {
 
 impl State {
     fn next(&self) -> Point {
-        self.point.add(&self.direction.to_point())
+        self.point.add(&self.direction)
     }
 }
 

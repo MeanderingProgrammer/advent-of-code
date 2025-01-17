@@ -31,7 +31,7 @@ impl FromStr for Particle {
 
 impl Particle {
     fn at(&self, time: i64) -> Point {
-        self.position.add(&self.velocity.mul(time))
+        self.position.add(self.velocity.mul(time))
     }
 }
 

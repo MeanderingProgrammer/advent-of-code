@@ -143,13 +143,13 @@ impl Id {
     }
 
     fn to(&self, p: &Point) -> u8 {
-        let p = p.sub(&self.offset);
+        let p = p.sub(self.offset.clone());
         (p.y as u8) * self.width + (p.x as u8)
     }
 
     fn from(&self, i: u8) -> Point {
         let (x, y) = (i % self.width, i / self.width);
-        Point::new(x as i64, y as i64).add(&self.offset)
+        Point::new(x as i64, y as i64).add(self.offset.clone())
     }
 }
 

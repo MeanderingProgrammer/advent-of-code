@@ -24,6 +24,17 @@ impl FromStr for Direction {
     }
 }
 
+impl From<&Direction> for Point {
+    fn from(value: &Direction) -> Self {
+        match value {
+            Direction::Up => Self::new(0, -1),
+            Direction::Down => Self::new(0, 1),
+            Direction::Left => Self::new(-1, 0),
+            Direction::Right => Self::new(1, 0),
+        }
+    }
+}
+
 impl Direction {
     pub fn from_char(ch: char) -> Option<Self> {
         match ch {
@@ -37,15 +48,6 @@ impl Direction {
 
     pub fn values() -> &'static [Self] {
         &[Self::Up, Self::Down, Self::Left, Self::Right]
-    }
-
-    pub fn to_point(&self) -> Point {
-        match self {
-            Self::Up => Point::new(0, -1),
-            Self::Down => Point::new(0, 1),
-            Self::Left => Point::new(-1, 0),
-            Self::Right => Point::new(1, 0),
-        }
     }
 
     pub fn left(&self) -> Self {
@@ -88,6 +90,21 @@ pub enum Heading {
     North,
 }
 
+impl From<&Heading> for Point {
+    fn from(value: &Heading) -> Self {
+        match value {
+            Heading::SouthEast => Self::new(1, 1),
+            Heading::East => Self::new(1, 0),
+            Heading::NorthEast => Self::new(1, -1),
+            Heading::SouthWest => Self::new(-1, 1),
+            Heading::West => Self::new(-1, 0),
+            Heading::NorthWest => Self::new(-1, -1),
+            Heading::South => Self::new(0, 1),
+            Heading::North => Self::new(0, -1),
+        }
+    }
+}
+
 impl Heading {
     pub fn values() -> &'static [Self] {
         &[
@@ -100,19 +117,6 @@ impl Heading {
             Self::South,
             Self::North,
         ]
-    }
-
-    pub fn to_point(&self) -> Point {
-        match self {
-            Self::SouthEast => Point::new(1, 1),
-            Self::East => Point::new(1, 0),
-            Self::NorthEast => Point::new(1, -1),
-            Self::SouthWest => Point::new(-1, 1),
-            Self::West => Point::new(-1, 0),
-            Self::NorthWest => Point::new(-1, -1),
-            Self::South => Point::new(0, 1),
-            Self::North => Point::new(0, -1),
-        }
     }
 }
 
@@ -161,11 +165,13 @@ impl Point {
         Self { x, y }
     }
 
-    pub fn add(&self, rhs: &Self) -> Self {
+    pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
+        let rhs: Self = rhs.into();
         Self::new(self.x + rhs.x, self.y + rhs.y)
     }
 
-    pub fn sub(&self, rhs: &Self) -> Self {
+    pub fn sub<P: Into<Self>>(&self, rhs: P) -> Self {
+        let rhs: Self = rhs.into();
         Self::new(self.x - rhs.x, self.y - rhs.y)
     }
 
@@ -176,14 +182,14 @@ impl Point {
     pub fn neighbors(&self) -> Vec<Self> {
         Direction::values()
             .iter()
-            .map(|dir| self.add(&dir.to_point()))
+            .map(|dir| self.add(dir))
             .collect()
     }
 
     pub fn diagonal_neighbors(&self) -> Vec<Self> {
         Heading::values()
             .iter()
-            .map(|head| self.add(&head.to_point()))
+            .map(|head| self.add(head))
             .collect()
     }
 
@@ -211,6 +217,19 @@ pub enum Direction3d {
     Backward,
 }
 
+impl From<&Direction3d> for Point3d {
+    fn from(value: &Direction3d) -> Self {
+        match value {
+            Direction3d::Up => Self::new(0, 0, 1),
+            Direction3d::Down => Self::new(0, 0, -1),
+            Direction3d::Forward => Self::new(0, 1, 0),
+            Direction3d::Backward => Self::new(0, -1, 0),
+            Direction3d::Left => Self::new(-1, 0, 0),
+            Direction3d::Right => Self::new(1, 0, 0),
+        }
+    }
+}
+
 impl Direction3d {
     pub fn values() -> &'static [Self] {
         &[
@@ -221,17 +240,6 @@ impl Direction3d {
             Self::Forward,
             Self::Backward,
         ]
-    }
-
-    pub fn to_point(&self) -> Point3d {
-        match self {
-            Self::Up => Point3d::new(0, 0, 1),
-            Self::Down => Point3d::new(0, 0, -1),
-            Self::Forward => Point3d::new(0, 1, 0),
-            Self::Backward => Point3d::new(0, -1, 0),
-            Self::Left => Point3d::new(-1, 0, 0),
-            Self::Right => Point3d::new(1, 0, 0),
-        }
     }
 }
 
@@ -269,11 +277,13 @@ impl Point3d {
         Self { x, y, z }
     }
 
-    pub fn add(&self, rhs: &Self) -> Self {
+    pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
+        let rhs: Self = rhs.into();
         Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 
-    pub fn sub(&self, rhs: &Self) -> Self {
+    pub fn sub<P: Into<Self>>(&self, rhs: P) -> Self {
+        let rhs: Self = rhs.into();
         Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 
@@ -284,7 +294,7 @@ impl Point3d {
     pub fn neighbors(&self) -> Vec<Self> {
         Direction3d::values()
             .iter()
-            .map(|dir| self.add(&dir.to_point()))
+            .map(|dir| self.add(dir))
             .collect()
     }
 

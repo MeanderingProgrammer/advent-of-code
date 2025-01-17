@@ -10,19 +10,21 @@ enum Cucumber {
     South,
 }
 
+impl From<&Cucumber> for Point {
+    fn from(value: &Cucumber) -> Self {
+        match value {
+            Cucumber::South => Self::new(0, 1),
+            Cucumber::East => Self::new(1, 0),
+        }
+    }
+}
+
 impl Cucumber {
     fn from_char(ch: char) -> Option<Cucumber> {
         match ch {
             '>' => Some(Self::East),
             'v' => Some(Self::South),
             _ => None,
-        }
-    }
-
-    fn to_point(&self) -> Point {
-        match self {
-            Self::South => Point::new(0, 1),
-            Self::East => Point::new(1, 0),
         }
     }
 }
@@ -78,7 +80,7 @@ impl Seafloor {
         };
         let (mut next, mut moved) = (FxHashSet::default(), false);
         for start in current {
-            let mut point = start.add(&cucumber.to_point());
+            let mut point = start.add(&cucumber);
             point.x %= self.limit.x + 1;
             point.y %= self.limit.y + 1;
             if !current.contains(&point) && !other.contains(&point) {

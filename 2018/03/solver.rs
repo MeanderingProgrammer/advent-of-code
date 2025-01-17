@@ -35,7 +35,7 @@ impl Claim {
         let mut result = Vec::default();
         for x in 0..self.width {
             for y in 0..self.height {
-                result.push(self.point.add(&Point::new(x, y)));
+                result.push(self.point.add(Point::new(x, y)));
             }
         }
         result
