@@ -1,6 +1,6 @@
+use crate::iter::Iter;
 use crate::point::Point;
 use fxhash::FxHashMap;
-use itertools::{Itertools, MinMaxResult};
 use std::cmp::PartialEq;
 use std::fmt;
 use std::string::ToString;
@@ -146,15 +146,9 @@ impl Bound {
         if points.is_empty() {
             panic!("Can't get the bounds of an empty area");
         }
-        fn get_min_max(min_max: MinMaxResult<i64>) -> (i64, i64) {
-            match min_max {
-                MinMaxResult::MinMax(min, max) => (min, max),
-                _ => panic!("Could not find min max"),
-            }
-        }
-        let (min_x, max_x) = get_min_max(points.iter().map(|point| point.x).minmax());
-        let (min_y, max_y) = get_min_max(points.iter().map(|point| point.y).minmax());
-        Bound {
+        let (min_x, max_x) = points.iter().map(|point| point.x).minmax().unwrap();
+        let (min_y, max_y) = points.iter().map(|point| point.y).minmax().unwrap();
+        Self {
             lower: Point::new(min_x, min_y),
             upper: Point::new(max_x, max_y),
         }

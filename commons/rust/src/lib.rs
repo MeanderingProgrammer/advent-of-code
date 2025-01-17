@@ -3,6 +3,7 @@ pub mod bit_set;
 pub mod grid;
 pub mod ids;
 pub mod int_code;
+pub mod iter;
 pub mod math;
 pub mod point;
 pub mod queue;
