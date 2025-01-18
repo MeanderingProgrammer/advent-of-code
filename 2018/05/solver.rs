@@ -1,46 +1,70 @@
 use aoc_lib::answer;
+use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 
+#[derive(Debug, Clone)]
+enum Unit {
+    Upper(u8),
+    Lower(u8),
+}
+
+impl Unit {
+    fn new(ch: char) -> Self {
+        match ch.is_ascii_uppercase() {
+            true => Self::Upper(Base::ch_upper(ch)),
+            false => Self::Lower(Base::ch_lower(ch)),
+        }
+    }
+
+    fn variant(&self) -> u8 {
+        match self {
+            Self::Upper(variant) => *variant,
+            Self::Lower(variant) => *variant,
+        }
+    }
+
+    fn collide(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Upper(v1), Self::Lower(v2)) => v1 == v2,
+            (Self::Lower(v1), Self::Upper(v2)) => v1 == v2,
+            (Self::Upper(_), Self::Upper(_)) => false,
+            (Self::Lower(_), Self::Lower(_)) => false,
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Polymer {
-    units: Vec<char>,
+    units: Vec<Unit>,
 }
 
 impl Polymer {
     fn react(&mut self) -> usize {
-        while let Some(reaction_index) = self.get_reaction_index() {
-            self.units.remove(reaction_index);
-            self.units.remove(reaction_index);
+        while let Some(i) = self.next() {
+            self.units.remove(i);
+            self.units.remove(i);
         }
         self.units.len()
     }
 
-    fn get_reaction_index(&self) -> Option<usize> {
+    fn next(&self) -> Option<usize> {
         for i in 0..self.units.len() - 1 {
-            let (u1, u2) = (self.units[i], self.units[i + 1]);
-            if Self::collide(u1, u2) {
+            if self.units[i].collide(&self.units[i + 1]) {
                 return Some(i);
             }
         }
         None
     }
 
-    fn get_unit_types(&self) -> FxHashSet<char> {
-        self.units
-            .iter()
-            .map(|unit| unit.to_ascii_lowercase())
-            .collect()
+    fn variants(&self) -> FxHashSet<u8> {
+        self.units.iter().map(|unit| unit.variant()).collect()
     }
 
-    fn remove_unit_type(&self, unit_type: char) -> Self {
-        let mut unit_copy = self.units.clone();
-        unit_copy.retain(|&unit| unit.to_ascii_lowercase() != unit_type);
-        Self { units: unit_copy }
-    }
-
-    fn collide(u1: char, u2: char) -> bool {
-        u1.is_lowercase() != u2.is_lowercase() && u1.to_ascii_lowercase() == u2.to_ascii_lowercase()
+    fn remove(&self, variant: u8) -> Self {
+        let mut units = self.units.clone();
+        units.retain(|unit| unit.variant() != variant);
+        Self { units }
     }
 }
 
@@ -49,18 +73,18 @@ fn main() {
 }
 
 fn solution() {
-    let mut polymer = Polymer {
-        units: Reader::default().read_chars(),
-    };
+    let chars = Reader::default().read_chars();
+    let units: Vec<Unit> = chars.into_iter().map(Unit::new).collect();
+    let mut polymer = Polymer { units };
     answer::part1(11242, polymer.react());
     answer::part2(5492, best_removed(&polymer));
 }
 
 fn best_removed(polymer: &Polymer) -> usize {
     polymer
-        .get_unit_types()
+        .variants()
         .into_iter()
-        .map(|unit_type| polymer.remove_unit_type(unit_type).react())
+        .map(|variant| polymer.remove(variant).react())
         .min()
         .unwrap()
 }
