@@ -25,9 +25,10 @@ impl Cups {
     }
 
     fn run(&mut self) {
-        let mut aside: Vec<usize> = vec![self.cups[self.current]];
-        aside.push(self.cups[aside[0]]);
-        aside.push(self.cups[aside[1]]);
+        let mut aside: [usize; 3] = [0; 3];
+        aside[0] = self.cups[self.current];
+        aside[1] = self.cups[aside[0]];
+        aside[2] = self.cups[aside[1]];
         let destination = self.get_destination(&aside);
         self.cups[self.current] = self.cups[aside[2]];
         self.cups[aside[2]] = self.cups[destination];
@@ -44,7 +45,7 @@ impl Cups {
     }
 
     fn previous(&self, value: usize) -> usize {
-        if value - 1 < self.low {
+        if value == self.low {
             self.high
         } else {
             value - 1
@@ -75,13 +76,13 @@ fn solution() {
     answer::part2(235551949822, run(1_000_000, 10_000_000).part_2());
 }
 
-fn run(num_cups: usize, rounds: usize) -> Cups {
+fn run(cups: usize, rounds: usize) -> Cups {
     let mut values: Vec<usize> = Reader::default()
         .read_chars()
         .iter()
         .map(|c| c.to_digit(10).unwrap() as usize)
         .collect();
-    for i in values.iter().max().unwrap() + 1..=num_cups {
+    for i in values.iter().max().unwrap() + 1..=cups {
         values.push(i);
     }
     let mut cups = Cups::new(values);
