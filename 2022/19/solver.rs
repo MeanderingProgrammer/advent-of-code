@@ -7,7 +7,7 @@ use std::str::FromStr;
 #[derive(Debug)]
 struct Instruction {
     material: usize,
-    requirements: [i64; 3],
+    requirements: [u8; 3],
 }
 
 impl FromStr for Instruction {
@@ -47,9 +47,9 @@ impl FromStr for Instruction {
 
 #[derive(Debug)]
 struct Blueprint {
-    id: i64,
+    id: usize,
     instructions: Vec<Instruction>,
-    max_values: [i64; 3],
+    max_values: [u8; 3],
 }
 
 impl FromStr for Blueprint {
@@ -58,7 +58,7 @@ impl FromStr for Blueprint {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (id_data, instruction_data) = s.split_once(": ").unwrap();
 
-        let id: i64 = id_data.split_once(' ').unwrap().1.parse().unwrap();
+        let id = id_data.split_once(' ').unwrap().1.parse().unwrap();
 
         let instructions: Vec<Instruction> = instruction_data
             .split('.')
@@ -84,7 +84,7 @@ impl FromStr for Blueprint {
 }
 
 impl Blueprint {
-    fn simulate(&self, runtime: i64) -> i64 {
+    fn simulate(&self, runtime: u8) -> usize {
         let mut q = PriorityQueue::new(HeapVariant::Max);
         q.push(State::new(), (0, runtime));
         let mut seen = FxHashSet::default();
@@ -143,7 +143,7 @@ impl Blueprint {
                 q.push(next_state, (next_num_geods, time_left - 1));
             }
         }
-        max_geodes_seen
+        max_geodes_seen as usize
     }
 
     fn exceeds_max(&self, state: &State) -> bool {
@@ -156,8 +156,8 @@ impl Blueprint {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
-    robots: [i64; 4],
-    materials: [i64; 4],
+    robots: [u8; 4],
+    materials: [u8; 4],
 }
 
 impl State {
@@ -168,7 +168,7 @@ impl State {
         }
     }
 
-    fn geodes(&self) -> i64 {
+    fn geodes(&self) -> u8 {
         self.materials[3]
     }
 
@@ -196,7 +196,7 @@ impl State {
         self.robots[instruction.material] += 1;
     }
 
-    fn max_geodes(&self, time_left: i64) -> i64 {
+    fn max_geodes(&self, time_left: u8) -> u8 {
         let max_additional = (time_left * (time_left + 1)) / 2;
         self.geodes() + (self.robots[3] * time_left) + max_additional
     }

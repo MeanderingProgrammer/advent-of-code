@@ -3,12 +3,6 @@ use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
-#[derive(Debug)]
-enum Player {
-    One,
-    Two,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Deck(VecDeque<u8>);
 
@@ -43,71 +37,75 @@ impl Deck {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct Decks(Deck, Deck);
+
+impl Decks {
+    fn done(&self) -> bool {
+        self.0.empty() || self.1.empty()
+    }
+
+    fn next(&mut self) -> (u8, u8) {
+        (self.0.next(), self.1.next())
+    }
+
+    fn can_split(&self, i1: u8, i2: u8) -> bool {
+        i1 <= self.0.len() && i2 <= self.1.len()
+    }
+
+    fn split(&self, i1: u8, i2: u8) -> Self {
+        Self(self.0.split(i1), self.1.split(i2))
+    }
+}
+
 #[derive(Debug)]
+enum Player {
+    One,
+    Two,
+}
+
+#[derive(Debug, Clone)]
 struct Game {
-    deck1: Deck,
-    deck2: Deck,
-    recursize: bool,
-    states: FxHashSet<(Deck, Deck)>,
+    decks: Decks,
+    states: FxHashSet<Decks>,
 }
 
 impl Game {
-    fn new(deck1: Deck, deck2: Deck, recursize: bool) -> Self {
+    fn new(decks: Decks) -> Self {
         Self {
-            deck1,
-            deck2,
-            recursize,
+            decks,
             states: FxHashSet::default(),
         }
     }
-    fn play(&mut self) -> &Deck {
-        match self.get_winner() {
-            Player::One => &self.deck1,
-            Player::Two => &self.deck2,
-        }
-    }
 
-    fn get_winner(&mut self) -> Player {
-        while !self.deck1.empty() && !self.deck2.empty() {
-            if self.is_repeat() {
+    fn play(&mut self, recursize: bool) -> Player {
+        while !self.decks.done() {
+            if self.states.contains(&self.decks) {
                 return Player::One;
+            } else {
+                self.states.insert(self.decks.clone());
             }
-            self.play_round();
+            self.next(recursize);
         }
-        if self.deck1.empty() {
-            Player::Two
-        } else {
+        if !self.decks.0.empty() {
             Player::One
-        }
-    }
-
-    fn is_repeat(&mut self) -> bool {
-        let state = (self.deck1.clone(), self.deck2.clone());
-        if self.states.contains(&state) {
-            true
         } else {
-            self.states.insert(state);
-            false
+            Player::Two
         }
     }
 
-    fn play_round(&mut self) {
-        let (card1, card2) = (self.deck1.next(), self.deck2.next());
-        let winner = if self.recursize && card1 <= self.deck1.len() && card2 <= self.deck2.len() {
-            Game::new(
-                self.deck1.split(card1),
-                self.deck2.split(card2),
-                self.recursize,
-            )
-            .get_winner()
+    fn next(&mut self, recursize: bool) {
+        let (card1, card2) = self.decks.next();
+        let winner = if recursize && self.decks.can_split(card1, card2) {
+            Self::new(self.decks.split(card1, card2)).play(recursize)
         } else if card1 > card2 {
             Player::One
         } else {
             Player::Two
         };
         match winner {
-            Player::One => self.deck1.add(card1, card2),
-            Player::Two => self.deck2.add(card2, card1),
+            Player::One => self.decks.0.add(card1, card2),
+            Player::Two => self.decks.1.add(card2, card1),
         }
     }
 }
@@ -117,14 +115,10 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(32102, play_game(false));
-    answer::part2(34173, play_game(true));
-}
-
-fn play_game(recursize: bool) -> usize {
-    let data = Reader::default().read_group_lines();
-    let mut game = Game::new(get_deck(&data[0]), get_deck(&data[1]), recursize);
-    game.play().score()
+    let groups = Reader::default().read_group_lines();
+    let game = Game::new(Decks(get_deck(&groups[0]), get_deck(&groups[1])));
+    answer::part1(32102, play(&game, false));
+    answer::part2(34173, play(&game, true));
 }
 
 fn get_deck(values: &[String]) -> Deck {
@@ -135,4 +129,13 @@ fn get_deck(values: &[String]) -> Deck {
             .map(|value| value.parse().unwrap())
             .collect(),
     )
+}
+
+fn play(game: &Game, recursize: bool) -> usize {
+    let mut game = game.clone();
+    let deck = match game.play(recursize) {
+        Player::One => &game.decks.0,
+        Player::Two => &game.decks.1,
+    };
+    deck.score()
 }

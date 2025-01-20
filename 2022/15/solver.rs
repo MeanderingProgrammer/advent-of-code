@@ -6,17 +6,17 @@ use std::str::FromStr;
 
 #[derive(Debug)]
 struct Line {
-    slope: i64,
-    y_intercept: i64,
+    m: i64,
+    b: i64,
 }
 
 impl Line {
-    fn new(slope: i64, y_intercept: i64) -> Self {
-        Self { slope, y_intercept }
+    fn new(m: i64, b: i64) -> Self {
+        Self { m, b }
     }
 
     fn x(&self, y: i64) -> i64 {
-        (y - self.y_intercept) / self.slope
+        (y - self.b) / self.m
     }
 }
 
@@ -46,9 +46,9 @@ impl Range {
 
 #[derive(Debug)]
 struct CoverageZone {
-    lines: Vec<Line>,
-    x_range: Range,
-    y_range: Range,
+    lines: [Line; 4],
+    xs: Range,
+    ys: Range,
 }
 
 impl FromStr for CoverageZone {
@@ -73,28 +73,28 @@ impl FromStr for CoverageZone {
         let radius = center.manhattan_distance(&beacon);
 
         Ok(Self {
-            lines: vec![
-                Line::new(-1, y + x + radius),
+            lines: [
                 Line::new(1, y - x + radius),
                 Line::new(1, y - x - radius),
+                Line::new(-1, y + x + radius),
                 Line::new(-1, y + x - radius),
             ],
-            x_range: Range::new(x - radius, x + radius),
-            y_range: Range::new(y - radius, y + radius),
+            xs: Range::new(x - radius, x + radius),
+            ys: Range::new(y - radius, y + radius),
         })
     }
 }
 
 impl CoverageZone {
-    fn overlap_at_y(&self, y: i64) -> Option<Range> {
-        if !self.y_range.contains(y) {
+    fn overlap(&self, y: i64) -> Option<Range> {
+        if !self.ys.contains(y) {
             return None;
         }
         let intercepts = self
             .lines
             .iter()
             .map(|line| line.x(y))
-            .filter(|&intercept| self.x_range.contains(intercept))
+            .filter(|&intercept| self.xs.contains(intercept))
             .minmax();
         match intercepts {
             MinMaxResult::MinMax(min, max) => Some(Range::new(min, max)),
@@ -116,7 +116,7 @@ fn solution() {
 fn covered_range(coverage: &[CoverageZone], y: i64) -> Range {
     let overlaps: Vec<Range> = coverage
         .iter()
-        .flat_map(|zone| zone.overlap_at_y(y))
+        .flat_map(|zone| zone.overlap(y))
         .sorted()
         .collect();
     let mut joined = overlaps[0].clone();
