@@ -4,6 +4,8 @@ use aoc_lib::reader::Reader;
 use itertools::Itertools;
 use std::cmp::Ordering;
 use std::str::FromStr;
+use std::sync::mpsc;
+use std::thread;
 
 #[derive(Debug, Clone, Default)]
 struct Vector(i64, i64, i64);
@@ -46,6 +48,10 @@ enum Component {
 }
 
 impl Component {
+    fn values() -> &'static [Self] {
+        &[Self::X, Self::Y, Self::Z]
+    }
+
     fn get(&self, vector: &Vector) -> i64 {
         match self {
             Self::X => vector.0,
@@ -79,8 +85,7 @@ impl FromStr for Body {
 }
 
 impl Body {
-    fn apply_gravity(&mut self, other_position: Vector) {
-        let difference = self.position.subtract(&other_position);
+    fn apply_gravity(&mut self, difference: &Vector) {
         self.velocity = self.velocity.subtract(&difference.clamp());
     }
 
@@ -104,10 +109,12 @@ struct System {
 
 impl System {
     fn step(&mut self) {
-        for permutation in (0..self.bodies.len()).permutations(2) {
-            let (i, j) = (permutation[0], permutation[1]);
-            let other_position = self.bodies[j].position.clone();
-            self.bodies[i].apply_gravity(other_position);
+        for combination in (0..self.bodies.len()).combinations(2) {
+            let (i, j) = (combination[0], combination[1]);
+            let (vi, vj) = (&self.bodies[i].position, &self.bodies[j].position);
+            let (diff_ij, diff_ji) = (vi.subtract(vj), vj.subtract(vi));
+            self.bodies[i].apply_gravity(&diff_ij);
+            self.bodies[j].apply_gravity(&diff_ji);
         }
         self.bodies
             .iter_mut()
@@ -131,14 +138,13 @@ fn main() {
 }
 
 fn solution() {
-    let system = System {
-        bodies: Reader::default().read_from_str(),
-    };
-    answer::part1(5350, run_for(system.clone(), 1_000));
+    let bodies = Reader::default().read_from_str();
+    let system = System { bodies };
+    answer::part1(5350, run(system.clone(), 1_000));
     answer::part2(467034091553512, system_period(system.clone()));
 }
 
-fn run_for(mut system: System, n: usize) -> i64 {
+fn run(mut system: System, n: usize) -> i64 {
     for _ in 0..n {
         system.step();
     }
@@ -146,10 +152,18 @@ fn run_for(mut system: System, n: usize) -> i64 {
 }
 
 fn system_period(system: System) -> usize {
-    let x_period = component_period(system.clone(), &Component::X);
-    let y_period = component_period(system.clone(), &Component::Y);
-    let z_period = component_period(system.clone(), &Component::Z);
-    math::lcm(vec![x_period, y_period, z_period])
+    let (tx, rx) = mpsc::channel();
+    for component in Component::values() {
+        let system = system.clone();
+        let thread_tx = tx.clone();
+        thread::spawn(move || {
+            let period = component_period(system, component);
+            thread_tx.send(period).unwrap();
+        });
+    }
+    drop(tx);
+    let periods = rx.iter().collect();
+    math::lcm(periods)
 }
 
 fn component_period(mut system: System, component: &Component) -> usize {

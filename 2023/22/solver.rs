@@ -36,7 +36,6 @@ struct Brick {
     id: usize,
     start: Point3d,
     end: Point3d,
-    held: FxHashSet<usize>,
 }
 
 impl Brick {
@@ -47,12 +46,7 @@ impl Brick {
         let axis = Axis::new(&p1, &p2).unwrap();
         let (v1, v2) = (axis.get(&p1), axis.get(&p2));
         let (start, end) = if v1 <= v2 { (p1, p2) } else { (p2, p1) };
-        Self {
-            id,
-            start,
-            end,
-            held: FxHashSet::default(),
-        }
+        Self { id, start, end }
     }
 
     fn points(&self, direction: Option<Direction3d>) -> Vec<Point3d> {
@@ -75,46 +69,58 @@ impl Brick {
         self.start = self.start.add(&Direction3d::Down);
         self.end = self.end.add(&Direction3d::Down);
     }
+}
 
-    fn at(&self, settled: &FxHashMap<Point3d, usize>, direction: Direction3d) -> FxHashSet<usize> {
-        self.points(Some(direction))
-            .iter()
-            .flat_map(|point| settled.get(point))
-            .copied()
-            .collect()
+#[derive(Debug, Default)]
+struct Settled(FxHashMap<Point3d, usize>);
+
+impl Settled {
+    fn cement(&mut self, brick: &Brick) {
+        brick.points(None).into_iter().for_each(|point| {
+            self.0.insert(point, brick.id);
+        });
     }
 
-    fn unsupported(&self, removed: &FxHashSet<usize>) -> bool {
-        self.held.iter().all(|&support| removed.contains(&support))
+    fn held(&self, brick: &Brick) -> FxHashSet<usize> {
+        self.at(brick, Direction3d::Down)
+    }
+
+    fn holding(&self, brick: &Brick) -> FxHashSet<usize> {
+        self.at(brick, Direction3d::Up)
+    }
+
+    fn at(&self, brick: &Brick, direction: Direction3d) -> FxHashSet<usize> {
+        brick
+            .points(Some(direction))
+            .iter()
+            .filter_map(|point| self.0.get(point))
+            .copied()
+            .filter(|id| *id != brick.id)
+            .collect()
     }
 }
 
 #[derive(Debug)]
 struct Stack {
     bricks: Vec<Brick>,
-    settled: FxHashMap<Point3d, usize>,
+    settled: Settled,
 }
 
 impl Stack {
     fn new(bricks: Vec<Brick>) -> Self {
         Self {
             bricks,
-            settled: FxHashMap::default(),
+            settled: Settled::default(),
         }
     }
 
     fn fall(&mut self) {
         self.bricks.sort_by_key(|brick| brick.start.z);
         for brick in self.bricks.iter_mut() {
-            while brick.start.z > 1 && brick.held.is_empty() {
-                brick.held = brick.at(&self.settled, Direction3d::Down);
-                if brick.held.is_empty() {
-                    brick.down();
-                }
+            while brick.start.z > 1 && self.settled.held(brick).is_empty() {
+                brick.down();
             }
-            brick.points(None).into_iter().for_each(|point| {
-                self.settled.insert(point, brick.id);
-            });
+            self.settled.cement(brick);
         }
     }
 
@@ -131,21 +137,18 @@ impl Stack {
 
     fn count(&self, removed: &mut FxHashSet<usize>, brick: &Brick) -> usize {
         removed.insert(brick.id);
-        let holding: FxHashSet<usize> = brick
-            .at(&self.settled, Direction3d::Up)
-            .into_iter()
-            .filter(|id| *id != brick.id)
-            .collect();
-        let would_fall: Vec<&Brick> = holding
+        let unsupported: Vec<&Brick> = self
+            .settled
+            .holding(brick)
             .into_iter()
             .filter_map(|id| self.bricks.get(id))
-            .filter(|brick| brick.unsupported(removed))
+            .filter(|brick| self.settled.held(brick).is_subset(removed))
             .collect();
-        let reaction: usize = would_fall
+        let reaction: usize = unsupported
             .iter()
             .map(|brick| self.count(removed, brick))
             .sum();
-        would_fall.len() + reaction
+        unsupported.len() + reaction
     }
 }
 
@@ -160,7 +163,6 @@ fn solution() {
         .enumerate()
         .map(|(id, s)| Brick::new(id, s))
         .collect();
-
     let mut stack = Stack::new(bricks);
     stack.fall();
     let counts = stack.counts();
