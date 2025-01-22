@@ -39,6 +39,10 @@ name = "aoc_2015_22"
 path = "2015/22/solver.rs"
 
 [[bin]]
+name = "aoc_2015_24"
+path = "2015/24/solver.rs"
+
+[[bin]]
 name = "aoc_2015_25"
 path = "2015/25/solver.rs"
 
