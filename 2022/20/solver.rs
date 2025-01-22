@@ -1,10 +1,22 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use std::collections::VecDeque;
 
 #[derive(Debug)]
-struct SequenceEntry {
+struct Entry {
     index: usize,
     value: i64,
+    n: usize,
+}
+
+impl Entry {
+    fn new(index: usize, value: i64, length: usize) -> Self {
+        Self {
+            index,
+            value,
+            n: value.rem_euclid(length as i64 - 1) as usize,
+        }
+    }
 }
 
 fn main() {
@@ -12,47 +24,33 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(3466, decrypt(1, 1));
-    answer::part2(9995532008348, decrypt(811_589_153, 10));
+    let values = Reader::default().read_int();
+    answer::part1(3466, decrypt(&values, 1, 1));
+    answer::part2(9995532008348, decrypt(&values, 811_589_153, 10));
 }
 
-fn decrypt(multiplier: i64, rounds: usize) -> i64 {
-    let mut sequence = get_sequence(multiplier);
-    let full_length = sequence.len();
+fn decrypt(values: &[i64], key: i64, rounds: usize) -> i64 {
+    let length = values.len();
+    let mut sequence: VecDeque<Entry> = values
+        .iter()
+        .enumerate()
+        .map(|(i, value)| Entry::new(i, value * key, length))
+        .collect();
 
     for _ in 0..rounds {
-        for i in 0..sequence.len() {
-            let index = sequence
-                .iter()
-                .position(|sequence_entry| sequence_entry.index == i)
-                .unwrap();
-
-            let entry = sequence.remove(index);
-            let new_index = (index as i64 + entry.value).rem_euclid(full_length as i64 - 1);
-            sequence.insert(new_index as usize, entry);
+        for i in 0..length {
+            let index = sequence.iter().position(|entry| entry.index == i).unwrap();
+            sequence.rotate_left(index);
+            let entry = sequence.pop_front().unwrap();
+            sequence.rotate_left(entry.n);
+            sequence.push_front(entry);
         }
     }
 
-    let start_index = sequence
-        .iter()
-        .position(|sequence_entry| sequence_entry.value == 0)
-        .unwrap();
-
+    let start_index = sequence.iter().position(|entry| entry.value == 0).unwrap();
     [1_000, 2_000, 3_000]
         .iter()
-        .map(|offset| (start_index + offset) % full_length)
+        .map(|offset| (start_index + offset) % length)
         .map(|index| sequence[index].value)
         .sum()
-}
-
-fn get_sequence(multiplier: i64) -> Vec<SequenceEntry> {
-    Reader::default()
-        .read_int()
-        .iter()
-        .enumerate()
-        .map(|(index, &value)| SequenceEntry {
-            index,
-            value: value * multiplier,
-        })
-        .collect()
 }

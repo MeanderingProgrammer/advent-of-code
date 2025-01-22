@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
+use md5::Context;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;
 
@@ -10,15 +11,22 @@ struct State {
     result: AtomicUsize,
 }
 
-#[derive(Debug)]
 struct Miner {
-    prefix: String,
+    context: Context,
     zeros: usize,
 }
 
 impl Miner {
+    fn new(prefix: String, zeros: usize) -> Self {
+        let mut context = Context::new();
+        context.consume(prefix);
+        Self { context, zeros }
+    }
+
     fn matches(&self, index: usize) -> bool {
-        let digest = md5::compute(format!("{}{index}", self.prefix));
+        let mut context = self.context.clone();
+        context.consume(index.to_string());
+        let digest = context.compute();
         (0..self.zeros).all(|i| {
             let section = digest[i / 2];
             let part = if i % 2 == 0 {
@@ -47,7 +55,7 @@ fn first_index(prefix: String, zeros: usize) -> usize {
         index: AtomicUsize::new(0),
         result: AtomicUsize::new(usize::MAX),
     };
-    let miner = Miner { prefix, zeros };
+    let miner = Miner::new(prefix, zeros);
     thread::scope(|scope| {
         let threads = thread::available_parallelism().unwrap().get();
         for _ in 0..threads {

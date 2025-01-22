@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use itertools::{Itertools, MinMaxResult};
+use rayon::prelude::*;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -130,8 +131,9 @@ fn covered_range(coverage: &[CoverageZone], y: i64) -> Range {
 
 fn tuning_frequency(coverage: &[CoverageZone], max_value: i64) -> i64 {
     (0..=max_value)
+        .into_par_iter()
         .map(|y| (covered_range(coverage, y).max + 1, y))
-        .find(|(x, _)| *x <= max_value)
+        .find_any(|(x, _)| *x <= max_value)
         .map(|(x, y)| (x * 4_000_000) + y)
         .unwrap()
 }
