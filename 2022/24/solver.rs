@@ -43,11 +43,9 @@ impl Valley {
     fn new(grid: Grid<char>) -> Self {
         let mut blizzards = FxHashSet::default();
         let mut blizzard_positions = FxHashSet::default();
-        grid.points()
-            .iter()
-            .map(|point| (point, grid.get(point)))
-            .filter(|(_, &value)| value != '.')
-            .for_each(|(&point, value)| {
+        grid.iter()
+            .filter(|(_, value)| **value != '.')
+            .for_each(|(point, value)| {
                 blizzard_positions.insert(point.clone());
                 blizzards.insert(Blizzard {
                     position: point.clone(),

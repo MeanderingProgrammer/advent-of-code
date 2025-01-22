@@ -76,8 +76,8 @@ impl Cave {
         } else if point.x == 0 {
             (point.y as usize) * 48_271
         } else {
-            let left = self.cave.get(&point.add(&Direction::Left));
-            let above = self.cave.get(&point.add(&Direction::Up));
+            let left = &self.cave[&point.add(&Direction::Left)];
+            let above = &self.cave[&point.add(&Direction::Up)];
             left.erosion * above.erosion
         };
         Region::new((index + self.depth) % 20_183)
@@ -85,11 +85,9 @@ impl Cave {
 
     fn risk(&self) -> usize {
         self.cave
-            .points()
-            .into_iter()
-            .filter(|point| point.x <= self.target.x && point.y <= self.target.y)
-            .map(|point| self.cave.get(point))
-            .map(|region| region.kind)
+            .iter()
+            .filter(|(point, _)| point.x <= self.target.x && point.y <= self.target.y)
+            .map(|(_, region)| region.kind)
             .sum()
     }
 }
@@ -119,10 +117,10 @@ impl Dijkstra for Cave {
         if point == &self.target {
             result.push((Node::new(point.clone(), Tool::default()), 7));
         } else {
-            let tools = &self.cave.get(point).tools;
+            let tools = &self.cave[point].tools;
             for neighbor in point.neighbors() {
-                if self.cave.contains(&neighbor) {
-                    let region = self.cave.get(&neighbor);
+                if self.cave.has(&neighbor) {
+                    let region = &self.cave[&neighbor];
                     if region.tools.contains(tool) {
                         result.push((Node::new(neighbor, tool.clone()), 1));
                     } else {

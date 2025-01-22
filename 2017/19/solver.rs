@@ -17,16 +17,15 @@ impl Traverser {
     fn traverse(&self) -> Vec<Point> {
         let mut position: Option<Point> = self
             .grid
-            .points()
-            .into_iter()
-            .find(|point| point.y == 0)
-            .cloned();
+            .iter()
+            .find(|(point, _)| point.y == 0)
+            .map(|(point, _)| point.clone());
         let mut direction = Direction::Down;
         let mut seen: Vec<Point> = Vec::default();
         while let Some(point) = position {
             seen.push(point.clone());
             let forward = point.add(&direction);
-            let next = if self.grid.contains(&forward) {
+            let next = if self.grid.has(&forward) {
                 Some((forward, direction.clone()))
             } else {
                 Direction::values()
@@ -47,12 +46,12 @@ impl Traverser {
     }
 
     fn valid(&self, seen: &[Point], point: &Point) -> bool {
-        self.grid.contains(point) && !seen.contains(point)
+        self.grid.has(point) && !seen.contains(point)
     }
 
     fn letters(&self, seen: &[Point]) -> String {
         seen.iter()
-            .map(|point| self.grid.get(point))
+            .map(|point| self.grid[point])
             .filter(|value| !['-', '|', '+'].contains(value))
             .join("")
     }

@@ -323,9 +323,8 @@ fn get_state(id: &Id, rows: &[String]) -> State {
     let grid = Grid::from_lines(rows, |_, ch| Value::from_char(ch).map(Pod::new));
     State {
         pods: grid
-            .points()
-            .into_iter()
-            .map(|point| (id.to(point), grid.get(point).clone()))
+            .iter()
+            .map(|(point, value)| (id.to(point), value.clone()))
             .collect(),
     }
 }

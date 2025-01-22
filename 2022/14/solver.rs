@@ -64,7 +64,7 @@ impl SandFlow {
             let next = [Heading::South, Heading::SouthWest, Heading::SouthEast]
                 .iter()
                 .map(|heading| grain.add(heading))
-                .find(|point| !self.grid.contains(point));
+                .find(|point| !self.grid.has(point));
             if next.is_none() {
                 break;
             }
@@ -81,7 +81,7 @@ impl SandFlow {
     }
 
     fn amount_sand(&self) -> usize {
-        self.grid.get_values('O').len()
+        self.grid.values('O').len()
     }
 }
 

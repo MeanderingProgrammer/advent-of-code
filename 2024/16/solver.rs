@@ -39,8 +39,8 @@ struct Maze {
 
 impl Maze {
     fn new(mut grid: Grid<char>) -> Self {
-        let start = grid.get_values('S')[0].clone();
-        let end = grid.get_values('E')[0].clone();
+        let start = grid.value('S');
+        let end = grid.value('E');
         grid.add(start.clone(), '.');
         grid.add(end.clone(), '.');
         Self { grid, start, end }
@@ -79,7 +79,7 @@ impl Maze {
                 (current.turn(false).next(), 1001),
             ];
             for (next, next_cost) in neighbors.into_iter() {
-                if self.grid.get(&next.point) != &'.' {
+                if self.grid[&next.point] != '.' {
                     continue;
                 }
                 let cost = current_cost + next_cost;

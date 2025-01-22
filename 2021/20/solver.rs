@@ -16,7 +16,7 @@ impl Image {
     fn new(groups: &[Vec<String>]) -> Self {
         Self {
             on: Grid::from_lines(&groups[1], |_, ch| Some(ch == '#'))
-                .get_values(true)
+                .values(true)
                 .into_iter()
                 .collect(),
             enhancer: groups[0][0].chars().map(|ch| ch == '#').collect(),

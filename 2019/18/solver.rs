@@ -106,11 +106,10 @@ fn solution() {
 
 fn split(mut grid: Grid<Element>) -> Grid<Element> {
     let start = grid
-        .points()
-        .into_iter()
-        .find(|point| grid.get(point).is_start())
-        .unwrap()
-        .clone();
+        .iter()
+        .find(|(_, value)| value.is_start())
+        .map(|(point, _)| point.clone())
+        .unwrap();
 
     grid.remove(&start);
     start
@@ -135,27 +134,21 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
 fn solve(grid: Grid<Element>) -> i64 {
     let mut ids = Ids::default();
     let mut graph = FxHashMap::default();
-    grid.points()
-        .into_iter()
-        .filter(|point| grid.get(point).is_main())
-        .for_each(|point| {
+    grid.iter()
+        .filter(|(_, value)| value.is_main())
+        .for_each(|(point, _)| {
             let paths = get_paths(&grid, point, &mut ids);
             graph.insert(ids.set(point) as u8, paths);
         });
 
-    let keys = grid
-        .values()
-        .into_iter()
-        .filter(|value| value.is_key())
-        .count();
+    let keys = grid.iter().filter(|(_, value)| value.is_key()).count();
 
     let maze = Maze { graph, keys };
     let start = State {
         points: grid
-            .points()
-            .into_iter()
-            .filter(|point| grid.get(point).is_start())
-            .map(|point| ids.set(point) as u8)
+            .iter()
+            .filter(|(_, value)| value.is_start())
+            .map(|(point, _)| ids.set(point) as u8)
             .collect(),
         have: BitSet::default(),
     };
@@ -176,10 +169,10 @@ fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<P
         seen.insert(point.clone());
 
         if &point != start {
-            if let Element::Key(key) = grid.get(&point) {
+            if let Element::Key(key) = grid[&point] {
                 result.push(Path {
                     point: ids.set(&point) as u8,
-                    key: *key,
+                    key,
                     need: need.clone(),
                     distance,
                 });
@@ -188,7 +181,7 @@ fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<P
 
         for adjacent in point.neighbors() {
             if !seen.contains(&adjacent) {
-                match grid.get_or(&adjacent) {
+                match grid.get(&adjacent) {
                     Some(Element::Door(key)) => {
                         let mut next_need = need.clone();
                         next_need.add(*key);

@@ -3,6 +3,7 @@ use crate::point::Point;
 use fxhash::FxHashMap;
 use std::cmp::PartialEq;
 use std::fmt;
+use std::ops::Index;
 use std::string::ToString;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -40,42 +41,30 @@ impl<T> Grid<T> {
         self.grid.remove(point);
     }
 
-    pub fn get(&self, point: &Point) -> &T {
-        self.grid.get(point).unwrap()
-    }
-
-    pub fn get_or(&self, point: &Point) -> Option<&T> {
+    pub fn get(&self, point: &Point) -> Option<&T> {
         self.grid.get(point)
     }
 
-    pub fn contains(&self, point: &Point) -> bool {
+    pub fn has(&self, point: &Point) -> bool {
         self.grid.contains_key(point)
     }
 
-    pub fn points(&self) -> Vec<&Point> {
-        self.grid.keys().collect()
-    }
-
-    pub fn values(&self) -> Vec<&T> {
-        self.grid.values().collect()
-    }
-
-    pub fn height(&self) -> Option<i64> {
-        self.points().iter().map(|point| point.y).max()
+    pub fn iter(&self) -> impl Iterator<Item = (&Point, &T)> {
+        self.grid.iter()
     }
 
     pub fn bounds(&self) -> Bound {
-        Bound::new(&self.points())
+        let points: Vec<&Point> = self.grid.keys().collect();
+        Bound::new(&points)
     }
 
     pub fn to_graph(&self) -> FxHashMap<Point, Vec<Point>> {
-        self.points()
-            .into_iter()
-            .map(|point| {
+        self.iter()
+            .map(|(point, _)| {
                 let neighbors = point
                     .neighbors()
                     .into_iter()
-                    .filter(|neighbor| self.contains(neighbor))
+                    .filter(|neighbor| self.has(neighbor))
                     .collect();
                 (point.clone(), neighbors)
             })
@@ -83,16 +72,29 @@ impl<T> Grid<T> {
     }
 }
 
+impl<T> Index<&Point> for Grid<T> {
+    type Output = T;
+
+    fn index(&self, index: &Point) -> &Self::Output {
+        &self.grid[index]
+    }
+}
+
 impl<T> Grid<T>
 where
     T: PartialEq,
 {
-    pub fn get_values(&self, target: T) -> Vec<Point> {
-        self.grid
-            .iter()
+    pub fn values(&self, target: T) -> Vec<Point> {
+        self.iter()
             .filter(|(_, value)| value == &&target)
             .map(|(point, _)| point.clone())
             .collect()
+    }
+
+    pub fn value(&self, target: T) -> Point {
+        let mut values = self.values(target);
+        assert_eq!(1, values.len());
+        values.pop().unwrap()
     }
 }
 
@@ -123,7 +125,7 @@ where
                 .map(|y| {
                     (bottom_left.x..=top_right.x)
                         .map(|x| Point::new(x, y))
-                        .map(|point| match self.get_or(&point) {
+                        .map(|point| match self.get(&point) {
                             Some(value) => value.to_string(),
                             None => ".".to_string(),
                         })

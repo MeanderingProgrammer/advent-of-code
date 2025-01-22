@@ -40,8 +40,8 @@ impl Seafloor {
     fn new(grid: Grid<Cucumber>) -> Self {
         let mut east = FxHashSet::default();
         let mut south = FxHashSet::default();
-        for point in grid.points() {
-            match grid.get(point) {
+        for (point, value) in grid.iter() {
+            match value {
                 Cucumber::East => {
                     east.insert(point.clone());
                 }

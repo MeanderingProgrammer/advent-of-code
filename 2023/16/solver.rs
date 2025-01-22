@@ -22,11 +22,11 @@ impl State {
     fn next_states<'a>(&'a self, grid: &'a Grid<char>) -> impl Iterator<Item = State> + 'a {
         self.next_directions(grid)
             .map(|direction| Self::new(self.position.add(&direction), direction))
-            .filter(|state| grid.contains(&state.position))
+            .filter(|state| grid.has(&state.position))
     }
 
     fn next_directions(&self, grid: &Grid<char>) -> impl Iterator<Item = Direction> {
-        match *grid.get(&self.position) {
+        match grid[&self.position] {
             '.' => vec![self.direction.clone()],
             '|' => match self.direction {
                 Direction::Up | Direction::Down => vec![self.direction.clone()],

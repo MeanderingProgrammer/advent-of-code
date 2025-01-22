@@ -30,8 +30,8 @@ struct Landscape {
 impl Landscape {
     fn step(&mut self) {
         let mut updates: FxHashMap<Point, State> = FxHashMap::default();
-        for point in self.grid.points() {
-            match self.grid.get(point) {
+        for (point, value) in self.grid.iter() {
+            match value {
                 State::Open => {
                     if self.count(point, State::Tree) >= 3 {
                         updates.insert(point.clone(), State::Tree);
@@ -58,7 +58,7 @@ impl Landscape {
         point
             .diagonal_neighbors()
             .iter()
-            .filter(|neighbor| self.grid.contains(neighbor) && self.grid.get(neighbor) == &state)
+            .filter(|neighbor| self.grid.has(neighbor) && self.grid[neighbor] == state)
             .count()
     }
 
@@ -67,7 +67,7 @@ impl Landscape {
     }
 
     fn resource_count(&self, state: State) -> usize {
-        self.grid.get_values(state).len()
+        self.grid.values(state).len()
     }
 }
 

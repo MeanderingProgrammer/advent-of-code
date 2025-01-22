@@ -79,7 +79,7 @@ impl Platform {
         });
         rocks.into_iter().for_each(|rock| {
             let mut next = rock.clone();
-            while self.grid.get_or(&next.add(direction)) == Some(&Value::Empty) {
+            while self.grid.get(&next.add(direction)) == Some(&Value::Empty) {
                 next = next.add(direction);
             }
             if rock != next {
@@ -95,7 +95,7 @@ impl Platform {
     }
 
     fn rocks(&self) -> Vec<Point> {
-        self.grid.get_values(Value::Round)
+        self.grid.values(Value::Round)
     }
 }
 

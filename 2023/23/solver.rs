@@ -112,13 +112,13 @@ impl Compress {
 
     fn neighbors(&self, trace: &Trace) -> Vec<(Point, Direction, bool)> {
         let last = trace.path.last().unwrap();
-        let value = *self.grid.get(last);
+        let value = self.grid[last];
         Direction::values()
             .iter()
             // Continue path in all directions from last point on our path
             .map(|dir| (last.add(dir), dir.clone()))
             // Remove anything that's off the grid or goes into a forest
-            .filter(|(point, _)| *self.grid.get_or(point).unwrap_or(&'#') != '#')
+            .filter(|(point, _)| *self.grid.get(point).unwrap_or(&'#') != '#')
             // Remove direction going back the way we traveled
             .filter(|(point, _)| !trace.path.contains(point))
             // Add information about whether the step went uphill

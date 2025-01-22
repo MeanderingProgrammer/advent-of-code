@@ -54,7 +54,7 @@ impl FallingShape {
     fn collides(&self, grid: &Grid<char>) -> bool {
         self.points()
             .iter()
-            .any(|point| grid.contains(point) || point.y < 0 || point.x < 0 || point.x > 6)
+            .any(|point| grid.has(point) || point.y < 0 || point.x < 0 || point.x > 6)
     }
 }
 
@@ -139,7 +139,7 @@ fn simulate<'a>(
     let mut rocks_dropped = 0;
 
     while rocks_dropped < rocks_to_drop {
-        let height = grid.height().unwrap_or(-1);
+        let height = get_height(&grid);
         let shape = shapes.next().unwrap();
 
         let mut crashed = false;
@@ -169,7 +169,7 @@ fn simulate<'a>(
 
         rocks_dropped += 1;
 
-        let height = grid.height().unwrap() + 1;
+        let height = get_height(&grid) + 1;
 
         let value = grid.to_string();
         if let Entry::Vacant(entry) = cache.entry(value.clone()) {
@@ -189,17 +189,19 @@ fn simulate<'a>(
         remove_points_below(&mut grid, height - 50);
     }
 
-    grid.height().unwrap() + 1 + additional_height
+    get_height(&grid) + 1 + additional_height
+}
+
+fn get_height(grid: &Grid<char>) -> i64 {
+    grid.iter().map(|(point, _)| point.y).max().unwrap_or(-1)
 }
 
 fn remove_points_below(grid: &mut Grid<char>, threshold: i64) {
     let points_to_remove: Vec<Point> = grid
-        .points()
         .iter()
-        .filter(|point| point.y < threshold)
-        .map(|&point| point.clone())
+        .filter(|(point, _)| point.y < threshold)
+        .map(|(point, _)| point.clone())
         .collect();
-
     for point in points_to_remove {
         grid.remove(&point);
     }

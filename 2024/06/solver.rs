@@ -44,12 +44,7 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Element::from_ch);
-    let start: Point = grid
-        .points()
-        .into_iter()
-        .find(|point| grid.get(point) == &Element::Start)
-        .unwrap()
-        .clone();
+    let start = grid.value(Element::Start);
     let path = follow(&grid, &start, None).unwrap();
     answer::part1(5516, path.len());
     answer::part2(2008, obstacles(&grid, &start, path));
@@ -65,13 +60,13 @@ fn follow(
         point: start.clone(),
         direction: Direction::Up,
     };
-    while grid.contains(&state.point) {
+    while grid.has(&state.point) {
         if seen.contains(&state) {
             return None;
         }
         seen.insert(state.clone());
         let next = state.next();
-        if Some(&next) == obstacle || grid.get_or(&next) == Some(&Element::Obstacle) {
+        if Some(&next) == obstacle || grid.get(&next) == Some(&Element::Obstacle) {
             state.direction = state.direction.right();
         } else {
             state.point = next;
@@ -87,7 +82,7 @@ fn follow(
 fn obstacles(grid: &Grid<Element>, start: &Point, options: FxHashSet<Point>) -> usize {
     options
         .into_par_iter()
-        .filter(|point| match grid.get(point) {
+        .filter(|point| match grid[point] {
             Element::Start => false,
             _ => follow(grid, start, Some(point)).is_none(),
         })

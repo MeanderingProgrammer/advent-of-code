@@ -79,7 +79,7 @@ impl Elves {
             .iter()
             .for_each(|point| grid.add(point.clone(), '#'));
         let total_size = grid.bounds().size();
-        let occupied = grid.points().len() as i64;
+        let occupied = grid.iter().count() as i64;
         total_size - occupied
     }
 }
@@ -89,26 +89,22 @@ fn main() {
 }
 
 fn solution() {
-    let (empty_tiles, total_rounds) = simulate_until_end();
+    let grid = Reader::default().read_grid(Some);
+    let elves = Elves {
+        locations: grid.values('#').into_iter().collect(),
+        round: 0,
+    };
+    let (empty_tiles, total_rounds) = simulate(elves);
     answer::part1(4070, empty_tiles);
     answer::part2(881, total_rounds);
 }
 
-fn simulate_until_end() -> (i64, usize) {
+fn simulate(mut elves: Elves) -> (i64, usize) {
     let mut round_10 = 0;
-    let mut elves = get_elves();
     while elves.apply() {
         if elves.round == 10 {
             round_10 = elves.empty_tiles();
         }
     }
     (round_10, elves.round)
-}
-
-fn get_elves() -> Elves {
-    let grid = Reader::default().read_grid(Some);
-    Elves {
-        locations: grid.get_values('#').into_iter().collect(),
-        round: 0,
-    }
 }

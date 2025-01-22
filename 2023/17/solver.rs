@@ -70,7 +70,7 @@ impl Dijkstra for Search {
     fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
         node.get_neighbors(self.resistance)
             .into_iter()
-            .filter(|(_, _, positions)| self.grid.contains(positions.last().unwrap()))
+            .filter(|(_, _, positions)| self.grid.has(positions.last().unwrap()))
             .filter_map(|(direction, is_turn, positions)| {
                 let mut length = positions.len();
                 if !is_turn {
@@ -84,7 +84,7 @@ impl Dijkstra for Search {
                     };
                     let cost = positions
                         .iter()
-                        .map(|position| *self.grid.get(position) as i64)
+                        .map(|position| self.grid[position] as i64)
                         .sum();
                     Some((next_node, cost))
                 } else {

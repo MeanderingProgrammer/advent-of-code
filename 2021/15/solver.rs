@@ -30,7 +30,7 @@ impl Graph {
             return None;
         }
         let base = Point::new(p.x % self.tile, p.y % self.tile);
-        let original = *self.grid.get(&base);
+        let original = self.grid[&base];
         let distance = ((p.x / self.tile) + (p.y / self.tile)) as u8;
         let result = original + distance;
         Some(if result > 9 { result - 9 } else { result })

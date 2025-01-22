@@ -93,7 +93,7 @@ class Displayer:
             Color(1000, float("inf"), 31),
         ]
         change: list[Color] = [
-            Color(float("-inf"), -50, 32),
+            Color(float("-inf"), -10, 32),
             Color(10, float("inf"), 31),
         ]
         schema = Schema(

@@ -22,17 +22,17 @@ impl GraphSearch for Search {
     }
 
     fn neighbors(&self, node: &Point) -> impl Iterator<Item = Point> {
-        let max_height = self.grid.get(node) + 1;
-        node.neighbors().into_iter().filter(move |neighbor| {
-            self.grid.contains(neighbor) && self.grid.get(neighbor) <= &max_height
-        })
+        let max = self.grid[node] + 1;
+        node.neighbors()
+            .into_iter()
+            .filter(move |neighbor| self.grid.has(neighbor) && self.grid[neighbor] <= max)
     }
 }
 
 impl Search {
     fn shortest(&self, start_value: i64) -> Option<i64> {
         self.grid
-            .get_values(start_value)
+            .values(start_value)
             .into_iter()
             .filter_map(|start| self.bfs(start).first().cloned())
             .min()
@@ -52,10 +52,10 @@ fn solution() {
 fn get_search() -> (Search, Point) {
     let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
 
-    let start = grid.get_values(get_offset('S'))[0].clone();
+    let start = grid.value(get_offset('S'));
     grid.add(start.clone(), get_offset('a'));
 
-    let end = grid.get_values(get_offset('E'))[0].clone();
+    let end = grid.value(get_offset('E'));
     grid.add(end.clone(), get_offset('z'));
 
     (Search { grid, end }, start)

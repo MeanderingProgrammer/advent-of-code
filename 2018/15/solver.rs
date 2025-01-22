@@ -1,4 +1,5 @@
 use aoc_lib::answer;
+use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
@@ -18,6 +19,16 @@ struct Character {
     hp: i16,
 }
 
+impl Character {
+    fn new(team: Team, extra: i16) -> Self {
+        Self {
+            team,
+            damage: 3 + extra,
+            hp: 200,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 enum GameStatus {
     InProgress,
@@ -29,10 +40,21 @@ enum GameStatus {
 struct Game {
     characters: FxHashMap<Point, Character>,
     open_paths: FxHashSet<Point>,
-    until_elf_death: bool,
+    no_losses: bool,
 }
 
 impl Game {
+    fn new(grid: &Grid<char>, extra: i16, no_losses: bool) -> Self {
+        let mut game = Self {
+            characters: FxHashMap::default(),
+            open_paths: grid.values('.').into_iter().collect(),
+            no_losses,
+        };
+        game.add(grid.values('G'), Character::new(Team::Goblin, 0));
+        game.add(grid.values('E'), Character::new(Team::Elf, extra));
+        game
+    }
+
     fn add(&mut self, positions: Vec<Point>, character: Character) {
         positions.into_iter().for_each(|position| {
             self.characters.insert(position.clone(), character.clone());
@@ -83,7 +105,7 @@ impl Game {
                 target.hp -= character.damage;
                 if target.hp <= 0 {
                     self.characters.remove(&target_position).unwrap();
-                    if self.until_elf_death && elf_target {
+                    if self.no_losses && elf_target {
                         return GameStatus::Fail;
                     }
                 }
@@ -176,43 +198,18 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(214731, play_game(false));
-    answer::part2(53222, play_game(true));
+    let grid = Reader::default().read_grid(Some);
+    answer::part1(214731, play(&grid, false));
+    answer::part2(53222, play(&grid, true));
 }
 
-fn play_game(until_elf_death: bool) -> i64 {
-    let mut elf_damage = 3;
+fn play(grid: &Grid<char>, no_losses: bool) -> i64 {
+    let mut extra = 0;
     loop {
-        let mut game = get_game(elf_damage, until_elf_death);
+        let mut game = Game::new(grid, extra, no_losses);
         if let Some(result) = game.play() {
             return result;
         }
-        elf_damage += 1;
+        extra += 1;
     }
-}
-
-fn get_game(elf_damage: i16, until_elf_death: bool) -> Game {
-    let grid = Reader::default().read_grid(Some);
-    let mut game = Game {
-        characters: FxHashMap::default(),
-        open_paths: grid.get_values('.').into_iter().collect(),
-        until_elf_death,
-    };
-    game.add(
-        grid.get_values('G'),
-        Character {
-            team: Team::Goblin,
-            damage: 3,
-            hp: 200,
-        },
-    );
-    game.add(
-        grid.get_values('E'),
-        Character {
-            team: Team::Elf,
-            damage: elf_damage,
-            hp: 200,
-        },
-    );
-    game
 }

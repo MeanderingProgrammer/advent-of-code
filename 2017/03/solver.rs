@@ -34,12 +34,12 @@ impl Context {
             self.point
                 .diagonal_neighbors()
                 .into_iter()
-                .map(|point| self.grid.get_or(&point).unwrap_or(&0))
+                .map(|point| self.grid.get(&point).unwrap_or(&0))
                 .sum()
         };
         self.grid.add(self.point.clone(), self.value);
         let next_direction = self.direction.left();
-        if !self.grid.contains(&self.point.add(&next_direction)) {
+        if !self.grid.has(&self.point.add(&next_direction)) {
             self.direction = next_direction;
         }
     }

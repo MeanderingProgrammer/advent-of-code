@@ -56,7 +56,7 @@ struct Cube {
 
 impl Cube {
     fn new(grid: Grid<Space>) -> Self {
-        let total_spaces = grid.points().len();
+        let total_spaces = grid.iter().count();
         let spaces_per_face = total_spaces / 6;
         let size = (spaces_per_face as f64).sqrt() as i64;
 
@@ -102,7 +102,7 @@ impl Cube {
     }
 
     fn legal(&self, position: &Point) -> bool {
-        self.grid.get(position) == &Space::Open
+        self.grid[position] == Space::Open
     }
 }
 

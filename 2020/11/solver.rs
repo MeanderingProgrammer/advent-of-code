@@ -30,7 +30,7 @@ struct SeatingChart {
 impl SeatingChart {
     fn next(&self) -> Self {
         let mut next_chart = Grid::default();
-        self.chart.points().into_iter().for_each(|p| {
+        self.chart.iter().for_each(|(p, _)| {
             next_chart.add(p.clone(), self.next_seat(p));
         });
         Self {
@@ -40,7 +40,7 @@ impl SeatingChart {
     }
 
     fn next_seat(&self, p: &Point) -> Seat {
-        match self.chart.get(p) {
+        match self.chart[p] {
             Seat::Floor => Seat::Floor,
             Seat::Empty => {
                 if self.adjacent_occupied(p) == 0 {
@@ -70,13 +70,13 @@ impl SeatingChart {
 
     fn explore_direction(&self, p: &Point, heading: &Heading) -> Option<&Seat> {
         let mut point = p.add(heading);
-        let mut seat = self.chart.get_or(&point);
+        let mut seat = self.chart.get(&point);
         if !self.look {
             seat
         } else {
             while seat == Some(&Seat::Floor) {
                 point = point.add(heading);
-                seat = self.chart.get_or(&point);
+                seat = self.chart.get(&point);
             }
             seat
         }
@@ -84,9 +84,8 @@ impl SeatingChart {
 
     fn occupied(&self) -> usize {
         self.chart
-            .values()
-            .into_iter()
-            .filter(|&seat| *seat == Seat::Occupied)
+            .iter()
+            .filter(|(_, seat)| seat == &&Seat::Occupied)
             .count()
     }
 }

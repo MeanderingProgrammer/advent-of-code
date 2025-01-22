@@ -17,8 +17,8 @@ struct Race {
 
 impl Race {
     fn new(mut grid: Grid<char>) -> Self {
-        let start = grid.get_values('S')[0].clone();
-        let finish = grid.get_values('E')[0].clone();
+        let start = grid.value('S');
+        let finish = grid.value('E');
         grid.add(start.clone(), '.');
         grid.add(finish.clone(), '.');
         Self {
@@ -41,7 +41,7 @@ impl Race {
             self.distances.insert(current.clone(), distance);
             for next in current.neighbors().into_iter() {
                 let next_distance = distance + 1;
-                if self.grid.get(&next) != &'.' {
+                if self.grid[&next] != '.' {
                     continue;
                 }
                 if !self.has_better(&next, next_distance) {
@@ -86,7 +86,7 @@ impl Race {
                 if distance < 2 || distance > duration {
                     continue;
                 }
-                if !self.grid.contains(&option) || self.grid.get(&option) != &'.' {
+                if !self.grid.has(&option) || self.grid[&option] != '.' {
                     continue;
                 }
                 let cheat_time = i + distance + self.distances.get(&option).unwrap();
