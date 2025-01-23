@@ -1,204 +1,199 @@
 use aoc_lib::answer;
-use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use std::str::FromStr;
 
 #[derive(Debug)]
-struct Instruction {
-    material: usize,
-    requirements: [u8; 3],
+enum Robot {
+    Ore,
+    Clay,
+    Obsidian,
+    Geode,
 }
 
-impl FromStr for Instruction {
-    type Err = String;
+#[derive(Debug, Clone, Default)]
+struct Mineral {
+    ore: u8,
+    clay: u8,
+    obsidian: u8,
+    geode: u8,
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        fn parse_material(value: &str) -> usize {
-            match value {
-                "ore" => 0,
-                "clay" => 1,
-                "obsidian" => 2,
-                "geode" => 3,
-                _ => panic!("Unhandled material type"),
-            }
+impl From<Robot> for Mineral {
+    fn from(value: Robot) -> Self {
+        match value {
+            Robot::Ore => Self::new(1, 0, 0, 0),
+            Robot::Clay => Self::new(0, 1, 0, 0),
+            Robot::Obsidian => Self::new(0, 0, 1, 0),
+            Robot::Geode => Self::new(0, 0, 0, 1),
         }
+    }
+}
 
-        let parts: Vec<&str> = s.split(' ').collect();
-        Ok(Self {
-            material: parse_material(parts[1]),
-            requirements: match parts.len() {
-                6 => {
-                    let mut value = [0, 0, 0];
-                    value[parse_material(parts[5])] = parts[4].parse().unwrap();
-                    value
-                }
-                9 => {
-                    let mut value = [0, 0, 0];
-                    value[parse_material(parts[5])] = parts[4].parse().unwrap();
-                    value[parse_material(parts[8])] = parts[7].parse().unwrap();
-                    value
-                }
-                _ => panic!("Unhandled length of requirements"),
-            },
-        })
+impl Mineral {
+    fn new(ore: u8, clay: u8, obsidian: u8, geode: u8) -> Self {
+        Self {
+            ore,
+            clay,
+            obsidian,
+            geode,
+        }
+    }
+
+    fn add(&self, rhs: &Self) -> Self {
+        Self::new(
+            self.ore + rhs.ore,
+            self.clay + rhs.clay,
+            self.obsidian + rhs.obsidian,
+            self.geode + rhs.geode,
+        )
+    }
+
+    fn sub(&self, rhs: &Self) -> Self {
+        Self::new(
+            self.ore - rhs.ore,
+            self.clay - rhs.clay,
+            self.obsidian - rhs.obsidian,
+            self.geode - rhs.geode,
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
+struct State {
+    robots: Mineral,
+    resources: Mineral,
+}
+
+impl State {
+    fn can_build(&self, cost: &Mineral) -> bool {
+        let have = &self.resources;
+        have.ore >= cost.ore && have.clay >= cost.clay && have.obsidian >= cost.obsidian
+    }
+
+    fn next(&mut self) {
+        self.resources = self.resources.add(&self.robots);
+    }
+
+    fn geodes(&self, time: u8) -> u8 {
+        self.resources.geode + self.robots.geode * time
     }
 }
 
 #[derive(Debug)]
 struct Blueprint {
     id: usize,
-    instructions: Vec<Instruction>,
-    max_values: [u8; 3],
+    max_ore: u8,
+    max_clay: u8,
+    max_obsidian: u8,
+    ore_cost: Mineral,
+    clay_cost: Mineral,
+    obsidian_cost: Mineral,
+    geode_cost: Mineral,
 }
 
 impl FromStr for Blueprint {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (id_data, instruction_data) = s.split_once(": ").unwrap();
-
-        let id = id_data.split_once(' ').unwrap().1.parse().unwrap();
-
-        let instructions: Vec<Instruction> = instruction_data
-            .split('.')
-            .map(|value| value.trim())
-            .filter(|value| !value.is_empty())
-            .map(|value| value.parse().unwrap())
+        // Blueprint 1:
+        //  Each ore robot costs 4 ore.
+        //  Each clay robot costs 2 ore.
+        //  Each obsidian robot costs 3 ore and 14 clay.
+        //  Each geode robot costs 2 ore and 7 obsidian.
+        let (id, minerals) = s.split_once(": ").unwrap();
+        let (_, id) = id.split_once(' ').unwrap();
+        let minerals: Vec<u8> = minerals
+            .split_whitespace()
+            .filter_map(|s| s.parse().ok())
             .collect();
 
-        let mut max_values = [0, 0, 0];
-        instructions
-            .iter()
-            .flat_map(|instruction| instruction.requirements.iter().enumerate())
-            .for_each(|(material, &needed)| {
-                max_values[material] = max_values[material].max(needed)
-            });
-
+        assert_eq!(6, minerals.len());
+        let [ore1, ore2, ore3, clay, ore4, obsidian] = <[u8; 6]>::try_from(&minerals[..]).unwrap();
         Ok(Self {
-            id,
-            instructions,
-            max_values,
+            id: id.parse().unwrap(),
+            max_ore: ore1.max(ore2).max(ore3).max(ore4),
+            max_clay: clay,
+            max_obsidian: obsidian,
+            ore_cost: Mineral::new(ore1, 0, 0, 0),
+            clay_cost: Mineral::new(ore2, 0, 0, 0),
+            obsidian_cost: Mineral::new(ore3, clay, 0, 0),
+            geode_cost: Mineral::new(ore4, 0, obsidian, 0),
         })
     }
 }
 
 impl Blueprint {
-    fn simulate(&self, runtime: u8) -> usize {
-        let mut q = PriorityQueue::new(HeapVariant::Max);
-        q.push(State::new(), (0, runtime));
-        let mut seen = FxHashSet::default();
+    fn maximize(&self, time: u8) -> usize {
+        let state = State {
+            robots: Robot::Ore.into(),
+            resources: Mineral::default(),
+        };
+        self.dfs(state, time, 0) as usize
+    }
 
-        let mut max_geodes_seen = 0;
-
-        while !q.is_empty() {
-            let (state, (num_geods, time_left)) = q.pop().unwrap();
-
-            if seen.contains(&state) {
-                continue;
+    fn dfs(&self, state: State, time: u8, result: u8) -> u8 {
+        let mut result = result.max(state.geodes(time));
+        if self.max_geodes(&state, time) > result {
+            result = result.max(self.next(&state, time, result, Robot::Geode));
+            if state.robots.obsidian < self.max_obsidian {
+                result = result.max(self.next(&state, time, result, Robot::Obsidian))
             }
-            seen.insert(state.clone());
-
-            max_geodes_seen = max_geodes_seen.max(num_geods);
-
-            if time_left == 0 {
-                continue;
+            if state.robots.ore < self.max_ore {
+                result = result.max(self.next(&state, time, result, Robot::Ore));
             }
-
-            let mut valid_instructions: Vec<Option<&Instruction>> = self
-                .instructions
-                .iter()
-                .filter(|instruction| state.can_build(instruction))
-                .map(Some)
-                .collect();
-            valid_instructions.push(None);
-
-            for instruction in valid_instructions {
-                let mut next_state = state.clone();
-                next_state.collect();
-                if let Some(instruction) = instruction {
-                    next_state.build_robot(instruction);
-                }
-                for material in 0..3 {
-                    // By capping materials to twice maximum we make similar states look identical allowing them to be pruned.
-                    let material_cap = self.max_values[material] * 2;
-                    let capped = next_state.materials[material].min(material_cap);
-                    next_state.materials[material] = capped;
-                }
-
-                if seen.contains(&next_state) {
-                    continue;
-                }
-                // If we build more of a specific type of robot then we could ever use
-                // If clay robots cost 10 ore, then having > 10 ore robots adds no value
-                if self.exceeds_max(&next_state) {
-                    continue;
-                }
-                // Prune if there's no way this state can catch up to something we've already seen
-                if next_state.max_geodes(time_left - 1) <= max_geodes_seen {
-                    continue;
-                }
-
-                let next_num_geods = next_state.geodes();
-                q.push(next_state, (next_num_geods, time_left - 1));
+            if state.robots.clay < self.max_clay {
+                result = result.max(self.next(&state, time, result, Robot::Clay));
             }
         }
-        max_geodes_seen as usize
+        result
     }
 
-    fn exceeds_max(&self, state: &State) -> bool {
-        self.max_values
-            .iter()
-            .enumerate()
-            .any(|(material, &max_value)| state.robots[material] > max_value)
+    fn max_geodes(&self, state: &State, time: u8) -> u8 {
+        let mut state = state.clone();
+        for _ in 0..time {
+            state.resources.ore = self.max_ore;
+            if state.can_build(self.cost(&Robot::Geode)) {
+                state = self.build(state, Robot::Geode);
+            } else if state.can_build(self.cost(&Robot::Obsidian)) {
+                state = self.build(state, Robot::Obsidian);
+            } else {
+                state.next();
+            }
+            state.robots = state.robots.add(&Robot::Clay.into());
+        }
+        state.resources.geode
     }
-}
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct State {
-    robots: [u8; 4],
-    materials: [u8; 4],
-}
-
-impl State {
-    fn new() -> Self {
-        Self {
-            robots: [1, 0, 0, 0],
-            materials: [0, 0, 0, 0],
+    fn next(&self, state: &State, time: u8, result: u8, robot: Robot) -> u8 {
+        let mut time = time - 1;
+        let mut state = state.clone();
+        let cost = self.cost(&robot);
+        while time > 0 && !state.can_build(cost) {
+            time -= 1;
+            state.next();
+        }
+        if time > 0 {
+            self.dfs(self.build(state, robot), time, result)
+        } else {
+            result
         }
     }
 
-    fn geodes(&self) -> u8 {
-        self.materials[3]
+    fn build(&self, mut state: State, robot: Robot) -> State {
+        let cost = self.cost(&robot);
+        state.next();
+        state.resources = state.resources.sub(cost);
+        state.robots = state.robots.add(&robot.into());
+        state
     }
 
-    fn can_build(&self, instruction: &Instruction) -> bool {
-        instruction
-            .requirements
-            .iter()
-            .enumerate()
-            .filter(|(_, &needed)| needed > 0)
-            .all(|(material, &needed)| self.materials[material] >= needed)
-    }
-
-    fn collect(&mut self) {
-        for (material, quantity) in self.robots.iter().enumerate() {
-            self.materials[material] += quantity;
+    fn cost(&self, robot: &Robot) -> &Mineral {
+        match robot {
+            Robot::Ore => &self.ore_cost,
+            Robot::Clay => &self.clay_cost,
+            Robot::Obsidian => &self.obsidian_cost,
+            Robot::Geode => &self.geode_cost,
         }
-    }
-
-    fn build_robot(&mut self, instruction: &Instruction) {
-        instruction
-            .requirements
-            .iter()
-            .enumerate()
-            .for_each(|(material, needed)| self.materials[material] -= needed);
-        self.robots[instruction.material] += 1;
-    }
-
-    fn max_geodes(&self, time_left: u8) -> u8 {
-        let max_additional = (time_left * (time_left + 1)) / 2;
-        self.geodes() + (self.robots[3] * time_left) + max_additional
     }
 }
 
@@ -208,9 +203,9 @@ fn main() {
 
 fn solution() {
     let bps: Vec<Blueprint> = Reader::default().read_from_str();
-    answer::part1(1599, bps.iter().map(|bp| bp.simulate(24) * bp.id).sum());
+    answer::part1(1599, bps.iter().map(|bp| bp.maximize(24) * bp.id).sum());
     answer::part2(
         14112,
-        bps.iter().take(3).map(|bp| bp.simulate(32)).product(),
+        bps.iter().take(3).map(|bp| bp.maximize(32)).product(),
     );
 }

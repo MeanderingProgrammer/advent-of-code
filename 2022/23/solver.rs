@@ -22,40 +22,40 @@ struct Elves {
 
 impl Elves {
     fn apply(&mut self) -> bool {
-        let proposals = self.get_proposals();
-        let end_to_proposals = proposals.iter().map(|(_, end)| end).counts();
-
-        let mut any_move = false;
-        self.locations = proposals
-            .iter()
-            .map(|(start, end)| {
-                let num_proposals = end_to_proposals[&end];
-                let actual_end = if num_proposals == 1 { end } else { start };
-                if start != actual_end {
-                    any_move = true;
-                }
-                actual_end.clone()
-            })
-            .collect();
-        self.round += 1;
-
-        any_move
-    }
-
-    fn get_proposals(&self) -> Vec<(Point, Point)> {
-        self.locations
+        let proposals: Vec<(Point, Option<Point>)> = self
+            .locations
             .iter()
             .map(|location| (location.clone(), self.get_proposal(location)))
-            .collect()
+            .collect();
+
+        let counts = proposals.iter().filter_map(|(_, end)| end.clone()).counts();
+
+        self.round += 1;
+        let mut done = true;
+        self.locations = proposals
+            .into_iter()
+            .map(|(start, end)| match end {
+                None => start,
+                Some(end) => {
+                    if counts[&end] > 1 {
+                        start
+                    } else {
+                        done = false;
+                        end
+                    }
+                }
+            })
+            .collect();
+        !done
     }
 
-    fn get_proposal(&self, location: &Point) -> Point {
+    fn get_proposal(&self, location: &Point) -> Option<Point> {
         let isolated = location
             .diagonal_neighbors()
             .iter()
             .all(|location| !self.locations.contains(location));
         match isolated {
-            true => location.clone(),
+            true => None,
             false => CHECK_ORDER
                 .iter()
                 .cycle()
@@ -68,19 +68,17 @@ impl Elves {
                         && !self.locations.contains(l3)
                 })
                 .map(|(_, l2, _)| l2)
-                .next()
-                .unwrap_or(location.clone()),
+                .next(),
         }
     }
 
-    fn empty_tiles(&self) -> i64 {
+    fn empty_tiles(&self) -> usize {
         let mut grid = Grid::default();
         self.locations
             .iter()
-            .for_each(|point| grid.add(point.clone(), '#'));
-        let total_size = grid.bounds().size();
-        let occupied = grid.iter().count() as i64;
-        total_size - occupied
+            .for_each(|point| grid.add(point.clone(), true));
+        let total_size = grid.bounds().size() as usize;
+        total_size - self.locations.len()
     }
 }
 
@@ -94,12 +92,12 @@ fn solution() {
         locations: grid.values('#').into_iter().collect(),
         round: 0,
     };
-    let (empty_tiles, total_rounds) = simulate(elves);
-    answer::part1(4070, empty_tiles);
-    answer::part2(881, total_rounds);
+    let (part1, part2) = simulate(elves);
+    answer::part1(4070, part1);
+    answer::part2(881, part2);
 }
 
-fn simulate(mut elves: Elves) -> (i64, usize) {
+fn simulate(mut elves: Elves) -> (usize, usize) {
     let mut round_10 = 0;
     while elves.apply() {
         if elves.round == 10 {

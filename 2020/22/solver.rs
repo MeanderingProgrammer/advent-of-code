@@ -80,10 +80,8 @@ impl Game {
 
     fn play(&mut self, recursize: bool) -> Player {
         while !self.decks.done() {
-            if self.states.contains(&self.decks) {
+            if !self.states.insert(self.decks.clone()) {
                 return Player::One;
-            } else {
-                self.states.insert(self.decks.clone());
             }
             self.next(recursize);
         }
