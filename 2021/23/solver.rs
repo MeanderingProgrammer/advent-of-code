@@ -1,41 +1,45 @@
 use aoc_lib::answer;
-use aoc_lib::grid::{Bound, Grid};
-use aoc_lib::point::Point;
+use aoc_lib::grid::Grid;
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
-use fxhash::{FxHashMap, FxHashSet};
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::BTreeMap;
+use std::ops::Range;
 
-const HALLWAY: i64 = 1;
+// ...........
+//   B C B D
+//   D C B A
+//   D B A C
+//   A D C A
+//
+// Hall Width  = 2 + (4 + 3) + 2 = 11
+// Pods / Room = 2 or 4
+
+const WIDTH: u8 = 11;
+
+#[derive(Debug)]
+enum Hall {
+    Open,
+    Door,
+}
+
+impl From<u8> for Hall {
+    fn from(value: u8) -> Self {
+        match value {
+            2 | 4 | 6 | 8 => Self::Door,
+            _ => Self::Open,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-enum Value {
-    Hallway,
-    Doorway,
+enum Pod {
     A,
     B,
     C,
     D,
 }
 
-impl From<&Point> for Value {
-    fn from(point: &Point) -> Self {
-        let alley = match point.x {
-            3 => Self::A,
-            5 => Self::B,
-            7 => Self::C,
-            9 => Self::D,
-            _ => Self::Hallway,
-        };
-        if point.y == HALLWAY && alley != Self::Hallway {
-            Self::Doorway
-        } else {
-            alley
-        }
-    }
-}
-
-impl Value {
+impl Pod {
     fn from_char(ch: char) -> Option<Self> {
         match ch {
             'A' => Some(Self::A),
@@ -46,78 +50,150 @@ impl Value {
         }
     }
 
-    fn x(&self) -> i64 {
+    fn col(&self) -> u8 {
         match self {
-            Self::A => Some(3),
-            Self::B => Some(5),
-            Self::C => Some(7),
-            Self::D => Some(9),
-            _ => None,
-        }
-        .unwrap()
-    }
-
-    fn cost(&self) -> Option<i64> {
-        match self {
-            Self::A => Some(1),
-            Self::B => Some(10),
-            Self::C => Some(100),
-            Self::D => Some(1000),
-            _ => None,
+            Self::A => 2,
+            Self::B => 4,
+            Self::C => 6,
+            Self::D => 8,
         }
     }
-}
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct Pod {
-    value: Value,
-    start: bool,
-}
-
-impl Pod {
-    fn new(value: Value) -> Self {
-        Self { value, start: true }
+    fn cost(&self) -> i64 {
+        match self {
+            Self::A => 1,
+            Self::B => 10,
+            Self::C => 100,
+            Self::D => 1000,
+        }
     }
 
-    fn done(&self, p: &Point) -> bool {
-        self.value.x() == p.x
+    fn correct(&self, id: u8) -> bool {
+        self.col() == Self::x(id)
     }
 
-    fn crosses(&self, x1: i64) -> impl Iterator<Item = i64> {
-        let x2 = self.value.x();
+    fn path(&self, id: u8) -> Range<u8> {
+        let (x1, x2) = (self.col(), Self::x(id));
         x1.min(x2) + 1..x1.max(x2)
     }
+
+    fn id(x: u8, y: u8) -> u8 {
+        (y * WIDTH) + x
+    }
+
+    fn x(id: u8) -> u8 {
+        id % WIDTH
+    }
+
+    fn y(id: u8) -> u8 {
+        id / WIDTH
+    }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct State {
+struct Burrow {
     pods: BTreeMap<u8, Pod>,
+    size: u8,
 }
 
-impl State {
-    fn apply(&self, id: &Id, start: u8, end: u8) -> (Self, i64) {
-        let mut pods = self.pods.clone();
-        let mut pod = pods.remove(&start).unwrap();
-
-        let cost = pod.value.cost().unwrap();
-        // Movement along x-axis work as usual. However, along the y-axis we need
-        // to go up to the hallway, then back down to our desired level.
-        // So if the hallway is at y = 1, and we move from y = 4 to y = 2, what
-        // really happens is we go from 4 -> 1 then 1 -> 2.
-        let (p1, p2) = (id.from(start), id.from(end));
-        let distance = (p1.x - p2.x).abs() + (p1.y - HALLWAY) + (p2.y - HALLWAY);
-
-        pod.start = false;
-        pods.insert(end, pod);
-
-        (Self { pods }, cost * distance)
+impl Burrow {
+    fn new(lines: &[String]) -> Self {
+        let pods: BTreeMap<u8, Pod> = Grid::from_lines(lines, |_, ch| Pod::from_char(ch))
+            .iter()
+            .map(|(p, pod)| (Pod::id(p.x as u8, p.y as u8), pod.clone()))
+            .collect();
+        let size = (pods.len() / 4) as u8;
+        Self { pods, size }
     }
 
-    fn room(&self, id: &Id, x: i64) -> Option<i64> {
+    fn has(&self, id: u8) -> bool {
+        self.pods.contains_key(&id)
+    }
+
+    fn done(&self) -> bool {
+        self.pods.iter().all(|(id, pod)| pod.correct(*id))
+    }
+
+    fn neighbors(&self) -> impl Iterator<Item = (Self, i64)> + '_ {
+        let mut room: Vec<(u8, u8)> = Vec::default();
+        let mut hall: Vec<(u8, u8)> = Vec::default();
+        self.pods
+            .iter()
+            .map(|(start, pod)| (*start, self.neighbor(*start, pod)))
+            .for_each(|(start, mut ends)| {
+                if ends.len() == 1 && Pod::y(ends[0]) == 0 {
+                    room.push((start, ends.pop().unwrap()));
+                } else {
+                    ends.into_iter().for_each(|end| hall.push((start, end)));
+                }
+            });
+        // If we can go to a room only make those moves
+        let moves = if !room.is_empty() { room } else { hall };
+        moves.into_iter().map(|(start, end)| self.apply(start, end))
+    }
+
+    fn neighbor(&self, start: u8, pod: &Pod) -> Vec<u8> {
+        let (x, y) = (Pod::x(start), Pod::y(start));
+        if y > 0 {
+            // Pod: in a room
+            let top = (1..y).map(|y| Pod::id(x, y)).all(|id| !self.has(id));
+            if !top {
+                // Pod: in a room & not at top
+                //   -> can't move
+                vec![]
+            } else {
+                // Pod: in a room & at the top
+                if pod.correct(start) {
+                    // Pod: in a room & at the top & correct
+                    let below_settled = (y + 1..=self.size)
+                        .map(|y| Pod::id(x, y))
+                        .filter_map(|id| self.pods.get(&id).map(|pod| (id, pod)))
+                        .all(|(id, pod)| pod.correct(id));
+                    if below_settled {
+                        // Pod: in a room & at the top & correct & below settled
+                        //   -> in its final position
+                        vec![]
+                    } else {
+                        // Pod: in a room & at the top & correct & below not settled
+                        //   -> need to move somewhere in the hall
+                        self.hall(start, pod)
+                    }
+                } else {
+                    // Pod: in a room & at the top & not correct
+                    //   -> try to move to correct room, fallback to hall
+                    self.room(start, pod)
+                        .map(|point| vec![point])
+                        .unwrap_or_else(|| self.hall(start, pod))
+                }
+            }
+        } else {
+            // Pod: in the hall
+            //   -> try to move pod to correct room
+            self.room(start, pod)
+                .map(|point| vec![point])
+                .unwrap_or_default()
+        }
+    }
+
+    fn room(&self, start: u8, pod: &Pod) -> Option<u8> {
+        match self.in_room(pod.col()) {
+            None => None,
+            Some(room) => {
+                let blocked = pod.path(start).any(|x| self.has(x));
+                if blocked {
+                    None
+                } else {
+                    Some(Pod::id(pod.col(), self.size - room))
+                }
+            }
+        }
+    }
+
+    fn in_room(&self, x: u8) -> Option<u8> {
         let mut count = 0;
-        for (index, pod) in self.pods.iter() {
-            if id.from(*index).x == x {
-                if pod.value.x() != x {
+        for (id, pod) in self.pods.iter() {
+            if Pod::x(*id) == x {
+                if pod.col() != x {
                     return None;
                 } else {
                     count += 1;
@@ -126,156 +202,71 @@ impl State {
         }
         Some(count)
     }
-}
 
-#[derive(Debug)]
-struct Id {
-    offset: Point,
-    width: u8,
-}
-
-impl Id {
-    fn new(bound: &Bound) -> Self {
-        Self {
-            offset: bound.lower.clone(),
-            width: (bound.upper.x - bound.lower.x) as u8 + 1,
-        }
+    fn hall(&self, start: u8, pod: &Pod) -> Vec<u8> {
+        let mut result = self.side(start, pod, true);
+        result.append(&mut self.side(start, pod, false));
+        result
     }
 
-    fn to(&self, p: &Point) -> u8 {
-        let p = p.sub(self.offset.clone());
-        (p.y as u8) * self.width + (p.x as u8)
+    fn side(&self, start: u8, pod: &Pod, left: bool) -> Vec<u8> {
+        let x = Pod::x(start);
+        let range: Box<dyn Iterator<Item = u8>> = if left {
+            Box::new((0..x).rev())
+        } else {
+            Box::new(x + 1..WIDTH)
+        };
+        range
+            .take_while(|end| !self.has(*end))
+            .filter(|end| self.valid(pod, *end))
+            .collect()
     }
 
-    fn from(&self, i: u8) -> Point {
-        let (x, y) = (i % self.width, i / self.width);
-        Point::new(x as i64, y as i64).add(self.offset.clone())
-    }
-}
-
-#[derive(Debug)]
-struct Board {
-    graph: FxHashMap<u8, Vec<u8>>,
-    id: Id,
-    height: i64,
-}
-
-impl Dijkstra for Board {
-    type T = State;
-
-    fn done(&self, state: &State) -> bool {
-        state
-            .pods
-            .iter()
-            .all(|(index, pod)| pod.done(&self.id.from(*index)))
-    }
-
-    fn neighbors(&self, state: &State) -> impl Iterator<Item = (State, i64)> {
-        state
-            .pods
-            .iter()
-            .filter(|(start, pod)| !pod.done(&self.id.from(**start)) || pod.start)
-            .flat_map(|(start, _)| {
-                self.options(state, *start)
-                    .into_iter()
-                    .map(|end| state.apply(&self.id, *start, end))
-            })
-    }
-}
-
-impl Board {
-    fn new(grid: Grid<char>) -> Self {
-        let bound = grid.bounds();
-        let id = Id::new(&bound);
-        Self {
-            graph: grid
-                .to_graph()
-                .iter()
-                .map(|(from, to)| (id.to(from), to.iter().map(|e| id.to(e)).collect()))
-                .collect(),
-            id,
-            height: bound.upper.y - 1,
-        }
-    }
-
-    fn options(&self, state: &State, start: u8) -> Vec<u8> {
-        let pod = &state.pods[&start];
-        let valid_rooms = [self.id.from(start).x, pod.value.x()];
-
-        let mut seen = FxHashSet::default();
-        let mut options = Vec::new();
-
-        let mut queue = VecDeque::new();
-        queue.push_back(start);
-        while let Some(end) = queue.pop_back() {
-            let end_point = self.id.from(end);
-            let in_room = end_point.y != HALLWAY;
-
-            // Prune branches going into invalid rooms
-            if in_room && !valid_rooms.contains(&end_point.x) {
-                continue;
-            }
-
-            if seen.contains(&end) {
-                continue;
-            }
-            seen.insert(end);
-
-            if self.valid(state, pod, &end_point) {
-                if in_room {
-                    // If we can get into the room pick this move
-                    return vec![end];
-                } else {
-                    options.push(end);
-                }
-            }
-
-            for next in &self.graph[&end] {
-                if !state.pods.contains_key(next) {
-                    queue.push_back(*next);
-                }
-            }
-        }
-        options
-    }
-
-    fn valid(&self, state: &State, pod: &Pod, end: &Point) -> bool {
-        let end_value = end.into();
-        match end_value {
+    fn valid(&self, pod: &Pod, end: u8) -> bool {
+        match end.into() {
             // Never stop outside of a room
-            Value::Doorway => false,
-            Value::Hallway => {
-                if !pod.start {
-                    // Can not move to hallway once we have already been moved
-                    false
-                } else {
-                    // Here we detect "deadlock", which occurs when we put our amphipod
-                    // in the Hallway and this blocks an amphipod from reaching their
-                    // room who is in turn blocking us
-                    pod.crosses(end.x).all(|x| {
-                        state
-                            .pods
-                            .get(&self.id.to(&Point::new(x, HALLWAY)))
-                            .map(|o| !o.crosses(x).any(|o_x| o_x == end.x))
-                            .unwrap_or(true)
-                    })
-                }
-            }
-            _ => {
-                if pod.value != end_value {
-                    // If this room is for another amphipod then we cannot enter
-                    false
-                } else {
-                    // Must be the room for this amphipod, need to make sure that:
-                    // 1) Only valid amphipods are in the room
-                    // 2) We go to the correct point in the room, as far back as possible
-                    match state.room(&self.id, pod.value.x()) {
-                        None => false,
-                        Some(count) => end.y == self.height + HALLWAY - count,
-                    }
-                }
+            Hall::Door => false,
+            Hall::Open => {
+                // Detect "deadlock", occurs when we put a pod in the hall
+                // and some pod is blocking it and we're blocking that pod
+                pod.path(end).all(|id| {
+                    self.pods
+                        .get(&id)
+                        .map(|pod| !pod.path(id).contains(&end))
+                        .unwrap_or(true)
+                })
             }
         }
+    }
+
+    fn apply(&self, start: u8, end: u8) -> (Self, i64) {
+        let mut burrow = self.clone();
+        let pod = burrow.pods.remove(&start).unwrap();
+        let cost = pod.cost();
+        // Movement along x-axis work as usual. Movement along the y-axis
+        // needs to go up to hall then back down to our destination.
+        // Example: hall is at y = 0, move y = 3 -> y = 1, means we go
+        // from 3 -> 0 + 1 -> 0 = 3 + 1 = 4 (instead of 2).
+        let (x1, x2) = (Pod::x(start) as i64, Pod::x(end) as i64);
+        let (y1, y2) = (Pod::y(start) as i64, Pod::y(end) as i64);
+        let distance = (x1 - x2).abs() + y1 + y2;
+        burrow.pods.insert(end, pod);
+        (burrow, cost * distance)
+    }
+}
+
+#[derive(Debug)]
+struct Search {}
+
+impl Dijkstra for Search {
+    type T = Burrow;
+
+    fn done(&self, node: &Burrow) -> bool {
+        node.done()
+    }
+
+    fn neighbors(&self, node: &Burrow) -> impl Iterator<Item = (Burrow, i64)> {
+        node.neighbors()
     }
 }
 
@@ -284,47 +275,36 @@ fn main() {
 }
 
 fn solution() {
-    let data = Reader::default().read_lines();
-    answer::part1(18282, solve(&data, false));
-    answer::part2(50132, solve(&data, true));
+    let lines = Reader::default().read_lines();
+    answer::part1(18282, solve(lines.clone(), false));
+    answer::part2(50132, solve(lines.clone(), true));
 }
 
-fn solve(lines: &[String], extend: bool) -> i64 {
-    let rows = get_rows(lines, extend);
-    let board = get_board(&rows);
-    let state = get_state(&board.id, &rows);
-    board.run(state).unwrap()
+fn solve(lines: Vec<String>, extend: bool) -> i64 {
+    let lines = process_lines(lines, extend);
+    let burrow = Burrow::new(&lines);
+    Search {}.run(burrow).unwrap()
 }
 
-fn get_rows(rows: &[String], extend: bool) -> Vec<String> {
-    let mut result = Vec::from(rows);
+fn process_lines(lines: Vec<String>, extend: bool) -> Vec<String> {
+    // #############
+    // #...........#
+    // ###B#C#B#D###
+    //   #A#D#C#A#
+    //   #########
+    let mut result: Vec<String> = lines
+        .into_iter()
+        .skip(1)
+        .take(3)
+        .map(|s| s.replace('#', " "))
+        .map(|s| s[1..s.len() - 1].to_string())
+        .collect();
+    // ...........
+    //   B C B D
+    //   A D C A
     if extend {
-        let last_row = result.pop().unwrap();
-        let second_last_row = result.pop().unwrap();
-        result.extend([
-            "  #D#C#B#A#".to_string(),
-            "  #D#B#A#C#".to_string(),
-            second_last_row,
-            last_row,
-        ]);
+        result.insert(2, "  D C B A".to_string());
+        result.insert(3, "  D B A C".to_string());
     }
     result
-}
-
-fn get_board(rows: &[String]) -> Board {
-    let grid = Grid::from_lines(rows, |_, ch| match ch {
-        '#' | ' ' => None,
-        _ => Some(ch),
-    });
-    Board::new(grid)
-}
-
-fn get_state(id: &Id, rows: &[String]) -> State {
-    let grid = Grid::from_lines(rows, |_, ch| Value::from_char(ch).map(Pod::new));
-    State {
-        pods: grid
-            .iter()
-            .map(|(point, value)| (id.to(point), value.clone()))
-            .collect(),
-    }
 }
