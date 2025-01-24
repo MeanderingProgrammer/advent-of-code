@@ -4,35 +4,38 @@ use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Deck(VecDeque<u8>);
+struct Deck {
+    cards: VecDeque<u8>,
+}
 
 impl Deck {
     fn len(&self) -> u8 {
-        self.0.len() as u8
+        self.cards.len() as u8
     }
 
     fn empty(&self) -> bool {
-        self.0.is_empty()
+        self.cards.is_empty()
     }
 
     fn next(&mut self) -> u8 {
-        self.0.pop_front().unwrap()
+        self.cards.pop_front().unwrap()
     }
 
     fn add(&mut self, card1: u8, card2: u8) {
-        self.0.push_back(card1);
-        self.0.push_back(card2);
+        self.cards.push_back(card1);
+        self.cards.push_back(card2);
     }
 
     fn split(&self, index: u8) -> Self {
-        Self(self.0.iter().take(index as usize).copied().collect())
+        let cards = self.cards.iter().take(index as usize).copied().collect();
+        Self { cards }
     }
 
     fn score(&self) -> usize {
-        self.0
+        self.cards
             .iter()
             .enumerate()
-            .map(|(i, &card)| (self.0.len() - i) * (card as usize))
+            .map(|(i, &card)| (self.cards.len() - i) * (card as usize))
             .sum()
     }
 }
@@ -120,13 +123,13 @@ fn solution() {
 }
 
 fn get_deck(values: &[String]) -> Deck {
-    Deck(
-        values
+    Deck {
+        cards: values
             .iter()
             .skip(1)
             .map(|value| value.parse().unwrap())
             .collect(),
-    )
+    }
 }
 
 fn play(game: &Game, recursize: bool) -> usize {

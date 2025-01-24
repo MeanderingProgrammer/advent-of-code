@@ -1,30 +1,42 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Self
 
 from aoc import answer
 from aoc.parser import Parser
 
 
 class Computer:
-    def __init__(self, id: int, instructions):
-        self.regs = defaultdict(int)
+    def __init__(self, id: int, instructions: list["Instruction"]):
+        self.regs: dict[str, int] = defaultdict(int)
         self.regs["p"] = id
         self.ip = 0
         self.instructions = instructions
         self.sent = 0
-        self.o = []
-        self.q = []
+        self.o: list[int] | Self = []
+        self.q: deque[int] = deque()
         self.waiting = False
 
-    def set_other(self, o) -> None:
+    def run(self) -> None:
+        while self.has_next() and not self.waiting:
+            instruction = self.instructions[self.ip]
+            self.ip += instruction.run(self)
+
+        if isinstance(self.o, Computer):
+            if self.waiting and not self.o.waiting:
+                self.o.run()
+
+    def has_next(self) -> bool:
+        return self.ip >= 0 and self.ip < len(self.instructions)
+
+    def set_other(self, o: list[int] | Self) -> None:
         self.o = o
 
     def to_value(self, arg: str) -> int:
-        try:
-            return int(arg)
-        except ValueError:
+        if arg >= "a" and arg <= "z":
             return self.regs[arg]
+        else:
+            return int(arg)
 
     def send(self, value: int) -> None:
         self.sent += 1
@@ -38,16 +50,7 @@ class Computer:
         if len(self.q) == 0:
             return None
         else:
-            return self.q.pop(0)
-
-    def run(self) -> None:
-        while self.ip >= 0 and self.ip < len(self.instructions) and not self.waiting:
-            instruction = self.instructions[self.ip]
-            self.ip += instruction.run(self)
-
-        if isinstance(self.o, Computer):
-            if self.waiting and not self.o.waiting:
-                self.o.run()
+            return self.q.popleft()
 
 
 @dataclass(frozen=True)
@@ -90,33 +93,32 @@ class Instruction:
 
 @answer.timer
 def main() -> None:
-    answer.part1(9423, run_1_computers())
-    answer.part2(7620, run_2_computers())
+    lines = Parser().lines()
+    instructions = [parse_instruction(line) for line in lines]
+    answer.part1(9423, part1(instructions))
+    answer.part2(7620, part2(instructions))
 
 
-def run_1_computers() -> int:
+def parse_instruction(line: str) -> Instruction:
+    parts = line.split()
+    return Instruction(op=parts[0], args=parts[1:])
+
+
+def part1(instructions: list[Instruction]) -> int:
     added: list[int] = []
-    comp = Computer(0, get_instructions())
+    comp = Computer(0, instructions)
     comp.set_other(added)
     comp.run()
     return added[-1]
 
 
-def run_2_computers() -> int:
-    comp1 = Computer(0, get_instructions())
-    comp2 = Computer(1, get_instructions())
+def part2(instructions: list[Instruction]) -> int:
+    comp1 = Computer(0, instructions)
+    comp2 = Computer(1, instructions)
     comp1.set_other(comp2)
     comp2.set_other(comp1)
     comp1.run()
     return comp2.sent
-
-
-def get_instructions() -> list[Instruction]:
-    def parse_instruction(line: str) -> Instruction:
-        parts = line.split()
-        return Instruction(op=parts[0], args=parts[1:])
-
-    return [parse_instruction(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

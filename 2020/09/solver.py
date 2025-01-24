@@ -5,39 +5,39 @@ from aoc.parser import Parser
 
 
 @dataclass(frozen=True)
-class MaskingInput:
-    data: list[int]
-    preamble_length: int
+class Masking:
+    values: list[int]
+    preamble: int
 
     def first_invalid(self) -> int:
-        for i in range(self.preamble_length, len(self.data)):
+        for i in range(self.preamble, len(self.values)):
             if not self.can_sum(i):
-                return self.data[i]
+                return self.values[i]
         raise Exception("Failed")
 
     def can_sum(self, i: int) -> bool:
-        preamble: list[int] = self.data[i - self.preamble_length : i]
-        datum: int = self.data[i]
+        target: int = self.values[i]
+        preamble: list[int] = self.values[i - self.preamble : i]
         for value in preamble:
-            if datum - value in preamble:
+            if target - value in preamble:
                 return True
         return False
 
-    def get_sum_set(self, goal: int) -> list[int]:
-        for i in range(len(self.data)):
-            for j in range(i + 1, len(self.data)):
-                subset = self.data[i:j]
+    def get_sum_set(self, target: int) -> list[int]:
+        for i in range(len(self.values)):
+            for j in range(i + 1, len(self.values)):
+                subset = self.values[i:j]
                 total = sum(subset)
-                if total == goal:
+                if total == target:
                     return subset
-                elif total > goal:
+                elif total > target:
                     break
         raise Exception("Failed")
 
 
 @answer.timer
 def main() -> None:
-    masking = MaskingInput(data=Parser().int_lines(), preamble_length=25)
+    masking = Masking(values=Parser().int_lines(), preamble=25)
     invalid_number = masking.first_invalid()
     answer.part1(104054607, invalid_number)
     sum_set = masking.get_sum_set(invalid_number)
