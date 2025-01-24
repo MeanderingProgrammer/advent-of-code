@@ -8,24 +8,19 @@ use aoc_lib::search::Dijkstra;
 struct Node {
     position: Point,
     direction: Option<Direction>,
-    length: usize,
+    length: u8,
 }
 
 impl Node {
-    fn get_neighbors(&self, length: usize) -> Vec<(Direction, bool, Vec<Point>)> {
+    fn get_neighbors(&self, length: u8) -> Vec<(Direction, bool, Vec<Point>)> {
         // Handle turning directions which must extend out to the specified length
         // Initially all directions are considered a turn, afterwards it is the
         // directions which are not straight or backwards
         let turns = match &self.direction {
-            None => vec![
-                Direction::Up,
-                Direction::Down,
-                Direction::Left,
-                Direction::Right,
-            ],
+            None => [Direction::Down, Direction::Right],
             Some(direction) => match direction {
-                Direction::Up | Direction::Down => vec![Direction::Left, Direction::Right],
-                Direction::Left | Direction::Right => vec![Direction::Up, Direction::Down],
+                Direction::Up | Direction::Down => [Direction::Left, Direction::Right],
+                Direction::Left | Direction::Right => [Direction::Up, Direction::Down],
             },
         };
         let mut neighbors: Vec<(Direction, bool, Vec<Point>)> = turns
@@ -56,8 +51,8 @@ impl Node {
 struct Search {
     grid: Grid<u32>,
     target: Point,
-    resistance: usize,
-    max_repeats: usize,
+    resistance: u8,
+    max_repeats: u8,
 }
 
 impl Dijkstra for Search {
@@ -72,10 +67,8 @@ impl Dijkstra for Search {
             .into_iter()
             .filter(|(_, _, positions)| self.grid.has(positions.last().unwrap()))
             .filter_map(|(direction, is_turn, positions)| {
-                let mut length = positions.len();
-                if !is_turn {
-                    length += node.length;
-                }
+                let mut length = positions.len() as u8;
+                length += if is_turn { 0 } else { node.length };
                 if length <= self.max_repeats {
                     let next_node = Node {
                         position: positions.last().unwrap().clone(),
@@ -104,7 +97,7 @@ fn solution() {
     answer::part2(829, min_heat(&grid, 4, 10).unwrap());
 }
 
-fn min_heat(grid: &Grid<u32>, resistance: usize, max_repeats: usize) -> Option<i64> {
+fn min_heat(grid: &Grid<u32>, resistance: u8, max_repeats: u8) -> Option<i64> {
     let bounds = grid.bounds();
     let start = Node {
         position: bounds.lower,
