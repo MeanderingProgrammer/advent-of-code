@@ -48,6 +48,7 @@ impl Polymer {
         self.units.len()
     }
 
+    #[allow(clippy::manual_find)]
     fn next(&self) -> Option<usize> {
         for i in 0..self.units.len() - 1 {
             if self.units[i].collide(&self.units[i + 1]) {

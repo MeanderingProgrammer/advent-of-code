@@ -65,11 +65,11 @@ impl GraphSearch for Search {
         false
     }
 
-    fn done(&self, node: &Path) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node.caves.last().unwrap().value == END
     }
 
-    fn neighbors(&self, node: &Path) -> impl Iterator<Item = Path> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = Self::T> {
         self.graph
             .get(node.caves.last().unwrap())
             .unwrap()

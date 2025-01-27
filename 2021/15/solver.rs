@@ -39,12 +39,13 @@ impl Graph {
 
 impl Dijkstra for Graph {
     type T = Point;
+    type W = i64;
 
-    fn done(&self, node: &Point) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node == &Point::new(self.total - 1, self.total - 1)
     }
 
-    fn neighbors(&self, node: &Point) -> impl Iterator<Item = (Point, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.neighbors()
             .into_iter()
             .filter_map(|point| self.risk(&point).map(|risk| (point, risk as i64)))

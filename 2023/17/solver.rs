@@ -57,12 +57,13 @@ struct Search {
 
 impl Dijkstra for Search {
     type T = Node;
+    type W = i64;
 
-    fn done(&self, node: &Node) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node.position == self.target
     }
 
-    fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.get_neighbors(self.resistance)
             .into_iter()
             .filter(|(_, _, positions)| self.grid.has(positions.last().unwrap()))

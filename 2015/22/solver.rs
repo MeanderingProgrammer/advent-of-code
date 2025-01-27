@@ -262,12 +262,13 @@ impl Settings {
 
 impl Dijkstra for Settings {
     type T = Game;
+    type W = i64;
 
-    fn done(&self, node: &Game) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node.enemy.dead()
     }
 
-    fn neighbors(&self, node: &Game) -> impl Iterator<Item = (Game, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.neighbors()
     }
 }

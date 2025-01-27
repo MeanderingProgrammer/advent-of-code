@@ -68,12 +68,13 @@ struct Maze {
 
 impl Dijkstra for Maze {
     type T = State;
+    type W = i64;
 
-    fn done(&self, node: &State) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node.have.values().count() == self.keys
     }
 
-    fn neighbors(&self, node: &State) -> impl Iterator<Item = (State, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.points.iter().enumerate().flat_map(move |(i, point)| {
             self.graph[point]
                 .iter()

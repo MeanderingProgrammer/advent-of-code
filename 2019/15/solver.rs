@@ -127,11 +127,11 @@ impl GraphSearch for Search {
         true
     }
 
-    fn done(&self, node: &Point) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         self.grid.get(node).unwrap().is_oxygen()
     }
 
-    fn neighbors(&self, node: &Point) -> impl Iterator<Item = Point> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = Self::T> {
         node.neighbors()
             .into_iter()
             .filter(|neighbor| self.grid.get(neighbor).unwrap_or(&Item::Wall).is_open())

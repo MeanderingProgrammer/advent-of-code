@@ -260,12 +260,13 @@ struct Search {}
 
 impl Dijkstra for Search {
     type T = Burrow;
+    type W = i64;
 
-    fn done(&self, node: &Burrow) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node.done()
     }
 
-    fn neighbors(&self, node: &Burrow) -> impl Iterator<Item = (Burrow, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.neighbors()
     }
 }

@@ -106,12 +106,13 @@ impl Node {
 
 impl Dijkstra for Cave {
     type T = Node;
+    type W = i64;
 
-    fn done(&self, node: &Node) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node == &Node::new(self.target.clone(), Tool::default())
     }
 
-    fn neighbors(&self, node: &Node) -> impl Iterator<Item = (Node, i64)> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         let Node { point, tool } = node;
         let mut result = Vec::default();
         if point == &self.target {

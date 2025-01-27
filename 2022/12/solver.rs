@@ -17,11 +17,11 @@ impl GraphSearch for Search {
         true
     }
 
-    fn done(&self, node: &Point) -> bool {
+    fn done(&self, node: &Self::T) -> bool {
         node == &self.end
     }
 
-    fn neighbors(&self, node: &Point) -> impl Iterator<Item = Point> {
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = Self::T> {
         let max = self.grid[node] + 1;
         node.neighbors()
             .into_iter()

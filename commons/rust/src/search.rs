@@ -3,6 +3,7 @@ use fxhash::FxHashSet;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;
+use std::ops::Add;
 
 pub trait GraphSearch {
     type T: Debug + Clone + Hash + Eq;
@@ -56,14 +57,15 @@ pub trait GraphSearch {
 
 pub trait Dijkstra {
     type T: Debug + Clone + Hash + Eq;
+    type W: Debug + Clone + Default + Ord + Copy + Add<Output = Self::W>;
 
     fn done(&self, node: &Self::T) -> bool;
 
-    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, i64)>;
+    fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)>;
 
-    fn run(&self, start: Self::T) -> Option<i64> {
+    fn run(&self, start: Self::T) -> Option<Self::W> {
         let mut queue = PriorityQueue::new(HeapVariant::Min);
-        queue.push(start, 0);
+        queue.push(start, Self::W::default());
         let mut seen = FxHashSet::default();
         while !queue.is_empty() {
             let (node, weight) = queue.pop().unwrap();
