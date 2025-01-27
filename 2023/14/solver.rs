@@ -2,6 +2,7 @@ use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
+use fxhash::FxHashMap;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,10 +46,10 @@ impl Platform {
     }
 
     fn run_n(&mut self, n: usize) -> i64 {
-        let mut seen: Vec<(String, i64)> = Vec::new();
+        let mut seen: FxHashMap<String, (usize, i64)> = FxHashMap::default();
         let mut as_string = self.grid.to_string();
-        while !seen.iter().any(|(value, _)| value == &as_string) {
-            seen.push((as_string, self.total_load()));
+        while !seen.contains_key(&as_string) {
+            seen.insert(as_string, (seen.len(), self.total_load()));
             self.move_rocks(&Direction::Up);
             self.move_rocks(&Direction::Left);
             self.move_rocks(&Direction::Down);
@@ -56,17 +57,16 @@ impl Platform {
             as_string = self.grid.to_string();
         }
 
-        let preamble = seen
-            .iter()
-            .position(|(value, _)| value == &as_string)
-            .unwrap();
-        let pattern: Vec<i64> = seen
-            .into_iter()
-            .skip(preamble)
-            .map(|(_, load)| load)
+        let start = seen.get(&as_string).unwrap().0;
+        let mut pattern: Vec<(usize, i64)> = seen
+            .values()
+            .map(|(index, load)| (*index, *load))
+            .filter(|(index, _)| *index >= start)
             .collect();
+        pattern.sort();
+        let pattern: Vec<i64> = pattern.into_iter().map(|(_, load)| load).collect();
 
-        pattern[(n - preamble) % pattern.len()]
+        pattern[(n - start) % pattern.len()]
     }
 
     fn move_rocks(&mut self, direction: &Direction) {

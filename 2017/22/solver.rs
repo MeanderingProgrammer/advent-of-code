@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
-use std::collections::VecDeque;
 
 type Point = (i16, i16);
 
@@ -35,32 +34,34 @@ impl State {
 #[derive(Debug)]
 struct Virus {
     grid: FxHashMap<Point, State>,
-    state_change: FxHashMap<State, State>,
+    transitions: FxHashMap<State, State>,
     position: Point,
-    directions: VecDeque<Point>,
+    direction: usize,
+    directions: [Point; 4],
     infections: usize,
 }
 
 impl Virus {
-    fn new(grid: FxHashMap<Point, State>, state_change: FxHashMap<State, State>) -> Self {
+    fn new(grid: FxHashMap<Point, State>, transitions: FxHashMap<State, State>) -> Self {
         let (mut x, mut y) = (0, 0);
         for point in grid.keys() {
             (x, y) = (x.max(point.0), y.max(point.1));
         }
         Self {
             grid,
-            state_change,
+            transitions,
             position: (x / 2, y / 2),
-            directions: [(0, -1), (-1, 0), (0, 1), (1, 0)].into(),
+            direction: 0,
+            directions: [(0, -1), (-1, 0), (0, 1), (1, 0)],
             infections: 0,
         }
     }
 
     fn burst(&mut self) {
         let state = self.grid.get(&self.position).unwrap_or(&State::Clean);
-        self.directions.rotate_left(state.rotations());
-        let (dx, dy) = self.directions.front().unwrap();
-        let new_state = self.state_change.get(state).unwrap();
+        self.direction = (self.direction + state.rotations()) % self.directions.len();
+        let (dx, dy) = self.directions[self.direction];
+        let new_state = self.transitions.get(state).unwrap();
         self.grid.insert(self.position, new_state.clone());
         self.infections += match new_state {
             State::Infected => 1,
@@ -75,28 +76,29 @@ fn main() {
 }
 
 fn solution() {
-    let simplified = [
-        (State::Clean, State::Infected),
-        (State::Infected, State::Clean),
-    ];
-    answer::part1(5575, run(10_000, simplified.into_iter().collect()));
-    let expanded = [
-        (State::Clean, State::Weakened),
-        (State::Weakened, State::Infected),
-        (State::Infected, State::Flagged),
-        (State::Flagged, State::Clean),
-    ];
-    answer::part2(2511991, run(10_000_000, expanded.into_iter().collect()));
-}
-
-fn run(n: usize, state_change: FxHashMap<State, State>) -> usize {
+    let lines = Reader::default().read_lines();
     let mut grid: FxHashMap<Point, State> = FxHashMap::default();
-    for (y, line) in Reader::default().read_lines().iter().enumerate() {
+    for (y, line) in lines.iter().enumerate() {
         for (x, ch) in line.char_indices() {
             grid.insert((x as i16, y as i16), State::from_char(ch).unwrap());
         }
     }
-    let mut virus = Virus::new(grid, state_change);
+    let simplified = FxHashMap::from_iter([
+        (State::Clean, State::Infected),
+        (State::Infected, State::Clean),
+    ]);
+    answer::part1(5575, run(&grid, 10_000, simplified));
+    let expanded = FxHashMap::from_iter([
+        (State::Clean, State::Weakened),
+        (State::Weakened, State::Infected),
+        (State::Infected, State::Flagged),
+        (State::Flagged, State::Clean),
+    ]);
+    answer::part2(2511991, run(&grid, 10_000_000, expanded));
+}
+
+fn run(grid: &FxHashMap<Point, State>, n: usize, transitions: FxHashMap<State, State>) -> usize {
+    let mut virus = Virus::new(grid.clone(), transitions);
     for _ in 0..n {
         virus.burst();
     }

@@ -1,40 +1,13 @@
 use aoc_lib::answer;
 use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
+use fxhash::{FxHashMap, FxHashSet};
 use std::str::FromStr;
 
 #[derive(Debug)]
-enum Direction {
-    Left,
-    Right,
-}
-
-impl FromStr for Direction {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "left" => Ok(Self::Left),
-            "right" => Ok(Self::Right),
-            _ => Err(String::from("unhandled input")),
-        }
-    }
-}
-
-impl Direction {
-    fn value(&self) -> i64 {
-        match self {
-            Self::Left => -1,
-            Self::Right => 1,
-        }
-    }
-}
-
-#[derive(Debug)]
 struct Behavior {
-    write: u8,
-    direction: Direction,
+    write: bool,
+    direction: i16,
     next: u8,
 }
 
@@ -46,9 +19,19 @@ impl FromStr for Behavior {
         //    - Move one slot to the right.
         //    - Continue with state B.
         let lines: Vec<&str> = s.lines().collect();
+        let write = match last_word(lines[0]) {
+            "0" => Ok(false),
+            "1" => Ok(true),
+            _ => Err(String::from("unhandled write")),
+        };
+        let direction = match last_word(lines[1]) {
+            "left" => Ok(-1),
+            "right" => Ok(1),
+            _ => Err(String::from("unhandled direction")),
+        };
         Ok(Self {
-            write: last_word(lines[0]).parse().unwrap(),
-            direction: last_word(lines[1]).parse()?,
+            write: write?,
+            direction: direction?,
             next: to_state(lines[2]),
         })
     }
@@ -76,11 +59,10 @@ impl FromStr for Rule {
 }
 
 impl Rule {
-    fn get(&self, value: &u8) -> &Behavior {
+    fn get(&self, value: bool) -> &Behavior {
         match value {
-            0 => &self.zero,
-            1 => &self.one,
-            _ => panic!("Unhandled value: {value}"),
+            false => &self.zero,
+            true => &self.one,
         }
     }
 }
@@ -89,21 +71,25 @@ impl Rule {
 struct TuringMachine {
     state: u8,
     rules: FxHashMap<u8, Rule>,
-    position: i64,
-    tape: FxHashMap<i64, u8>,
+    position: i16,
+    tape: FxHashSet<i16>,
 }
 
 impl TuringMachine {
     fn step(&mut self) {
-        let value = self.tape.get(&self.position).unwrap_or(&0);
+        let value = self.tape.contains(&self.position);
         let behavior = self.rules[&self.state].get(value);
-        self.tape.insert(self.position, behavior.write);
-        self.position += behavior.direction.value();
+        if behavior.write {
+            self.tape.insert(self.position);
+        } else {
+            self.tape.remove(&self.position);
+        }
+        self.position += behavior.direction;
         self.state = behavior.next;
     }
 
     fn checksum(&self) -> usize {
-        self.tape.values().filter(|value| **value == 1).count()
+        self.tape.len()
     }
 }
 
@@ -118,7 +104,7 @@ fn solution() {
         state,
         rules: groups.iter().skip(1).map(|group| get_rule(group)).collect(),
         position: 0,
-        tape: FxHashMap::default(),
+        tape: FxHashSet::default(),
     };
     for _ in 0..steps {
         machine.step();

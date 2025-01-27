@@ -3,18 +3,20 @@ use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct LockIndex {
-    step_size: usize,
+    step: usize,
     current: usize,
 }
 
 impl LockIndex {
-    fn new(step_size: usize, current: usize) -> Self {
-        Self { step_size, current }
+    fn new(step: usize) -> Self {
+        Self {
+            step: step + 1,
+            current: 0,
+        }
     }
 
-    fn next(&mut self, length: usize) -> usize {
-        self.current = ((self.current + self.step_size) % length) + 1;
-        self.current
+    fn skip(&mut self, length: usize, n: usize) {
+        self.current = (self.current + self.step * n) % length;
     }
 }
 
@@ -28,22 +30,27 @@ fn solution() {
     answer::part2(1898341, after_zero(step_size, 50_000_000));
 }
 
-fn after_last(step_size: usize, steps: usize) -> usize {
+fn after_last(step: usize, steps: usize) -> usize {
+    let mut index = LockIndex::new(step);
     let mut values = vec![0];
-    let mut index = LockIndex::new(step_size, 0);
     for i in 1..=steps {
-        values.insert(index.next(i), i);
+        index.skip(i, 1);
+        values.insert(index.current, i);
     }
     values[index.current + 1]
 }
 
-fn after_zero(step_size: usize, steps: usize) -> usize {
+fn after_zero(step: usize, steps: usize) -> usize {
+    let mut index = LockIndex::new(step);
     let mut result = 0;
-    let mut index = LockIndex::new(step_size, 0);
-    for i in 1..=steps {
-        if index.next(i) == 1 {
-            result = i;
+    let mut n = 1;
+    while n <= steps {
+        if index.current == 0 {
+            result = n;
         }
+        let skip = (n - index.current).div_ceil(step);
+        n += skip;
+        index.skip(n, skip);
     }
     result
 }
