@@ -123,7 +123,6 @@ impl Maze {
                 }
             }
         }
-
         result
     }
 }
