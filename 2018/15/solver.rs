@@ -1,10 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
-use aoc_lib::queue::{HeapVariant, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
-use itertools::Itertools;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Team {
@@ -30,16 +29,16 @@ impl Character {
 }
 
 #[derive(Debug, PartialEq)]
-enum GameStatus {
+enum Status {
     InProgress,
-    Succcess,
+    Success,
     Fail,
 }
 
 #[derive(Debug)]
 struct Game {
     characters: FxHashMap<Point, Character>,
-    open_paths: FxHashSet<Point>,
+    open: FxHashSet<Point>,
     no_losses: bool,
 }
 
@@ -47,7 +46,7 @@ impl Game {
     fn new(grid: &Grid<char>, extra: i16, no_losses: bool) -> Self {
         let mut game = Self {
             characters: FxHashMap::default(),
-            open_paths: grid.values('.').into_iter().collect(),
+            open: grid.values('.').into_iter().collect(),
             no_losses,
         };
         game.add(grid.values('G'), Character::new(Team::Goblin, 0));
@@ -58,65 +57,63 @@ impl Game {
     fn add(&mut self, positions: Vec<Point>, character: Character) {
         positions.into_iter().for_each(|position| {
             self.characters.insert(position.clone(), character.clone());
-            self.open_paths.insert(position.clone());
+            self.open.insert(position.clone());
         });
     }
 
     fn play(&mut self) -> Option<i64> {
-        let (mut round, mut status) = (0, GameStatus::InProgress);
-        while status == GameStatus::InProgress {
+        let (mut round, mut status) = (0, Status::InProgress);
+        while status == Status::InProgress {
             status = self.round();
             round += 1;
         }
         match status {
-            GameStatus::InProgress | GameStatus::Fail => None,
-            GameStatus::Succcess => {
-                let hp_value: i64 = self
+            Status::InProgress | Status::Fail => None,
+            Status::Success => {
+                let hp: i64 = self
                     .characters
                     .values()
                     .map(|character| character.hp as i64)
                     .sum();
-                Some((round - 1) * hp_value)
+                Some((round - 1) * hp)
             }
         }
     }
 
-    fn round(&mut self) -> GameStatus {
-        for position in self.positions() {
+    fn round(&mut self) -> Status {
+        let mut positions: Vec<Point> = self.characters.keys().cloned().collect();
+        positions.sort();
+
+        for position in positions {
             let status = match self.characters.get(&position) {
-                Some(character) => self.single_character(&position, character.clone()),
-                None => GameStatus::InProgress,
+                None => Status::InProgress,
+                Some(character) => self.step(&position, character.clone()),
             };
-            if status != GameStatus::InProgress {
+            if status != Status::InProgress {
                 return status;
             }
         }
-        GameStatus::InProgress
+        Status::InProgress
     }
 
-    fn single_character(&mut self, position: &Point, character: Character) -> GameStatus {
-        if self.opponents(&character).next().is_none() {
-            return GameStatus::Succcess;
+    fn step(&mut self, position: &Point, character: Character) -> Status {
+        if self.opponents(&character).count() == 0 {
+            return Status::Success;
         }
-        match self.execute_move(position, &character) {
-            Some(target_position) => {
-                let target = self.characters.get_mut(&target_position).unwrap();
-                let elf_target = target.team == Team::Elf;
+        match self.execute(position, &character) {
+            None => Status::InProgress,
+            Some(position) => {
+                let target = self.characters.get_mut(&position).unwrap();
                 target.hp -= character.damage;
                 if target.hp <= 0 {
-                    self.characters.remove(&target_position).unwrap();
-                    if self.no_losses && elf_target {
-                        return GameStatus::Fail;
+                    let target = self.characters.remove(&position).unwrap();
+                    if self.no_losses && target.team == Team::Elf {
+                        return Status::Fail;
                     }
                 }
-                GameStatus::InProgress
+                Status::InProgress
             }
-            None => GameStatus::InProgress,
         }
-    }
-
-    fn positions(&self) -> impl Iterator<Item = Point> {
-        self.characters.keys().cloned().sorted()
     }
 
     fn opponents<'a>(&'a self, character: &'a Character) -> impl Iterator<Item = &Point> {
@@ -126,22 +123,22 @@ impl Game {
             .map(|(position, _)| position)
     }
 
-    fn execute_move(&mut self, position: &Point, character: &Character) -> Option<Point> {
-        match self.adjacent_target(position, character) {
-            Some(target_position) => Some(target_position),
-            None => match self.find_move(position, character) {
-                Some(new_position) => {
-                    let target_position = self.adjacent_target(&new_position, character);
-                    let value = self.characters.remove(position).unwrap();
-                    self.characters.insert(new_position, value);
-                    target_position
-                }
+    fn execute(&mut self, start: &Point, character: &Character) -> Option<Point> {
+        match self.target(start, character) {
+            Some(target) => Some(target),
+            None => match self.make_move(start, character) {
                 None => None,
+                Some(end) => {
+                    let target = self.target(&end, character);
+                    let character = self.characters.remove(start).unwrap();
+                    self.characters.insert(end, character);
+                    target
+                }
             },
         }
     }
 
-    fn adjacent_target(&self, position: &Point, character: &Character) -> Option<Point> {
+    fn target(&self, position: &Point, character: &Character) -> Option<Point> {
         let neighbors = position.neighbors();
         self.opponents(character)
             .filter(|opponent| neighbors.contains(opponent))
@@ -150,13 +147,13 @@ impl Game {
             .map(|(_, target)| target.clone())
     }
 
-    fn find_move(&self, position: &Point, character: &Character) -> Option<Point> {
-        let distances = self.distances(position);
+    fn make_move(&self, start: &Point, character: &Character) -> Option<Point> {
+        let distances = self.distances(start);
         let closest: Option<(u16, Point)> = self
             .opponents(character)
             .flat_map(|opponent| opponent.neighbors())
             .filter(|target| distances.contains_key(target))
-            .map(|target| (distances.get(&target).unwrap().0, target))
+            .map(|target| (distances[&target].0, target))
             .min();
         match closest {
             None => None,
@@ -171,22 +168,20 @@ impl Game {
     }
 
     fn distances(&self, start: &Point) -> FxHashMap<Point, (u16, Point)> {
-        let mut queue = PriorityQueue::new(HeapVariant::Min);
-        queue.push(start.clone(), (0, start.clone()));
+        let mut queue = VecDeque::default();
+        queue.push_back((start.clone(), 0, start.clone()));
         let mut distances = FxHashMap::default();
         while !queue.is_empty() {
-            let (position, (length, parent)) = queue.pop().unwrap();
+            let (position, length, parent) = queue.pop_front().unwrap();
             if !distances.contains_key(&position) {
                 distances.insert(position.clone(), (length, parent.clone()));
                 position
                     .neighbors()
                     .into_iter()
-                    .filter(|neighbor| self.open_paths.contains(neighbor))
+                    .filter(|neighbor| self.open.contains(neighbor))
                     .filter(|neighbor| !self.characters.contains_key(neighbor))
                     .filter(|neighbor| !distances.contains_key(neighbor))
-                    .for_each(|neighbor| {
-                        queue.push(neighbor, (length + 1, position.clone()));
-                    });
+                    .for_each(|neighbor| queue.push_back((neighbor, length + 1, position.clone())));
             }
         }
         distances

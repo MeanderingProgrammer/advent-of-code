@@ -47,7 +47,7 @@ impl Direction {
     }
 
     pub fn values() -> &'static [Self] {
-        &[Self::Up, Self::Down, Self::Left, Self::Right]
+        &[Self::Up, Self::Left, Self::Right, Self::Down]
     }
 
     pub fn left(&self) -> Self {
