@@ -3,6 +3,7 @@ use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
+use rayon::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -194,17 +195,24 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Some);
-    answer::part1(214731, play(&grid, false));
-    answer::part2(53222, play(&grid, true));
+    answer::part1(214731, play(&grid, 0, false).unwrap());
+    answer::part2(53222, play_until(&grid));
 }
 
-fn play(grid: &Grid<char>, no_losses: bool) -> i64 {
-    let mut extra = 0;
+fn play(grid: &Grid<char>, extra: i16, no_losses: bool) -> Option<i64> {
+    Game::new(grid, extra, no_losses).play()
+}
+
+fn play_until(grid: &Grid<char>) -> i64 {
+    let batch = std::thread::available_parallelism().unwrap().get() as i16;
+    let mut extra = 1;
     loop {
-        let mut game = Game::new(grid, extra, no_losses);
-        if let Some(result) = game.play() {
+        let result = (extra..extra + batch)
+            .into_par_iter()
+            .find_map_first(|extra| play(grid, extra, true));
+        if let Some(result) = result {
             return result;
         }
-        extra += 1;
+        extra += batch;
     }
 }
