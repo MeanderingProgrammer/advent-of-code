@@ -28,7 +28,8 @@ Sometime after 2022 I decided to go back and optimize every solution with the go
 of having no single solution take more than 1 second to run. Sometimes this involves
 algorithm improvements, other times I decided to re-write solutions from `Python`
 into something like `Rust` or `Go`. Currently the slowest solution takes just over
-550 ms, so mission accomplished.
+550 ms, so mission accomplished. Now the total runtime is such that the average year
+takes less than 1 second!
 
 # Input Data
 
