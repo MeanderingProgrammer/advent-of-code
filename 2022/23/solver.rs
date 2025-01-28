@@ -89,7 +89,7 @@ fn main() {
 fn solution() {
     let grid = Reader::default().read_grid(Some);
     let elves = Elves {
-        locations: grid.values('#').into_iter().collect(),
+        locations: grid.values(&'#').into_iter().collect(),
         round: 0,
     };
     let (part1, part2) = simulate(elves);

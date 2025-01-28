@@ -67,7 +67,7 @@ impl Landscape {
     }
 
     fn resource_count(&self, state: State) -> usize {
-        self.grid.values(state).len()
+        self.grid.values(&state).len()
     }
 }
 

@@ -34,7 +34,7 @@ impl Context {
             self.point
                 .diagonal_neighbors()
                 .into_iter()
-                .map(|point| self.grid.get(&point).unwrap_or(&0))
+                .map(|point| self.grid.get_or(&point, 0))
                 .sum()
         };
         self.grid.add(self.point.clone(), self.value);

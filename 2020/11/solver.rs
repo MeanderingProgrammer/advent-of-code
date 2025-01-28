@@ -21,72 +21,60 @@ impl Seat {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug)]
 struct SeatingChart {
     chart: Grid<Seat>,
     look: bool,
 }
 
 impl SeatingChart {
-    fn next(&self) -> Self {
-        let mut next_chart = Grid::default();
-        self.chart.iter().for_each(|(p, _)| {
-            next_chart.add(p.clone(), self.next_seat(p));
-        });
-        Self {
-            chart: next_chart,
-            look: self.look,
-        }
-    }
-
-    fn next_seat(&self, p: &Point) -> Seat {
-        match self.chart[p] {
-            Seat::Floor => Seat::Floor,
-            Seat::Empty => {
-                if self.adjacent_occupied(p) == 0 {
-                    Seat::Occupied
-                } else {
-                    Seat::Empty
+    fn step(&mut self) -> bool {
+        let mut changes: Vec<(Point, Seat)> = Vec::default();
+        for (point, seat) in self.chart.iter() {
+            let limit = match seat {
+                Seat::Floor => None,
+                Seat::Empty => Some(1),
+                Seat::Occupied => Some(if self.look { 5 } else { 4 }),
+            };
+            let next_seat = match limit {
+                None => Seat::Floor,
+                Some(limit) => {
+                    if self.neighbors(point) >= limit {
+                        Seat::Empty
+                    } else {
+                        Seat::Occupied
+                    }
                 }
-            }
-            Seat::Occupied => {
-                let to_empty = if self.look { 5 } else { 4 };
-                if self.adjacent_occupied(p) >= to_empty {
-                    Seat::Empty
-                } else {
-                    Seat::Occupied
-                }
+            };
+            if seat != &next_seat {
+                changes.push((point.clone(), next_seat));
             }
         }
+        let changed = !changes.is_empty();
+        for (point, seat) in changes {
+            self.chart.add(point, seat);
+        }
+        changed
     }
 
-    fn adjacent_occupied(&self, p: &Point) -> usize {
+    fn neighbors(&self, point: &Point) -> usize {
         Heading::values()
             .iter()
-            .map(|heading| self.explore_direction(p, heading))
-            .filter(|&seat| seat == Some(&Seat::Occupied))
+            .map(|heading| {
+                let mut point = point.add(heading);
+                if self.look {
+                    while self.chart.is(&point, &Seat::Floor) {
+                        point = point.add(heading);
+                    }
+                }
+                point
+            })
+            .filter(|point| self.chart.is(point, &Seat::Occupied))
             .count()
-    }
-
-    fn explore_direction(&self, p: &Point, heading: &Heading) -> Option<&Seat> {
-        let mut point = p.add(heading);
-        let mut seat = self.chart.get(&point);
-        if !self.look {
-            seat
-        } else {
-            while seat == Some(&Seat::Floor) {
-                point = point.add(heading);
-                seat = self.chart.get(&point);
-            }
-            seat
-        }
     }
 
     fn occupied(&self) -> usize {
-        self.chart
-            .iter()
-            .filter(|(_, seat)| seat == &&Seat::Occupied)
-            .count()
+        self.chart.values(&Seat::Occupied).len()
     }
 }
 
@@ -95,22 +83,13 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(2386, run_until_stable(false));
-    answer::part2(2091, run_until_stable(true));
+    let chart = Reader::default().read_grid(Seat::from_ch);
+    answer::part1(2386, run(chart.clone(), false));
+    answer::part2(2091, run(chart.clone(), true));
 }
 
-fn run_until_stable(look: bool) -> usize {
-    let mut previous = SeatingChart {
-        chart: Grid::default(),
-        look,
-    };
-    let mut current = SeatingChart {
-        chart: Reader::default().read_grid(Seat::from_ch),
-        look,
-    };
-    while previous != current {
-        previous = current.clone();
-        current = current.next();
-    }
-    previous.occupied()
+fn run(chart: Grid<Seat>, look: bool) -> usize {
+    let mut chart = SeatingChart { chart, look };
+    while chart.step() {}
+    chart.occupied()
 }

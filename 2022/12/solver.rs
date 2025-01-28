@@ -1,12 +1,13 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
+use aoc_lib::ids::Base;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use aoc_lib::search::GraphSearch;
 
 #[derive(Debug)]
 struct Search {
-    grid: Grid<i64>,
+    grid: Grid<u8>,
     end: Point,
 }
 
@@ -30,9 +31,9 @@ impl GraphSearch for Search {
 }
 
 impl Search {
-    fn shortest(&self, start_value: i64) -> Option<i64> {
+    fn shortest(&self, value: u8) -> Option<i64> {
         self.grid
-            .values(start_value)
+            .values(&value)
             .into_iter()
             .filter_map(|start| self.bfs(start).first().cloned())
             .min()
@@ -46,21 +47,17 @@ fn main() {
 fn solution() {
     let (search, start) = get_search();
     answer::part1(472, search.bfs(start).first().cloned().unwrap());
-    answer::part2(465, search.shortest(get_offset('a')).unwrap());
+    answer::part2(465, search.shortest(Base::ch_lower('a')).unwrap());
 }
 
 fn get_search() -> (Search, Point) {
-    let mut grid = Reader::default().read_grid(|ch| Some(get_offset(ch)));
+    let mut grid = Reader::default().read_grid(|ch| Some(Base::ch_lower(ch)));
 
-    let start = grid.value(get_offset('S'));
-    grid.add(start.clone(), get_offset('a'));
+    let start = grid.value(&Base::ch_lower('S'));
+    grid.add(start.clone(), Base::ch_lower('a'));
 
-    let end = grid.value(get_offset('E'));
-    grid.add(end.clone(), get_offset('z'));
+    let end = grid.value(&Base::ch_lower('E'));
+    grid.add(end.clone(), Base::ch_lower('z'));
 
     (Search { grid, end }, start)
-}
-
-fn get_offset(ch: char) -> i64 {
-    (ch as i64) - ('a' as i64)
 }

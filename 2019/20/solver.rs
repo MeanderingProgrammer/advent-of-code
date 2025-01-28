@@ -90,8 +90,8 @@ impl Maze {
         } else {
             start.add(&direction.opposite())
         };
-        let c1 = self.grid.get(&start).unwrap_or(&' ');
-        let c2 = self.grid.get(&end).unwrap_or(&' ');
+        let c1 = self.grid.get_or(&start, ' ');
+        let c2 = self.grid.get_or(&end, ' ');
         if c1.is_alphabetic() && c2.is_alphabetic() {
             assert_eq!('.', self.grid[&point]);
             Some((point, format!("{c1}{c2}")))
@@ -116,8 +116,8 @@ impl Maze {
                 result.push((node, length));
             } else {
                 for adjacent in point.neighbors() {
-                    let value = self.grid.get(&adjacent).unwrap_or(&' ');
-                    if *value == '.' && !seen.contains(&adjacent) {
+                    let value = self.grid.get_or(&adjacent, ' ');
+                    if value == '.' && !seen.contains(&adjacent) {
                         queue.push_back((adjacent, length + 1));
                     }
                 }

@@ -47,11 +47,11 @@ impl Game {
     fn new(grid: &Grid<char>, extra: i16, no_losses: bool) -> Self {
         let mut game = Self {
             characters: FxHashMap::default(),
-            open: grid.values('.').into_iter().collect(),
+            open: grid.values(&'.').into_iter().collect(),
             no_losses,
         };
-        game.add(grid.values('G'), Character::new(Team::Goblin, 0));
-        game.add(grid.values('E'), Character::new(Team::Elf, extra));
+        game.add(grid.values(&'G'), Character::new(Team::Goblin, 0));
+        game.add(grid.values(&'E'), Character::new(Team::Elf, extra));
         game
     }
 

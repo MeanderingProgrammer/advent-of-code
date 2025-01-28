@@ -53,9 +53,9 @@ impl<T> Grid<T> {
         self.grid.iter()
     }
 
-    pub fn bounds(&self) -> Bound {
+    pub fn bounds(&self) -> Bounds {
         let points: Vec<&Point> = self.grid.keys().collect();
-        Bound::new(&points)
+        Bounds::new(&points)
     }
 
     pub fn to_graph(&self) -> FxHashMap<Point, Vec<Point>> {
@@ -84,14 +84,21 @@ impl<T> Grid<T>
 where
     T: PartialEq,
 {
-    pub fn values(&self, target: T) -> Vec<Point> {
+    pub fn is(&self, point: &Point, target: &T) -> bool {
+        match self.get(point) {
+            None => false,
+            Some(value) => value == target,
+        }
+    }
+
+    pub fn values(&self, target: &T) -> Vec<Point> {
         self.iter()
-            .filter(|(_, value)| value == &&target)
+            .filter(|(_, value)| value == &target)
             .map(|(point, _)| point.clone())
             .collect()
     }
 
-    pub fn value(&self, target: T) -> Point {
+    pub fn value(&self, target: &T) -> Point {
         let mut values = self.values(target);
         assert_eq!(1, values.len());
         values.pop().unwrap()
@@ -102,6 +109,10 @@ impl<T> Grid<T>
 where
     T: Clone,
 {
+    pub fn get_or(&self, point: &Point, default: T) -> T {
+        self.get(point).cloned().unwrap_or(default)
+    }
+
     pub fn transform(&self, f: impl Fn(&Point) -> Point) -> Self {
         let mut result = Self::default();
         for (point, value) in self.grid.iter() {
@@ -126,8 +137,8 @@ where
                     (bottom_left.x..=top_right.x)
                         .map(|x| Point::new(x, y))
                         .map(|point| match self.get(&point) {
-                            Some(value) => value.to_string(),
                             None => ".".to_string(),
+                            Some(value) => value.to_string(),
                         })
                         .join("")
                 })
@@ -138,13 +149,13 @@ where
 }
 
 #[derive(Debug, Clone)]
-pub struct Bound {
+pub struct Bounds {
     pub lower: Point,
     pub upper: Point,
 }
 
-impl Bound {
-    pub fn new(points: &[&Point]) -> Bound {
+impl Bounds {
+    pub fn new(points: &[&Point]) -> Bounds {
         if points.is_empty() {
             panic!("Can't get the bounds of an empty area");
         }

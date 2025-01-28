@@ -44,7 +44,7 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Element::from_ch);
-    let start = grid.value(Element::Start);
+    let start = grid.value(&Element::Start);
     let path = follow(&grid, &start, None).unwrap();
     answer::part1(5516, path.len());
     answer::part2(2008, obstacles(&grid, &start, path));
@@ -66,7 +66,7 @@ fn follow(
         }
         seen.insert(state.clone());
         let next = state.next();
-        if Some(&next) == obstacle || grid.get(&next) == Some(&Element::Obstacle) {
+        if Some(&next) == obstacle || grid.is(&next, &Element::Obstacle) {
             state.direction = state.direction.right();
         } else {
             state.point = next;

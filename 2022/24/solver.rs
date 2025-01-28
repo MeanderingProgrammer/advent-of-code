@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::grid::{Bound, Grid};
+use aoc_lib::grid::{Bounds, Grid};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
@@ -34,7 +34,7 @@ impl Blizzard {
 
 #[derive(Debug, Clone)]
 struct Valley {
-    bounds: Bound,
+    bounds: Bounds,
     blizzards: FxHashSet<Blizzard>,
     blizzard_positions: FxHashSet<Point>,
 }

@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::grid::{Bound, Grid};
+use aoc_lib::grid::{Bounds, Grid};
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
@@ -16,7 +16,7 @@ impl Image {
     fn new(groups: &[Vec<String>]) -> Self {
         Self {
             on: Grid::from_lines(&groups[1], |_, ch| Some(ch == '#'))
-                .values(true)
+                .values(&true)
                 .into_iter()
                 .collect(),
             enhancer: groups[0][0].chars().map(|ch| ch == '#').collect(),
@@ -27,7 +27,7 @@ impl Image {
 
     fn enhance(&mut self) {
         let mut on = FxHashSet::default();
-        let bounds = Bound::new(&self.on.iter().collect::<Vec<_>>());
+        let bounds = Bounds::new(&self.on.iter().collect::<Vec<_>>());
         let start = bounds.lower.sub(self.border.clone());
         let end = bounds.upper.add(self.border.clone());
         for y in start.y..=end.y {
@@ -42,7 +42,7 @@ impl Image {
         self.time += 1;
     }
 
-    fn next(&self, bounds: &Bound, point: &Point) -> bool {
+    fn next(&self, bounds: &Bounds, point: &Point) -> bool {
         let mut binary = String::default();
         for dy in -1..=1 {
             for dx in -1..=1 {

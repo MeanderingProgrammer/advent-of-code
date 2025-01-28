@@ -98,7 +98,7 @@ fn main() {
 fn solution() {
     let grid = Reader::default().read_grid(Some);
     let locations: FxHashSet<Location> = grid
-        .values('#')
+        .values(&'#')
         .into_iter()
         .map(|point| Location::new(point, 0))
         .collect();

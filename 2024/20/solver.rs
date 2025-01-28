@@ -17,8 +17,7 @@ struct Race {
 
 impl Race {
     fn new(mut grid: Grid<char>) -> Self {
-        let start = grid.value('S');
-        let finish = grid.value('E');
+        let (start, finish) = (grid.value(&'S'), grid.value(&'E'));
         grid.add(start.clone(), '.');
         grid.add(finish.clone(), '.');
         Self {
