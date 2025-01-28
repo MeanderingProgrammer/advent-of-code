@@ -41,16 +41,20 @@ struct Polymer {
 
 impl Polymer {
     fn react(&mut self) -> usize {
-        while let Some(i) = self.next() {
+        // X2112XXX33XX
+        // bAcCaCBAcCca
+        let mut index = 0;
+        while let Some(i) = self.next(index) {
             self.units.remove(i);
             self.units.remove(i);
+            index = i.max(1) - 1;
         }
         self.units.len()
     }
 
     #[allow(clippy::manual_find)]
-    fn next(&self) -> Option<usize> {
-        for i in 0..self.units.len() - 1 {
+    fn next(&self, start: usize) -> Option<usize> {
+        for i in start..self.units.len() - 1 {
             if self.units[i].collide(&self.units[i + 1]) {
                 return Some(i);
             }
