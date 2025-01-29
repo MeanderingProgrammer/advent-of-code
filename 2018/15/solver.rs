@@ -117,7 +117,7 @@ impl Game {
         }
     }
 
-    fn opponents<'a>(&'a self, character: &'a Character) -> impl Iterator<Item = &Point> {
+    fn opponents<'a>(&'a self, character: &'a Character) -> impl Iterator<Item = &'a Point> {
         self.characters
             .iter()
             .filter(|(_, opponent)| opponent.team != character.team)
