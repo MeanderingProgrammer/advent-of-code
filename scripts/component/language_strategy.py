@@ -16,16 +16,17 @@ class LanguageStrategy:
     languages: list[Language]
 
     def get(self, day: Day) -> list[Language]:
-        options = [
-            language
-            for language in self.languages
-            if language.solution_path(day).is_file()
-        ]
+        languages: list[Language] = []
+        for language in self.languages:
+            solution = language.solution_path(day)
+            if solution.is_file():
+                languages.append(language)
+
         if self.name == StrategyName.ALL:
-            return options
+            return languages
         elif self.name == StrategyName.FASTEST:
             speed = dict(rust=1, go=2, zig=3, java=4, ocaml=5, python=6, ts=7)
-            ordered = sorted(options, key=lambda language: speed[language.name])
-            return [ordered[0]]
+            ordered = sorted(languages, key=lambda language: speed[language.name])
+            return [] if len(ordered) == 0 else [ordered[0]]
         else:
             raise Exception(f"Unhandled name: {self.name}")
