@@ -178,4 +178,10 @@ impl Bounds {
         let contains_y = point.y >= self.lower.y && point.y <= self.upper.y;
         contains_x && contains_y
     }
+
+    pub fn edge(&self, point: &Point) -> bool {
+        let edge_x = point.x == self.lower.x || point.x == self.upper.x;
+        let edge_y = point.y == self.lower.y || point.y == self.upper.y;
+        edge_x || edge_y
+    }
 }
