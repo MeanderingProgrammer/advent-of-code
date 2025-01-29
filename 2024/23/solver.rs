@@ -2,7 +2,6 @@ use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
-use rand::Rng;
 
 #[derive(Debug, Default)]
 struct Graph {
@@ -37,7 +36,7 @@ impl Graph {
             return vec![r];
         }
         // choose a pivot vertex u in P ⋃ X
-        let i = rand::thread_rng().gen_range(0..(p.len() + x.len()));
+        let i = fastrand::usize(0..(p.len() + x.len()));
         let u = if i < p.len() {
             p.iter().nth(i).unwrap().clone()
         } else {

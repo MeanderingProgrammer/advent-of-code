@@ -1,9 +1,11 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import override
 
-import toml
+import tomlkit
 from language.language import Language
 from pojo.day import Day
+from tomlkit.items import AoT
 
 
 @dataclass(kw_only=True, init=False)
@@ -30,22 +32,21 @@ class Rust(Language):
 
     @override
     def add_build(self, day: Day) -> None:
-        cargo_file = "Cargo.toml"
-        cargo = toml.load(cargo_file)
-        bin_config = dict(
-            name=Rust.binary(day),
-            path=str(day.dir().joinpath(self.solution_file)),
-        )
-        if bin_config in cargo["bin"]:
+        config = tomlkit.table()
+        config["name"] = Rust.binary(day)
+        config["path"] = str(day.dir().joinpath(self.solution_file))
+
+        path = Path("Cargo.toml")
+        cargo = tomlkit.parse(path.read_text())
+        bins = cargo["bin"]
+        assert isinstance(bins, AoT)
+        if config in bins:
             print("Do not need to update Cargo file")
             return
 
-        cargo["bin"].append(bin_config)
-        cargo["bin"].sort(key=lambda bin: bin["name"])
-
-        f = open(cargo_file, "w+")
-        f.write(toml.dumps(cargo))
-        f.close()
+        bins.append(config)
+        cargo["bin"] = sorted(bins, key=lambda bin: bin["name"])
+        path.write_text(cargo.as_string())
 
     @staticmethod
     def binary(day: Day) -> str:

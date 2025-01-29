@@ -1,7 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
-use rand::seq::{IteratorRandom, SliceRandom};
 use rayon::prelude::*;
 use std::thread;
 
@@ -66,10 +65,9 @@ impl Graph {
     }
 
     fn karger(&mut self) {
-        let mut rng = rand::thread_rng();
         while self.graph.len() > 2 {
-            let n1 = self.graph.keys().choose(&mut rng).unwrap().clone();
-            let n2 = self.graph[&n1].choose(&mut rng).unwrap().clone();
+            let n1 = fastrand::choice(self.graph.keys()).unwrap().clone();
+            let n2 = fastrand::choice(&self.graph[&n1]).unwrap().clone();
 
             let edges1 = self.get_and_remove(&n1, &n2);
             let edges2 = self.get_and_remove(&n2, &n1);
