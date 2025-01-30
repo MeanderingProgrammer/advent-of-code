@@ -19,16 +19,16 @@ class Rust(Language):
 
     @override
     def test_command(self) -> list[str]:
-        return ["cargo", "test", "-rq", "--test", "aoc_lib"]
+        return Rust.cargo("test") + ["--test", "aoc_lib"]
 
     @override
     def build_commands(self) -> list[list[str]]:
-        return [["cargo", "build", "-rq", "--bins"]]
+        return [Rust.cargo("build") + ["--bins"]]
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
         args = [] if len(run_args) == 0 else ["--"] + run_args
-        return ["cargo", "run", "-rq", "--bin", Rust.binary(day)] + args
+        return Rust.cargo("run") + ["--bin", Rust.binary(day)] + args
 
     @override
     def add_build(self, day: Day) -> None:
@@ -47,6 +47,10 @@ class Rust(Language):
         bins.append(config)
         cargo["bin"] = sorted(bins, key=lambda bin: bin["name"])
         path.write_text(cargo.as_string())
+
+    @staticmethod
+    def cargo(command: str) -> list[str]:
+        return ["cargo", command, "-rq"]
 
     @staticmethod
     def binary(day: Day) -> str:
