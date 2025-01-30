@@ -20,7 +20,7 @@ class TypeScript(Language):
 
     @override
     def build_commands(self) -> list[list[str]]:
-        return [["bun", "install"]]
+        return [["bun", "install", "--save-text-lockfile"]]
 
     @override
     def run_command(self, day: Day, run_args: list[str]) -> list[str]:
