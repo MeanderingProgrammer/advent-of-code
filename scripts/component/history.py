@@ -18,7 +18,7 @@ class History:
     def load(self, fail: bool) -> list[RuntimeInfo]:
         file = Path(f"{self.name}.json")
         if not file.is_file() and fail:
-            raise Exception(f"Looks like {self.name} runtimes were never created")
+            raise Exception(f"Runtimes were never determined: {self.name}")
         # Default to an empty list if user does not want to fail on missing data
         if not file.is_file():
             return []

@@ -6,7 +6,7 @@ from typing import Any, Optional
 import matplotlib.pyplot as plt
 
 
-class FigType(StrEnum):
+class FigureKind(StrEnum):
     MATPLOTLIB = auto()
     PLOTLY = auto()
 
@@ -14,46 +14,63 @@ class FigType(StrEnum):
 @dataclass(frozen=True)
 class FigureProps:
     name: str
-    fig: Any
-    fig_type: FigType
+    figure: Any
+    kind: FigureKind
     legend: Optional[dict] = None
 
 
 @dataclass(frozen=True)
 class FigureSaver:
     archive: bool
-    archive_directory: Optional[Path]
+    now: str
+
+    def info(self) -> dict:
+        return dict(
+            archive=self.archive,
+            now=self.now,
+        )
 
     def save(self, props: FigureProps) -> None:
-        fig_path = Path(f"images/{props.name}.png")
-        self.archive_figure(fig_path)
+        """
+        archive: existing figure -> archive directory
+                 new figure -> root directory
+        else   : existing figure -> stay in root directory
+                 new figure -> archive directory
+        """
 
-        if fig_path.exists():
-            print(f"Skipping {fig_path} as it already exists")
-        else:
-            print(f"Creating {fig_path}")
-            if props.fig_type == FigType.MATPLOTLIB:
-                self.save_matplotlib(props.fig, props.legend, fig_path)
-            elif props.fig_type == FigType.PLOTLY:
-                self.save_plotly(props.fig, fig_path)
+        root_dir = Path("images")
+        archive_dir = root_dir.joinpath("archive").joinpath(self.now)
+        archive_dir.mkdir(parents=True, exist_ok=True)
+
+        name = f"{props.name}.png"
+        root_path = root_dir.joinpath(name)
+        archive_path = archive_dir.joinpath(name)
+
+        if self.archive:
+            if root_path.exists():
+                print(f"Moving {props.name} from {root_path} to {archive_path}")
+                assert not archive_path.exists()
+                root_path.rename(archive_path)
             else:
-                raise Exception(f"Unhandled figure type: {props.fig_type}")
+                print(f"Skip archiving {props.name}, {root_path} already empty")
 
-        if props.fig_type == FigType.MATPLOTLIB:
-            props.fig.get_figure().clear()
+        path = root_path if self.archive else archive_path
+        print(f"Saving {props.name} to {path}")
+        assert not path.exists()
 
-    def archive_figure(self, fig_path: Path) -> None:
-        if not fig_path.exists() or not self.archive:
-            return
-        assert self.archive_directory is not None
-        assert self.archive_directory.exists()
-        fig_path.rename(self.archive_directory.joinpath(fig_path.name))
+        if props.kind == FigureKind.MATPLOTLIB:
+            self.save_matplotlib(props.figure, props.legend, path)
+        elif props.kind == FigureKind.PLOTLY:
+            self.save_plotly(props.figure, path)
+        else:
+            raise Exception(f"Unhandled figure kind: {props.kind}")
 
-    def save_matplotlib(self, fig: Any, legend: Optional[dict], fig_path: Path) -> None:
+    def save_matplotlib(self, fig: Any, legend: Optional[dict], path: Path) -> None:
         if legend is not None:
             fig.get_figure().legend(**legend)
         plt.tight_layout()
-        fig.get_figure().savefig(str(fig_path))
+        fig.get_figure().savefig(str(path))
+        fig.get_figure().clear()
 
-    def save_plotly(self, fig: Any, fig_path: Path) -> None:
-        fig.write_image(file=str(fig_path), format="png")
+    def save_plotly(self, fig: Any, path: Path) -> None:
+        fig.write_image(file=str(path), format="png")
