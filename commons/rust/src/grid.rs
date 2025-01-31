@@ -25,7 +25,7 @@ impl<T> Grid<T> {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
-                let point = Point::new(x, y);
+                let point = Point::new(x as i32, y as i32);
                 if let Some(value) = f(&point, ch) {
                     grid.add(point, value);
                 }

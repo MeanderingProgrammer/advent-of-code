@@ -82,7 +82,7 @@ impl Race {
         let mut result = 0;
         for x in Self::range_start(point.x, duration)..=Self::range_end(point.x, duration) {
             for y in Self::range_start(point.y, duration)..=Self::range_end(point.y, duration) {
-                let option = Point::new(x, y);
+                let option = Point::new(x as i32, y as i32);
                 let distance = point.manhattan_distance(&option) as usize;
                 if distance < 2 || distance > duration {
                     continue;

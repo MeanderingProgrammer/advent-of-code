@@ -84,7 +84,7 @@ fn enabled_points(prefix: String) -> Vec<Point> {
             hashed
                 .char_indices()
                 .filter(|&(_, value)| value == '1')
-                .map(|(x, _)| Point::new(x, y))
+                .map(|(x, _)| Point::new(x as i32, y))
                 .collect::<Vec<Point>>()
         })
         .collect()

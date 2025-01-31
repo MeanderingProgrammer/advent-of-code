@@ -71,9 +71,9 @@ impl Maze {
         for v1 in 0..size {
             for (v2, after, inner) in values {
                 let start = if horizontal {
-                    Point::new(v2, v1)
+                    Point::new(v2 as i32, v1 as i32)
                 } else {
-                    Point::new(v1, v2)
+                    Point::new(v1 as i32, v2 as i32)
                 };
                 if let Some((point, label)) = self.node(start, &direction, after) {
                     result.insert(point, Node::new(&label, inner));

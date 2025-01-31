@@ -34,7 +34,7 @@ impl Node {
 
     fn go(&self, direction: &Direction, n: u8) -> Point {
         let point: Point = direction.into();
-        self.point.add(point.mul(n))
+        self.point.add(point.mul(n as i32))
     }
 }
 

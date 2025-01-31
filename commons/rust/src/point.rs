@@ -161,14 +161,8 @@ impl PartialOrd for Point {
 }
 
 impl Point {
-    pub fn new<T: TryInto<i32>>(x: T, y: T) -> Self
-    where
-        T::Error: fmt::Debug,
-    {
-        Self {
-            x: x.try_into().unwrap(),
-            y: y.try_into().unwrap(),
-        }
+    pub fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
     }
 
     pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
@@ -181,11 +175,7 @@ impl Point {
         Self::new(self.x - rhs.x, self.y - rhs.y)
     }
 
-    pub fn mul<T: TryInto<i32>>(&self, rhs: T) -> Self
-    where
-        T::Error: fmt::Debug,
-    {
-        let rhs: i32 = rhs.try_into().unwrap();
+    pub fn mul(&self, rhs: i32) -> Self {
         Self::new(self.x * rhs, self.y * rhs)
     }
 
@@ -283,15 +273,8 @@ impl fmt::Display for Point3d {
 }
 
 impl Point3d {
-    pub fn new<T: TryInto<i32>>(x: T, y: T, z: T) -> Self
-    where
-        T::Error: fmt::Debug,
-    {
-        Self {
-            x: x.try_into().unwrap(),
-            y: y.try_into().unwrap(),
-            z: z.try_into().unwrap(),
-        }
+    pub fn new(x: i32, y: i32, z: i32) -> Self {
+        Self { x, y, z }
     }
 
     pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
@@ -304,11 +287,7 @@ impl Point3d {
         Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 
-    pub fn mul<T: TryInto<i32>>(&self, rhs: T) -> Self
-    where
-        T::Error: fmt::Debug,
-    {
-        let rhs: i32 = rhs.try_into().unwrap();
+    pub fn mul(&self, rhs: i32) -> Self {
         Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 
