@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::int_code::{Bus, Computer};
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -75,7 +75,7 @@ fn solution() {
 fn run(memory: &[i64], sequence: &[i64], pause: bool) -> i64 {
     sequence
         .iter()
-        .permutations(sequence.len())
+        .permutations()
         .map(|possibility| check(memory, possibility, pause))
         .max()
         .unwrap()

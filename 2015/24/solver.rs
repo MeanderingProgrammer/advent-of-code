@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 #[derive(Debug)]
 struct Organizer {

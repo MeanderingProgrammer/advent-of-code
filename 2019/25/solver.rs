@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::int_code::{Bus, Computer};
+use aoc_lib::iter::Iter;
 use aoc_lib::point::Direction;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 use std::collections::VecDeque;
 use std::str::FromStr;
 
@@ -197,7 +197,7 @@ impl DroidBus {
 
     fn get_key(&self) -> i64 {
         let lines = self.instruction.split('\n').filter(|s| !s.is_empty());
-        let last_line = lines.last().unwrap().split_whitespace().collect_vec();
+        let last_line = lines.last().unwrap().split_whitespace().vec();
         last_line[last_line.len() - 8].parse().unwrap()
     }
 }

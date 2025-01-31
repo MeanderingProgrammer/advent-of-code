@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::iter::Iter;
 use aoc_lib::math;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 use std::cmp::Ordering;
 use std::str::FromStr;
 use std::sync::mpsc;

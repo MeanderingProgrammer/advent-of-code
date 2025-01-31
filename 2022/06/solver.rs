@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 fn main() {
     answer::timer(solution);
@@ -13,7 +13,7 @@ fn solution() {
 }
 
 fn first_unique_sequence(chars: &[char], length: usize) -> usize {
-    let unique_length = |start| chars[start..start + length].iter().unique().count();
+    let unique_length = |start| chars[start..start + length].iter().unique();
     let start_pos = (0..chars.len()).position(|i| unique_length(i) == length);
     start_pos.unwrap() + length
 }

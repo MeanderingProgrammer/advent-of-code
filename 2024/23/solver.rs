@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::collections::{HashMap, HashSet};
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 #[derive(Debug, Default)]
 struct Graph {
@@ -93,7 +93,6 @@ fn part1(cliques: &[Vec<String>]) -> usize {
         .flat_map(|clique| clique.iter().combinations(3))
         .filter(|values| values.iter().any(|value| value.starts_with("t")))
         .unique()
-        .count()
 }
 
 fn part2(cliques: &[Vec<String>]) -> String {

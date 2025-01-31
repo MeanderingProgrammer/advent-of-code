@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::collections::{HashMap, HashSet};
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 type Graph<'a> = HashMap<(&'a str, &'a str), i16>;
 
@@ -55,10 +55,9 @@ fn max_score(graph: &Graph, include_self: bool) -> i16 {
     if include_self {
         all_people.insert("Myself");
     }
-    let num_people = all_people.len();
     all_people
         .into_iter()
-        .permutations(num_people)
+        .permutations()
         .map(|people| People { people, graph }.score())
         .max()
         .unwrap()

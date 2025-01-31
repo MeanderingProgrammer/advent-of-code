@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 fn main() {
     answer::timer(solution);

@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
+use aoc_lib::iter::Iter;
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
-use itertools::Itertools;
 
 type Dir = (Heading, Heading, Heading);
 

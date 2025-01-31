@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::iter::Iter;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use itertools::{Itertools, MinMaxResult};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -98,7 +98,7 @@ impl CoverageZone {
             .filter(|&intercept| self.xs.contains(intercept))
             .minmax();
         match intercepts {
-            MinMaxResult::MinMax(min, max) => Some(Range::new(min, max)),
+            Some((min, max)) => Some(Range::new(min, max)),
             _ => None,
         }
     }
