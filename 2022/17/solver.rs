@@ -3,7 +3,6 @@ use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use std::collections::hash_map::Entry;
 
 #[derive(Debug, Clone)]
 struct Shape {
@@ -172,8 +171,9 @@ fn simulate<'a>(
         let height = get_height(&grid) + 1;
 
         let value = grid.to_string();
-        if let Entry::Vacant(entry) = cache.entry(value.clone()) {
-            entry.insert((rocks_dropped, height));
+        #[allow(clippy::map_entry)]
+        if !cache.contains_key(&value) {
+            cache.insert(value, (rocks_dropped, height));
         } else {
             let (cache_rocks, cache_height): &(i64, i32) = cache.get(&value).unwrap();
             let period_length = rocks_dropped - cache_rocks;

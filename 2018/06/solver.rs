@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Bounds;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Distance {
