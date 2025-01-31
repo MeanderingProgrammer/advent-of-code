@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
+use aoc_lib::iter::Iter;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashSet;
@@ -7,26 +8,23 @@ use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
-    position: Point,
+    point: Point,
     direction: Direction,
 }
 
 impl State {
-    fn new(position: Point, direction: Direction) -> Self {
-        Self {
-            position,
-            direction,
-        }
+    fn new(point: Point, direction: Direction) -> Self {
+        Self { point, direction }
     }
 
     fn next_states<'a>(&'a self, grid: &'a Grid<char>) -> impl Iterator<Item = State> + 'a {
         self.next_directions(grid)
-            .map(|direction| Self::new(self.position.add(&direction), direction))
-            .filter(|state| grid.has(&state.position))
+            .map(|direction| Self::new(self.point.add(&direction), direction))
+            .filter(|state| grid.has(&state.point))
     }
 
     fn next_directions(&self, grid: &Grid<char>) -> impl Iterator<Item = Direction> {
-        match grid[&self.position] {
+        match grid[&self.point] {
             '.' => vec![self.direction.clone()],
             '|' => match self.direction {
                 Direction::Up | Direction::Down => vec![self.direction.clone()],
@@ -54,27 +52,34 @@ impl State {
     }
 }
 
-fn energized(grid: &Grid<char>, start: State) -> usize {
-    let mut explored = FxHashSet::default();
-    explored.insert(start.clone());
-    let mut q: VecDeque<State> = VecDeque::default();
-    q.push_back(start);
-    while !q.is_empty() {
-        let state = q.pop_front().unwrap();
-        state.next_states(grid).for_each(|state| {
-            if explored.insert(state.clone()) {
-                q.push_back(state);
-            }
-        });
-    }
-    explored
-        .into_iter()
-        .map(|state| state.position)
-        .collect::<FxHashSet<_>>()
-        .len()
+fn main() {
+    answer::timer(solution);
 }
 
-fn create_states<'a, F: Fn(i32) -> Point + 'a>(
+fn solution() {
+    let grid = Reader::default().read_grid(Some);
+    answer::part1(8901, part1(&grid));
+    answer::part2(9064, part2(&grid));
+}
+
+fn part1(grid: &Grid<char>) -> usize {
+    energized(grid, State::new(Point::default(), Direction::Right))
+}
+
+fn part2(grid: &Grid<char>) -> usize {
+    let bounds = grid.bounds();
+    let (start, end) = (bounds.lower.x, bounds.upper.x);
+    let coords: Vec<i32> = (start..=end).collect();
+    states(&coords, Direction::Down, |x| Point::new(x, start))
+        .chain(states(&coords, Direction::Up, |x| Point::new(x, end)))
+        .chain(states(&coords, Direction::Right, |y| Point::new(start, y)))
+        .chain(states(&coords, Direction::Left, |y| Point::new(end, y)))
+        .map(|state| energized(grid, state))
+        .max()
+        .unwrap()
+}
+
+fn states<'a, F: Fn(i32) -> Point + 'a>(
     coords: &'a [i32],
     direction: Direction,
     f: F,
@@ -84,31 +89,17 @@ fn create_states<'a, F: Fn(i32) -> Point + 'a>(
         .map(move |&coord| State::new(f(coord), direction.clone()))
 }
 
-fn main() {
-    answer::timer(solution);
-}
-
-fn solution() {
-    let grid = Reader::default().read_grid(Some);
-
-    let part1 = energized(&grid, State::new(Point::default(), Direction::Right));
-
-    let side = grid.bounds().upper.x;
-    let coords: Vec<i32> = (0..=side).collect();
-    let part2 = create_states(&coords, Direction::Down, |x| Point::new(x, 0))
-        .chain(create_states(&coords, Direction::Up, |x| {
-            Point::new(x, side)
-        }))
-        .chain(create_states(&coords, Direction::Right, |y| {
-            Point::new(0, y)
-        }))
-        .chain(create_states(&coords, Direction::Left, |y| {
-            Point::new(side, y)
-        }))
-        .map(|state| energized(&grid, state))
-        .max()
-        .unwrap();
-
-    answer::part1(8901, part1);
-    answer::part2(9064, part2);
+fn energized(grid: &Grid<char>, start: State) -> usize {
+    let mut explored = FxHashSet::default();
+    explored.insert(start.clone());
+    let mut q: VecDeque<State> = VecDeque::default();
+    q.push_back(start);
+    while let Some(state) = q.pop_front() {
+        state.next_states(grid).for_each(|state| {
+            if explored.insert(state.clone()) {
+                q.push_back(state);
+            }
+        });
+    }
+    explored.into_iter().map(|state| state.point).unique()
 }

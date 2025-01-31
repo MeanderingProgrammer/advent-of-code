@@ -1,5 +1,6 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
+use aoc_lib::ids::Ids;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
@@ -40,7 +41,7 @@ impl Compress {
         let target = bounds.upper.add(&Direction::Left);
 
         // Save space and make lookups faster by mapping points to an integer
-        let mut ids: FxHashMap<Point, u8> = FxHashMap::default();
+        let mut ids: Ids<Point> = Ids::default();
         let mut graph: FxHashMap<Point, FxHashMap<Direction, Edge>> = FxHashMap::default();
 
         let mut traces: VecDeque<Trace> = VecDeque::default();
@@ -58,12 +59,12 @@ impl Compress {
             } else {
                 let trace = traces.pop_front().unwrap();
                 let (start, end) = (trace.path.first().unwrap(), trace.path.last().unwrap());
-                Self::add_id(&mut ids, start);
+                ids.set(start);
                 // Add current edge to the graph
                 graph.entry(start.clone()).or_default().insert(
                     trace.dir,
                     Edge {
-                        id: Self::add_id(&mut ids, end),
+                        id: ids.set(end) as u8,
                         length: trace.path.len() - 1,
                         uphill: trace.uphill,
                     },
@@ -99,13 +100,13 @@ impl Compress {
                     .filter(|(dir, _)| n != 3 || dir != &Direction::Up)
                     .map(|(_, edge)| edge)
                     .collect();
-                (*ids.get(&point).unwrap(), edges)
+                (ids.get(&point) as u8, edges)
             })
             .collect();
 
         Search {
-            start: *ids.get(&start).unwrap(),
-            target: *ids.get(&target).unwrap(),
+            start: ids.get(&start) as u8,
+            target: ids.get(&target) as u8,
             graph,
         }
     }
@@ -130,11 +131,6 @@ impl Compress {
                 (point, dir, uphill)
             })
             .collect()
-    }
-
-    fn add_id(ids: &mut FxHashMap<Point, u8>, point: &Point) -> u8 {
-        let id = ids.len() as u8;
-        *ids.entry(point.clone()).or_insert(id)
     }
 }
 

@@ -1,9 +1,18 @@
-use std::fmt::Write;
+use fxhash::FxHashSet;
+use std::fmt::{Display, Write};
+use std::hash::Hash;
 
 pub trait Iter: Iterator {
+    fn unique(&mut self) -> usize
+    where
+        Self::Item: Hash + Eq,
+    {
+        self.collect::<FxHashSet<_>>().len()
+    }
+
     fn join(&mut self, sep: &str) -> String
     where
-        Self::Item: std::fmt::Display,
+        Self::Item: Display,
     {
         match self.next() {
             None => String::default(),
