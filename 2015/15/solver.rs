@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug, Default)]
@@ -48,7 +48,7 @@ impl FromStr for Ingredient {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (name, components_string) = s.split_once(": ").unwrap();
-        let components: FxHashMap<&str, i64> = components_string
+        let components: HashMap<&str, i64> = components_string
             .split(", ")
             .map(|component| component.split_once(' ').unwrap())
             .map(|(property, quantity)| (property, quantity.parse().unwrap()))

@@ -1,6 +1,6 @@
+use crate::collections::HashMap;
 use crate::iter::Iter;
 use crate::point::Point;
-use fxhash::FxHashMap;
 use std::borrow::Borrow;
 use std::cmp::PartialEq;
 use std::fmt;
@@ -9,13 +9,13 @@ use std::string::ToString;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Grid<T> {
-    grid: FxHashMap<Point, T>,
+    grid: HashMap<Point, T>,
 }
 
 impl<T> Default for Grid<T> {
     fn default() -> Self {
         Self {
-            grid: FxHashMap::default(),
+            grid: HashMap::default(),
         }
     }
 }
@@ -59,7 +59,7 @@ impl<T> Grid<T> {
         Bounds::new(&points)
     }
 
-    pub fn to_graph(&self) -> FxHashMap<Point, Vec<Point>> {
+    pub fn to_graph(&self) -> HashMap<Point, Vec<Point>> {
         self.iter()
             .map(|(point, _)| {
                 let neighbors = point

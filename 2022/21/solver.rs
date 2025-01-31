@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug)]
 enum Operation {
@@ -44,12 +44,12 @@ impl Expression {
 
 #[derive(Debug)]
 struct Monkeys {
-    monkeys: FxHashMap<String, Expression>,
+    monkeys: HashMap<String, Expression>,
 }
 
 impl Monkeys {
     fn new(lines: Vec<String>) -> Self {
-        let mut monkeys = FxHashMap::default();
+        let mut monkeys = HashMap::default();
         lines.iter().for_each(|line| {
             let (name, job) = line.split_once(": ").unwrap();
             monkeys.insert(name.to_string(), Expression::new(job.split(' ').collect()));

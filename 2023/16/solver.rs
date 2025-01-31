@@ -1,9 +1,9 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::iter::Iter;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -90,7 +90,7 @@ fn states<'a, F: Fn(i32) -> Point + 'a>(
 }
 
 fn energized(grid: &Grid<char>, start: State) -> usize {
-    let mut explored = FxHashSet::default();
+    let mut explored = HashSet::default();
     explored.insert(start.clone());
     let mut q: VecDeque<State> = VecDeque::default();
     q.push_back(start);

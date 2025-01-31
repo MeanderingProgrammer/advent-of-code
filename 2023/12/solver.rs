@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::collections::VecDeque;
 use std::str::FromStr;
 
@@ -52,7 +52,7 @@ impl Row {
         result
     }
 
-    fn count(self, cache: &mut FxHashMap<Row, usize>) -> usize {
+    fn count(self, cache: &mut HashMap<Row, usize>) -> usize {
         match cache.get(&self) {
             Some(value) => *value,
             None => {
@@ -78,13 +78,13 @@ impl Row {
         }
     }
 
-    fn empty(&self, cache: &mut FxHashMap<Row, usize>) -> usize {
+    fn empty(&self, cache: &mut HashMap<Row, usize>) -> usize {
         let mut result = self.clone();
         result.springs.pop_front();
         result.count(cache)
     }
 
-    fn group(&self, group: usize, cache: &mut FxHashMap<Row, usize>) -> usize {
+    fn group(&self, group: usize, cache: &mut HashMap<Row, usize>) -> usize {
         if self.any(group, Spring::Operational) || self.is(group, Spring::Damaged) {
             0
         } else {
@@ -112,11 +112,11 @@ fn main() {
 
 fn solution() {
     let rows = Reader::default().read_from_str();
-    let mut cache = FxHashMap::default();
+    let mut cache = HashMap::default();
     answer::part1(8075, run(&rows, &mut cache, 1));
     answer::part2(4232520187524, run(&rows, &mut cache, 5));
 }
 
-fn run(rows: &[Row], cache: &mut FxHashMap<Row, usize>, n: usize) -> usize {
+fn run(rows: &[Row], cache: &mut HashMap<Row, usize>, n: usize) -> usize {
     rows.iter().map(|row| row.multiply(n).count(cache)).sum()
 }

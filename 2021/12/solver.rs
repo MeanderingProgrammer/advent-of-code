@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
 use aoc_lib::search::GraphSearch;
-use fxhash::FxHashMap;
 
 const START: u32 = 0;
 const END: u32 = 1;
@@ -54,7 +54,7 @@ impl Path {
 
 #[derive(Debug)]
 struct Search {
-    graph: FxHashMap<Cave, Vec<Cave>>,
+    graph: HashMap<Cave, Vec<Cave>>,
     valid: fn(&Path, &Cave) -> bool,
 }
 
@@ -90,8 +90,8 @@ fn solution() {
     answer::part2(93686, paths(graph.clone(), false));
 }
 
-fn get_graph(lines: &[String]) -> FxHashMap<Cave, Vec<Cave>> {
-    let mut graph: FxHashMap<Cave, Vec<Cave>> = FxHashMap::default();
+fn get_graph(lines: &[String]) -> HashMap<Cave, Vec<Cave>> {
+    let mut graph: HashMap<Cave, Vec<Cave>> = HashMap::default();
     lines.iter().for_each(|line| {
         let (v1, v2) = line.split_once('-').unwrap();
         let (c1, c2) = (Cave::new(v1), Cave::new(v2));
@@ -101,7 +101,7 @@ fn get_graph(lines: &[String]) -> FxHashMap<Cave, Vec<Cave>> {
     graph
 }
 
-fn paths(graph: FxHashMap<Cave, Vec<Cave>>, part1: bool) -> usize {
+fn paths(graph: HashMap<Cave, Vec<Cave>>, part1: bool) -> usize {
     let valid = if part1 { one_small } else { two_small };
     let search = Search { graph, valid };
     search.dfs(Path::new(Cave::new("start"))).len()

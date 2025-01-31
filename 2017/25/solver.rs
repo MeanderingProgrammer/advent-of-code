@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -70,9 +70,9 @@ impl Rule {
 #[derive(Debug)]
 struct TuringMachine {
     state: u8,
-    rules: FxHashMap<u8, Rule>,
+    rules: HashMap<u8, Rule>,
     position: i16,
-    tape: FxHashSet<i16>,
+    tape: HashSet<i16>,
 }
 
 impl TuringMachine {
@@ -104,7 +104,7 @@ fn solution() {
         state,
         rules: groups.iter().skip(1).map(|group| get_rule(group)).collect(),
         position: 0,
-        tape: FxHashSet::default(),
+        tape: HashSet::default(),
     };
     for _ in 0..steps {
         machine.step();

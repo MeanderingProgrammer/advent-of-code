@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use rayon::prelude::*;
 use std::collections::VecDeque;
 
@@ -11,8 +11,8 @@ struct Race {
     grid: Grid<char>,
     start: Point,
     finish: Point,
-    distances: FxHashMap<Point, usize>,
-    previous: FxHashMap<Point, Point>,
+    distances: HashMap<Point, usize>,
+    previous: HashMap<Point, Point>,
 }
 
 impl Race {
@@ -24,8 +24,8 @@ impl Race {
             grid,
             start,
             finish,
-            distances: FxHashMap::default(),
-            previous: FxHashMap::default(),
+            distances: HashMap::default(),
+            previous: HashMap::default(),
         }
     }
 

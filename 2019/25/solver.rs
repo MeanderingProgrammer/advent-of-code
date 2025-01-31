@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::Direction;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
 use std::collections::VecDeque;
 use std::str::FromStr;
@@ -48,11 +48,11 @@ impl FromStr for View {
 
 #[derive(Debug, Default)]
 struct Graph {
-    graph: FxHashMap<String, FxHashSet<Direction>>,
+    graph: HashMap<String, HashSet<Direction>>,
 }
 
 impl Graph {
-    fn node(&mut self, name: &str) -> &mut FxHashSet<Direction> {
+    fn node(&mut self, name: &str) -> &mut HashSet<Direction> {
         self.graph.entry(name.to_string()).or_default()
     }
 

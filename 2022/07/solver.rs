@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug, Default)]
 struct Node {
@@ -30,12 +30,12 @@ impl Node {
 #[derive(Debug)]
 struct FileSystem {
     id: usize,
-    tree: FxHashMap<usize, Node>,
+    tree: HashMap<usize, Node>,
 }
 
 impl FileSystem {
     fn new() -> Self {
-        let mut tree = FxHashMap::default();
+        let mut tree = HashMap::default();
         tree.insert(0, Node::default());
         Self { id: 0, tree }
     }

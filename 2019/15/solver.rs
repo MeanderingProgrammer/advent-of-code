@@ -1,9 +1,9 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::GraphSearch;
-use fxhash::FxHashMap;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
@@ -51,7 +51,7 @@ struct RepairDroid {
     position: Point,
     next_position: Option<(Direction, Point)>,
     path: VecDeque<(Direction, Point)>,
-    grid: FxHashMap<Point, Item>,
+    grid: HashMap<Point, Item>,
 }
 
 impl Default for RepairDroid {
@@ -117,7 +117,7 @@ impl Bus for RepairDroid {
 
 #[derive(Debug)]
 struct Search {
-    grid: FxHashMap<Point, Item>,
+    grid: HashMap<Point, Item>,
 }
 
 impl GraphSearch for Search {

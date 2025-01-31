@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use std::collections::VecDeque;
 use std::fmt::Write;
 
@@ -91,10 +91,10 @@ fn enabled_points(prefix: String) -> Vec<Point> {
 }
 
 fn group_points(points: Vec<Point>) -> usize {
-    let mut groups: Vec<FxHashSet<Point>> = Vec::new();
+    let mut groups: Vec<HashSet<Point>> = Vec::new();
     for point in points.into_iter() {
-        let adjacent: FxHashSet<Point> = point.neighbors().into_iter().collect();
-        let mut new_group: FxHashSet<Point> = [point].into_iter().collect();
+        let adjacent: HashSet<Point> = point.neighbors().into_iter().collect();
+        let mut new_group: HashSet<Point> = [point].into_iter().collect();
         groups.retain(|group| match adjacent.is_disjoint(group) {
             true => true,
             false => {

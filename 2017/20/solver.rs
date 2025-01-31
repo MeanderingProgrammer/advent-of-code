@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::point::Point3d;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug, Clone)]
 struct Particle {
@@ -59,8 +59,8 @@ fn solution() {
 
 fn run_simulation(mut particles: Vec<Particle>, cleanup: bool) -> Vec<Particle> {
     for _ in 0..1_000 {
-        let mut seen: FxHashSet<Point3d> = FxHashSet::default();
-        let mut bad_positions: FxHashSet<Point3d> = FxHashSet::default();
+        let mut seen: HashSet<Point3d> = HashSet::default();
+        let mut bad_positions: HashSet<Point3d> = HashSet::default();
         let mut next_particles: Vec<Particle> = Vec::new();
         for particle in particles.iter() {
             let next_particle = particle.step();

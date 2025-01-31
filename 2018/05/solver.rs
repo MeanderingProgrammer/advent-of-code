@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::ids::Base;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug, Clone)]
 enum Unit {
@@ -62,7 +62,7 @@ impl Polymer {
         None
     }
 
-    fn variants(&self) -> FxHashSet<u8> {
+    fn variants(&self) -> HashSet<u8> {
         self.units.iter().map(|unit| unit.variant()).collect()
     }
 

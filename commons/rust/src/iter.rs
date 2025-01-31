@@ -1,4 +1,4 @@
-use fxhash::FxHashSet;
+use crate::collections::HashSet;
 use std::fmt::{Display, Write};
 use std::hash::Hash;
 
@@ -7,7 +7,7 @@ pub trait Iter: Iterator {
     where
         Self::Item: Hash + Eq,
     {
-        self.collect::<FxHashSet<_>>().len()
+        self.collect::<HashSet<_>>().len()
     }
 
     fn join(&mut self, sep: &str) -> String

@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
@@ -60,12 +60,12 @@ impl BridgeData {
 
 #[derive(Debug)]
 struct BridgeBuilder {
-    components: FxHashMap<u8, FxHashSet<u8>>,
+    components: HashMap<u8, HashSet<u8>>,
 }
 
 impl BridgeBuilder {
     fn new(lines: &[String]) -> Self {
-        let mut components: FxHashMap<u8, FxHashSet<u8>> = FxHashMap::default();
+        let mut components: HashMap<u8, HashSet<u8>> = HashMap::default();
         lines.iter().for_each(|line| {
             let (p1, p2) = line.split_once('/').unwrap();
             let v1: u8 = p1.parse().unwrap();

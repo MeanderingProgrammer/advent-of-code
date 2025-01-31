@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug)]
 enum Motion {
@@ -93,7 +93,7 @@ impl CartSystem {
     fn tick(&mut self) {
         self.carts.sort_by_key(|cart| cart.point.clone());
 
-        let mut carts: FxHashMap<Point, usize> = self
+        let mut carts: HashMap<Point, usize> = self
             .carts
             .iter()
             .map(|cart| (cart.point.clone(), cart.id))

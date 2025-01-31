@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::point::{Direction3d, Point3d};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 
 #[derive(Debug)]
 enum Axis {
@@ -72,7 +72,7 @@ impl Brick {
 }
 
 #[derive(Debug, Default)]
-struct Settled(FxHashMap<Point3d, usize>);
+struct Settled(HashMap<Point3d, usize>);
 
 impl Settled {
     fn cement(&mut self, brick: &Brick) {
@@ -81,15 +81,15 @@ impl Settled {
         });
     }
 
-    fn held(&self, brick: &Brick) -> FxHashSet<usize> {
+    fn held(&self, brick: &Brick) -> HashSet<usize> {
         self.at(brick, Direction3d::Down)
     }
 
-    fn holding(&self, brick: &Brick) -> FxHashSet<usize> {
+    fn holding(&self, brick: &Brick) -> HashSet<usize> {
         self.at(brick, Direction3d::Up)
     }
 
-    fn at(&self, brick: &Brick, direction: Direction3d) -> FxHashSet<usize> {
+    fn at(&self, brick: &Brick, direction: Direction3d) -> HashSet<usize> {
         brick
             .points(Some(direction))
             .iter()
@@ -129,13 +129,13 @@ impl Stack {
         self.bricks
             .iter()
             .map(|brick| {
-                let mut removed = FxHashSet::default();
+                let mut removed = HashSet::default();
                 self.count(&mut removed, brick)
             })
             .collect()
     }
 
-    fn count(&self, removed: &mut FxHashSet<usize>, brick: &Brick) -> usize {
+    fn count(&self, removed: &mut HashSet<usize>, brick: &Brick) -> usize {
         removed.insert(brick.id);
         let unsupported: Vec<&Brick> = self
             .settled

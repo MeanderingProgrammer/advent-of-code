@@ -1,9 +1,9 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
-use fxhash::FxHashSet;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 enum Tool {
@@ -17,7 +17,7 @@ enum Tool {
 struct Region {
     erosion: usize,
     kind: usize,
-    tools: FxHashSet<Tool>,
+    tools: HashSet<Tool>,
 }
 
 impl Region {
@@ -27,9 +27,9 @@ impl Region {
             erosion,
             kind,
             tools: match kind {
-                0 => FxHashSet::from_iter([Tool::Gear, Tool::Torch]),
-                1 => FxHashSet::from_iter([Tool::Gear, Tool::Neither]),
-                2 => FxHashSet::from_iter([Tool::Torch, Tool::Neither]),
+                0 => HashSet::from_iter([Tool::Gear, Tool::Torch]),
+                1 => HashSet::from_iter([Tool::Gear, Tool::Neither]),
+                2 => HashSet::from_iter([Tool::Torch, Tool::Neither]),
                 _ => unreachable!(),
             },
         }

@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug)]
 enum Cucumber {
@@ -32,14 +32,14 @@ impl Cucumber {
 #[derive(Debug)]
 struct Seafloor {
     limit: Point,
-    east: FxHashSet<Point>,
-    south: FxHashSet<Point>,
+    east: HashSet<Point>,
+    south: HashSet<Point>,
 }
 
 impl Seafloor {
     fn new(grid: Grid<Cucumber>) -> Self {
-        let mut east = FxHashSet::default();
-        let mut south = FxHashSet::default();
+        let mut east = HashSet::default();
+        let mut south = HashSet::default();
         for (point, value) in grid.iter() {
             match value {
                 Cucumber::East => {
@@ -73,12 +73,12 @@ impl Seafloor {
         east_moved || south_moved
     }
 
-    fn apply(&self, cucumber: Cucumber) -> (FxHashSet<Point>, bool) {
+    fn apply(&self, cucumber: Cucumber) -> (HashSet<Point>, bool) {
         let (current, other) = match cucumber {
             Cucumber::East => (&self.east, &self.south),
             Cucumber::South => (&self.south, &self.east),
         };
-        let (mut next, mut moved) = (FxHashSet::default(), false);
+        let (mut next, mut moved) = (HashSet::default(), false);
         for start in current {
             let mut point = start.add(&cucumber);
             point.x %= self.limit.x + 1;

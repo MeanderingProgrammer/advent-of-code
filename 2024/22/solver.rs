@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -8,7 +8,7 @@ use std::str::FromStr;
 struct Secret {
     value: usize,
     changes: Vec<i64>,
-    sequences: FxHashMap<[i64; 4], usize>,
+    sequences: HashMap<[i64; 4], usize>,
 }
 
 impl FromStr for Secret {
@@ -18,7 +18,7 @@ impl FromStr for Secret {
         Ok(Self {
             value: s.parse().unwrap(),
             changes: Vec::default(),
-            sequences: FxHashMap::default(),
+            sequences: HashMap::default(),
         })
     }
 }
@@ -75,7 +75,7 @@ fn part1(secrets: &mut [Secret], n: usize) -> usize {
 }
 
 fn part2(secrets: &[Secret]) -> usize {
-    let options: FxHashSet<[i64; 4]> = secrets
+    let options: HashSet<[i64; 4]> = secrets
         .iter()
         .flat_map(|secret| secret.sequences.keys())
         .cloned()

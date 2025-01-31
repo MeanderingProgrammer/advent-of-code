@@ -1,9 +1,9 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::queue::{HeapKind, PriorityQueue};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {
@@ -47,16 +47,16 @@ impl Maze {
 
     fn solve(&self) -> (usize, usize) {
         let mut min_cost = 0;
-        let mut end_seen = FxHashSet::default();
+        let mut end_seen = HashSet::default();
 
         let start = State::new(self.start.clone(), Direction::Right);
 
-        let mut distances = FxHashMap::default();
+        let mut distances = HashMap::default();
         distances.insert(start.clone(), 0);
 
-        let mut start_seen = FxHashSet::default();
+        let mut start_seen = HashSet::default();
         start_seen.insert(start.point.clone());
-        let mut state_seen = FxHashMap::default();
+        let mut state_seen = HashMap::default();
         state_seen.insert(start.clone(), start_seen);
 
         let mut queue = PriorityQueue::new(HeapKind::Min);

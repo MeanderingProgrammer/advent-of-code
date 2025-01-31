@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -24,14 +24,14 @@ impl FromStr for Instruction {
 }
 
 impl Instruction {
-    fn apply_single(&self, arrangement: &mut FxHashMap<usize, Vec<char>>) {
+    fn apply_single(&self, arrangement: &mut HashMap<usize, Vec<char>>) {
         for _ in 0..self.amount {
             let value = arrangement.get_mut(&self.from).unwrap().pop().unwrap();
             arrangement.get_mut(&self.to).unwrap().push(value);
         }
     }
 
-    fn apply_multiple(&self, arrangement: &mut FxHashMap<usize, Vec<char>>) {
+    fn apply_multiple(&self, arrangement: &mut HashMap<usize, Vec<char>>) {
         let mut temp = Vec::new();
         for _ in 0..self.amount {
             let value = arrangement.get_mut(&self.from).unwrap().pop().unwrap();
@@ -74,8 +74,8 @@ fn solution() {
     );
 }
 
-fn get_arrangement(raw: &[String]) -> FxHashMap<usize, Vec<char>> {
-    let mut arrangement: FxHashMap<usize, Vec<char>> = FxHashMap::default();
+fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {
+    let mut arrangement: HashMap<usize, Vec<char>> = HashMap::default();
     for row in raw.iter().rev().skip(1) {
         let row_chars: Vec<char> = row.chars().collect();
         for (i, index) in (1..row.len()).step_by(4).enumerate() {
@@ -91,9 +91,9 @@ fn get_arrangement(raw: &[String]) -> FxHashMap<usize, Vec<char>> {
 }
 
 fn get_result(
-    mut arrangement: FxHashMap<usize, Vec<char>>,
+    mut arrangement: HashMap<usize, Vec<char>>,
     instructions: &[Instruction],
-    f: fn(&Instruction, &mut FxHashMap<usize, Vec<char>>) -> (),
+    f: fn(&Instruction, &mut HashMap<usize, Vec<char>>) -> (),
 ) -> String {
     instructions.iter().for_each(|instruction| {
         f(instruction, &mut arrangement);

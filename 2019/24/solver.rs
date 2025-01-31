@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Location {
@@ -17,14 +17,14 @@ impl Location {
 
 #[derive(Debug)]
 struct Layout {
-    grid: FxHashSet<Location>,
+    grid: HashSet<Location>,
     recursive: bool,
     size: i32,
     middle: Point,
 }
 
 impl Layout {
-    fn new(grid: FxHashSet<Location>, recursive: bool) -> Self {
+    fn new(grid: HashSet<Location>, recursive: bool) -> Self {
         Self {
             grid,
             recursive,
@@ -34,7 +34,7 @@ impl Layout {
     }
 
     fn step(&mut self) {
-        let mut counts: FxHashMap<Location, usize> = FxHashMap::default();
+        let mut counts: HashMap<Location, usize> = HashMap::default();
         self.grid
             .iter()
             .flat_map(|location| self.neighbors(location))
@@ -97,7 +97,7 @@ fn main() {
 
 fn solution() {
     let grid = Reader::default().read_grid(Some);
-    let locations: FxHashSet<Location> = grid
+    let locations: HashSet<Location> = grid
         .values(&'#')
         .into_iter()
         .map(|point| Location::new(point, 0))
@@ -106,7 +106,7 @@ fn solution() {
     answer::part2(2017, part2(locations.clone()));
 }
 
-fn part1(grid: FxHashSet<Location>) -> usize {
+fn part1(grid: HashSet<Location>) -> usize {
     let mut layout = Layout::new(grid, false);
     let mut seen = Vec::default();
     while !seen.contains(&layout.grid) {
@@ -116,7 +116,7 @@ fn part1(grid: FxHashSet<Location>) -> usize {
     layout.diversity()
 }
 
-fn part2(grid: FxHashSet<Location>) -> usize {
+fn part2(grid: HashSet<Location>) -> usize {
     let mut layout = Layout::new(grid, true);
     for _ in 0..200 {
         layout.step();

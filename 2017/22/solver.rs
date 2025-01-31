@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 type Point = (i16, i16);
 
@@ -33,8 +33,8 @@ impl State {
 
 #[derive(Debug)]
 struct Virus {
-    grid: FxHashMap<Point, State>,
-    transitions: FxHashMap<State, State>,
+    grid: HashMap<Point, State>,
+    transitions: HashMap<State, State>,
     position: Point,
     direction: usize,
     directions: [Point; 4],
@@ -42,7 +42,7 @@ struct Virus {
 }
 
 impl Virus {
-    fn new(grid: FxHashMap<Point, State>, transitions: FxHashMap<State, State>) -> Self {
+    fn new(grid: HashMap<Point, State>, transitions: HashMap<State, State>) -> Self {
         let (mut x, mut y) = (0, 0);
         for point in grid.keys() {
             (x, y) = (x.max(point.0), y.max(point.1));
@@ -77,18 +77,18 @@ fn main() {
 
 fn solution() {
     let lines = Reader::default().read_lines();
-    let mut grid: FxHashMap<Point, State> = FxHashMap::default();
+    let mut grid: HashMap<Point, State> = HashMap::default();
     for (y, line) in lines.iter().enumerate() {
         for (x, ch) in line.char_indices() {
             grid.insert((x as i16, y as i16), State::from_char(ch).unwrap());
         }
     }
-    let simplified = FxHashMap::from_iter([
+    let simplified = HashMap::from_iter([
         (State::Clean, State::Infected),
         (State::Infected, State::Clean),
     ]);
     answer::part1(5575, run(&grid, 10_000, simplified));
-    let expanded = FxHashMap::from_iter([
+    let expanded = HashMap::from_iter([
         (State::Clean, State::Weakened),
         (State::Weakened, State::Infected),
         (State::Infected, State::Flagged),
@@ -97,7 +97,7 @@ fn solution() {
     answer::part2(2511991, run(&grid, 10_000_000, expanded));
 }
 
-fn run(grid: &FxHashMap<Point, State>, n: usize, transitions: FxHashMap<State, State>) -> usize {
+fn run(grid: &HashMap<Point, State>, n: usize, transitions: HashMap<State, State>) -> usize {
     let mut virus = Virus::new(grid.clone(), transitions);
     for _ in 0..n {
         virus.burst();

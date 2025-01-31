@@ -1,6 +1,7 @@
 pub mod answer;
 pub mod assembunny;
 pub mod bit_set;
+pub mod collections;
 pub mod grid;
 pub mod ids;
 pub mod int_code;

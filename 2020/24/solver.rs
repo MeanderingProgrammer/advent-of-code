@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -58,7 +58,7 @@ impl HexHeading {
 
 #[derive(Debug, Default)]
 struct Floor {
-    floor: FxHashMap<Point, bool>,
+    floor: HashMap<Point, bool>,
 }
 
 impl Floor {
@@ -73,7 +73,7 @@ impl Floor {
     }
 
     fn transform(&mut self) {
-        let mut counts = FxHashMap::default();
+        let mut counts = HashMap::default();
         for (point, tile) in self.floor.iter() {
             counts.entry(point.clone()).or_insert(0);
             if !tile {

@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -44,8 +44,8 @@ impl Claim {
 
 #[derive(Debug, Default)]
 struct Overlaps {
-    claims: FxHashSet<usize>,
-    points: FxHashSet<Point>,
+    claims: HashSet<usize>,
+    points: HashSet<Point>,
 }
 
 fn main() {
@@ -54,7 +54,7 @@ fn main() {
 
 fn solution() {
     let claims: Vec<Claim> = Reader::default().read_from_str();
-    let ids: FxHashSet<usize> = claims.iter().map(|claim| claim.id).collect();
+    let ids: HashSet<usize> = claims.iter().map(|claim| claim.id).collect();
     let result = overlaps(&claims);
     answer::part1(120408, result.points.len());
     answer::part2(1276, *ids.difference(&result.claims).next().unwrap());
@@ -62,7 +62,7 @@ fn solution() {
 
 fn overlaps(claims: &[Claim]) -> Overlaps {
     let mut result = Overlaps::default();
-    let mut seen: FxHashMap<Point, usize> = FxHashMap::default();
+    let mut seen: HashMap<Point, usize> = HashMap::default();
     for claim in claims {
         for point in claim.points() {
             match seen.get(&point) {

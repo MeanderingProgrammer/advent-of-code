@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug)]
 struct PasswordGenerator {
@@ -43,17 +43,17 @@ impl PasswordGenerator {
     }
 
     fn contains_invalid(&self) -> bool {
-        let invalid = FxHashSet::from_iter([
+        let invalid = HashSet::from_iter([
             Self::to_index('i'),
             Self::to_index('o'),
             Self::to_index('l'),
         ]);
-        let value = FxHashSet::from_iter(self.value.iter().cloned());
+        let value = HashSet::from_iter(self.value.iter().cloned());
         invalid.intersection(&value).count() > 0
     }
 
     fn num_pairs(&self) -> usize {
-        let pairs: FxHashSet<u8> = (0..self.value.len() - 1)
+        let pairs: HashSet<u8> = (0..self.value.len() - 1)
             .filter(|&i| self.value[i] == self.value[i + 1])
             .map(|i| self.value[i])
             .collect();

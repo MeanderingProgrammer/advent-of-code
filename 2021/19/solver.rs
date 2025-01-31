@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::point::Point3d;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -20,7 +20,7 @@ impl Join {
 #[derive(Debug)]
 struct Scanner {
     positions: Vec<Point3d>,
-    points: FxHashSet<Point3d>,
+    points: HashSet<Point3d>,
 }
 
 impl Scanner {
@@ -43,7 +43,7 @@ impl Scanner {
     }
 
     fn attempt(&self, other: &Scanner, rotation: usize, overlap: usize) -> Option<Join> {
-        let mut offsets: FxHashMap<Point3d, usize> = FxHashMap::default();
+        let mut offsets: HashMap<Point3d, usize> = HashMap::default();
         for p1 in &self.points {
             for p2 in &other.points {
                 let offset = p1.sub(rotate(p2, rotation));

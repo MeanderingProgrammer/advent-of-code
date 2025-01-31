@@ -1,9 +1,9 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
+use aoc_lib::collections::HashMap;
 use aoc_lib::ids::Base;
 use aoc_lib::queue::{HeapKind, PriorityQueue};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use itertools::Itertools;
 use std::str::FromStr;
 
@@ -150,9 +150,9 @@ impl<const N: usize> FullState<N> {
 #[derive(Debug)]
 struct Cave {
     // Mapping from valve to each reachable valve and the time it takes to reach it
-    graph: FxHashMap<u8, Vec<(u8, u8)>>,
+    graph: HashMap<u8, Vec<(u8, u8)>>,
     // Mapping from each valve to its flow rate
-    flows: FxHashMap<u8, u16>,
+    flows: HashMap<u8, u16>,
 }
 
 impl Cave {
@@ -194,14 +194,14 @@ fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
         .sorted()
         .collect();
 
-    let flows: FxHashMap<u8, u16> = valves
+    let flows: HashMap<u8, u16> = valves
         .iter()
         .map(|valve| (valve, ordered.iter().position(|v| v == &valve.name)))
         .filter(|(_, index)| index.is_some())
         .map(|(valve, index)| (index.unwrap() as u8, valve.flow_rate))
         .collect();
 
-    let mut graph: FxHashMap<u8, Vec<(u8, u8)>> = FxHashMap::default();
+    let mut graph: HashMap<u8, Vec<(u8, u8)>> = HashMap::default();
     (0..ordered.len())
         .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1, v2)))
         .filter(|(v1, v2)| v1 != v2)
@@ -213,8 +213,8 @@ fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
     Cave { graph, flows }
 }
 
-fn floyd_warshall(valves: &[Valve]) -> FxHashMap<(u32, u32), u8> {
-    let mut dist = FxHashMap::default();
+fn floyd_warshall(valves: &[Valve]) -> HashMap<(u32, u32), u8> {
+    let mut dist = HashMap::default();
     for v1 in valves.iter() {
         for v2 in valves.iter() {
             dist.insert((v1.name, v2.name), u8::MAX);

@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::math;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -27,7 +27,7 @@ impl FromStr for Edge {
 #[derive(Debug)]
 struct Network {
     directions: Vec<char>,
-    graph: FxHashMap<String, Edge>,
+    graph: HashMap<String, Edge>,
 }
 
 impl Network {

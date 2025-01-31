@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::grid::Grid;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Point<const N: usize> {
@@ -37,7 +37,7 @@ impl<const N: usize> Point<N> {
 
 #[derive(Debug, Default)]
 struct State<const N: usize> {
-    active: FxHashSet<Point<N>>,
+    active: HashSet<Point<N>>,
 }
 
 impl<const N: usize> State<N> {
@@ -52,7 +52,7 @@ impl<const N: usize> State<N> {
     }
 
     fn step(&self) -> Self {
-        let mut counts: FxHashMap<Point<N>, usize> = FxHashMap::default();
+        let mut counts: HashMap<Point<N>, usize> = HashMap::default();
         for point in self.active.iter() {
             for neighbor in point.neighbors() {
                 *counts.entry(neighbor).or_default() += 1;

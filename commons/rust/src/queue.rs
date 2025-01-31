@@ -1,4 +1,4 @@
-use fxhash::FxHashMap;
+use crate::collections::HashMap;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::hash::Hash;
@@ -53,7 +53,7 @@ pub enum HeapKind {
 pub struct PriorityQueue<I, P> {
     kind: HeapKind,
     heap: BinaryHeap<Item<I, P>>,
-    best: FxHashMap<I, P>,
+    best: HashMap<I, P>,
 }
 
 impl<I, P> PriorityQueue<I, P>
@@ -65,7 +65,7 @@ where
         Self {
             kind,
             heap: BinaryHeap::default(),
-            best: FxHashMap::default(),
+            best: HashMap::default(),
         }
     }
 

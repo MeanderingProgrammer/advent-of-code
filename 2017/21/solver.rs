@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 struct Square(Vec<String>);
@@ -63,19 +63,19 @@ impl Square {
 
 #[derive(Debug)]
 struct Art {
-    sections: FxHashMap<Square, usize>,
+    sections: HashMap<Square, usize>,
 }
 
 impl Art {
     fn new(values: &[&str]) -> Self {
         let square = Square(values.iter().map(|row| row.to_string()).collect());
-        let mut sections = FxHashMap::default();
+        let mut sections = HashMap::default();
         sections.insert(square, 1);
         Self { sections }
     }
 
     fn next(&self, patterns: &Patterns) -> Self {
-        let mut sections = FxHashMap::default();
+        let mut sections = HashMap::default();
         for (square, count) in self.sections.iter() {
             for next in square.next(patterns) {
                 *sections.entry(next).or_default() += count;
@@ -93,7 +93,7 @@ impl Art {
 }
 
 #[derive(Debug, Default)]
-struct Patterns(FxHashMap<Vec<String>, Vec<String>>);
+struct Patterns(HashMap<Vec<String>, Vec<String>>);
 
 impl Patterns {
     fn add(&mut self, key: &Grid<char>, value: Vec<String>) {

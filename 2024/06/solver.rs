@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use rayon::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -50,12 +50,8 @@ fn solution() {
     answer::part2(2008, obstacles(&grid, &start, path));
 }
 
-fn follow(
-    grid: &Grid<Element>,
-    start: &Point,
-    obstacle: Option<&Point>,
-) -> Option<FxHashSet<Point>> {
-    let mut seen: FxHashSet<State> = FxHashSet::default();
+fn follow(grid: &Grid<Element>, start: &Point, obstacle: Option<&Point>) -> Option<HashSet<Point>> {
+    let mut seen: HashSet<State> = HashSet::default();
     let mut state = State {
         point: start.clone(),
         direction: Direction::Up,
@@ -75,11 +71,11 @@ fn follow(
     Some(if obstacle.is_none() {
         seen.into_iter().map(|state| state.point).collect()
     } else {
-        FxHashSet::default()
+        HashSet::default()
     })
 }
 
-fn obstacles(grid: &Grid<Element>, start: &Point, options: FxHashSet<Point>) -> usize {
+fn obstacles(grid: &Grid<Element>, start: &Point, options: HashSet<Point>) -> usize {
     options
         .into_par_iter()
         .filter(|point| match grid[point] {

@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use rayon::prelude::*;
 use std::thread;
 
@@ -25,12 +25,12 @@ impl Node {
 
 #[derive(Debug, Clone)]
 struct Graph {
-    graph: FxHashMap<Node, Vec<Node>>,
+    graph: HashMap<Node, Vec<Node>>,
 }
 
 impl Graph {
     fn new(lines: Vec<String>) -> Self {
-        let data: FxHashMap<&str, Vec<&str>> = lines
+        let data: HashMap<&str, Vec<&str>> = lines
             .iter()
             .map(|line| {
                 let (node, edges) = line.split_once(": ").unwrap();
@@ -38,7 +38,7 @@ impl Graph {
             })
             .collect();
 
-        let mut ids: FxHashMap<&str, usize> = FxHashMap::default();
+        let mut ids: HashMap<&str, usize> = HashMap::default();
         data.iter().for_each(|(node, edges)| {
             Self::add_node(&mut ids, node);
             edges.iter().for_each(|edge| {
@@ -46,7 +46,7 @@ impl Graph {
             });
         });
 
-        let mut graph: FxHashMap<Node, Vec<Node>> = FxHashMap::default();
+        let mut graph: HashMap<Node, Vec<Node>> = HashMap::default();
         data.iter().for_each(|(node, edges)| {
             edges.iter().for_each(|edge| {
                 let (n1, n2) = (Node::new(ids[node]), Node::new(ids[edge]));
@@ -58,7 +58,7 @@ impl Graph {
         Self { graph }
     }
 
-    fn add_node<'a>(ids: &mut FxHashMap<&'a str, usize>, node: &'a str) {
+    fn add_node<'a>(ids: &mut HashMap<&'a str, usize>, node: &'a str) {
         if !ids.contains_key(node) {
             ids.insert(node, ids.len());
         }

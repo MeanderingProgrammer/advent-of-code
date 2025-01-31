@@ -1,12 +1,12 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug)]
 struct Path {
-    distances: FxHashMap<Point, i32>,
+    distances: HashMap<Point, i32>,
 }
 
 impl FromStr for Path {
@@ -15,7 +15,7 @@ impl FromStr for Path {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut point = Point::default();
         let mut distance = 0;
-        let mut distances = FxHashMap::default();
+        let mut distances = HashMap::default();
         s.split(",").for_each(|step| {
             let direction = Direction::from_str(&step[..1]).unwrap();
             let amount: usize = step[1..].parse().unwrap();

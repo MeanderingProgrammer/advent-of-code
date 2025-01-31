@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug)]
 struct Beam {
@@ -41,7 +41,7 @@ impl Bus for Beam {
 #[derive(Debug)]
 struct Tester {
     memory: Vec<i64>,
-    beam_starts: FxHashMap<i64, i64>,
+    beam_starts: HashMap<i64, i64>,
 }
 
 impl Tester {
@@ -74,7 +74,7 @@ fn solution() {
     let memory = Reader::default().read_csv();
     let mut tester = Tester {
         memory,
-        beam_starts: FxHashMap::default(),
+        beam_starts: HashMap::default(),
     };
     answer::part1(160, affected_points(&mut tester, 50));
     answer::part2(9441282, bounding_point(&mut tester, 100));

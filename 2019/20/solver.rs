@@ -1,9 +1,9 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
-use fxhash::{FxHashMap, FxHashSet};
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -44,18 +44,18 @@ impl Maze {
         }
     }
 
-    fn graph(&self) -> FxHashMap<Node, Vec<(Node, u16)>> {
+    fn graph(&self) -> HashMap<Node, Vec<(Node, u16)>> {
         let mut nodes = self.nodes(true);
         nodes.extend(self.nodes(false));
-        let mut result = FxHashMap::default();
+        let mut result = HashMap::default();
         for (point, node) in nodes.iter() {
             result.insert(node.clone(), self.edges(point, &nodes));
         }
         result
     }
 
-    fn nodes(&self, horizontal: bool) -> FxHashMap<Point, Node> {
-        let mut result = FxHashMap::default();
+    fn nodes(&self, horizontal: bool) -> HashMap<Point, Node> {
+        let mut result = HashMap::default();
         let size = if horizontal { self.width } else { self.height };
         let direction = if horizontal {
             Direction::Right
@@ -100,10 +100,10 @@ impl Maze {
         }
     }
 
-    fn edges(&self, start: &Point, nodes: &FxHashMap<Point, Node>) -> Vec<(Node, u16)> {
+    fn edges(&self, start: &Point, nodes: &HashMap<Point, Node>) -> Vec<(Node, u16)> {
         let mut queue = VecDeque::new();
         queue.push_back((start.clone(), 0));
-        let mut seen = FxHashSet::default();
+        let mut seen = HashSet::default();
         let mut result = Vec::default();
         while !queue.is_empty() {
             let (point, length) = queue.pop_front().unwrap();
@@ -155,7 +155,7 @@ impl Node {
 
 #[derive(Debug)]
 struct Graph {
-    graph: FxHashMap<Node, Vec<(Node, u16)>>,
+    graph: HashMap<Node, Vec<(Node, u16)>>,
     recursive: bool,
 }
 
@@ -203,7 +203,7 @@ fn solution() {
     answer::part2(7506, solve(&graph, true));
 }
 
-fn solve(graph: &FxHashMap<Node, Vec<(Node, u16)>>, recursive: bool) -> u16 {
+fn solve(graph: &HashMap<Node, Vec<(Node, u16)>>, recursive: bool) -> u16 {
     let graph = graph.clone();
     let start = (Node::new("AA", false), 0);
     Graph { graph, recursive }.run(start).unwrap()

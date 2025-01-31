@@ -1,5 +1,5 @@
+use crate::collections::HashSet;
 use crate::queue::{HeapKind, PriorityQueue};
-use fxhash::FxHashSet;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -25,7 +25,7 @@ pub trait GraphSearch {
     fn run(&self, start: Self::T, front: bool) -> Vec<i64> {
         let mut queue = VecDeque::new();
         queue.push_back((start, 0));
-        let mut seen = FxHashSet::default();
+        let mut seen = HashSet::default();
         let mut result = Vec::default();
         while !queue.is_empty() {
             // Remove from either the front (BFS) or back (DFS)
@@ -66,7 +66,7 @@ pub trait Dijkstra {
     fn run(&self, start: Self::T) -> Option<Self::W> {
         let mut queue = PriorityQueue::new(HeapKind::Min);
         queue.push(start, Self::W::default());
-        let mut seen = FxHashSet::default();
+        let mut seen = HashSet::default();
         while let Some((node, weight)) = queue.pop() {
             if seen.contains(&node) {
                 continue;

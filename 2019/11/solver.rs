@@ -1,15 +1,15 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::grid::Grid;
 use aoc_lib::int_code::{Bus, Computer};
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug)]
 struct PaintBot {
     direction: Direction,
     position: Point,
-    grid: FxHashMap<Point, i64>,
+    grid: HashMap<Point, i64>,
     color: bool,
 }
 
@@ -18,7 +18,7 @@ impl PaintBot {
         Self {
             direction: Direction::Up,
             position: Point::default(),
-            grid: FxHashMap::from_iter([(Point::default(), setting)]),
+            grid: HashMap::from_iter([(Point::default(), setting)]),
             color: true,
         }
     }

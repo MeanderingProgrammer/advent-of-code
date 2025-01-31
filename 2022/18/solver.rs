@@ -1,7 +1,7 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::point::Point3d;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
@@ -21,7 +21,7 @@ impl Bound {
 
 #[derive(Debug)]
 struct Grid {
-    points: FxHashSet<Point3d>,
+    points: HashSet<Point3d>,
 }
 
 impl Grid {
@@ -29,8 +29,8 @@ impl Grid {
         !self.points.contains(point)
     }
 
-    fn fill(&self) -> FxHashSet<Point3d> {
-        let mut seen = FxHashSet::default();
+    fn fill(&self) -> HashSet<Point3d> {
+        let mut seen = HashSet::default();
         let bound = self.get_bound();
         let mut q = VecDeque::default();
         q.push_back(bound.lower.clone());

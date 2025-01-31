@@ -1,14 +1,14 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
 struct Garden {
     start: Point,
-    walls: FxHashSet<Point>,
+    walls: HashSet<Point>,
     len: i32,
 }
 
@@ -22,8 +22,8 @@ impl Garden {
     }
 
     fn step(&self, n: i32) -> i64 {
-        let mut result: FxHashSet<Point> = FxHashSet::default();
-        let mut seen: FxHashSet<Point> = FxHashSet::default();
+        let mut result: HashSet<Point> = HashSet::default();
+        let mut seen: HashSet<Point> = HashSet::default();
         let mut q: VecDeque<(Point, i32)> = [(self.start.clone(), n)].into();
         while !q.is_empty() {
             let (point, steps) = q.pop_front().unwrap();

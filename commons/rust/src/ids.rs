@@ -1,4 +1,4 @@
-use fxhash::FxHashMap;
+use crate::collections::HashMap;
 use std::cmp::Eq;
 use std::hash::Hash;
 
@@ -24,7 +24,7 @@ impl Base {
 
 #[derive(Debug, Default)]
 pub struct Ids<K> {
-    values: FxHashMap<K, usize>,
+    values: HashMap<K, usize>,
 }
 
 impl<K> Ids<K>

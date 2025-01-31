@@ -1,12 +1,12 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::{Bounds, Grid};
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug, Clone)]
 struct Image {
-    on: FxHashSet<Point>,
+    on: HashSet<Point>,
     enhancer: Vec<bool>,
     time: usize,
     border: Point,
@@ -26,7 +26,7 @@ impl Image {
     }
 
     fn enhance(&mut self) {
-        let mut on = FxHashSet::default();
+        let mut on = HashSet::default();
         let bounds = Bounds::new(&self.on.iter().collect::<Vec<_>>());
         let start = bounds.lower.sub(self.border.clone());
         let end = bounds.upper.add(self.border.clone());

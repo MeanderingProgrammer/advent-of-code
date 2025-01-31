@@ -1,13 +1,13 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 
 #[derive(Debug)]
 struct Animator {
     force_corners: bool,
-    on: FxHashSet<Point>,
+    on: HashSet<Point>,
     min: Point,
     max: Point,
 }
@@ -23,7 +23,7 @@ impl Animator {
     }
 
     fn step(&mut self) {
-        let mut next_on = FxHashSet::default();
+        let mut next_on = HashSet::default();
         for x in self.min.x..=self.max.x {
             for y in self.min.y..=self.max.y {
                 let point = Point::new(x, y);

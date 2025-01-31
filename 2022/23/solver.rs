@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
-use fxhash::FxHashSet;
 use itertools::Itertools;
 
 type Dir = (Heading, Heading, Heading);
@@ -16,7 +16,7 @@ const CHECK_ORDER: [Dir; 4] = [
 
 #[derive(Debug, Clone)]
 struct Elves {
-    locations: FxHashSet<Point>,
+    locations: HashSet<Point>,
     round: usize,
 }
 

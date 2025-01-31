@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -24,8 +24,8 @@ struct Group {
     category: Category,
     units: i64,
     hp: i64,
-    weaknesses: FxHashSet<String>,
-    immunities: FxHashSet<String>,
+    weaknesses: HashSet<String>,
+    immunities: HashSet<String>,
     damage: i64,
     damage_type: String,
     initiative: i64,
@@ -97,7 +97,7 @@ impl Battle {
 
     fn assign_targets(&self) -> Vec<(usize, usize)> {
         let mut assignments = Vec::new();
-        let mut targets = FxHashSet::default();
+        let mut targets = HashSet::default();
         for group in self.groups.iter() {
             match self.get_target(group, &targets) {
                 None => (),
@@ -110,7 +110,7 @@ impl Battle {
         assignments
     }
 
-    fn get_target(&self, group: &Group, targets: &FxHashSet<usize>) -> Option<&Group> {
+    fn get_target(&self, group: &Group, targets: &HashSet<usize>) -> Option<&Group> {
         self.get_category(group.category.enemy())
             .into_iter()
             .filter(|target| !targets.contains(&target.id))
@@ -166,7 +166,7 @@ fn part_2() -> Option<i64> {
 
 fn get_battle(boost: i64) -> Battle {
     fn parse_group(id: usize, category: Category, raw: &str, boost: i64) -> Group {
-        let mut traits: FxHashMap<String, FxHashSet<String>> = FxHashMap::default();
+        let mut traits: HashMap<String, HashSet<String>> = HashMap::default();
         if raw.contains('(') && raw.contains(')') {
             let (_, raw_traits) = raw.split_once('(').unwrap();
             let (raw_traits, _) = raw_traits.split_once(')').unwrap();

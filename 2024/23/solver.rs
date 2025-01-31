@@ -1,11 +1,11 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use itertools::Itertools;
 
 #[derive(Debug, Default)]
 struct Graph {
-    edges: FxHashMap<String, FxHashSet<String>>,
+    edges: HashMap<String, HashSet<String>>,
 }
 
 impl Graph {
@@ -19,7 +19,7 @@ impl Graph {
         self.edges.entry(from).or_default().insert(to);
     }
 
-    fn nodes(&self) -> FxHashSet<String> {
+    fn nodes(&self) -> HashSet<String> {
         self.edges.keys().cloned().collect()
     }
 
@@ -27,8 +27,8 @@ impl Graph {
     fn bron_kerbosch(
         &self,
         r: Vec<String>,
-        mut p: FxHashSet<String>,
-        mut x: FxHashSet<String>,
+        mut p: HashSet<String>,
+        mut x: HashSet<String>,
     ) -> Vec<Vec<String>> {
         // if P and X are both empty then
         if p.is_empty() && x.is_empty() {
@@ -83,7 +83,7 @@ fn solution() {
 fn get_cliques(lines: Vec<String>) -> Vec<Vec<String>> {
     let mut graph = Graph::default();
     lines.into_iter().for_each(|line| graph.add(line));
-    graph.bron_kerbosch(Vec::default(), graph.nodes(), FxHashSet::default())
+    graph.bron_kerbosch(Vec::default(), graph.nodes(), HashSet::default())
 }
 
 fn part1(cliques: &[Vec<String>]) -> usize {

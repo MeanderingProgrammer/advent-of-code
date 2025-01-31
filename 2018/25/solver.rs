@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -43,8 +43,8 @@ impl Point {
 
 #[derive(Debug, Default)]
 struct UnionFind {
-    parents: FxHashMap<Point, Point>,
-    ranks: FxHashMap<Point, usize>,
+    parents: HashMap<Point, Point>,
+    ranks: HashMap<Point, usize>,
 }
 
 impl UnionFind {

@@ -1,8 +1,8 @@
 use aoc_lib::answer;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::grid::Grid;
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
 use rayon::prelude::*;
 use std::collections::VecDeque;
 
@@ -38,15 +38,15 @@ enum Status {
 
 #[derive(Debug)]
 struct Game {
-    characters: FxHashMap<Point, Character>,
-    open: FxHashSet<Point>,
+    characters: HashMap<Point, Character>,
+    open: HashSet<Point>,
     no_losses: bool,
 }
 
 impl Game {
     fn new(grid: &Grid<char>, extra: i16, no_losses: bool) -> Self {
         let mut game = Self {
-            characters: FxHashMap::default(),
+            characters: HashMap::default(),
             open: grid.values(&'.').into_iter().collect(),
             no_losses,
         };
@@ -168,10 +168,10 @@ impl Game {
         }
     }
 
-    fn distances(&self, start: &Point) -> FxHashMap<Point, (u16, Point)> {
+    fn distances(&self, start: &Point) -> HashMap<Point, (u16, Point)> {
         let mut queue = VecDeque::default();
         queue.push_back((start.clone(), 0, start.clone()));
-        let mut distances = FxHashMap::default();
+        let mut distances = HashMap::default();
         while !queue.is_empty() {
             let (position, length, parent) = queue.pop_front().unwrap();
             if !distances.contains_key(&position) {

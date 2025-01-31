@@ -1,11 +1,11 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
+use aoc_lib::collections::{HashMap, HashSet};
 use aoc_lib::grid::Grid;
 use aoc_lib::ids::{Base, Ids};
 use aoc_lib::point::{Heading, Point};
 use aoc_lib::reader::Reader;
 use aoc_lib::search::Dijkstra;
-use fxhash::{FxHashMap, FxHashSet};
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
@@ -74,7 +74,7 @@ impl State {
 
 #[derive(Debug)]
 struct Maze {
-    graph: FxHashMap<u8, Vec<Path>>,
+    graph: HashMap<u8, Vec<Path>>,
     keys: usize,
 }
 
@@ -140,7 +140,7 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
 
 fn solve(grid: Grid<Element>) -> u16 {
     let mut ids = Ids::default();
-    let mut graph = FxHashMap::default();
+    let mut graph = HashMap::default();
     grid.iter()
         .filter(|(_, value)| value.is_main())
         .for_each(|(point, _)| {
@@ -165,7 +165,7 @@ fn solve(grid: Grid<Element>) -> u16 {
 fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<Path> {
     let mut queue = VecDeque::new();
     queue.push_back(((start.clone(), BitSet::default()), 0));
-    let mut seen = FxHashSet::default();
+    let mut seen = HashSet::default();
     let mut result = Vec::new();
     while !queue.is_empty() {
         let ((point, need), distance) = queue.pop_front().unwrap();

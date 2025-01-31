@@ -1,4 +1,4 @@
-use fxhash::FxHashMap;
+use crate::collections::HashMap;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -45,7 +45,7 @@ impl FromStr for Instruction {
 
 #[derive(Debug)]
 pub struct Computer {
-    registers: FxHashMap<char, i64>,
+    registers: HashMap<char, i64>,
     outputs: Vec<i64>,
 }
 

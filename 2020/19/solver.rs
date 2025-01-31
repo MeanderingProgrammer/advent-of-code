@@ -1,6 +1,6 @@
 use aoc_lib::answer;
+use aoc_lib::collections::HashMap;
 use aoc_lib::reader::Reader;
-use fxhash::FxHashMap;
 
 #[derive(Debug)]
 enum Rule {
@@ -11,7 +11,7 @@ enum Rule {
 
 #[derive(Debug)]
 struct Rules {
-    rules: FxHashMap<i64, Rule>,
+    rules: HashMap<i64, Rule>,
 }
 
 impl Rules {
@@ -73,7 +73,7 @@ fn total_matches(rules: &Rules, lines: &[String]) -> usize {
 }
 
 fn parse_rules(lines: &[String]) -> Rules {
-    let mut result = FxHashMap::default();
+    let mut result = HashMap::default();
     for line in lines.iter() {
         let (number, rule) = line.split_once(": ").unwrap();
         result.insert(number.parse().unwrap(), parse_rule(rule));
