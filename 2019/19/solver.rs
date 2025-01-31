@@ -81,7 +81,7 @@ fn solution() {
 }
 
 fn affected_points(tester: &mut Tester, size: i64) -> i64 {
-    let mut affected = Vec::new();
+    let mut affected = Vec::default();
     for y in 0..size {
         for x in 0..size {
             affected.push(tester.test(x, y));

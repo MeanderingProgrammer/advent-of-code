@@ -27,7 +27,7 @@ struct DroidState {
 
 impl DroidState {
     fn get_instructions(&mut self, scaffolding: &[Point]) -> Vec<String> {
-        let mut instructions = Vec::new();
+        let mut instructions = Vec::default();
         let mut turn = self.get_turn(scaffolding);
         while turn.is_some() {
             self.direction = match turn.as_ref().unwrap() {

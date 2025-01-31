@@ -20,7 +20,7 @@ impl Password {
     }
 
     fn same_counts(&self) -> Vec<usize> {
-        let mut result = Vec::new();
+        let mut result = Vec::default();
         let mut i = 0;
         while i < self.value.len() {
             let length = self.get_length_of_same(i);

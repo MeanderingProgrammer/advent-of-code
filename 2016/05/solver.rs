@@ -97,7 +97,7 @@ fn update_password(state: &State, mutex: &Mutex<Password>, i: usize) {
 }
 
 fn to_hex(chars: &[u8]) -> String {
-    let mut result = String::new();
+    let mut result = String::default();
     chars
         .iter()
         .for_each(|ch| write!(result, "{:x}", ch).unwrap());

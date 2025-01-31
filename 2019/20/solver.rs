@@ -101,7 +101,7 @@ impl Maze {
     }
 
     fn edges(&self, start: &Point, nodes: &HashMap<Point, Node>) -> Vec<(Node, u16)> {
-        let mut queue = VecDeque::new();
+        let mut queue = VecDeque::default();
         queue.push_back((start.clone(), 0));
         let mut seen = HashSet::default();
         let mut result = Vec::default();

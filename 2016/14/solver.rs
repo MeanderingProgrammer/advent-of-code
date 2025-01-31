@@ -87,7 +87,7 @@ fn solution() {
 fn generate(prefix: &str, n: usize) -> usize {
     let hasher = Hasher::new(prefix.to_string(), n, 1_000);
 
-    let mut hashes = VecDeque::new();
+    let mut hashes = VecDeque::default();
     let mut i = 0;
     while hashes.is_empty() {
         if let Some(hash) = hasher.compute(i) {
@@ -96,7 +96,7 @@ fn generate(prefix: &str, n: usize) -> usize {
         i += 1;
     }
 
-    let mut keys = Vec::new();
+    let mut keys = Vec::default();
     while keys.len() < 64 {
         let hash = hashes.pop_front().unwrap();
         let hash_end = hash.i + 1_000;

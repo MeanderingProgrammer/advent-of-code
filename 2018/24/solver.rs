@@ -96,7 +96,7 @@ impl Battle {
     }
 
     fn assign_targets(&self) -> Vec<(usize, usize)> {
-        let mut assignments = Vec::new();
+        let mut assignments = Vec::default();
         let mut targets = HashSet::default();
         for group in self.groups.iter() {
             match self.get_target(group, &targets) {
@@ -192,7 +192,7 @@ fn get_battle(boost: i64) -> Battle {
         }
     }
 
-    let mut groups = Vec::new();
+    let mut groups = Vec::default();
     let line_groups = Reader::default().read_group_lines();
     for value in line_groups[0].iter().skip(1) {
         groups.push(parse_group(groups.len(), Category::Immune, value, boost));

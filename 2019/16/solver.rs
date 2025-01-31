@@ -17,7 +17,7 @@ impl Transmission {
     }
 
     fn standard(&mut self) {
-        let mut new_digits = Vec::new();
+        let mut new_digits = Vec::default();
         for i in 0..self.digits.len() {
             new_digits.push(self.standard_digit(i));
         }
@@ -37,7 +37,7 @@ impl Transmission {
     fn offset(&mut self) {
         // Going from back to front each digit is the current sum % 10
         // This only applies in the middle of a set of digits and does not hold to the start
-        let mut new_digits = Vec::new();
+        let mut new_digits = Vec::default();
         let mut current_sum = 0;
         for digit in self.digits.iter().rev() {
             current_sum += digit;

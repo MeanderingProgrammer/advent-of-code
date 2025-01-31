@@ -54,7 +54,7 @@ fn solution() {
 
 fn get_cycles(instructions: Vec<Instruction>) -> Vec<i64> {
     let mut current: i64 = 1;
-    let mut cycles: Vec<i64> = Vec::new();
+    let mut cycles: Vec<i64> = Vec::default();
     for instruction in instructions {
         match instruction {
             Instruction::Noop => cycles.push(current),
@@ -69,7 +69,7 @@ fn get_cycles(instructions: Vec<Instruction>) -> Vec<i64> {
 }
 
 fn get_crt(cycles: &[i64], rows: usize, columns: usize) -> Vec<String> {
-    let mut result = Vec::new();
+    let mut result = Vec::default();
     result.push("".to_string());
     for row in 0..rows {
         let pixels: Vec<String> = (0..columns)

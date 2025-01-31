@@ -11,7 +11,7 @@ struct JumpDroid {
 
 impl JumpDroid {
     fn new(actions: Vec<&str>) -> Self {
-        let mut program: Vec<char> = Vec::new();
+        let mut program: Vec<char> = Vec::default();
         actions.into_iter().for_each(|action| {
             program.append(&mut action.chars().collect());
             program.push('\n');

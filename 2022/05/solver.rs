@@ -32,7 +32,7 @@ impl Instruction {
     }
 
     fn apply_multiple(&self, arrangement: &mut HashMap<usize, Vec<char>>) {
-        let mut temp = Vec::new();
+        let mut temp = Vec::default();
         for _ in 0..self.amount {
             let value = arrangement.get_mut(&self.from).unwrap().pop().unwrap();
             temp.push(value);

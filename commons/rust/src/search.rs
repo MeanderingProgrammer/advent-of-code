@@ -23,7 +23,7 @@ pub trait GraphSearch {
     }
 
     fn run(&self, start: Self::T, front: bool) -> Vec<i64> {
-        let mut queue = VecDeque::new();
+        let mut queue = VecDeque::default();
         queue.push_back((start, 0));
         let mut seen = HashSet::default();
         let mut result = Vec::default();

@@ -32,7 +32,7 @@ impl Network {
     }
 
     fn run_until_repeat(&mut self) -> Vec<i64> {
-        let mut history = Vec::new();
+        let mut history = Vec::default();
         loop {
             let packets: Vec<Packet> = self.nodes.iter_mut().flat_map(|node| node.run()).collect();
             packets.iter().for_each(|packet| self.send_packet(packet));
@@ -93,8 +93,8 @@ impl NodeBus {
         Self {
             packets: [id].into(),
             running: true,
-            buffer: Vec::new(),
-            outbound_packets: Vec::new(),
+            buffer: Vec::default(),
+            outbound_packets: Vec::default(),
         }
     }
 

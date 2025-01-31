@@ -33,13 +33,15 @@ struct FileSystem {
     tree: HashMap<usize, Node>,
 }
 
-impl FileSystem {
-    fn new() -> Self {
+impl Default for FileSystem {
+    fn default() -> Self {
         let mut tree = HashMap::default();
         tree.insert(0, Node::default());
         Self { id: 0, tree }
     }
+}
 
+impl FileSystem {
     fn up(&mut self) {
         self.id = self.tree[&self.id].parent.unwrap();
     }
@@ -95,7 +97,7 @@ fn solution() {
 }
 
 fn get_file_system(lines: &[String]) -> FileSystem {
-    let mut fs = FileSystem::new();
+    let mut fs = FileSystem::default();
     lines.iter().for_each(|line| {
         let parts: Vec<&str> = line.split(' ').collect();
         match (parts[0], parts[1]) {

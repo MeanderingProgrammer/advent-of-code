@@ -163,10 +163,10 @@ fn solve(grid: Grid<Element>) -> u16 {
 }
 
 fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<Path> {
-    let mut queue = VecDeque::new();
+    let mut queue = VecDeque::default();
     queue.push_back(((start.clone(), BitSet::default()), 0));
     let mut seen = HashSet::default();
-    let mut result = Vec::new();
+    let mut result = Vec::default();
     while !queue.is_empty() {
         let ((point, need), distance) = queue.pop_front().unwrap();
 

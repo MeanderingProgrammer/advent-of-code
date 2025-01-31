@@ -61,7 +61,7 @@ fn run_simulation(mut particles: Vec<Particle>, cleanup: bool) -> Vec<Particle> 
     for _ in 0..1_000 {
         let mut seen: HashSet<Point3d> = HashSet::default();
         let mut bad_positions: HashSet<Point3d> = HashSet::default();
-        let mut next_particles: Vec<Particle> = Vec::new();
+        let mut next_particles: Vec<Particle> = Vec::default();
         for particle in particles.iter() {
             let next_particle = particle.step();
             if cleanup {

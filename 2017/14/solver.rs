@@ -19,7 +19,7 @@ impl Knot {
             lengths,
             q: (0..256).collect(),
             skip_size: 0,
-            skipped: Vec::new(),
+            skipped: Vec::default(),
         }
     }
 
@@ -30,7 +30,7 @@ impl Knot {
         self.dense_hash()
             .chars()
             .map(|ch| u32::from_str_radix(&ch.to_string(), 16))
-            .fold(String::new(), |mut output, hex_bytes| {
+            .fold(String::default(), |mut output, hex_bytes| {
                 let _ = write!(output, "{:04b}", hex_bytes.unwrap());
                 output
             })
@@ -48,7 +48,7 @@ impl Knot {
 
     fn dense_hash(&self) -> String {
         self.q.iter().collect::<Vec<&usize>>().chunks(16).fold(
-            String::new(),
+            String::default(),
             |mut output, chunk| {
                 let mut hashed = 0;
                 for &value in chunk {
@@ -91,7 +91,7 @@ fn enabled_points(prefix: String) -> Vec<Point> {
 }
 
 fn group_points(points: Vec<Point>) -> usize {
-    let mut groups: Vec<HashSet<Point>> = Vec::new();
+    let mut groups: Vec<HashSet<Point>> = Vec::default();
     for point in points.into_iter() {
         let adjacent: HashSet<Point> = point.neighbors().into_iter().collect();
         let mut new_group: HashSet<Point> = [point].into_iter().collect();

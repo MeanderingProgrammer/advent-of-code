@@ -30,7 +30,7 @@ impl Race {
     }
 
     fn solve(&mut self) {
-        let mut queue = VecDeque::new();
+        let mut queue = VecDeque::default();
         queue.push_back((self.finish.clone(), 0));
         while !queue.is_empty() {
             let (current, distance) = queue.pop_front().unwrap();

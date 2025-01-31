@@ -15,7 +15,7 @@ impl Game {
     }
 
     fn play_round(&mut self) {
-        let mut next_value: Vec<u8> = Vec::new();
+        let mut next_value: Vec<u8> = Vec::default();
         for i in 0..self.value.len() {
             if i > 0 && self.value[i] == self.value[i - 1] {
                 let last_index = next_value.len() - 1;

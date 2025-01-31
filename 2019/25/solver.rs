@@ -126,7 +126,7 @@ struct DroidBus {
 impl DroidBus {
     fn explored(&mut self) -> bool {
         let view = View::from_str(&self.instruction).unwrap();
-        self.instruction = String::new();
+        self.instruction = String::default();
 
         let location = view.name;
         match &self.previous {

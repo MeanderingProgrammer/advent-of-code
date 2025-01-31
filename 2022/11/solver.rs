@@ -127,7 +127,7 @@ fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
         for m in 0..monkeys.len() {
             let monkey = &mut monkeys[m];
 
-            let mut movements: Vec<ItemMove> = Vec::new();
+            let mut movements: Vec<ItemMove> = Vec::default();
             while !monkey.items.is_empty() {
                 let mut item = monkey.items.remove(0);
                 item = monkey.apply_operation(item);
