@@ -1,9 +1,10 @@
 use aoc_lib::answer;
+use aoc_lib::bit_set::BitSet;
 use aoc_lib::grid::Grid;
 use aoc_lib::ids::Ids;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
-use fxhash::{FxHashMap, FxHashSet};
+use fxhash::FxHashMap;
 use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq)]
@@ -136,27 +137,23 @@ impl Compress {
 
 #[derive(Debug)]
 struct State {
-    seen: FxHashSet<u8>,
+    seen: BitSet,
     last: u8,
     length: usize,
 }
 
 impl State {
     fn new(start: u8) -> Self {
-        let mut seen = FxHashSet::default();
-        seen.insert(start);
         Self {
-            seen,
+            seen: [start].into(),
             last: start,
             length: 0,
         }
     }
 
     fn add(&self, edge: &Edge) -> Self {
-        let mut seen = self.seen.clone();
-        seen.insert(edge.id);
         Self {
-            seen,
+            seen: self.seen.with_extend([edge.id]),
             last: edge.id,
             length: self.length + edge.length,
         }
@@ -175,15 +172,14 @@ impl Search {
         let mut result: usize = 0;
         let mut q: VecDeque<State> = VecDeque::default();
         q.push_back(State::new(self.start));
-        while !q.is_empty() {
-            let state = q.pop_back().unwrap();
+        while let Some(state) = q.pop_back() {
             if state.last == self.target {
                 result = result.max(state.length);
             } else {
                 self.graph[&state.last]
                     .iter()
                     .filter(|edge| !slippery || !edge.uphill)
-                    .filter(|edge| !state.seen.contains(&edge.id))
+                    .filter(|edge| !state.seen.contains(edge.id))
                     .for_each(|edge| q.push_back(state.add(edge)));
             }
         }
