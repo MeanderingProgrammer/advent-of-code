@@ -153,7 +153,7 @@ impl State {
 
     fn add(&self, edge: &Edge) -> Self {
         Self {
-            seen: self.seen.with_extend([edge.id]),
+            seen: self.seen.extend([edge.id]),
             last: edge.id,
             length: self.length + edge.length,
         }

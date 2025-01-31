@@ -5,7 +5,7 @@ pub struct BitSet {
 
 impl<const N: usize> From<[u8; N]> for BitSet {
     fn from(values: [u8; N]) -> Self {
-        BitSet::default().with_extend(values)
+        BitSet::default().extend(values)
     }
 }
 
@@ -14,13 +14,9 @@ impl BitSet {
         self.values |= 1 << value;
     }
 
-    pub fn extend<const N: usize>(&mut self, values: [u8; N]) {
-        values.into_iter().for_each(|value| self.add(value));
-    }
-
-    pub fn with_extend<const N: usize>(&self, values: [u8; N]) -> Self {
+    pub fn extend<const N: usize>(&self, values: [u8; N]) -> Self {
         let mut result = self.clone();
-        result.extend(values);
+        values.into_iter().for_each(|value| result.add(value));
         result
     }
 

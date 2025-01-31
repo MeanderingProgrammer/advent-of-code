@@ -40,137 +40,136 @@ impl Valve {
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct IndividualState {
+struct Individual {
     location: u8,
-    time_left: u16,
+    time: u8,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
-struct FullState {
-    individuals: Vec<IndividualState>,
+struct FullState<const N: usize> {
+    individuals: [Individual; N],
     opened: BitSet,
 }
 
-impl FullState {
-    fn new(time: u16, individuals: usize) -> Self {
+impl<const N: usize> FullState<N> {
+    fn new(time: u8) -> Self {
         Self {
-            individuals: vec![
-                IndividualState {
-                    location: 0,
-                    time_left: time,
-                };
-                individuals
-            ],
+            individuals: std::array::from_fn(|_| Individual { location: 0, time }),
             opened: BitSet::default(),
         }
     }
-}
 
-/// Valves are represented using u8s rather than strings
-#[derive(Debug)]
-struct Cave {
-    /// Mapping from each valve to each reachable valve and the time it takes to reach it
-    graph: FxHashMap<u8, Vec<(u8, u16)>>,
-    /// Mapping from each valve to its flow rate
-    valve_flow: FxHashMap<u8, u16>,
-}
-
-impl Cave {
-    fn traverse(&self, time: u16, individuals: usize) -> u16 {
-        let mut queue = PriorityQueue::new(HeapKind::Max);
-        queue.push(FullState::new(time, individuals), 0);
-        let mut max_score: u16 = 0;
-        while !queue.is_empty() {
-            let (state, score) = queue.pop().unwrap();
-            if score + self.max_score(&state, 3) < max_score {
-                continue;
-            }
-            max_score = max_score.max(score);
-            let next_states = match individuals {
-                1 => self.next_options(&state, score, 0),
-                2 => {
-                    let states_1 = self.next_options(&state, score, 0);
-                    let states_2 = self.next_options(&state, score, 1);
-                    if states_1.is_empty() {
-                        states_2
-                    } else if states_2.is_empty() {
-                        states_1
-                    } else {
-                        let mut result = vec![];
-                        for (next_state, next_score) in states_1.into_iter() {
-                            let mut followup_states = self.next_options(&next_state, next_score, 1);
-                            if followup_states.is_empty() {
-                                result.push((next_state, next_score));
-                            } else {
-                                result.append(&mut followup_states);
-                            }
-                        }
-                        result
-                    }
-                }
-                _ => unreachable!(),
-            };
-            for (next_state, next_score) in next_states {
-                queue.push(next_state, next_score);
-            }
+    fn next(&self, cave: &Cave) -> Vec<(Self, u16)> {
+        match N {
+            1 => self.next_1(cave),
+            2 => self.next_2(cave),
+            _ => unreachable!(),
         }
-        max_score
     }
 
-    fn next_options(&self, state: &FullState, score: u16, i: usize) -> Vec<(FullState, u16)> {
-        let individual = &state.individuals[i];
-        self.graph[&individual.location]
+    fn next_1(&self, cave: &Cave) -> Vec<(Self, u16)> {
+        self.individual(cave, 0)
+    }
+
+    fn next_2(&self, cave: &Cave) -> Vec<(Self, u16)> {
+        let states = self.individual(cave, 0);
+        if states.is_empty() {
+            self.individual(cave, 1)
+        } else {
+            let mut result = Vec::default();
+            for (state, score) in states {
+                let states_2 = state.individual(cave, 1);
+                if states_2.is_empty() {
+                    result.push((state, score));
+                } else {
+                    for (state_2, score_2) in states_2 {
+                        result.push((state_2, score + score_2));
+                    }
+                }
+            }
+            result
+        }
+    }
+
+    fn individual(&self, cave: &Cave, i: usize) -> Vec<(Self, u16)> {
+        let individual = &self.individuals[i];
+        cave.graph[&individual.location]
             .iter()
-            .filter(|(_, time)| individual.time_left > *time)
-            .filter(|(destination, _)| !state.opened.contains(*destination))
+            .filter(|(_, time)| individual.time > *time)
+            .filter(|(destination, _)| !self.opened.contains(*destination))
             .map(|(destination, time)| {
-                let time_left = individual.time_left - time - 1;
-                let mut individuals = state.individuals.clone();
-                individuals[i] = IndividualState {
-                    location: *destination,
-                    time_left,
-                };
-                let mut opened = state.opened.clone();
-                opened.add(*destination);
-                let next_state = FullState {
-                    individuals,
-                    opened,
-                };
-                let next_score = score + (self.valve_flow[destination] * time_left);
-                (next_state, next_score)
+                let time = individual.time - time - 1;
+                let state = self.apply(i, *destination, time);
+                let score = cave.flows[destination] * time as u16;
+                (state, score)
             })
             .collect()
     }
 
-    fn max_score(&self, state: &FullState, move_time: u16) -> u16 {
-        let mut highest_values = self
-            .valve_flow
-            .iter()
-            .filter(|(name, _)| !state.opened.contains(**name))
-            .map(|(_, &flow_rate)| flow_rate)
-            .sorted()
-            .rev()
-            .peekable();
+    fn apply(&self, i: usize, location: u8, time: u8) -> Self {
+        let mut individuals = self.individuals.clone();
+        individuals[i] = Individual { location, time };
+        Self {
+            individuals,
+            opened: self.opened.extend([location]),
+        }
+    }
 
-        let mut times_left: Vec<u16> = state
+    fn possible(&self, cave: &Cave, takes: u8) -> u16 {
+        let flows = cave
+            .flows
+            .iter()
+            .filter(|(name, _)| !self.opened.contains(**name))
+            .map(|(_, flow)| flow)
+            .sorted()
+            .rev();
+
+        let mut times: Vec<u8> = self
             .individuals
             .iter()
-            .map(|individual| individual.time_left)
+            .map(|individual| individual.time)
             .collect();
 
-        let mut additional_score = 0;
-        while times_left.iter().max().unwrap() > &move_time && highest_values.peek().is_some() {
-            let index_of_max = times_left
+        let mut result = 0;
+        for flow in flows {
+            let (index, _) = times
                 .iter()
                 .enumerate()
                 .max_by(|(_, a), (_, b)| a.cmp(b))
-                .map(|(index, _)| index)
                 .unwrap();
-
-            times_left[index_of_max] -= move_time;
-            additional_score += times_left[index_of_max] * highest_values.next().unwrap();
+            if times[index] <= takes {
+                break;
+            }
+            times[index] -= takes;
+            result += times[index] as u16 * flow;
         }
-        additional_score
+        result
+    }
+}
+
+#[derive(Debug)]
+struct Cave {
+    // Mapping from valve to each reachable valve and the time it takes to reach it
+    graph: FxHashMap<u8, Vec<(u8, u8)>>,
+    // Mapping from each valve to its flow rate
+    flows: FxHashMap<u8, u16>,
+}
+
+impl Cave {
+    fn traverse<const N: usize>(&self, time: u8) -> u16 {
+        let mut queue = PriorityQueue::new(HeapKind::Max);
+        queue.push(FullState::<N>::new(time), 0);
+        let mut max_score: u16 = 0;
+        while let Some((state, score)) = queue.pop() {
+            if score + state.possible(self, 3) > max_score {
+                max_score = max_score.max(score);
+                let next_states = state.next(self);
+                for (next_state, next_score) in next_states {
+                    queue.push(next_state, score + next_score);
+                }
+            }
+        }
+        max_score
     }
 }
 
@@ -181,8 +180,8 @@ fn main() {
 fn solution() {
     let valves = Reader::default().read_from_str();
     let cave = create_cave(valves, Valve::index("AA"));
-    answer::part1(1873, cave.traverse(30, 1));
-    answer::part2(2425, cave.traverse(26, 2));
+    answer::part1(1873, cave.traverse::<1>(30));
+    answer::part2(2425, cave.traverse::<2>(26));
 }
 
 fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
@@ -195,14 +194,14 @@ fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
         .sorted()
         .collect();
 
-    let valve_flow: FxHashMap<u8, u16> = valves
+    let flows: FxHashMap<u8, u16> = valves
         .iter()
         .map(|valve| (valve, ordered.iter().position(|v| v == &valve.name)))
         .filter(|(_, index)| index.is_some())
         .map(|(valve, index)| (index.unwrap() as u8, valve.flow_rate))
         .collect();
 
-    let mut graph: FxHashMap<u8, Vec<(u8, u16)>> = FxHashMap::default();
+    let mut graph: FxHashMap<u8, Vec<(u8, u8)>> = FxHashMap::default();
     (0..ordered.len())
         .flat_map(|v1| (1..ordered.len()).map(move |v2| (v1, v2)))
         .filter(|(v1, v2)| v1 != v2)
@@ -211,14 +210,14 @@ fn create_cave(valves: Vec<Valve>, start: u32) -> Cave {
             graph.entry(v1 as u8).or_default().push((v2 as u8, *weight));
         });
 
-    Cave { graph, valve_flow }
+    Cave { graph, flows }
 }
 
-fn floyd_warshall(valves: &[Valve]) -> FxHashMap<(u32, u32), u16> {
+fn floyd_warshall(valves: &[Valve]) -> FxHashMap<(u32, u32), u8> {
     let mut dist = FxHashMap::default();
     for v1 in valves.iter() {
         for v2 in valves.iter() {
-            dist.insert((v1.name, v2.name), u16::MAX);
+            dist.insert((v1.name, v2.name), u8::MAX);
         }
     }
     for v in valves.iter() {

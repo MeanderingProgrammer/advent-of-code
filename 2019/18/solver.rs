@@ -94,8 +94,7 @@ impl Dijkstra for Maze {
                 .map(move |path| {
                     let mut points = node.points.clone();
                     points[i] = path.point;
-                    let mut keys = node.keys.clone();
-                    keys.add(path.key);
+                    let keys = node.keys.extend([path.key]);
                     (State { points, keys }, path.distance)
                 })
         })
@@ -190,11 +189,7 @@ fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<P
         for adjacent in point.neighbors() {
             if !seen.contains(&adjacent) {
                 let next = match grid.get(&adjacent) {
-                    Some(Element::Door(key)) => {
-                        let mut need = need.clone();
-                        need.add(*key);
-                        Some(need)
-                    }
+                    Some(Element::Door(key)) => Some(need.extend([*key])),
                     Some(_) => Some(need.clone()),
                     None => None,
                 };
