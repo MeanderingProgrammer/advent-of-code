@@ -224,7 +224,7 @@ impl VacuumDroid {
         }
     }
 
-    fn dust_collect(&self) -> i64 {
+    fn dust_collect(&self) -> i32 {
         self.scaffolding
             .iter()
             .filter(|point| self.is_intersection(point))

@@ -7,36 +7,36 @@ use std::str::FromStr;
 
 #[derive(Debug)]
 struct Line {
-    m: i64,
-    b: i64,
+    m: i32,
+    b: i32,
 }
 
 impl Line {
-    fn new(m: i64, b: i64) -> Self {
+    fn new(m: i32, b: i32) -> Self {
         Self { m, b }
     }
 
-    fn x(&self, y: i64) -> i64 {
+    fn x(&self, y: i32) -> i32 {
         (y - self.b) / self.m
     }
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
 struct Range {
-    min: i64,
-    max: i64,
+    min: i32,
+    max: i32,
 }
 
 impl Range {
-    fn new(min: i64, max: i64) -> Self {
+    fn new(min: i32, max: i32) -> Self {
         Self { min, max }
     }
 
-    fn contains(&self, value: i64) -> bool {
+    fn contains(&self, value: i32) -> bool {
         value >= self.min && value <= self.max
     }
 
-    fn len(&self) -> i64 {
+    fn len(&self) -> i32 {
         self.max - self.min
     }
 
@@ -62,7 +62,7 @@ impl FromStr for CoverageZone {
             let (x, y) = point.split_once(", ").unwrap();
             let (_, x) = x.split_once('=').unwrap();
             let (_, y) = y.split_once('=').unwrap();
-            Point::new(x.parse().unwrap(), y.parse().unwrap())
+            Point::new(x.parse::<i32>().unwrap(), y.parse::<i32>().unwrap())
         }
 
         // Sensor <point>: closest beacon is <point>
@@ -87,7 +87,7 @@ impl FromStr for CoverageZone {
 }
 
 impl CoverageZone {
-    fn overlap(&self, y: i64) -> Option<Range> {
+    fn overlap(&self, y: i32) -> Option<Range> {
         if !self.ys.contains(y) {
             return None;
         }
@@ -114,7 +114,7 @@ fn solution() {
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }
 
-fn covered_range(coverage: &[CoverageZone], y: i64) -> Range {
+fn covered_range(coverage: &[CoverageZone], y: i32) -> Range {
     let overlaps: Vec<Range> = coverage
         .iter()
         .flat_map(|zone| zone.overlap(y))
@@ -129,11 +129,11 @@ fn covered_range(coverage: &[CoverageZone], y: i64) -> Range {
     joined
 }
 
-fn tuning_frequency(coverage: &[CoverageZone], max_value: i64) -> i64 {
+fn tuning_frequency(coverage: &[CoverageZone], max_value: i32) -> i64 {
     (0..=max_value)
         .into_par_iter()
         .map(|y| (covered_range(coverage, y).max + 1, y))
         .find_any(|(x, _)| *x <= max_value)
-        .map(|(x, y)| (x * 4_000_000) + y)
+        .map(|(x, y)| (x as i64 * 4_000_000) + y as i64)
         .unwrap()
 }

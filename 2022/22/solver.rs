@@ -51,15 +51,14 @@ impl Edges {
 #[derive(Debug)]
 struct Cube {
     grid: Grid<Space>,
-    size: i64,
+    size: i32,
 }
 
 impl Cube {
     fn new(grid: Grid<Space>) -> Self {
         let total_spaces = grid.iter().count();
         let spaces_per_face = total_spaces / 6;
-        let size = (spaces_per_face as f64).sqrt() as i64;
-
+        let size = (spaces_per_face as f64).sqrt() as i32;
         Self { grid, size }
     }
 
@@ -125,7 +124,7 @@ impl Turn {
 
 #[derive(Debug)]
 enum Instruction {
-    Move(i64),
+    Move(usize),
     Turn(Turn),
 }
 
@@ -156,7 +155,7 @@ impl FromStr for Block {
 }
 
 impl Block {
-    fn top_left(&self, size: i64) -> Point {
+    fn top_left(&self, size: i32) -> Point {
         // This will differ for different inputs
         let (col, row) = match self {
             Self::A => (1, 0),
@@ -169,7 +168,7 @@ impl Block {
         Point::new(col * size, row * size)
     }
 
-    fn absolute(&self, size: i64, relative: &Point) -> Point {
+    fn absolute(&self, size: i32, relative: &Point) -> Point {
         self.top_left(size).add(relative.clone())
     }
 }
@@ -177,7 +176,7 @@ impl Block {
 #[derive(Debug)]
 struct State {
     block: Block,
-    size: i64,
+    size: i32,
     relative: Point,
     direction: Direction,
 }
@@ -197,7 +196,7 @@ impl State {
         self.relative.add(&self.direction)
     }
 
-    fn score(&self) -> i64 {
+    fn score(&self) -> i32 {
         let position = self.block.absolute(self.size, &self.relative);
         let row_score = (position.y + 1) * 1_000;
         let column_score = (position.x + 1) * 4;
@@ -251,7 +250,7 @@ fn solution() {
     );
 }
 
-fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: FxHashMap<Block, Edges>) -> i64 {
+fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: FxHashMap<Block, Edges>) -> i32 {
     let mut state = State::new(cube);
     for instruction in instructions {
         match instruction {

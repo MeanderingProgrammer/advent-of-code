@@ -7,7 +7,7 @@ use std::collections::HashMap;
 #[derive(Debug)]
 struct Distance {
     infinite: bool,
-    to: Vec<i64>,
+    to: Vec<i32>,
 }
 
 impl Distance {
@@ -26,11 +26,11 @@ impl Distance {
         }
     }
 
-    fn total(&self) -> i64 {
+    fn total(&self) -> i32 {
         self.distances().sum()
     }
 
-    fn distances(&self) -> impl Iterator<Item = i64> + '_ {
+    fn distances(&self) -> impl Iterator<Item = i32> + '_ {
         self.to.iter().copied()
     }
 }
@@ -42,8 +42,7 @@ struct Coordinates {
 
 impl Coordinates {
     fn new(points: Vec<Point>) -> Self {
-        let references: Vec<&Point> = points.iter().collect();
-        let bounds = Bounds::new(&references);
+        let bounds = Bounds::new(&points);
         Self {
             distances: (bounds.lower.x..=bounds.upper.x)
                 .flat_map(|x| (bounds.lower.y..=bounds.upper.y).map(move |y| Point::new(x, y)))
@@ -73,7 +72,7 @@ impl Coordinates {
             .unwrap()
     }
 
-    fn within(&self, max: i64) -> usize {
+    fn within(&self, max: i32) -> usize {
         // Assumes no points outside of min / max boundaries fall within
         // the max allowable distance, this assumption could be checked
         self.distances

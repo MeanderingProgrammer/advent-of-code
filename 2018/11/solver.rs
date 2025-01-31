@@ -5,20 +5,20 @@ use fxhash::FxHashMap;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
 struct FuelCell {
-    x: i64,
-    y: i64,
+    x: i32,
+    y: i32,
 }
 
 impl FuelCell {
-    fn new(x: i64, y: i64) -> Self {
+    fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 
-    fn add(&self, dx: i64, dy: i64) -> Self {
+    fn add(&self, dx: i32, dy: i32) -> Self {
         Self::new(self.x + dx, self.y + dy)
     }
 
-    fn power_level(&self, serial_number: i64) -> i64 {
+    fn power_level(&self, serial_number: i32) -> i32 {
         let rack_id = self.x + 10;
         let initial_power_level = rack_id * self.y;
         let power_level = (initial_power_level + serial_number) * rack_id;
@@ -28,12 +28,12 @@ impl FuelCell {
 
 #[derive(Debug)]
 struct PowerGrid {
-    size: i64,
-    grid: FxHashMap<FuelCell, i64>,
+    size: i32,
+    grid: FxHashMap<FuelCell, i32>,
 }
 
 impl PowerGrid {
-    fn new(serial_number: i64, size: i64) -> Self {
+    fn new(serial_number: i32, size: i32) -> Self {
         let mut grid = FxHashMap::default();
         for x in 1..=size {
             for y in 1..=size {
@@ -59,7 +59,7 @@ impl PowerGrid {
         Point3d::new(result.0, result.1, result.3)
     }
 
-    fn get_largest(&self, size: i64) -> (i64, i64, i64) {
+    fn get_largest(&self, size: i32) -> (i32, i32, i32) {
         let mut result = (0, 0, 0);
         for x in 1..=self.size - size {
             for y in 1..=self.size - size {
@@ -73,7 +73,7 @@ impl PowerGrid {
         result
     }
 
-    fn get_power(&self, fuel_cell: &FuelCell, size: i64) -> i64 {
+    fn get_power(&self, fuel_cell: &FuelCell, size: i32) -> i32 {
         let total = self.get(&fuel_cell.add(size - 1, size - 1));
         let above = self.get(&fuel_cell.add(size - 1, -1));
         let left = self.get(&fuel_cell.add(-1, size - 1));
@@ -81,7 +81,7 @@ impl PowerGrid {
         total - above - left + overlap
     }
 
-    fn get(&self, fuel_cell: &FuelCell) -> i64 {
+    fn get(&self, fuel_cell: &FuelCell) -> i32 {
         *self.grid.get(fuel_cell).unwrap_or(&0)
     }
 }
@@ -91,7 +91,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = Reader::default().read_int();
+    let values: Vec<i32> = Reader::default().read_from_str();
     let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);
     answer::part1(Point::new(243, 43), Point::new(largest_3.0, largest_3.1));

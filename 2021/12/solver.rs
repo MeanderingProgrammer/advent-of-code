@@ -104,7 +104,7 @@ fn get_graph(lines: &[String]) -> FxHashMap<Cave, Vec<Cave>> {
 fn paths(graph: FxHashMap<Cave, Vec<Cave>>, part1: bool) -> usize {
     let valid = if part1 { one_small } else { two_small };
     let search = Search { graph, valid };
-    search.bfs(Path::new(Cave::new("start"))).len()
+    search.dfs(Path::new(Cave::new("start"))).len()
 }
 
 fn one_small(path: &Path, cave: &Cave) -> bool {

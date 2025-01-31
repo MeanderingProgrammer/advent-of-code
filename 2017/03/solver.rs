@@ -5,9 +5,9 @@ use aoc_lib::reader::Reader;
 
 #[derive(Debug)]
 struct Context {
-    grid: Grid<i64>,
+    grid: Grid<i32>,
     point: Point,
-    value: i64,
+    value: i32,
     direction: Direction,
 }
 
@@ -50,12 +50,12 @@ fn main() {
 }
 
 fn solution() {
-    let goal = Reader::default().read_int()[0];
+    let goal: i32 = Reader::default().read_from_str()[0];
     answer::part1(419, compute(goal, true));
     answer::part2(295229, compute(goal, false));
 }
 
-fn compute(goal: i64, part1: bool) -> i64 {
+fn compute(goal: i32, part1: bool) -> i32 {
     let mut context = Context::default();
     while context.value < goal {
         context.next(part1);

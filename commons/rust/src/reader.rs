@@ -8,7 +8,7 @@ struct Cli<'a> {
     file_name: &'a str,
 }
 
-impl<'a> Cli<'a> {
+impl Cli<'_> {
     fn parse() -> Self {
         let test = match env::args().nth(1) {
             None => false,

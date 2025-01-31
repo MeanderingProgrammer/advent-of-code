@@ -1,4 +1,3 @@
-use std::cmp::PartialEq;
 use std::fmt::Debug;
 use std::time::Instant;
 

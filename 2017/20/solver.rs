@@ -37,7 +37,7 @@ impl Particle {
         }
     }
 
-    fn size(&self) -> i64 {
+    fn size(&self) -> i32 {
         self.position.length()
     }
 }

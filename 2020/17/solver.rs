@@ -5,11 +5,11 @@ use fxhash::{FxHashMap, FxHashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Point<const N: usize> {
-    coords: [i64; N],
+    coords: [i32; N],
 }
 
 impl<const N: usize> Point<N> {
-    fn new(x: i64, y: i64) -> Self {
+    fn new(x: i32, y: i32) -> Self {
         let mut coords = [0; N];
         assert!(N >= 2);
         coords[0] = x;

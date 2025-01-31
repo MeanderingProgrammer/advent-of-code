@@ -59,7 +59,7 @@ impl Pod {
         }
     }
 
-    fn cost(&self) -> i64 {
+    fn cost(&self) -> u32 {
         match self {
             Self::A => 1,
             Self::B => 10,
@@ -114,7 +114,7 @@ impl Burrow {
         self.pods.iter().all(|(id, pod)| pod.correct(*id))
     }
 
-    fn neighbors(&self) -> impl Iterator<Item = (Self, i64)> + '_ {
+    fn neighbors(&self) -> impl Iterator<Item = (Self, u32)> + '_ {
         let mut room: Vec<(u8, u8)> = Vec::default();
         let mut hall: Vec<(u8, u8)> = Vec::default();
         self.pods
@@ -239,7 +239,7 @@ impl Burrow {
         }
     }
 
-    fn apply(&self, start: u8, end: u8) -> (Self, i64) {
+    fn apply(&self, start: u8, end: u8) -> (Self, u32) {
         let mut burrow = self.clone();
         let pod = burrow.pods.remove(&start).unwrap();
         let cost = pod.cost();
@@ -251,7 +251,7 @@ impl Burrow {
         let (y1, y2) = (Pod::y(start) as i64, Pod::y(end) as i64);
         let distance = (x1 - x2).abs() + y1 + y2;
         burrow.pods.insert(end, pod);
-        (burrow, cost * distance)
+        (burrow, cost * distance as u32)
     }
 }
 
@@ -260,7 +260,7 @@ struct Search {}
 
 impl Dijkstra for Search {
     type T = Burrow;
-    type W = i64;
+    type W = u32;
 
     fn done(&self, node: &Self::T) -> bool {
         node.done()
@@ -281,7 +281,7 @@ fn solution() {
     answer::part2(50132, solve(lines.clone(), true));
 }
 
-fn solve(lines: Vec<String>, extend: bool) -> i64 {
+fn solve(lines: Vec<String>, extend: bool) -> u32 {
     let lines = process_lines(lines, extend);
     let burrow = Burrow::new(&lines);
     Search {}.run(burrow).unwrap()

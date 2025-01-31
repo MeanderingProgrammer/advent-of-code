@@ -8,8 +8,8 @@ use std::str::FromStr;
 struct Claim {
     id: usize,
     point: Point,
-    width: i64,
-    height: i64,
+    width: i32,
+    height: i32,
 }
 
 impl FromStr for Claim {

@@ -9,7 +9,7 @@ use std::collections::VecDeque;
 struct Garden {
     start: Point,
     walls: FxHashSet<Point>,
-    len: i64,
+    len: i32,
 }
 
 impl Garden {
@@ -21,10 +21,10 @@ impl Garden {
         }
     }
 
-    fn step(&self, n: i64) -> i64 {
+    fn step(&self, n: i32) -> i64 {
         let mut result: FxHashSet<Point> = FxHashSet::default();
         let mut seen: FxHashSet<Point> = FxHashSet::default();
-        let mut q: VecDeque<(Point, i64)> = [(self.start.clone(), n)].into();
+        let mut q: VecDeque<(Point, i32)> = [(self.start.clone(), n)].into();
         while !q.is_empty() {
             let (point, steps) = q.pop_front().unwrap();
             // Any position reached with an even number of steps
@@ -68,7 +68,7 @@ fn solution() {
             garden.step(65 + garden.len),
             garden.step(65 + 2 * garden.len),
         ],
-        (26501365 - 65) / garden.len,
+        (26501365 - 65) / garden.len as i64,
     );
 
     answer::part1(3847, part1);

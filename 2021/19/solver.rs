@@ -67,8 +67,8 @@ impl Scanner {
         });
     }
 
-    fn largest_distance(&self) -> i64 {
-        let mut result: i64 = 0;
+    fn largest_distance(&self) -> i32 {
+        let mut result: i32 = 0;
         for i in 0..self.positions.len() - 1 {
             for j in i + 1..self.positions.len() {
                 let difference = self.positions[i].sub(self.positions[j].clone());

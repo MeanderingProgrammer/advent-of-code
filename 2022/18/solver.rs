@@ -48,15 +48,15 @@ impl Grid {
     }
 
     fn get_bound(&self) -> Bound {
-        fn get_min(values: &[i64]) -> i64 {
+        fn get_min(values: &[i32]) -> i32 {
             values.iter().min().unwrap() - 1
         }
-        fn get_max(values: &[i64]) -> i64 {
+        fn get_max(values: &[i32]) -> i32 {
             values.iter().max().unwrap() + 1
         }
-        let xs: Vec<i64> = self.points.iter().map(|point| point.x).collect();
-        let ys: Vec<i64> = self.points.iter().map(|point| point.y).collect();
-        let zs: Vec<i64> = self.points.iter().map(|point| point.z).collect();
+        let xs: Vec<i32> = self.points.iter().map(|point| point.x).collect();
+        let ys: Vec<i32> = self.points.iter().map(|point| point.y).collect();
+        let zs: Vec<i32> = self.points.iter().map(|point| point.z).collect();
         Bound {
             lower: Point3d::new(get_min(&xs), get_min(&ys), get_min(&zs)),
             upper: Point3d::new(get_max(&xs), get_max(&ys), get_max(&zs)),

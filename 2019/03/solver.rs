@@ -6,7 +6,7 @@ use std::str::FromStr;
 
 #[derive(Debug)]
 struct Path {
-    distances: FxHashMap<Point, i64>,
+    distances: FxHashMap<Point, i32>,
 }
 
 impl FromStr for Path {
@@ -56,9 +56,9 @@ fn solution() {
     );
 }
 
-fn min_value<F>(points: &[Point], f: F) -> i64
+fn min_value<F>(points: &[Point], f: F) -> i32
 where
-    F: FnMut(&Point) -> i64,
+    F: FnMut(&Point) -> i32,
 {
     points.iter().map(f).min().unwrap()
 }

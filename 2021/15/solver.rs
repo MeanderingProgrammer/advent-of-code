@@ -7,12 +7,12 @@ use aoc_lib::search::Dijkstra;
 #[derive(Debug)]
 struct Graph {
     grid: Grid<u8>,
-    tile: i64,
-    total: i64,
+    tile: i32,
+    total: i32,
 }
 
 impl Graph {
-    fn new(grid: &Grid<u8>, expand: i64) -> Self {
+    fn new(grid: &Grid<u8>, expand: i32) -> Self {
         let bounds = grid.bounds();
         assert_eq!(Point::default(), bounds.lower);
         let end = bounds.upper;
@@ -39,7 +39,7 @@ impl Graph {
 
 impl Dijkstra for Graph {
     type T = Point;
-    type W = i64;
+    type W = u16;
 
     fn done(&self, node: &Self::T) -> bool {
         node == &Point::new(self.total - 1, self.total - 1)
@@ -48,7 +48,7 @@ impl Dijkstra for Graph {
     fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.neighbors()
             .into_iter()
-            .filter_map(|point| self.risk(&point).map(|risk| (point, risk as i64)))
+            .filter_map(|point| self.risk(&point).map(|risk| (point, risk as u16)))
     }
 }
 
@@ -62,7 +62,7 @@ fn solution() {
     answer::part2(2979, solve(&grid, 5));
 }
 
-fn solve(grid: &Grid<u8>, expand: i64) -> i64 {
+fn solve(grid: &Grid<u8>, expand: i32) -> u16 {
     let graph = Graph::new(grid, expand);
     graph.run(Point::default()).unwrap()
 }

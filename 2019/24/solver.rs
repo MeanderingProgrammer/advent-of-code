@@ -19,7 +19,7 @@ impl Location {
 struct Layout {
     grid: FxHashSet<Location>,
     recursive: bool,
-    size: i64,
+    size: i32,
     middle: Point,
 }
 

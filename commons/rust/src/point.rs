@@ -122,15 +122,15 @@ impl Heading {
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct Point {
-    pub x: i64,
-    pub y: i64,
+    pub x: i32,
+    pub y: i32,
 }
 
 impl FromStr for Point {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let values: Vec<i64> = s
+        let values: Vec<i32> = s
             .split(',')
             .map(|coord| coord.trim().parse().unwrap())
             .collect();
@@ -161,8 +161,14 @@ impl PartialOrd for Point {
 }
 
 impl Point {
-    pub fn new(x: i64, y: i64) -> Self {
-        Self { x, y }
+    pub fn new<T: TryInto<i32>>(x: T, y: T) -> Self
+    where
+        T::Error: fmt::Debug,
+    {
+        Self {
+            x: x.try_into().unwrap(),
+            y: y.try_into().unwrap(),
+        }
     }
 
     pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
@@ -175,7 +181,11 @@ impl Point {
         Self::new(self.x - rhs.x, self.y - rhs.y)
     }
 
-    pub fn mul(&self, rhs: i64) -> Self {
+    pub fn mul<T: TryInto<i32>>(&self, rhs: T) -> Self
+    where
+        T::Error: fmt::Debug,
+    {
+        let rhs: i32 = rhs.try_into().unwrap();
         Self::new(self.x * rhs, self.y * rhs)
     }
 
@@ -198,11 +208,11 @@ impl Point {
         (sum_squares as f64).sqrt()
     }
 
-    pub fn manhattan_distance(&self, other: &Self) -> i64 {
+    pub fn manhattan_distance(&self, other: &Self) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 
-    pub fn length(&self) -> i64 {
+    pub fn length(&self) -> i32 {
         self.x.abs() + self.y.abs()
     }
 }
@@ -245,16 +255,16 @@ impl Direction3d {
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct Point3d {
-    pub x: i64,
-    pub y: i64,
-    pub z: i64,
+    pub x: i32,
+    pub y: i32,
+    pub z: i32,
 }
 
 impl FromStr for Point3d {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let values: Vec<i64> = s
+        let values: Vec<i32> = s
             .split(',')
             .map(|coord| coord.trim().parse().unwrap())
             .collect();
@@ -273,8 +283,15 @@ impl fmt::Display for Point3d {
 }
 
 impl Point3d {
-    pub fn new(x: i64, y: i64, z: i64) -> Self {
-        Self { x, y, z }
+    pub fn new<T: TryInto<i32>>(x: T, y: T, z: T) -> Self
+    where
+        T::Error: fmt::Debug,
+    {
+        Self {
+            x: x.try_into().unwrap(),
+            y: y.try_into().unwrap(),
+            z: z.try_into().unwrap(),
+        }
     }
 
     pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
@@ -287,7 +304,11 @@ impl Point3d {
         Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 
-    pub fn mul(&self, rhs: i64) -> Self {
+    pub fn mul<T: TryInto<i32>>(&self, rhs: T) -> Self
+    where
+        T::Error: fmt::Debug,
+    {
+        let rhs: i32 = rhs.try_into().unwrap();
         Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 
@@ -298,7 +319,7 @@ impl Point3d {
             .collect()
     }
 
-    pub fn length(&self) -> i64 {
+    pub fn length(&self) -> i32 {
         self.x.abs() + self.y.abs() + self.z.abs()
     }
 }

@@ -22,7 +22,7 @@ impl Axis {
         }
     }
 
-    fn get(&self, p: &Point3d) -> i64 {
+    fn get(&self, p: &Point3d) -> i32 {
         match self {
             Self::X => p.x,
             Self::Y => p.y,

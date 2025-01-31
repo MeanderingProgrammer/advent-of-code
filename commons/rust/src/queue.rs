@@ -7,15 +7,15 @@ use std::hash::Hash;
 struct Item<I, P> {
     item: I,
     priority: P,
-    variant: HeapVariant,
+    kind: HeapKind,
 }
 
 impl<I, P> Item<I, P> {
-    fn new(item: I, priority: P, variant: &HeapVariant) -> Self {
+    fn new(item: I, priority: P, kind: &HeapKind) -> Self {
         Self {
             item,
             priority,
-            variant: variant.clone(),
+            kind: kind.clone(),
         }
     }
 }
@@ -36,22 +36,22 @@ impl<I, P: Ord> PartialOrd for Item<I, P> {
 
 impl<I, P: Ord> Ord for Item<I, P> {
     fn cmp(&self, other: &Self) -> Ordering {
-        match self.variant {
-            HeapVariant::Min => other.priority.cmp(&self.priority),
-            HeapVariant::Max => self.priority.cmp(&other.priority),
+        match self.kind {
+            HeapKind::Min => other.priority.cmp(&self.priority),
+            HeapKind::Max => self.priority.cmp(&other.priority),
         }
     }
 }
 
 #[derive(Debug, Clone)]
-pub enum HeapVariant {
+pub enum HeapKind {
     Max,
     Min,
 }
 
 #[derive(Debug)]
 pub struct PriorityQueue<I, P> {
-    variant: HeapVariant,
+    kind: HeapKind,
     heap: BinaryHeap<Item<I, P>>,
     best: FxHashMap<I, P>,
 }
@@ -61,9 +61,9 @@ where
     I: Clone + Hash + Eq,
     P: Clone + Ord,
 {
-    pub fn new(variant: HeapVariant) -> Self {
+    pub fn new(kind: HeapKind) -> Self {
         Self {
-            variant,
+            kind,
             heap: BinaryHeap::default(),
             best: FxHashMap::default(),
         }
@@ -72,14 +72,14 @@ where
     pub fn push(&mut self, item: I, priority: P) {
         let better = match self.best.get(&item) {
             None => true,
-            Some(current) => match self.variant {
-                HeapVariant::Min => &priority < current,
-                HeapVariant::Max => &priority > current,
+            Some(current) => match self.kind {
+                HeapKind::Min => &priority < current,
+                HeapKind::Max => &priority > current,
             },
         };
         if better {
             self.best.insert(item.clone(), priority.clone());
-            self.heap.push(Item::new(item, priority, &self.variant));
+            self.heap.push(Item::new(item, priority, &self.kind));
         }
     }
 

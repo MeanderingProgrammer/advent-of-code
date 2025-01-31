@@ -43,7 +43,7 @@ impl RockFormation {
 struct SandFlow {
     grid: Grid<char>,
     with_floor: bool,
-    max_height: i64,
+    max_height: i32,
     start: Point,
 }
 

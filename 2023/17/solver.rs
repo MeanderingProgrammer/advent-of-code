@@ -6,50 +6,41 @@ use aoc_lib::search::Dijkstra;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Node {
-    position: Point,
+    point: Point,
     direction: Option<Direction>,
     length: u8,
 }
 
 impl Node {
-    fn get_neighbors(&self, length: u8) -> Vec<(Direction, bool, Vec<Point>)> {
-        // Handle turning directions which must extend out to the specified length
-        // Initially all directions are considered a turn, afterwards it is the
-        // directions which are not straight or backwards
-        let turns = match &self.direction {
-            None => [Direction::Down, Direction::Right],
-            Some(direction) => match direction {
-                Direction::Up | Direction::Down => [Direction::Left, Direction::Right],
-                Direction::Left | Direction::Right => [Direction::Up, Direction::Down],
-            },
-        };
-        let mut neighbors: Vec<(Direction, bool, Vec<Point>)> = turns
-            .into_iter()
-            .map(|turn| {
-                let positions = (1..=length)
-                    .map(|i| {
-                        let point: Point = (&turn).into();
-                        self.position.add(point.mul(i as i64))
-                    })
-                    .collect();
-                (turn, true, positions)
-            })
-            .collect();
-        // Add in the forward direction which does not need to extend to the length
+    fn new(point: Point, direction: Option<Direction>, length: u8) -> Self {
+        Self {
+            point,
+            direction,
+            length,
+        }
+    }
+
+    fn get_neighbors(&self) -> [Option<Direction>; 3] {
         match &self.direction {
-            None => (),
-            Some(direction) => {
-                let position = self.position.add(direction);
-                neighbors.push((direction.clone(), false, vec![position]));
-            }
-        };
-        neighbors
+            // Initially all directions are considered a turn
+            None => [Some(Direction::Down), Some(Direction::Right), None],
+            Some(direction) => [
+                Some(direction.left()),
+                Some(direction.right()),
+                Some(direction.clone()),
+            ],
+        }
+    }
+
+    fn go(&self, direction: &Direction, n: u8) -> Point {
+        let point: Point = direction.into();
+        self.point.add(point.mul(n))
     }
 }
 
 #[derive(Debug)]
 struct Search {
-    grid: Grid<u32>,
+    grid: Grid<u16>,
     target: Point,
     resistance: u8,
     max_repeats: u8,
@@ -57,30 +48,28 @@ struct Search {
 
 impl Dijkstra for Search {
     type T = Node;
-    type W = i64;
+    type W = u16;
 
     fn done(&self, node: &Self::T) -> bool {
-        node.position == self.target
+        node.point == self.target
     }
 
     fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
-        node.get_neighbors(self.resistance)
+        node.get_neighbors()
             .into_iter()
-            .filter(|(_, _, positions)| self.grid.has(positions.last().unwrap()))
-            .filter_map(|(direction, is_turn, positions)| {
-                let mut length = positions.len() as u8;
-                length += if is_turn { 0 } else { node.length };
-                if length <= self.max_repeats {
-                    let next_node = Node {
-                        position: positions.last().unwrap().clone(),
-                        direction: Some(direction),
-                        length,
-                    };
-                    let cost = positions
-                        .iter()
-                        .map(|position| self.grid[position] as i64)
+            .flatten()
+            .filter_map(|direction| {
+                let turn = node.direction != Some(direction.clone());
+                // Turns must be extended out to the resistance
+                let traveled = if turn { self.resistance } else { 1 };
+                let length = traveled + if turn { 0 } else { node.length };
+                let point = node.go(&direction, traveled);
+                if length <= self.max_repeats && self.grid.has(&point) {
+                    let cost = (1..=traveled)
+                        .map(|i| node.go(&direction, i))
+                        .map(|point| self.grid[&point])
                         .sum();
-                    Some((next_node, cost))
+                    Some((Node::new(point, Some(direction), length), cost))
                 } else {
                     None
                 }
@@ -93,23 +82,19 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| ch.to_digit(10));
-    answer::part1(694, min_heat(&grid, 1, 3).unwrap());
-    answer::part2(829, min_heat(&grid, 4, 10).unwrap());
+    let grid = Reader::default().read_grid(|ch| Some(ch.to_digit(10).unwrap() as u16));
+    answer::part1(694, min_heat(&grid, 1, 3));
+    answer::part2(829, min_heat(&grid, 4, 10));
 }
 
-fn min_heat(grid: &Grid<u32>, resistance: u8, max_repeats: u8) -> Option<i64> {
+fn min_heat(grid: &Grid<u16>, resistance: u8, max_repeats: u8) -> u16 {
     let bounds = grid.bounds();
-    let start = Node {
-        position: bounds.lower,
-        direction: None,
-        length: 0,
-    };
+    let start = Node::new(bounds.lower, None, 0);
     let search = Search {
         grid: grid.clone(),
         target: bounds.upper,
         resistance,
         max_repeats,
     };
-    search.run(start)
+    search.run(start).unwrap()
 }

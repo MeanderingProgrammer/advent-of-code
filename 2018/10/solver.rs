@@ -1,5 +1,5 @@
 use aoc_lib::answer;
-use aoc_lib::grid::Grid;
+use aoc_lib::grid::{Bounds, Grid};
 use aoc_lib::point::Point;
 use aoc_lib::reader::Reader;
 use std::str::FromStr;
@@ -30,7 +30,7 @@ impl FromStr for Particle {
 }
 
 impl Particle {
-    fn at(&self, time: i64) -> Point {
+    fn at(&self, time: i32) -> Point {
         self.position.add(self.velocity.mul(time))
     }
 }
@@ -41,7 +41,7 @@ struct Particles {
 }
 
 impl Particles {
-    fn min_area(&self) -> Option<i64> {
+    fn min_area(&self) -> Option<i32> {
         let mut previous = self.area_at(0);
         for time in 1.. {
             let area = self.area_at(time);
@@ -53,23 +53,22 @@ impl Particles {
         None
     }
 
-    fn area_at(&self, time: i64) -> i64 {
+    fn area_at(&self, time: i32) -> i64 {
         let positions = self.at(time);
-        let xs: Vec<i64> = positions.iter().map(|position| position.x).collect();
-        let dx = xs.iter().max().unwrap() - xs.iter().min().unwrap();
-        let ys: Vec<i64> = positions.iter().map(|position| position.y).collect();
-        let dy = ys.iter().max().unwrap() - ys.iter().min().unwrap();
+        let bounds = Bounds::new(&positions);
+        let dx = (bounds.upper.x - bounds.lower.x) as i64;
+        let dy = (bounds.upper.y - bounds.lower.y) as i64;
         dy * dx
     }
 
-    fn at(&self, time: i64) -> Vec<Point> {
+    fn at(&self, time: i32) -> Vec<Point> {
         self.particles
             .iter()
             .map(|particle| particle.at(time))
             .collect()
     }
 
-    fn grid_str(&self, time: i64) -> String {
+    fn grid_str(&self, time: i32) -> String {
         let mut grid: Grid<char> = Grid::default();
         self.at(time).into_iter().for_each(|position| {
             grid.add(position, '#');

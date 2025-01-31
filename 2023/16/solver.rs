@@ -74,8 +74,8 @@ fn energized(grid: &Grid<char>, start: State) -> usize {
         .len()
 }
 
-fn create_states<'a, F: Fn(i64) -> Point + 'a>(
-    coords: &'a [i64],
+fn create_states<'a, F: Fn(i32) -> Point + 'a>(
+    coords: &'a [i32],
     direction: Direction,
     f: F,
 ) -> impl Iterator<Item = State> + 'a {
@@ -94,7 +94,7 @@ fn solution() {
     let part1 = energized(&grid, State::new(Point::default(), Direction::Right));
 
     let side = grid.bounds().upper.x;
-    let coords: Vec<i64> = (0..=side).collect();
+    let coords: Vec<i32> = (0..=side).collect();
     let part2 = create_states(&coords, Direction::Down, |x| Point::new(x, 0))
         .chain(create_states(&coords, Direction::Up, |x| {
             Point::new(x, side)

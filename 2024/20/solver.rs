@@ -53,8 +53,10 @@ impl Race {
     }
 
     fn has_better(&self, point: &Point, distance: usize) -> bool {
-        return self.distances.contains_key(point)
-            && self.distances.get(point).unwrap() < &distance;
+        match self.distances.get(point) {
+            None => false,
+            Some(value) => *value < distance,
+        }
     }
 
     fn cheats(&self, savings: usize, duration: usize) -> usize {
@@ -80,7 +82,7 @@ impl Race {
         let mut result = 0;
         for x in Self::range_start(point.x, duration)..=Self::range_end(point.x, duration) {
             for y in Self::range_start(point.y, duration)..=Self::range_end(point.y, duration) {
-                let option = Point::new(x as i64, y as i64);
+                let option = Point::new(x, y);
                 let distance = point.manhattan_distance(&option) as usize;
                 if distance < 2 || distance > duration {
                     continue;
@@ -101,16 +103,12 @@ impl Race {
         result
     }
 
-    fn range_start(value: i64, offset: usize) -> usize {
+    fn range_start(value: i32, offset: usize) -> usize {
         let v = value as usize;
-        if offset >= v {
-            0
-        } else {
-            v - offset
-        }
+        v.saturating_sub(offset)
     }
 
-    fn range_end(value: i64, offset: usize) -> usize {
+    fn range_end(value: i32, offset: usize) -> usize {
         let v = value as usize;
         v + offset
     }

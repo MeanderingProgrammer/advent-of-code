@@ -1,6 +1,7 @@
 use crate::iter::Iter;
 use crate::point::Point;
 use fxhash::FxHashMap;
+use std::borrow::Borrow;
 use std::cmp::PartialEq;
 use std::fmt;
 use std::ops::Index;
@@ -24,7 +25,7 @@ impl<T> Grid<T> {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
-                let point = Point::new(x as i64, y as i64);
+                let point = Point::new(x, y);
                 if let Some(value) = f(&point, ch) {
                     grid.add(point, value);
                 }
@@ -155,7 +156,8 @@ pub struct Bounds {
 }
 
 impl Bounds {
-    pub fn new(points: &[&Point]) -> Bounds {
+    pub fn new<T: Borrow<Point>>(points: &[T]) -> Bounds {
+        let points: Vec<&Point> = points.iter().map(|point| point.borrow()).collect();
         if points.is_empty() {
             panic!("Can't get the bounds of an empty area");
         }
@@ -170,7 +172,7 @@ impl Bounds {
     pub fn size(&self) -> i64 {
         let width = self.upper.x - self.lower.x + 1;
         let height = self.upper.y - self.lower.y + 1;
-        width * height
+        (width as i64) * (height as i64)
     }
 
     pub fn contain(&self, point: &Point) -> bool {

@@ -40,13 +40,13 @@ struct Platform {
 }
 
 impl Platform {
-    fn run_once(&mut self) -> i64 {
+    fn run_once(&mut self) -> i32 {
         self.move_rocks(&Direction::Up);
         self.total_load()
     }
 
-    fn run_n(&mut self, n: usize) -> i64 {
-        let mut seen: FxHashMap<String, (usize, i64)> = FxHashMap::default();
+    fn run_n(&mut self, n: usize) -> i32 {
+        let mut seen: FxHashMap<String, (usize, i32)> = FxHashMap::default();
         let mut as_string = self.grid.to_string();
         while !seen.contains_key(&as_string) {
             seen.insert(as_string, (seen.len(), self.total_load()));
@@ -58,13 +58,13 @@ impl Platform {
         }
 
         let start = seen.get(&as_string).unwrap().0;
-        let mut pattern: Vec<(usize, i64)> = seen
+        let mut pattern: Vec<(usize, i32)> = seen
             .values()
             .map(|(index, load)| (*index, *load))
             .filter(|(index, _)| *index >= start)
             .collect();
         pattern.sort();
-        let pattern: Vec<i64> = pattern.into_iter().map(|(_, load)| load).collect();
+        let pattern: Vec<i32> = pattern.into_iter().map(|(_, load)| load).collect();
 
         pattern[(n - start) % pattern.len()]
     }
@@ -89,7 +89,7 @@ impl Platform {
         });
     }
 
-    fn total_load(&self) -> i64 {
+    fn total_load(&self) -> i32 {
         let max_y = self.grid.bounds().upper.y + 1;
         self.rocks().into_iter().map(|point| max_y - point.y).sum()
     }

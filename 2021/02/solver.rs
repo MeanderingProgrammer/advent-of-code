@@ -26,7 +26,7 @@ impl FromStr for Direction {
 #[derive(Debug)]
 struct Instruction {
     direction: Direction,
-    amount: i64,
+    amount: i32,
 }
 
 impl FromStr for Instruction {

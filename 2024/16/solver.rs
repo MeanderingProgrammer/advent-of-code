@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::grid::Grid;
 use aoc_lib::point::{Direction, Point};
-use aoc_lib::queue::{HeapVariant, PriorityQueue};
+use aoc_lib::queue::{HeapKind, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::{FxHashMap, FxHashSet};
 
@@ -59,7 +59,7 @@ impl Maze {
         let mut state_seen = FxHashMap::default();
         state_seen.insert(start.clone(), start_seen);
 
-        let mut queue = PriorityQueue::new(HeapVariant::Min);
+        let mut queue = PriorityQueue::new(HeapKind::Min);
         queue.push(start, 0);
 
         while !queue.is_empty() {

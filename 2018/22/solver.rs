@@ -38,7 +38,7 @@ impl Region {
 
 #[derive(Debug)]
 struct Cave {
-    buffer: i64,
+    buffer: i32,
     depth: usize,
     target: Point,
     cave: Grid<Region>,
@@ -106,7 +106,7 @@ impl Node {
 
 impl Dijkstra for Cave {
     type T = Node;
-    type W = i64;
+    type W = u16;
 
     fn done(&self, node: &Self::T) -> bool {
         node == &Node::new(self.target.clone(), Tool::default())

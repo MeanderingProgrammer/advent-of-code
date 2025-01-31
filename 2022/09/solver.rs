@@ -60,7 +60,7 @@ fn adjust_trail(front: &Point, back: &Point) -> Point {
     }
 }
 
-fn get_adjustment(tail_val: i64, head_val: i64) -> i64 {
+fn get_adjustment(tail_val: i32, head_val: i32) -> i32 {
     match tail_val.cmp(&head_val) {
         std::cmp::Ordering::Less => 1,
         std::cmp::Ordering::Equal => 0,

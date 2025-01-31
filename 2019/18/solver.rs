@@ -51,13 +51,25 @@ struct Path {
     point: u8,
     key: u8,
     need: BitSet,
-    distance: i64,
+    distance: u16,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct State {
     points: Vec<u8>,
-    have: BitSet,
+    keys: BitSet,
+}
+
+impl State {
+    fn take(&self, path: &Path) -> bool {
+        if self.keys.contains(path.key) {
+            // Skip keys we already have
+            false
+        } else {
+            // Ensure we have all the keys we need
+            path.need.values().all(|key| self.keys.contains(key))
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -68,28 +80,23 @@ struct Maze {
 
 impl Dijkstra for Maze {
     type T = State;
-    type W = i64;
+    type W = u16;
 
     fn done(&self, node: &Self::T) -> bool {
-        node.have.values().count() == self.keys
+        node.keys.values().count() == self.keys
     }
 
     fn neighbors(&self, node: &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
         node.points.iter().enumerate().flat_map(move |(i, point)| {
             self.graph[point]
                 .iter()
-                .filter(|path| !node.have.contains(path.key))
-                .filter(|path| path.need.values().all(|key| node.have.contains(key)))
+                .filter(|path| node.take(path))
                 .map(move |path| {
-                    let mut next_points = node.points.clone();
-                    next_points[i] = path.point;
-                    let mut next_have = node.have.clone();
-                    next_have.add(path.key);
-                    let next_state = State {
-                        points: next_points,
-                        have: next_have,
-                    };
-                    (next_state, path.distance)
+                    let mut points = node.points.clone();
+                    points[i] = path.point;
+                    let mut keys = node.keys.clone();
+                    keys.add(path.key);
+                    (State { points, keys }, path.distance)
                 })
         })
     }
@@ -132,7 +139,7 @@ fn split(mut grid: Grid<Element>) -> Grid<Element> {
     grid
 }
 
-fn solve(grid: Grid<Element>) -> i64 {
+fn solve(grid: Grid<Element>) -> u16 {
     let mut ids = Ids::default();
     let mut graph = FxHashMap::default();
     grid.iter()
@@ -151,7 +158,7 @@ fn solve(grid: Grid<Element>) -> i64 {
             .filter(|(_, value)| value.is_start())
             .map(|(point, _)| ids.set(point) as u8)
             .collect(),
-        have: BitSet::default(),
+        keys: BitSet::default(),
     };
     maze.run(start).unwrap()
 }
@@ -182,16 +189,17 @@ fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<P
 
         for adjacent in point.neighbors() {
             if !seen.contains(&adjacent) {
-                match grid.get(&adjacent) {
+                let next = match grid.get(&adjacent) {
                     Some(Element::Door(key)) => {
-                        let mut next_need = need.clone();
-                        next_need.add(*key);
-                        queue.push_back(((adjacent, next_need), distance + 1));
+                        let mut need = need.clone();
+                        need.add(*key);
+                        Some(need)
                     }
-                    Some(_) => {
-                        queue.push_back(((adjacent, need.clone()), distance + 1));
-                    }
-                    None => (),
+                    Some(_) => Some(need.clone()),
+                    None => None,
+                };
+                if let Some(next) = next {
+                    queue.push_back(((adjacent, next), distance + 1));
                 }
             }
         }

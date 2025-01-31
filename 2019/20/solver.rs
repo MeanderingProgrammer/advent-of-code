@@ -44,7 +44,7 @@ impl Maze {
         }
     }
 
-    fn graph(&self) -> FxHashMap<Node, Vec<(Node, usize)>> {
+    fn graph(&self) -> FxHashMap<Node, Vec<(Node, u16)>> {
         let mut nodes = self.nodes(true);
         nodes.extend(self.nodes(false));
         let mut result = FxHashMap::default();
@@ -71,9 +71,9 @@ impl Maze {
         for v1 in 0..size {
             for (v2, after, inner) in values {
                 let start = if horizontal {
-                    Point::new(v2 as i64, v1 as i64)
+                    Point::new(v2, v1)
                 } else {
-                    Point::new(v1 as i64, v2 as i64)
+                    Point::new(v1, v2)
                 };
                 if let Some((point, label)) = self.node(start, &direction, after) {
                     result.insert(point, Node::new(&label, inner));
@@ -100,7 +100,7 @@ impl Maze {
         }
     }
 
-    fn edges(&self, start: &Point, nodes: &FxHashMap<Point, Node>) -> Vec<(Node, usize)> {
+    fn edges(&self, start: &Point, nodes: &FxHashMap<Point, Node>) -> Vec<(Node, u16)> {
         let mut queue = VecDeque::new();
         queue.push_back((start.clone(), 0));
         let mut seen = FxHashSet::default();
@@ -155,44 +155,40 @@ impl Node {
 
 #[derive(Debug)]
 struct Graph {
-    graph: FxHashMap<Node, Vec<(Node, usize)>>,
+    graph: FxHashMap<Node, Vec<(Node, u16)>>,
     recursive: bool,
 }
 
 impl Dijkstra for Graph {
     type T = (Node, u8);
-    type W = usize;
+    type W = u16;
 
     fn done(&self, (node, _): &Self::T) -> bool {
         node == &Node::new("ZZ", false)
     }
 
     fn neighbors(&self, (node, level): &Self::T) -> impl Iterator<Item = (Self::T, Self::W)> {
-        self.graph
-            .get(node)
-            .unwrap()
-            .iter()
-            .filter_map(move |(node, length)| {
-                let next = if node.end() {
-                    if *level == 0 {
-                        Some((node.clone(), *level, *length))
-                    } else {
-                        None
-                    }
-                } else if !self.recursive {
-                    Some((node.opposite(), *level, length + 1))
+        self.graph[node].iter().filter_map(move |(node, length)| {
+            let next = if node.end() {
+                if *level == 0 {
+                    Some((node.clone(), *level, *length))
                 } else {
-                    let level = if node.inner {
-                        Some(level + 1)
-                    } else if *level > 0 {
-                        Some(level - 1)
-                    } else {
-                        None
-                    };
-                    level.map(|level| (node.opposite(), level, length + 1))
+                    None
+                }
+            } else if !self.recursive {
+                Some((node.opposite(), *level, length + 1))
+            } else {
+                let level = if node.inner {
+                    Some(level + 1)
+                } else if *level > 0 {
+                    Some(level - 1)
+                } else {
+                    None
                 };
-                next.map(|(node, level, length)| ((node, level), length))
-            })
+                level.map(|level| (node.opposite(), level, length + 1))
+            };
+            next.map(|(node, level, length)| ((node, level), length))
+        })
     }
 }
 
@@ -203,11 +199,12 @@ fn main() {
 fn solution() {
     let lines = Reader::default().read_lines();
     let graph = Maze::new(&lines).graph();
-    answer::part1(628, solve(&graph, false).unwrap());
-    answer::part2(7506, solve(&graph, true).unwrap());
+    answer::part1(628, solve(&graph, false));
+    answer::part2(7506, solve(&graph, true));
 }
 
-fn solve(graph: &FxHashMap<Node, Vec<(Node, usize)>>, recursive: bool) -> Option<usize> {
+fn solve(graph: &FxHashMap<Node, Vec<(Node, u16)>>, recursive: bool) -> u16 {
     let graph = graph.clone();
-    Graph { graph, recursive }.run((Node::new("AA", false), 0))
+    let start = (Node::new("AA", false), 0);
+    Graph { graph, recursive }.run(start).unwrap()
 }

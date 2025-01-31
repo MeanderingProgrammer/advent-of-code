@@ -23,7 +23,7 @@ struct FallingShape {
 }
 
 impl FallingShape {
-    fn new(shape: Shape, height: i64) -> Self {
+    fn new(shape: Shape, height: i32) -> Self {
         let anchor = Point::new(2, height + 4);
         FallingShape { anchor, shape }
     }
@@ -133,7 +133,7 @@ fn simulate<'a>(
     mut shapes: impl Iterator<Item = &'a Shape>,
 ) -> i64 {
     let mut grid: Grid<char> = Grid::default();
-    let mut cache: FxHashMap<String, (i64, i64)> = FxHashMap::default();
+    let mut cache: FxHashMap<String, (i64, i32)> = FxHashMap::default();
 
     let mut additional_height = 0;
     let mut rocks_dropped = 0;
@@ -175,9 +175,9 @@ fn simulate<'a>(
         if let Entry::Vacant(entry) = cache.entry(value.clone()) {
             entry.insert((rocks_dropped, height));
         } else {
-            let (cache_rocks, cache_height): &(i64, i64) = cache.get(&value).unwrap();
-            let (period_length, period_height) =
-                (rocks_dropped - cache_rocks, height - cache_height);
+            let (cache_rocks, cache_height): &(i64, i32) = cache.get(&value).unwrap();
+            let period_length = rocks_dropped - cache_rocks;
+            let period_height = (height - cache_height) as i64;
             let periods_left = (rocks_to_drop - rocks_dropped) / period_length;
 
             // Once we have a cache hit we advance as many full periods as possible
@@ -189,14 +189,14 @@ fn simulate<'a>(
         remove_points_below(&mut grid, height - 50);
     }
 
-    get_height(&grid) + 1 + additional_height
+    get_height(&grid) as i64 + 1 + additional_height
 }
 
-fn get_height(grid: &Grid<char>) -> i64 {
+fn get_height(grid: &Grid<char>) -> i32 {
     grid.iter().map(|(point, _)| point.y).max().unwrap_or(-1)
 }
 
-fn remove_points_below(grid: &mut Grid<char>, threshold: i64) {
+fn remove_points_below(grid: &mut Grid<char>, threshold: i32) {
     let points_to_remove: Vec<Point> = grid
         .iter()
         .filter(|(point, _)| point.y < threshold)

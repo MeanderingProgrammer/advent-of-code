@@ -1,7 +1,7 @@
 use aoc_lib::answer;
 use aoc_lib::bit_set::BitSet;
 use aoc_lib::ids::Base;
-use aoc_lib::queue::{HeapVariant, PriorityQueue};
+use aoc_lib::queue::{HeapKind, PriorityQueue};
 use aoc_lib::reader::Reader;
 use fxhash::FxHashMap;
 use itertools::Itertools;
@@ -77,7 +77,7 @@ struct Cave {
 
 impl Cave {
     fn traverse(&self, time: u16, individuals: usize) -> u16 {
-        let mut queue = PriorityQueue::new(HeapVariant::Max);
+        let mut queue = PriorityQueue::new(HeapKind::Max);
         queue.push(FullState::new(time, individuals), 0);
         let mut max_score: u16 = 0;
         while !queue.is_empty() {

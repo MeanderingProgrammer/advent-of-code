@@ -5,18 +5,18 @@ use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Stats {
-    hp: i64,
-    attack: i64,
-    armor: i64,
+    hp: u16,
+    attack: u16,
+    armor: u16,
 }
 
 impl Stats {
-    fn new(hp: i64, attack: i64, armor: i64) -> Self {
+    fn new(hp: u16, attack: u16, armor: u16) -> Self {
         Self { hp, attack, armor }
     }
 
     fn dead(&self) -> bool {
-        self.hp <= 0
+        self.hp == 0
     }
 
     fn plus(&self, rhs: &Stats) -> Stats {
@@ -29,9 +29,9 @@ impl Stats {
 
     fn minus(&self, rhs: &Stats) -> Stats {
         Stats::new(
-            self.hp - rhs.hp,
-            self.attack - rhs.attack,
-            self.armor - rhs.armor,
+            self.hp.saturating_sub(rhs.hp),
+            self.attack.saturating_sub(rhs.attack),
+            self.armor.saturating_sub(rhs.armor),
         )
     }
 }
@@ -100,7 +100,7 @@ impl Spell {
         ]
     }
 
-    fn cost(&self) -> i64 {
+    fn cost(&self) -> u16 {
         match self {
             Self::MagicMissile => 53,
             Self::Drain => 73,
@@ -175,7 +175,7 @@ struct Game {
 }
 
 impl Game {
-    fn neighbors(&self) -> impl Iterator<Item = (Self, i64)> + '_ {
+    fn neighbors(&self) -> impl Iterator<Item = (Self, u16)> + '_ {
         Spell::values()
             .iter()
             .filter(|spell| self.can_perform(spell))
@@ -234,8 +234,8 @@ impl Game {
 
 #[derive(Debug)]
 struct Settings {
-    hp: i64,
-    attack: i64,
+    hp: u16,
+    attack: u16,
 }
 
 impl Settings {
@@ -246,11 +246,11 @@ impl Settings {
         }
     }
 
-    fn second(s: &str) -> i64 {
+    fn second(s: &str) -> u16 {
         s.split_once(": ").unwrap().1.parse().unwrap()
     }
 
-    fn game(&self, damage: i64) -> Game {
+    fn game(&self, damage: u16) -> Game {
         Game {
             player: Stats::new(50, 500, 0),
             enemy: Stats::new(self.hp, self.attack, 0),
@@ -262,7 +262,7 @@ impl Settings {
 
 impl Dijkstra for Settings {
     type T = Game;
-    type W = i64;
+    type W = u16;
 
     fn done(&self, node: &Self::T) -> bool {
         node.enemy.dead()
