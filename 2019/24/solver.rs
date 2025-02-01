@@ -1,5 +1,6 @@
 use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
+use aoc_lib::collections::HashSet;
+use aoc_lib::iter::Iter;
 use aoc_lib::point::{Direction, Point};
 use aoc_lib::reader::Reader;
 
@@ -34,12 +35,12 @@ impl Layout {
     }
 
     fn step(&mut self) {
-        let mut counts: HashMap<Location, usize> = HashMap::default();
-        self.grid
+        let counts = self
+            .grid
             .iter()
             .flat_map(|location| self.neighbors(location))
             .filter(|neighbor| self.valid(&neighbor.point))
-            .for_each(|neighbor| *counts.entry(neighbor).or_default() += 1);
+            .counts();
 
         self.grid = counts
             .into_iter()

@@ -1,14 +1,15 @@
 use aoc_lib::answer;
 use aoc_lib::collections::HashMap;
 use aoc_lib::int_code::{Bus, Computer};
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
 
 #[derive(Debug, Default)]
 struct Game {
     tile_buffer: Vec<i64>,
-    tile_freq: HashMap<String, i64>,
+    tiles: Vec<String>,
     tile_x: HashMap<String, i64>,
-    score: i64,
+    score: usize,
 }
 
 impl Bus for Game {
@@ -28,7 +29,7 @@ impl Bus for Game {
             let y = self.tile_buffer[1];
             let value = self.tile_buffer[2];
             if x == -1 && y == 0 {
-                self.score = value;
+                self.score = value as usize;
             } else {
                 let name = match value {
                     0 => "empty",
@@ -38,7 +39,7 @@ impl Bus for Game {
                     4 => "ball",
                     _ => panic!("Unknown tile value"),
                 };
-                *self.tile_freq.entry(name.to_string()).or_insert(0) += 1;
+                self.tiles.push(name.to_string());
                 self.tile_x.insert(name.to_string(), x);
             }
             self.tile_buffer.clear();
@@ -56,16 +57,17 @@ fn solution() {
     answer::part2(17159, play_game(&memory, true));
 }
 
-fn play_game(memory: &[i64], play_for_free: bool) -> i64 {
+fn play_game(memory: &[i64], part2: bool) -> usize {
     let mut memory = memory.to_vec();
-    if play_for_free {
+    if part2 {
         memory[0] = 2;
     }
     let mut computer: Computer<Game> = Computer::default(&memory);
     computer.run();
-    if play_for_free {
+    if part2 {
         computer.bus.score
     } else {
-        *computer.bus.tile_freq.get("block").unwrap()
+        let tiles = computer.bus.tiles;
+        *tiles.into_iter().counts().get("block").unwrap()
     }
 }

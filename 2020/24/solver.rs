@@ -56,9 +56,19 @@ impl HexHeading {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct Floor {
     floor: HashMap<Point, bool>,
+    counts: HashMap<bool, Vec<usize>>,
+}
+
+impl Default for Floor {
+    fn default() -> Self {
+        Self {
+            floor: HashMap::default(),
+            counts: HashMap::from_iter([(true, vec![2]), (false, vec![0, 3, 4, 5, 6])]),
+        }
+    }
 }
 
 impl Floor {
@@ -88,10 +98,10 @@ impl Floor {
                 }
             }
         }
+
         for (point, count) in counts.into_iter() {
-            let tile = *self.floor.get(&point).unwrap_or(&true);
-            let flip_counts = if tile { vec![2] } else { vec![0, 3, 4, 5, 6] };
-            if flip_counts.contains(&count) {
+            let tile = self.floor.get(&point).unwrap_or(&true);
+            if self.counts[tile].contains(&count) {
                 self.flip(point);
             }
         }

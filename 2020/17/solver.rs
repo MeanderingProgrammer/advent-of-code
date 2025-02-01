@@ -1,6 +1,7 @@
 use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
+use aoc_lib::collections::HashSet;
 use aoc_lib::grid::Grid;
+use aoc_lib::iter::Iter;
 use aoc_lib::reader::Reader;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -52,12 +53,11 @@ impl<const N: usize> State<N> {
     }
 
     fn step(&self) -> Self {
-        let mut counts: HashMap<Point<N>, usize> = HashMap::default();
-        for point in self.active.iter() {
-            for neighbor in point.neighbors() {
-                *counts.entry(neighbor).or_default() += 1;
-            }
-        }
+        let counts = self
+            .active
+            .iter()
+            .flat_map(|point| point.neighbors())
+            .counts();
         let mut state = Self::default();
         for (point, count) in counts.into_iter() {
             let active = if self.active.contains(&point) {

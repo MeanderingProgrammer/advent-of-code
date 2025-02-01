@@ -4,7 +4,7 @@ use aoc_lib::iter::Iter;
 fn test_combinations() {
     let values = [0, 1, 2, 3, 4];
     assert_eq!(
-        vec![vec![&0], vec![&1], vec![&2], vec![&3], vec![&4],],
+        vec![vec![&0], vec![&1], vec![&2], vec![&3], vec![&4]],
         values.iter().combinations(1).vec()
     );
     assert_eq!(
@@ -18,7 +18,7 @@ fn test_combinations() {
             vec![&1, &4],
             vec![&2, &3],
             vec![&2, &4],
-            vec![&3, &4]
+            vec![&3, &4],
         ],
         values.iter().combinations(2).vec()
     );
