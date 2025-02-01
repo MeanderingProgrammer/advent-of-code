@@ -1,6 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashSet, Reader};
 
 #[derive(Debug)]
 struct PasswordGenerator {

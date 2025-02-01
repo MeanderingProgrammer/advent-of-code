@@ -1,5 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Reader};
 use md5::Context;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;

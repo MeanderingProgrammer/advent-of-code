@@ -1,6 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::point::Point3d;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Point3d, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]

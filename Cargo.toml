@@ -10,11 +10,11 @@ rayon = "1.10.0"
 rustc-hash = "2.1.0"
 
 [lib]
-name = "aoc_lib"
+name = "aoc"
 path = "commons/rust/src/lib.rs"
 
 [[test]]
-name = "aoc_lib"
+name = "aoc"
 path = "commons/rust/tests/lib.rs"
 
 [[bin]]

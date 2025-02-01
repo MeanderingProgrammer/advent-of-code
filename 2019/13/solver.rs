@@ -1,8 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashMap;
-use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::iter::Iter;
-use aoc_lib::reader::Reader;
+use aoc::int_code::{Bus, Computer};
+use aoc::{answer, HashMap, Iter, Reader};
 
 #[derive(Debug, Default)]
 struct Game {

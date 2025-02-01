@@ -1,4 +1,4 @@
-use aoc_lib::reader::Reader;
+use aoc::Reader;
 
 #[test]
 fn test_group_int() {

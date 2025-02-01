@@ -1,9 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::grid::Grid;
-use aoc_lib::iter::Iter;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction, Grid, HashSet, Iter, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

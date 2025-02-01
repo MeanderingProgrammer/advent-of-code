@@ -1,5 +1,4 @@
-use crate::collections::HashSet;
-use crate::queue::{HeapKind, PriorityQueue};
+use crate::{HashSet, HeapKind, PriorityQueue};
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::hash::Hash;

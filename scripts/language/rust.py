@@ -19,7 +19,7 @@ class Rust(Language):
 
     @override
     def test_command(self) -> list[str]:
-        return Rust.cargo("test") + ["--test", "aoc_lib"]
+        return Rust.cargo("test") + ["--test", "aoc"]
 
     @override
     def build_commands(self) -> list[list[str]]:

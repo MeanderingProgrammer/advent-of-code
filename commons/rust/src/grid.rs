@@ -1,6 +1,4 @@
-use crate::collections::HashMap;
-use crate::iter::Iter;
-use crate::point::Point;
+use crate::{HashMap, Iter, Point};
 use std::borrow::Borrow;
 use std::cmp::PartialEq;
 use std::fmt;

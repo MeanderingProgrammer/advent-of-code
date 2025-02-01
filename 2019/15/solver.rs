@@ -1,9 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashMap;
-use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
-use aoc_lib::search::GraphSearch;
+use aoc::int_code::{Bus, Computer};
+use aoc::{answer, Direction, GraphSearch, HashMap, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]

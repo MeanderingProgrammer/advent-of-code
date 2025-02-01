@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::point::Point3d;
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashSet, Point3d, Reader};
 
 #[derive(Debug, Clone)]
 struct Particle {

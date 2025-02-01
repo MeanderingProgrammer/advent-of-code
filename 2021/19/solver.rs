@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::point::Point3d;
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashMap, HashSet, Point3d, Reader};
 use rayon::prelude::*;
 use std::str::FromStr;
 

@@ -1,10 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::bit_set::BitSet;
-use aoc_lib::collections::HashMap;
-use aoc_lib::grid::Grid;
-use aoc_lib::ids::Ids;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, BitSet, Direction, Grid, HashMap, Ids, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq)]

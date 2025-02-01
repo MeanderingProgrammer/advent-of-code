@@ -1,6 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::int_code::{Computer, NoopBus};
-use aoc_lib::reader::Reader;
+use aoc::int_code::{Computer, NoopBus};
+use aoc::{answer, Reader};
 
 fn main() {
     answer::timer(solution);

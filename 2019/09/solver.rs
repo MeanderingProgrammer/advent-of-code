@@ -1,6 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::reader::Reader;
+use aoc::int_code::{Bus, Computer};
+use aoc::{answer, Reader};
 
 #[derive(Debug)]
 struct BoostProgram {

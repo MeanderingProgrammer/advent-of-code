@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::ids::Base;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Base, HashMap, HashSet, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]

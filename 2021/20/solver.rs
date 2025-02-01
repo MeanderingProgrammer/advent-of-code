@@ -1,8 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::grid::{Bounds, Grid};
-use aoc_lib::point::Point;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Bounds, Grid, HashSet, Point, Reader};
 
 #[derive(Debug, Clone)]
 struct Image {

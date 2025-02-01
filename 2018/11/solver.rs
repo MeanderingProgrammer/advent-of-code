@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashMap;
-use aoc_lib::point::{Point, Point3d};
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashMap, Point, Point3d, Reader};
 
 #[derive(Debug, Eq, PartialEq, Hash)]
 struct FuelCell {

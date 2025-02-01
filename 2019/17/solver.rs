@@ -1,7 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::int_code::{Bus, Computer};
+use aoc::{answer, Direction, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug)]

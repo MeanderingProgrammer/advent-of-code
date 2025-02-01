@@ -1,5 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Reader};
 
 fn main() {
     answer::timer(solution);

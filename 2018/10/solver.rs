@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::grid::{Bounds, Grid};
-use aoc_lib::point::Point;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Bounds, Grid, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]

@@ -1,6 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::reader::Reader;
-use aoc_lib::search::Dijkstra;
+use aoc::{answer, Dijkstra, Reader};
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

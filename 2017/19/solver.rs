@@ -1,8 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::grid::Grid;
-use aoc_lib::iter::Iter;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction, Grid, Iter, Point, Reader};
 
 #[derive(Debug)]
 struct Traverser {

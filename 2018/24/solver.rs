@@ -1,6 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashMap, HashSet, Reader};
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]

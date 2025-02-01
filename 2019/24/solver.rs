@@ -1,8 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::iter::Iter;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction, HashSet, Iter, Point, Reader};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Location {

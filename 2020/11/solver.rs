@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::grid::Grid;
-use aoc_lib::point::{Heading, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Grid, Heading, Point, Reader};
 
 #[derive(Debug, Clone, PartialEq)]
 enum Seat {

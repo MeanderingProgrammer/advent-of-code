@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::ids::Base;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Base, HashSet, Reader};
 
 #[derive(Debug, Clone)]
 enum Unit {

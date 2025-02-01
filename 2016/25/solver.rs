@@ -1,6 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::assembunny::{Computer, Instruction, Value};
-use aoc_lib::reader::Reader;
+use aoc::assembunny::{Computer, Instruction, Value};
+use aoc::{answer, Reader};
 
 fn main() {
     answer::timer(solution);

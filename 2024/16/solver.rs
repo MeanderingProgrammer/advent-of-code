@@ -1,9 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::grid::Grid;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::queue::{HeapKind, PriorityQueue};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction, Grid, HashMap, HashSet, HeapKind, Point, PriorityQueue, Reader};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {

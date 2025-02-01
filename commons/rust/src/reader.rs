@@ -1,4 +1,4 @@
-use crate::grid::Grid;
+use crate::Grid;
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};

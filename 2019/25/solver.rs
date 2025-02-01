@@ -1,9 +1,5 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::int_code::{Bus, Computer};
-use aoc_lib::iter::Iter;
-use aoc_lib::point::Direction;
-use aoc_lib::reader::Reader;
+use aoc::int_code::{Bus, Computer};
+use aoc::{answer, Direction, HashMap, HashSet, Iter, Reader};
 use std::collections::VecDeque;
 use std::str::FromStr;
 

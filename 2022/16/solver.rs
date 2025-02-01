@@ -1,10 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::bit_set::BitSet;
-use aoc_lib::collections::HashMap;
-use aoc_lib::ids::Base;
-use aoc_lib::iter::Iter;
-use aoc_lib::queue::{HeapKind, PriorityQueue};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Base, BitSet, HashMap, HeapKind, Iter, PriorityQueue, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]

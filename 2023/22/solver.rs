@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::point::{Direction3d, Point3d};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction3d, HashMap, HashSet, Point3d, Reader};
 
 #[derive(Debug)]
 enum Axis {

@@ -1,4 +1,4 @@
-use aoc_lib::answer;
+use aoc::answer;
 
 #[test]
 fn test_correct() {

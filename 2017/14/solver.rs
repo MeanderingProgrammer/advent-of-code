@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::point::Point;
-use aoc_lib::reader::Reader;
+use aoc::{answer, HashSet, Point, Reader};
 use std::collections::VecDeque;
 use std::fmt::Write;
 

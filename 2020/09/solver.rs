@@ -1,6 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::iter::Iter;
-use aoc_lib::reader::Reader;
+use aoc::{answer, Iter, Reader};
 
 #[derive(Debug)]
 struct Masking {

@@ -1,9 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::{HashMap, HashSet};
-use aoc_lib::grid::Grid;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
-use aoc_lib::search::Dijkstra;
+use aoc::{answer, Dijkstra, Direction, Grid, HashMap, HashSet, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug)]

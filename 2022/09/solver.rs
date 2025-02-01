@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashSet;
-use aoc_lib::point::{Direction, Point};
-use aoc_lib::reader::Reader;
+use aoc::{answer, Direction, HashSet, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]

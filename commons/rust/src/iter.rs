@@ -1,4 +1,4 @@
-use crate::collections::{HashMap, HashSet};
+use crate::{HashMap, HashSet};
 use std::fmt::{Display, Write};
 use std::hash::Hash;
 

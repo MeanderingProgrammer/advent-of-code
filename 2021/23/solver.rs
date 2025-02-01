@@ -1,7 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::grid::Grid;
-use aoc_lib::reader::Reader;
-use aoc_lib::search::Dijkstra;
+use aoc::{answer, Dijkstra, Grid, Reader};
 use std::collections::BTreeMap;
 use std::ops::Range;
 

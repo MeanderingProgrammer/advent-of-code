@@ -1,8 +1,4 @@
-use aoc_lib::answer;
-use aoc_lib::collections::HashMap;
-use aoc_lib::ids::Base;
-use aoc_lib::reader::Reader;
-use aoc_lib::search::GraphSearch;
+use aoc::{answer, Base, GraphSearch, HashMap, Reader};
 
 const START: u32 = 0;
 const END: u32 = 1;
