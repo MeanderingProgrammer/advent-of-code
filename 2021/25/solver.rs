@@ -1,4 +1,4 @@
-use aoc::{answer, Grid, HashSet, Point, Reader};
+use aoc::{answer, FromChar, Grid, HashSet, Point, Reader};
 
 #[derive(Debug)]
 enum Cucumber {
@@ -6,21 +6,21 @@ enum Cucumber {
     South,
 }
 
+impl FromChar for Cucumber {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '>' => Some(Self::East),
+            'v' => Some(Self::South),
+            _ => None,
+        }
+    }
+}
+
 impl From<&Cucumber> for Point {
     fn from(value: &Cucumber) -> Self {
         match value {
             Cucumber::South => Self::new(0, 1),
             Cucumber::East => Self::new(1, 0),
-        }
-    }
-}
-
-impl Cucumber {
-    fn from_char(ch: char) -> Option<Cucumber> {
-        match ch {
-            '>' => Some(Self::East),
-            'v' => Some(Self::South),
-            _ => None,
         }
     }
 }
@@ -95,7 +95,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Cucumber::from_char);
+    let grid = Reader::default().read_grid();
     let mut seafloor = Seafloor::new(grid);
     answer::part1(492, seafloor.converge());
 }

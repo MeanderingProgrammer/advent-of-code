@@ -29,10 +29,10 @@ impl Maze {
     //   ###########.#####
     //              Z
     //              Z
-    fn new(lines: &[String]) -> Self {
+    fn new(lines: &Vec<String>) -> Self {
         let middle = &lines[lines.len() / 2];
         Self {
-            grid: Grid::from_lines(lines, |_, ch| Some(ch)),
+            grid: lines.into(),
             width: middle.len(),
             height: lines.len(),
             size: middle.chars().filter(|ch| ['#', '.'].contains(ch)).count() / 2,

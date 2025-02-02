@@ -1,4 +1,4 @@
-use aoc::{answer, Base, GraphSearch, HashMap, Reader};
+use aoc::{answer, Convert, GraphSearch, HashMap, Reader};
 
 const START: u32 = 0;
 const END: u32 = 1;
@@ -18,7 +18,7 @@ impl Cave {
             } else if s == "end" {
                 END
             } else {
-                Base::str_insensitive(s)
+                Convert::idx_lower_str(s)
             },
         }
     }

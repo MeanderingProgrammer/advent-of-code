@@ -1,3 +1,4 @@
+use crate::FromChar;
 use std::cmp::Ordering;
 use std::fmt;
 use std::str::FromStr;
@@ -24,6 +25,18 @@ impl FromStr for Direction {
     }
 }
 
+impl FromChar for Direction {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '^' => Some(Self::Up),
+            'v' => Some(Self::Down),
+            '<' => Some(Self::Left),
+            '>' => Some(Self::Right),
+            _ => None,
+        }
+    }
+}
+
 impl From<&Direction> for Point {
     fn from(value: &Direction) -> Self {
         match value {
@@ -36,16 +49,6 @@ impl From<&Direction> for Point {
 }
 
 impl Direction {
-    pub fn from_char(ch: char) -> Option<Self> {
-        match ch {
-            '^' => Some(Self::Up),
-            'v' => Some(Self::Down),
-            '<' => Some(Self::Left),
-            '>' => Some(Self::Right),
-            _ => None,
-        }
-    }
-
     pub fn values() -> &'static [Self] {
         &[Self::Up, Self::Left, Self::Right, Self::Down]
     }

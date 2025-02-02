@@ -1,4 +1,4 @@
-use crate::Grid;
+use crate::{FromChar, Grid};
 use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -70,8 +70,8 @@ impl Reader {
             .collect()
     }
 
-    pub fn read_grid<T>(&self, f: fn(char) -> Option<T>) -> Grid<T> {
-        Grid::from_lines(&self.read_lines(), |_, ch| f(ch))
+    pub fn read_grid<T: FromChar>(&self) -> Grid<T> {
+        (&self.read_lines()).into()
     }
 
     pub fn read_int(&self) -> Vec<i64> {

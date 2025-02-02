@@ -1,4 +1,4 @@
-use aoc::{answer, Base, HashSet, Reader};
+use aoc::{answer, Convert, HashSet, Reader};
 
 #[derive(Debug, Clone)]
 enum Unit {
@@ -9,8 +9,8 @@ enum Unit {
 impl Unit {
     fn new(ch: char) -> Self {
         match ch.is_ascii_uppercase() {
-            true => Self::Upper(Base::ch_upper(ch)),
-            false => Self::Lower(Base::ch_lower(ch)),
+            true => Self::Upper(Convert::idx_upper(ch)),
+            false => Self::Lower(Convert::idx_lower(ch)),
         }
     }
 

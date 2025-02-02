@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Reader};
+use aoc::{answer, FromChar, HashMap, Reader};
 
 type Point = (i16, i16);
 
@@ -10,7 +10,7 @@ enum State {
     Infected,
 }
 
-impl State {
+impl FromChar for State {
     fn from_char(ch: char) -> Option<Self> {
         match ch {
             '.' => Some(Self::Clean),
@@ -18,7 +18,9 @@ impl State {
             _ => None,
         }
     }
+}
 
+impl State {
     fn rotations(&self) -> usize {
         match self {
             Self::Weakened => 0,

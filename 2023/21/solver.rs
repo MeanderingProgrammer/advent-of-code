@@ -51,7 +51,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Some);
+    let grid = Reader::default().read_grid();
     let garden = Garden::new(grid);
 
     let part1 = garden.step(64);

@@ -1,5 +1,6 @@
 mod bit_set;
 mod collections;
+mod convert;
 mod grid;
 mod ids;
 mod iter;
@@ -16,8 +17,9 @@ pub mod math;
 
 pub use bit_set::BitSet;
 pub use collections::{HashMap, HashSet};
+pub use convert::{Convert, FromChar};
 pub use grid::{Bounds, Grid};
-pub use ids::{Base, Ids};
+pub use ids::Ids;
 pub use iter::Iter;
 pub use md5::Md5;
 pub use point::{Direction, Direction3d, Heading, Point, Point3d};

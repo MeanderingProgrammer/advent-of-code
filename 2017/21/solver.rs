@@ -123,7 +123,7 @@ fn get_patterns(lines: &[String]) -> Patterns {
         let (input, output) = line.split_once(" => ").unwrap();
         let input: Vec<String> = input.split("/").map(|row| row.to_string()).collect();
         let output: Vec<String> = output.split("/").map(|row| row.to_string()).collect();
-        let mut grid = Grid::from_lines(&input, |_, ch| Some(ch));
+        let mut grid = (&input).into();
         for _ in 0..4 {
             patterns.add(&grid, output.clone());
             patterns.add(&grid.transform(|p| Point::new(-p.x, p.y)), output.clone());

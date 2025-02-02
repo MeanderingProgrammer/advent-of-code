@@ -100,7 +100,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Some);
+    let grid = Reader::default().read_grid();
     let maze = Maze::new(grid);
     let (part1, part2) = maze.solve();
     answer::part1(107512, part1);

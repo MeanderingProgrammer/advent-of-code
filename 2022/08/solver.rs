@@ -2,7 +2,7 @@ use aoc::{answer, Direction, Grid, Point, Reader};
 
 #[derive(Debug)]
 struct Map {
-    grid: Grid<usize>,
+    grid: Grid<u8>,
 }
 
 impl Map {
@@ -13,17 +13,17 @@ impl Map {
             .collect()
     }
 
-    fn scenic_score(&self, point: &Point, value: &usize) -> (usize, bool) {
+    fn scenic_score(&self, point: &Point, score: &u8) -> (usize, bool) {
         let (mut dist, mut edge) = (1, false);
         for dir in Direction::values() {
-            let (dir_dist, dir_edge) = self.go(value, point, dir);
+            let (dir_dist, dir_edge) = self.go(score, point, dir);
             dist *= dir_dist;
             edge |= dir_edge;
         }
         (dist, edge)
     }
 
-    fn go(&self, top: &usize, point: &Point, direction: &Direction) -> (usize, bool) {
+    fn go(&self, top: &u8, point: &Point, direction: &Direction) -> (usize, bool) {
         let next = point.add(direction);
         match self.grid.get(&next) {
             None => (0, true),
@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| Some(ch.to_digit(10).unwrap() as usize));
+    let grid = Reader::default().read_grid();
     let map = Map { grid };
     let results = map.results();
     answer::part1(1533, results.iter().filter(|score| score.1).count());

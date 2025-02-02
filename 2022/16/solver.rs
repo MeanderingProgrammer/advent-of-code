@@ -1,4 +1,4 @@
-use aoc::{answer, Base, BitSet, HashMap, HeapKind, Iter, PriorityQueue, Reader};
+use aoc::{answer, BitSet, Convert, HashMap, HeapKind, Iter, PriorityQueue, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -28,8 +28,8 @@ impl FromStr for Valve {
 }
 
 impl Valve {
-    fn index(name: &str) -> u32 {
-        Base::str_insensitive(name)
+    fn index(s: &str) -> u32 {
+        Convert::idx_lower_str(s)
     }
 }
 

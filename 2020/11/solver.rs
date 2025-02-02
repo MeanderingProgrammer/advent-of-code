@@ -1,4 +1,4 @@
-use aoc::{answer, Grid, Heading, Point, Reader};
+use aoc::{answer, FromChar, Grid, Heading, Point, Reader};
 
 #[derive(Debug, Clone, PartialEq)]
 enum Seat {
@@ -7,8 +7,8 @@ enum Seat {
     Floor,
 }
 
-impl Seat {
-    fn from_ch(ch: char) -> Option<Self> {
+impl FromChar for Seat {
+    fn from_char(ch: char) -> Option<Self> {
         match ch {
             '#' => Some(Self::Occupied),
             'L' => Some(Self::Empty),
@@ -80,7 +80,7 @@ fn main() {
 }
 
 fn solution() {
-    let chart = Reader::default().read_grid(Seat::from_ch);
+    let chart = Reader::default().read_grid();
     answer::part1(2386, run(chart.clone(), false));
     answer::part2(2091, run(chart.clone(), true));
 }

@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, Grid, HashSet, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashSet, Point, Reader};
 use rayon::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -8,8 +8,8 @@ enum Element {
     Obstacle,
 }
 
-impl Element {
-    fn from_ch(ch: char) -> Option<Self> {
+impl FromChar for Element {
+    fn from_char(ch: char) -> Option<Self> {
         if ch == '^' {
             Some(Self::Start)
         } else if ch == '.' {
@@ -39,7 +39,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Element::from_ch);
+    let grid = Reader::default().read_grid();
     let start = grid.value(&Element::Start);
     let path = follow(&grid, &start, None).unwrap();
     answer::part1(5516, path.len());

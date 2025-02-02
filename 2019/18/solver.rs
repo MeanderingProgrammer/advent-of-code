@@ -1,4 +1,7 @@
-use aoc::{answer, Base, BitSet, Dijkstra, Grid, HashMap, HashSet, Heading, Ids, Point, Reader};
+use aoc::{
+    answer, BitSet, Convert, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point,
+    Reader,
+};
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
@@ -9,8 +12,8 @@ enum Element {
     Door(u8),
 }
 
-impl Element {
-    fn from_ch(ch: char) -> Option<Self> {
+impl FromChar for Element {
+    fn from_char(ch: char) -> Option<Self> {
         if ch == '#' {
             None
         } else if ch == '@' {
@@ -18,14 +21,16 @@ impl Element {
         } else if ch == '.' {
             Some(Self::Empty)
         } else if ch.is_ascii_lowercase() {
-            Some(Self::Key(Base::ch_lower(ch)))
+            Some(Self::Key(Convert::idx_lower(ch)))
         } else if ch.is_ascii_uppercase() {
-            Some(Self::Door(Base::ch_upper(ch)))
+            Some(Self::Door(Convert::idx_upper(ch)))
         } else {
             None
         }
     }
+}
 
+impl Element {
     fn is_start(&self) -> bool {
         matches!(self, Self::Start)
     }
@@ -99,7 +104,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Element::from_ch);
+    let grid = Reader::default().read_grid();
     answer::part1(5402, solve(grid.clone()));
     answer::part2(2138, solve(split(grid.clone())));
 }

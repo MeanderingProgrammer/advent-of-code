@@ -1,4 +1,4 @@
-use aoc::{answer, BitSet, Direction, Grid, HashMap, Ids, Point, Reader};
+use aoc::{answer, BitSet, Direction, FromChar, Grid, HashMap, Ids, Point, Reader};
 use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq)]
@@ -186,7 +186,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Some);
+    let grid = Reader::default().read_grid();
     let search = Compress { grid }.collapse();
     answer::part1(2154, search.run(true));
     answer::part2(6654, search.run(false));

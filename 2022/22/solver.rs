@@ -1,10 +1,20 @@
-use aoc::{answer, Direction, Grid, HashMap, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
 enum Space {
     Open,
     Wall,
+}
+
+impl FromChar for Space {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '.' => Some(Self::Open),
+            '#' => Some(Self::Wall),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -51,7 +61,8 @@ struct Cube {
 }
 
 impl Cube {
-    fn new(grid: Grid<Space>) -> Self {
+    fn new(lines: &Vec<String>) -> Self {
+        let grid: Grid<Space> = lines.into();
         let total_spaces = grid.iter().count();
         let spaces_per_face = total_spaces / 6;
         let size = (spaces_per_face as f64).sqrt() as i32;
@@ -122,6 +133,18 @@ impl Turn {
 enum Instruction {
     Move(usize),
     Turn(Turn),
+}
+
+impl FromStr for Instruction {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "L" => Ok(Self::Turn(Turn::Left)),
+            "R" => Ok(Self::Turn(Turn::Right)),
+            amount => Ok(Self::Move(amount.parse().unwrap())),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -292,26 +315,13 @@ fn parse_edge_mapping(s: &str) -> (Block, Vec<Edge>) {
 
 fn get_input() -> (Cube, Vec<Instruction>) {
     let data = Reader::default().read_group_lines();
-    (parse_cube(&data[0]), parse_instructions(&data[1][0]))
-}
-
-fn parse_cube(lines: &[String]) -> Cube {
-    let grid = Grid::from_lines(lines, |_, ch| match ch {
-        '.' => Some(Space::Open),
-        '#' => Some(Space::Wall),
-        _ => None,
-    });
-    Cube::new(grid)
+    (Cube::new(&data[0]), parse_instructions(&data[1][0]))
 }
 
 fn parse_instructions(line: &str) -> Vec<Instruction> {
     line.replace('L', ",L,")
         .replace('R', ",R,")
         .split(',')
-        .map(|part| match part {
-            "L" => Instruction::Turn(Turn::Left),
-            "R" => Instruction::Turn(Turn::Right),
-            amount => Instruction::Move(amount.parse().unwrap()),
-        })
+        .map(|part| part.parse().unwrap())
         .collect()
 }

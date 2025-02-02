@@ -1,4 +1,19 @@
-use aoc::{answer, Bounds, Grid, HashSet, Point, Reader};
+use aoc::{answer, Bounds, FromChar, Grid, HashSet, Point, Reader};
+
+#[derive(Debug, PartialEq)]
+enum Value {
+    On,
+    Off,
+}
+
+impl FromChar for Value {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '#' => Some(Self::On),
+            _ => Some(Self::Off),
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 struct Image {
@@ -10,11 +25,9 @@ struct Image {
 
 impl Image {
     fn new(groups: &[Vec<String>]) -> Self {
+        let grid: Grid<Value> = (&groups[1]).into();
         Self {
-            on: Grid::from_lines(&groups[1], |_, ch| Some(ch == '#'))
-                .values(&true)
-                .into_iter()
-                .collect(),
+            on: grid.values(&Value::On).into_iter().collect(),
             enhancer: groups[0][0].chars().map(|ch| ch == '#').collect(),
             time: 0,
             border: Point::new(1, 1),

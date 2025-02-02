@@ -1,12 +1,28 @@
-use aoc::{answer, Direction, Grid, Iter, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, Iter, Point, Reader};
+
+#[derive(Debug)]
+enum Tile {
+    Empty,
+    Letter(char),
+}
+
+impl FromChar for Tile {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            ' ' => None,
+            '-' | '|' | '+' => Some(Self::Empty),
+            ch => Some(Self::Letter(ch)),
+        }
+    }
+}
 
 #[derive(Debug)]
 struct Traverser {
-    grid: Grid<char>,
+    grid: Grid<Tile>,
 }
 
 impl Traverser {
-    fn new(grid: Grid<char>) -> Self {
+    fn new(grid: Grid<Tile>) -> Self {
         Self { grid }
     }
 
@@ -47,8 +63,11 @@ impl Traverser {
 
     fn letters(&self, seen: &[Point]) -> String {
         seen.iter()
-            .map(|point| self.grid[point])
-            .filter(|value| !['-', '|', '+'].contains(value))
+            .map(|point| &self.grid[point])
+            .filter_map(|tile| match tile {
+                Tile::Empty => None,
+                Tile::Letter(ch) => Some(ch),
+            })
             .join("")
     }
 }
@@ -58,7 +77,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| if ch == ' ' { None } else { Some(ch) });
+    let grid = Reader::default().read_grid();
     let traverser = Traverser::new(grid);
     let seen = traverser.traverse();
     answer::part1("NDWHOYRUEA", &traverser.letters(&seen));

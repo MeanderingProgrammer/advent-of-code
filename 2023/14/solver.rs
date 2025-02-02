@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, Grid, HashMap, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Point, Reader};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -8,8 +8,8 @@ enum Value {
     Cube,
 }
 
-impl Value {
-    fn from_ch(ch: char) -> Option<Self> {
+impl FromChar for Value {
+    fn from_char(ch: char) -> Option<Self> {
         match ch {
             '.' => Some(Self::Empty),
             'O' => Some(Self::Round),
@@ -101,7 +101,7 @@ fn main() {
 
 fn solution() {
     let grid = Platform {
-        grid: Reader::default().read_grid(Value::from_ch),
+        grid: Reader::default().read_grid(),
     };
     answer::part1(109654, grid.clone().run_once());
     answer::part2(94876, grid.clone().run_n(1000000000));

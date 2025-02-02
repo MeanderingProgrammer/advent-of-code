@@ -190,7 +190,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(Some);
+    let grid = Reader::default().read_grid();
     answer::part1(214731, play(&grid, 0, false).unwrap());
     answer::part2(53222, play_until(&grid));
 }

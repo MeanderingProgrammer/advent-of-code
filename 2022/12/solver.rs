@@ -1,4 +1,4 @@
-use aoc::{answer, Base, GraphSearch, Grid, Point, Reader};
+use aoc::{answer, FromChar, GraphSearch, Grid, Point, Reader};
 
 #[derive(Debug)]
 struct Search {
@@ -30,7 +30,7 @@ impl Search {
         self.grid
             .values(&value)
             .into_iter()
-            .filter_map(|start| self.bfs(start).first().cloned())
+            .filter_map(|start| self.bfs(start).pop())
             .min()
     }
 }
@@ -42,17 +42,21 @@ fn main() {
 fn solution() {
     let (search, start) = get_search();
     answer::part1(472, search.bfs(start).first().cloned().unwrap());
-    answer::part2(465, search.shortest(Base::ch_lower('a')).unwrap());
+    answer::part2(465, search.shortest(index('a')).unwrap());
 }
 
 fn get_search() -> (Search, Point) {
-    let mut grid = Reader::default().read_grid(|ch| Some(Base::ch_lower(ch)));
+    let mut grid: Grid<u8> = Reader::default().read_grid();
 
-    let start = grid.value(&Base::ch_lower('S'));
-    grid.add(start.clone(), Base::ch_lower('a'));
+    let start = grid.value(&index('S'));
+    grid.add(start.clone(), index('a'));
 
-    let end = grid.value(&Base::ch_lower('E'));
-    grid.add(end.clone(), Base::ch_lower('z'));
+    let end = grid.value(&index('E'));
+    grid.add(end.clone(), index('z'));
 
     (Search { grid, end }, start)
+}
+
+fn index(ch: char) -> u8 {
+    u8::from_char(ch).unwrap()
 }

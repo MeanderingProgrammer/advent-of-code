@@ -36,7 +36,7 @@ impl Node {
 
 #[derive(Debug)]
 struct Search {
-    grid: Grid<u16>,
+    grid: Grid<u8>,
     target: Point,
     resistance: u8,
     max_repeats: u8,
@@ -63,7 +63,7 @@ impl Dijkstra for Search {
                 if length <= self.max_repeats && self.grid.has(&point) {
                     let cost = (1..=traveled)
                         .map(|i| node.go(&direction, i))
-                        .map(|point| self.grid[&point])
+                        .map(|point| self.grid[&point] as u16)
                         .sum();
                     Some((Node::new(point, Some(direction), length), cost))
                 } else {
@@ -78,12 +78,12 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid(|ch| Some(ch.to_digit(10).unwrap() as u16));
+    let grid = Reader::default().read_grid();
     answer::part1(694, min_heat(&grid, 1, 3));
     answer::part2(829, min_heat(&grid, 4, 10));
 }
 
-fn min_heat(grid: &Grid<u16>, resistance: u8, max_repeats: u8) -> u16 {
+fn min_heat(grid: &Grid<u8>, resistance: u8, max_repeats: u8) -> u16 {
     let bounds = grid.bounds();
     let start = Node::new(bounds.lower, None, 0);
     let search = Search {

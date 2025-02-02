@@ -1,9 +1,59 @@
-use aoc::{answer, Direction, Grid, HashMap, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Point, Reader};
 
 #[derive(Debug)]
 enum Motion {
     Intersection,
     Forward(Direction, Direction),
+}
+
+#[derive(Debug)]
+enum Tile {
+    Intersection,
+    Vertical,
+    Horizontal,
+    ForwardSlash,
+    BackSlash,
+}
+
+impl FromChar for Tile {
+    fn from_char(ch: char) -> Option<Self> {
+        match ch {
+            '+' => Some(Self::Intersection),
+            '|' | '^' | 'v' => Some(Self::Vertical),
+            '-' | '<' | '>' => Some(Self::Horizontal),
+            '/' => Some(Self::ForwardSlash),
+            '\\' => Some(Self::BackSlash),
+            _ => None,
+        }
+    }
+}
+
+impl Tile {
+    fn bottom(&self) -> bool {
+        matches!(self, Self::Intersection | Self::Vertical)
+    }
+
+    fn motion(&self, bottom: bool) -> Motion {
+        match self {
+            Self::Intersection => Motion::Intersection,
+            Self::Vertical => Motion::Forward(Direction::Up, Direction::Down),
+            Self::Horizontal => Motion::Forward(Direction::Left, Direction::Right),
+            Self::ForwardSlash => {
+                if bottom {
+                    Motion::Forward(Direction::Up, Direction::Left)
+                } else {
+                    Motion::Forward(Direction::Down, Direction::Right)
+                }
+            }
+            Self::BackSlash => {
+                if bottom {
+                    Motion::Forward(Direction::Up, Direction::Right)
+                } else {
+                    Motion::Forward(Direction::Down, Direction::Left)
+                }
+            }
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -55,20 +105,16 @@ impl Cart {
 
 #[derive(Debug)]
 struct CartSystem {
-    track: Grid<char>,
+    track: Grid<Tile>,
     carts: Vec<Cart>,
     crashes: Vec<Point>,
 }
 
 impl CartSystem {
-    fn new(lines: &[String]) -> Self {
-        let track = Grid::from_lines(lines, |_, ch| match ch {
-            ' ' => None,
-            '<' | '>' => Some('-'),
-            '^' | 'v' => Some('|'),
-            ch => Some(ch),
-        });
-        let carts = Grid::from_lines(lines, |_, ch| Direction::from_char(ch))
+    fn new(lines: &Vec<String>) -> Self {
+        let track: Grid<Tile> = lines.into();
+        let carts: Grid<Direction> = lines.into();
+        let carts = carts
             .iter()
             .enumerate()
             .map(|(id, (point, direction))| Cart::new(id, point, direction))
@@ -105,7 +151,11 @@ impl CartSystem {
             carts.remove(&start);
 
             let above = start.add(&Direction::Up);
-            let motion = Self::motion(self.track[&start], self.track.get_or(&above, ' '));
+            let bottom = match self.track.get(&above) {
+                None => false,
+                Some(tile) => tile.bottom(),
+            };
+            let motion = self.track[&start].motion(bottom);
             cart.go(motion);
 
             let end = cart.point.clone();
@@ -122,30 +172,6 @@ impl CartSystem {
             }
         }
         self.carts.retain(|cart| !crashed.contains(&cart.id));
-    }
-
-    fn motion(value: char, above: char) -> Motion {
-        let bottom = ['|', '+'].contains(&above);
-        match value {
-            '+' => Motion::Intersection,
-            '|' => Motion::Forward(Direction::Up, Direction::Down),
-            '-' => Motion::Forward(Direction::Left, Direction::Right),
-            '/' => {
-                if bottom {
-                    Motion::Forward(Direction::Up, Direction::Left)
-                } else {
-                    Motion::Forward(Direction::Down, Direction::Right)
-                }
-            }
-            '\\' => {
-                if bottom {
-                    Motion::Forward(Direction::Up, Direction::Right)
-                } else {
-                    Motion::Forward(Direction::Down, Direction::Left)
-                }
-            }
-            _ => unreachable!(),
-        }
     }
 }
 

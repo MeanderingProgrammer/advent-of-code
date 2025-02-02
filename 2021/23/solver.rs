@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Grid, Reader};
+use aoc::{answer, Dijkstra, FromChar, Grid, Reader};
 use std::collections::BTreeMap;
 use std::ops::Range;
 
@@ -36,7 +36,7 @@ enum Pod {
     D,
 }
 
-impl Pod {
+impl FromChar for Pod {
     fn from_char(ch: char) -> Option<Self> {
         match ch {
             'A' => Some(Self::A),
@@ -46,7 +46,9 @@ impl Pod {
             _ => None,
         }
     }
+}
 
+impl Pod {
     fn col(&self) -> u8 {
         match self {
             Self::A => 2,
@@ -94,8 +96,9 @@ struct Burrow {
 }
 
 impl Burrow {
-    fn new(lines: &[String]) -> Self {
-        let pods: BTreeMap<u8, Pod> = Grid::from_lines(lines, |_, ch| Pod::from_char(ch))
+    fn new(lines: &Vec<String>) -> Self {
+        let grid: Grid<Pod> = lines.into();
+        let pods: BTreeMap<u8, Pod> = grid
             .iter()
             .map(|(p, pod)| (Pod::id(p.x as u8, p.y as u8), pod.clone()))
             .collect();

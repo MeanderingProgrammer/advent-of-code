@@ -1,4 +1,4 @@
-use crate::{HashMap, Iter, Point};
+use crate::{FromChar, HashMap, Iter, Point};
 use std::borrow::Borrow;
 use std::cmp::PartialEq;
 use std::fmt;
@@ -18,20 +18,22 @@ impl<T> Default for Grid<T> {
     }
 }
 
-impl<T> Grid<T> {
-    pub fn from_lines(lines: &[String], f: impl Fn(&Point, char) -> Option<T>) -> Self {
+impl<T: FromChar> From<&Vec<String>> for Grid<T> {
+    fn from(lines: &Vec<String>) -> Self {
         let mut grid = Self::default();
         for (y, line) in lines.iter().enumerate() {
             for (x, ch) in line.char_indices() {
                 let point = Point::new(x as i32, y as i32);
-                if let Some(value) = f(&point, ch) {
+                if let Some(value) = T::from_char(ch) {
                     grid.add(point, value);
                 }
             }
         }
         grid
     }
+}
 
+impl<T> Grid<T> {
     pub fn add(&mut self, point: Point, value: T) {
         self.grid.insert(point, value);
     }

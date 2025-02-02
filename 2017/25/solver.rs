@@ -1,4 +1,4 @@
-use aoc::{answer, Base, HashMap, HashSet, Reader};
+use aoc::{answer, Convert, HashMap, HashSet, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -125,7 +125,7 @@ fn get_rule(s: &str) -> (u8, Rule) {
 }
 
 fn to_state(s: &str) -> u8 {
-    Base::ch_upper(last_word(s).chars().next().unwrap())
+    Convert::idx_upper(last_word(s).chars().next().unwrap())
 }
 
 fn last_word(s: &str) -> &str {

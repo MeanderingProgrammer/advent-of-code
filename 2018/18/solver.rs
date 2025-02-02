@@ -1,4 +1,4 @@
-use aoc::{answer, Grid, HashMap, Point, Reader};
+use aoc::{answer, FromChar, Grid, HashMap, Point, Reader};
 
 #[derive(Debug, PartialEq)]
 enum State {
@@ -7,8 +7,8 @@ enum State {
     Yard,
 }
 
-impl State {
-    fn from_ch(ch: char) -> Option<Self> {
+impl FromChar for State {
+    fn from_char(ch: char) -> Option<Self> {
         match ch {
             '.' => Some(Self::Open),
             '|' => Some(Self::Tree),
@@ -78,7 +78,7 @@ fn solution() {
 
 fn run(n: usize) -> usize {
     let mut landscape = Landscape {
-        grid: Reader::default().read_grid(State::from_ch),
+        grid: Reader::default().read_grid(),
     };
     let mut scores = vec![landscape.resource_value()];
     for _ in 0..n {
