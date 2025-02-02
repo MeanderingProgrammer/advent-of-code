@@ -1,5 +1,4 @@
-use aoc::{answer, Reader};
-use md5::Context;
+use aoc::{answer, Md5, Reader};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;
 
@@ -11,21 +10,27 @@ struct State {
 }
 
 struct Miner {
-    context: Context,
+    prefix: String,
     zeros: usize,
 }
 
 impl Miner {
     fn new(prefix: String, zeros: usize) -> Self {
-        let mut context = Context::new();
-        context.consume(prefix);
-        Self { context, zeros }
+        Self { prefix, zeros }
     }
 
-    fn matches(&self, index: usize) -> bool {
-        let mut context = self.context.clone();
-        context.consume(index.to_string());
-        let digest = context.compute();
+    fn matches(&self, index: usize) -> Option<usize> {
+        let inputs = std::array::from_fn(|i| format!("{}{}", self.prefix, index + i));
+        let digests = Md5::from(inputs).compute();
+        digests
+            .into_iter()
+            .enumerate()
+            .filter(|(_, digest)| self.valid(*digest))
+            .map(|(i, _)| index + i)
+            .next()
+    }
+
+    fn valid(&self, digest: [u8; 16]) -> bool {
         (0..self.zeros).all(|i| {
             let section = digest[i / 2];
             let part = if i % 2 == 0 {
@@ -67,8 +72,8 @@ fn first_index(prefix: String, zeros: usize) -> usize {
 fn worker(state: &State, miner: &Miner, batch_size: usize) {
     while !state.done.load(Ordering::Relaxed) {
         let start = state.index.fetch_add(batch_size, Ordering::Relaxed);
-        for i in start..start + batch_size {
-            if miner.matches(i) {
+        for i in (start..start + batch_size).step_by(8) {
+            if let Some(i) = miner.matches(i) {
                 state.done.store(true, Ordering::Relaxed);
                 state.result.fetch_min(i, Ordering::Relaxed);
             }

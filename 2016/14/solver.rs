@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Md5, Reader};
 use rayon::prelude::*;
 use std::collections::VecDeque;
 
@@ -22,43 +22,43 @@ impl Hasher {
     }
 
     fn compute_range(&self, start: usize, end: usize) -> (usize, VecDeque<HashInfo>) {
-        let end = end.max(start + self.batch) + 1;
+        let end = end.max(start + self.batch);
         (
             end,
             (start..end)
                 .into_par_iter()
-                .filter_map(|i| self.compute(i))
+                .step_by(8)
+                .flat_map(|i| self.compute(i))
                 .collect(),
         )
     }
 
-    fn compute(&self, i: usize) -> Option<HashInfo> {
-        let mut digest = md5::compute(format!("{}{i}", self.prefix));
-        let mut hash = [0; 32];
+    fn compute(&self, start: usize) -> VecDeque<HashInfo> {
+        let inputs = std::array::from_fn(|i| format!("{}{}", self.prefix, start + i));
+        let mut digests = Md5::from(inputs).compute();
         for _ in 0..(self.n) {
-            Self::fill_hash(&mut hash, digest);
-            digest = md5::compute(hash);
+            digests = Md5::from(digests).compute();
         }
-        Self::fill_hash(&mut hash, digest);
-        Self::repeat(&hash, 3).map(|triple| HashInfo {
-            i,
-            triple,
-            quintuple: Self::repeat(&hash, 5),
-        })
-    }
-
-    fn fill_hash(buffer: &mut [u8; 32], digest: md5::Digest) {
-        for i in 0..16 {
-            let ch = digest[i];
-            let (v1, v2) = (ch >> 4, ch & 0xf);
-            buffer[i * 2] = Self::hex_ascii(v1);
-            buffer[i * 2 + 1] = Self::hex_ascii(v2);
-        }
-    }
-
-    fn hex_ascii(ch: u8) -> u8 {
-        let offset = if ch < 10 { 48 } else { 87 };
-        offset + ch
+        digests
+            .into_iter()
+            .map(|digest| {
+                let mut hash = [0; 32];
+                for i in 0..16 {
+                    let ch = digest[i];
+                    hash[i * 2] = ch >> 4;
+                    hash[i * 2 + 1] = ch & 0xf;
+                }
+                hash
+            })
+            .enumerate()
+            .filter_map(|(i, hash)| {
+                Self::repeat(&hash, 3).map(|triple| HashInfo {
+                    i: start + i,
+                    triple,
+                    quintuple: Self::repeat(&hash, 5),
+                })
+            })
+            .collect()
     }
 
     fn repeat(hash: &[u8; 32], size: usize) -> Option<u8> {
@@ -89,10 +89,8 @@ fn generate(prefix: &str, n: usize) -> usize {
     let mut hashes = VecDeque::default();
     let mut i = 0;
     while hashes.is_empty() {
-        if let Some(hash) = hasher.compute(i) {
-            hashes.push_back(hash);
-        }
-        i += 1;
+        hashes.append(&mut hasher.compute(i));
+        i += 8;
     }
 
     let mut keys = Vec::default();
