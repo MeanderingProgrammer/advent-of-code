@@ -39,29 +39,22 @@ impl Hasher {
         for _ in 0..(self.n) {
             digests = Md5::from(digests).compute();
         }
-        digests
+        Md5::from(digests)
+            .buffers
             .into_iter()
-            .map(|digest| {
-                let mut hash = [0; 32];
-                for i in 0..16 {
-                    let ch = digest[i];
-                    hash[i * 2] = ch >> 4;
-                    hash[i * 2 + 1] = ch & 0xf;
-                }
-                hash
-            })
             .enumerate()
             .filter_map(|(i, hash)| {
-                Self::repeat(&hash, 3).map(|triple| HashInfo {
+                let hash = &hash[0..32];
+                Self::repeat(hash, 3).map(|triple| HashInfo {
                     i: start + i,
                     triple,
-                    quintuple: Self::repeat(&hash, 5),
+                    quintuple: Self::repeat(hash, 5),
                 })
             })
             .collect()
     }
 
-    fn repeat(hash: &[u8; 32], size: usize) -> Option<u8> {
+    fn repeat(hash: &[u8], size: usize) -> Option<u8> {
         hash.windows(size).find_map(|window| {
             let first = window[0];
             if window.iter().all(|&ch| ch == first) {

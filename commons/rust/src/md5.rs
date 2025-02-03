@@ -2,7 +2,7 @@ use wide::u32x8;
 
 #[derive(Debug)]
 pub struct Md5 {
-    buffers: [[u8; 64]; 8],
+    pub buffers: [[u8; 64]; 8],
 }
 
 impl From<[String; 8]> for Md5 {
@@ -23,17 +23,23 @@ impl From<[String; 8]> for Md5 {
     }
 }
 
-impl From<[[u8; 16]; 8]> for Md5 {
-    fn from(values: [[u8; 16]; 8]) -> Self {
+impl From<[[u32; 4]; 8]> for Md5 {
+    fn from(values: [[u32; 4]; 8]) -> Self {
         fn hex_ascii(ch: u8) -> u8 {
             ch + if ch < 10 { 48 } else { 87 }
         }
-        let buffers = values.map(|value| {
+        let buffers = values.map(|digest| {
             let mut buffer = [0; 64];
-            for i in 0..16 {
-                let ch = value[i];
-                buffer[i * 2] = hex_ascii(ch >> 4);
-                buffer[i * 2 + 1] = hex_ascii(ch & 0xf);
+            for i in 0..digest.len() {
+                let block = digest[i];
+                buffer[i * 8 + 0] = hex_ascii(((block & 0xf0000000) >> 28) as u8);
+                buffer[i * 8 + 1] = hex_ascii(((block & 0x0f000000) >> 24) as u8);
+                buffer[i * 8 + 2] = hex_ascii(((block & 0x00f00000) >> 20) as u8);
+                buffer[i * 8 + 3] = hex_ascii(((block & 0x000f0000) >> 16) as u8);
+                buffer[i * 8 + 4] = hex_ascii(((block & 0x0000f000) >> 12) as u8);
+                buffer[i * 8 + 5] = hex_ascii(((block & 0x00000f00) >> 8) as u8);
+                buffer[i * 8 + 6] = hex_ascii(((block & 0x000000f0) >> 4) as u8);
+                buffer[i * 8 + 7] = hex_ascii(((block & 0x0000000f) >> 0) as u8);
             }
             buffer[32] = 0x80;
             // 32 byte digest -> 256 bits -> [0, 1, 0, 0, 0, 0, 0, 0]
@@ -49,7 +55,7 @@ impl Md5 {
         Self { buffers }
     }
 
-    pub fn compute(&self) -> [[u8; 16]; 8] {
+    pub fn compute(&self) -> [[u32; 4]; 8] {
         // https://en.wikipedia.org/wiki/MD5
         let (a, b, c, d) = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476);
 
@@ -63,14 +69,7 @@ impl Md5 {
 
         let [a, b, c, d] = Self::transform([a, b, c, d], m);
 
-        std::array::from_fn(|i| {
-            let mut result = [0; 16];
-            result[0..4].copy_from_slice(&a[i].to_le_bytes());
-            result[4..8].copy_from_slice(&b[i].to_le_bytes());
-            result[8..12].copy_from_slice(&c[i].to_le_bytes());
-            result[12..16].copy_from_slice(&d[i].to_le_bytes());
-            result
-        })
+        std::array::from_fn(|i| [a[i], b[i], c[i], d[i]].map(|section| section.swap_bytes()))
     }
 
     fn transform(state: [u32; 4], m: [u32x8; 16]) -> [[u32; 8]; 4] {

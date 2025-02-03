@@ -11,12 +11,14 @@ struct State {
 
 struct Miner {
     prefix: String,
-    zeros: usize,
+    mask: u32,
 }
 
 impl Miner {
     fn new(prefix: String, zeros: usize) -> Self {
-        Self { prefix, zeros }
+        assert!(zeros <= 8);
+        let mask = !((1 << (32 - (4 * zeros))) - 1);
+        Self { prefix, mask }
     }
 
     fn matches(&self, index: usize) -> Option<usize> {
@@ -25,21 +27,9 @@ impl Miner {
         digests
             .into_iter()
             .enumerate()
-            .filter(|(_, digest)| self.valid(*digest))
+            .filter(|(_, [digest, _, _, _])| *digest & self.mask == 0)
             .map(|(i, _)| index + i)
             .next()
-    }
-
-    fn valid(&self, digest: [u8; 16]) -> bool {
-        (0..self.zeros).all(|i| {
-            let section = digest[i / 2];
-            let part = if i % 2 == 0 {
-                section >> 4
-            } else {
-                section & 0xf
-            };
-            part == 0
-        })
     }
 }
 
