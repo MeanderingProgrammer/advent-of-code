@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -9,8 +9,8 @@ impl FromStr for Range {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // 1-3
-        let (start, end) = s.split_once('-').unwrap();
-        Ok(Self(start.parse().unwrap(), end.parse().unwrap()))
+        let [start, end] = Parser::values(s, "-").unwrap();
+        Ok(Self(start, end))
     }
 }
 
@@ -31,11 +31,10 @@ impl FromStr for Rule {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // class: <Value> or <Value>
-        let (name, ranges) = s.split_once(": ").unwrap();
-        let (r1, r2) = ranges.split_once(" or ").unwrap();
+        let [name, s] = Parser::all(s, ": ").unwrap();
         Ok(Self {
             name: name.to_string(),
-            ranges: [r1.parse().unwrap(), r2.parse().unwrap()],
+            ranges: Parser::values(s, " or ").unwrap(),
         })
     }
 }

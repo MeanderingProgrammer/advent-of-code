@@ -1,4 +1,5 @@
-use aoc::{answer, Convert, GraphSearch, HashMap, Reader};
+use aoc::{answer, Convert, GraphSearch, HashMap, Parser, Reader};
+use std::str::FromStr;
 
 const START: u32 = 0;
 const END: u32 = 1;
@@ -9,10 +10,12 @@ struct Cave {
     value: u32,
 }
 
-impl Cave {
-    fn new(s: &str) -> Self {
-        Self {
-            big: s.chars().next().unwrap().is_uppercase(),
+impl FromStr for Cave {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            big: Convert::ch(s).is_uppercase(),
             value: if s == "start" {
                 START
             } else if s == "end" {
@@ -20,7 +23,7 @@ impl Cave {
             } else {
                 Convert::idx_lower_str(s)
             },
-        }
+        })
     }
 }
 
@@ -89,8 +92,7 @@ fn solution() {
 fn get_graph(lines: &[String]) -> HashMap<Cave, Vec<Cave>> {
     let mut graph: HashMap<Cave, Vec<Cave>> = HashMap::default();
     lines.iter().for_each(|line| {
-        let (v1, v2) = line.split_once('-').unwrap();
-        let (c1, c2) = (Cave::new(v1), Cave::new(v2));
+        let [c1, c2]: [Cave; 2] = Parser::values(line, "-").unwrap();
         graph.entry(c1.clone()).or_default().push(c2.clone());
         graph.entry(c2.clone()).or_default().push(c1.clone());
     });
@@ -100,7 +102,7 @@ fn get_graph(lines: &[String]) -> HashMap<Cave, Vec<Cave>> {
 fn paths(graph: HashMap<Cave, Vec<Cave>>, part1: bool) -> usize {
     let valid = if part1 { one_small } else { two_small };
     let search = Search { graph, valid };
-    search.dfs(Path::new(Cave::new("start"))).len()
+    search.dfs(Path::new("start".parse().unwrap())).len()
 }
 
 fn one_small(path: &Path, cave: &Cave) -> bool {

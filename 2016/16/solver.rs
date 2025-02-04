@@ -5,16 +5,16 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1("10010101010011101", &fill_disk(272));
-    answer::part2("01100111101101111", &fill_disk(35_651_584));
-}
-
-fn fill_disk(length: usize) -> String {
-    let mut curve: Vec<bool> = Reader::default()
+    let curve: Vec<bool> = Reader::default()
         .read_chars()
         .iter()
         .map(|&ch| ch == '1')
         .collect();
+    answer::part1("10010101010011101", &fill_disk(curve.clone(), 272));
+    answer::part2("01100111101101111", &fill_disk(curve.clone(), 35_651_584));
+}
+
+fn fill_disk(mut curve: Vec<bool>, length: usize) -> String {
     while curve.len() < length {
         let mut flipped: Vec<bool> = curve.iter().rev().map(|value| !value).collect();
         curve.push(false);

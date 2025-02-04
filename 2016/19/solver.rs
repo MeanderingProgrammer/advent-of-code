@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let n = Reader::default().read_int()[0];
+    let n = Reader::default().read_line();
     answer::part1(1834903, solve(n, true));
     answer::part2(1420280, solve(n, false));
 }

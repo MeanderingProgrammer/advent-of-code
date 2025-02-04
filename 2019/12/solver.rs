@@ -1,4 +1,4 @@
-use aoc::{answer, math, Iter, Reader};
+use aoc::{answer, math, Iter, Point3d, Reader};
 use std::cmp::Ordering;
 use std::str::FromStr;
 use std::sync::mpsc;
@@ -69,13 +69,9 @@ impl FromStr for Body {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // <x=4, y=12, z=13>
-        let values: Vec<i64> = s[1..s.len() - 1]
-            .split(", ")
-            .map(|value| value.split_once('=').unwrap().1)
-            .map(|value| value.parse().unwrap())
-            .collect();
+        let p: Point3d = s.parse().unwrap();
         Ok(Self {
-            position: Vector(values[0], values[1], values[2]),
+            position: Vector(p.x as i64, p.y as i64, p.z as i64),
             velocity: Vector::default(),
         })
     }

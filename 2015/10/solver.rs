@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Convert, Reader};
 
 #[derive(Debug)]
 struct Game {
@@ -37,7 +37,7 @@ fn solution() {
         value: Reader::default()
             .read_chars()
             .into_iter()
-            .map(|ch| ch.to_digit(10).unwrap() as u8)
+            .map(Convert::idx_int)
             .collect(),
     };
     answer::part1(360154, game.play(40));

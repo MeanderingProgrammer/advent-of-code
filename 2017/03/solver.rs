@@ -47,7 +47,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal: i32 = Reader::default().read_from_str()[0];
+    let goal = Reader::default().read_line();
     answer::part1(419, compute(goal, true));
     answer::part2(295229, compute(goal, false));
 }

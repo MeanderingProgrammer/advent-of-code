@@ -1,5 +1,4 @@
 use aoc::{answer, Iter, Md5, Reader};
-use std::fmt::Write;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::thread;
@@ -50,7 +49,8 @@ fn main() {
 }
 
 fn solution() {
-    let password = get_password(Reader::default().read_line());
+    let prefix = Reader::default().read_line();
+    let password = get_password(prefix);
     answer::part1("d4cd2ee1", &to_hex(&password.part_1()));
     answer::part2("f2c730e5", &to_hex(&password.part_2()));
 }
@@ -99,9 +99,5 @@ fn update_password(state: &State, mutex: &Mutex<Password>, start: usize) {
 }
 
 fn to_hex(chars: &[u8]) -> String {
-    let mut result = String::default();
-    chars
-        .iter()
-        .for_each(|ch| write!(result, "{:x}", ch).unwrap());
-    result
+    chars.iter().map(|ch| format!("{:x}", ch)).join("")
 }

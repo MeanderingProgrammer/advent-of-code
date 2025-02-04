@@ -27,22 +27,22 @@ impl DroidState {
     fn get_instructions(&mut self, scaffolding: &[Point]) -> Vec<String> {
         let mut instructions = Vec::default();
         let mut turn = self.get_turn(scaffolding);
-        while turn.is_some() {
-            self.direction = match turn.as_ref().unwrap() {
+        while let Some(current) = turn {
+            self.direction = match current {
                 Turn::Left => self.direction.left(),
                 Turn::Right => self.direction.right(),
             };
             let amount = self.move_until_end(scaffolding);
-            instructions.push(format!("{},{}", turn.as_ref().unwrap().code(), amount));
+            instructions.push(format!("{},{}", current.code(), amount));
             turn = self.get_turn(scaffolding);
         }
         instructions
     }
 
     fn get_turn(&self, scaffolding: &[Point]) -> Option<Turn> {
-        if scaffolding.contains(&self.location.add(&self.direction.left())) {
+        if scaffolding.contains(&self.go(Some(Turn::Left))) {
             Some(Turn::Left)
-        } else if scaffolding.contains(&self.location.add(&self.direction.right())) {
+        } else if scaffolding.contains(&self.go(Some(Turn::Right))) {
             Some(Turn::Right)
         } else {
             None
@@ -51,11 +51,20 @@ impl DroidState {
 
     fn move_until_end(&mut self, scaffolding: &[Point]) -> usize {
         let mut amount = 0;
-        while scaffolding.contains(&self.location.add(&self.direction)) {
-            self.location = self.location.add(&self.direction);
+        while scaffolding.contains(&self.go(None)) {
+            self.location = self.go(None);
             amount += 1;
         }
         amount
+    }
+
+    fn go(&self, turn: Option<Turn>) -> Point {
+        let direction = match turn {
+            None => &self.direction,
+            Some(Turn::Left) => &self.direction.left(),
+            Some(Turn::Right) => &self.direction.right(),
+        };
+        self.location.add(direction)
     }
 }
 

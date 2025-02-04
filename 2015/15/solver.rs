@@ -1,8 +1,8 @@
-use aoc::{answer, HashMap, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Default)]
-struct Properties {
+struct Ingredient {
     capacity: i64,
     durability: i64,
     flavor: i64,
@@ -10,7 +10,22 @@ struct Properties {
     calories: i64,
 }
 
-impl Properties {
+impl FromStr for Ingredient {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let [capacity, durability, flavor, texture, calories] = Parser::values(s, " ").unwrap();
+        Ok(Self {
+            capacity,
+            durability,
+            flavor,
+            texture,
+            calories,
+        })
+    }
+}
+
+impl Ingredient {
     fn score(&self) -> i64 {
         self.capacity.max(0) * self.durability.max(0) * self.flavor.max(0) * self.texture.max(0)
     }
@@ -31,36 +46,6 @@ impl Properties {
         self.flavor += rhs.flavor;
         self.texture += rhs.texture;
         self.calories += rhs.calories;
-    }
-}
-
-#[derive(Debug)]
-struct Ingredient {
-    #[allow(dead_code)]
-    name: String,
-    properties: Properties,
-}
-
-impl FromStr for Ingredient {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (name, components_string) = s.split_once(": ").unwrap();
-        let components: HashMap<&str, i64> = components_string
-            .split(", ")
-            .map(|component| component.split_once(' ').unwrap())
-            .map(|(property, quantity)| (property, quantity.parse().unwrap()))
-            .collect();
-        Ok(Self {
-            name: name.to_string(),
-            properties: Properties {
-                capacity: components["capacity"],
-                durability: components["durability"],
-                flavor: components["flavor"],
-                texture: components["texture"],
-                calories: components["calories"],
-            },
-        })
     }
 }
 
@@ -92,12 +77,12 @@ impl Recipe {
         (part1, part2)
     }
 
-    fn get_values(&self, proportion: Vec<usize>) -> Properties {
-        let mut properties = Properties::default();
+    fn get_values(&self, proportion: Vec<usize>) -> Ingredient {
+        let mut result = Ingredient::default();
         for (ingredient, amount) in self.ingredients.iter().zip(proportion.into_iter()) {
-            properties.add(&ingredient.properties.mul(amount));
+            result.add(&ingredient.mul(amount));
         }
-        properties
+        result
     }
 }
 

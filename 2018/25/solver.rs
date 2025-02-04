@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Reader};
+use aoc::{answer, HashMap, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -13,19 +13,9 @@ impl FromStr for Point {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let values: Vec<i64> = s
-            .split(',')
-            .map(|coord| coord.trim().parse().unwrap())
-            .collect();
-        if values.len() == 4 {
-            Ok(Self {
-                w: values[0],
-                x: values[1],
-                y: values[2],
-                z: values[3],
-            })
-        } else {
-            Err(format!("Unknown point format {s}"))
+        match Parser::values(s, ",") {
+            None => Err(format!("Unknown point format {s}")),
+            Some([w, x, y, z]) => Ok(Self { w, x, y, z }),
         }
     }
 }

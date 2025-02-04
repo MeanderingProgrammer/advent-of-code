@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -42,33 +42,29 @@ impl Action {
 #[derive(Debug)]
 struct Direction {
     action: Action,
-    start: (usize, usize),
-    end: (usize, usize),
+    start: [usize; 2],
+    end: [usize; 2],
 }
 
 impl FromStr for Direction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        fn parse_point(s: &str) -> (usize, usize) {
-            // 660,55
-            let (x, y) = s.split_once(',').unwrap();
-            (x.parse().unwrap(), y.parse().unwrap())
-        }
         // <action> <point> through <point>
-        let words: Vec<&str> = s.split_whitespace().collect();
+        let [action, start, end] = Parser::nth_rev(s, " ", [3, 2, 0]);
         Ok(Self {
-            action: words[words.len() - 4].parse()?,
-            start: parse_point(words[words.len() - 3]),
-            end: parse_point(words[words.len() - 1]),
+            action: action.parse()?,
+            // 660,55
+            start: Parser::values(start, ",").unwrap(),
+            end: Parser::values(end, ",").unwrap(),
         })
     }
 }
 
 impl Direction {
     fn apply(&self, grid: &mut [i64], f: fn(&Action, i64) -> i64) {
-        for x in self.start.0..=self.end.0 {
-            for y in self.start.1..=self.end.1 {
+        for x in self.start[0]..=self.end[0] {
+            for y in self.start[1]..=self.end[1] {
                 let index = (x * 1_000) + y;
                 grid[index] = f(&self.action, grid[index]);
             }

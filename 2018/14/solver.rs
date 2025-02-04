@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Convert, Reader};
 
 #[derive(Debug)]
 struct Recipes {
@@ -14,10 +14,7 @@ impl Recipes {
             e1: 0,
             e2: 1,
             scores: vec![3, 7],
-            goal: goal
-                .chars()
-                .map(|ch| ch.to_digit(10).unwrap() as u8)
-                .collect(),
+            goal: goal.chars().map(Convert::idx_int).collect(),
         }
     }
 
@@ -71,7 +68,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal = Reader::default().read_line();
+    let goal: String = Reader::default().read_line();
     let mut recipes = Recipes::new(&goal);
     recipes.evolve();
     answer::part1("2103141159", &recipes.part1(goal.parse().unwrap()));

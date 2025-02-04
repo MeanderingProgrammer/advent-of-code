@@ -256,7 +256,7 @@ impl Burrow {
 }
 
 #[derive(Debug)]
-struct Search {}
+struct Search;
 
 impl Dijkstra for Search {
     type T = Burrow;

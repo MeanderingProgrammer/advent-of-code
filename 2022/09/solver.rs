@@ -13,7 +13,7 @@ impl FromStr for Motion {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (direction, amount) = s.split_once(' ').unwrap();
         Ok(Self {
-            direction: Direction::from_str(direction)?,
+            direction: direction.parse()?,
             amount: amount.parse().unwrap(),
         })
     }

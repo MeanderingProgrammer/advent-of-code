@@ -1,13 +1,13 @@
-use aoc::{answer, HashMap, HashSet, Reader};
+use aoc::{answer, HashMap, HashSet, Parser, Reader};
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]
-enum Category {
+enum Kind {
     Immune,
     Infection,
 }
 
-impl Category {
+impl Kind {
     fn enemy(&self) -> Self {
         match self {
             Self::Immune => Self::Infection,
@@ -17,9 +17,9 @@ impl Category {
 }
 
 #[derive(Debug, Clone)]
-struct Group {
+struct Army {
     id: usize,
-    category: Category,
+    kind: Kind,
     units: i64,
     hp: i64,
     weaknesses: HashSet<String>,
@@ -29,7 +29,52 @@ struct Group {
     initiative: i64,
 }
 
-impl Group {
+impl Army {
+    fn new(id: usize, kind: Kind, s: &str) -> Self {
+        // 18 units each with 729 hit points <traits> with an attack that does 8 radiation damage at initiative 10
+        let [units, hp, damage, initiative] = Parser::values(s, " ").unwrap();
+        let [damage_type] = Parser::nth_rev(s, " ", [4]);
+        let mut traits = Self::traits(s);
+        let weaknesses = traits.remove("weak").unwrap_or_default();
+        let immunities = traits.remove("immune").unwrap_or_default();
+        Self {
+            id,
+            kind,
+            units,
+            hp,
+            weaknesses,
+            immunities,
+            damage,
+            damage_type: damage_type.to_string(),
+            initiative,
+        }
+    }
+
+    fn traits(s: &str) -> HashMap<String, HashSet<String>> {
+        // (weak to fire; immune to cold, slashing)
+        match Parser::enclosed(s, '(', ')') {
+            None => HashMap::default(),
+            Some(traits) => traits
+                .split("; ")
+                .map(|item| item.split_once(" to ").unwrap())
+                .map(|(k, v)| {
+                    (
+                        k.to_string(),
+                        v.split(", ").map(|s| s.to_string()).collect(),
+                    )
+                })
+                .collect(),
+        }
+    }
+
+    fn boost(&self, kind: Kind, boost: i64) -> Self {
+        let mut army = self.clone();
+        if army.kind == kind {
+            army.damage += boost
+        }
+        army
+    }
+
     fn dead(&self) -> bool {
         self.units <= 0
     }
@@ -38,7 +83,7 @@ impl Group {
         self.units * self.damage
     }
 
-    fn calculate_damage(&self, o: &Group) -> i64 {
+    fn calculate_damage(&self, o: &Self) -> i64 {
         if o.immunities.contains(&self.damage_type) {
             0
         } else if o.weaknesses.contains(&self.damage_type) {
@@ -52,7 +97,7 @@ impl Group {
         (self.power(), self.initiative)
     }
 
-    fn to_target(&self, o: &Group) -> (i64, i64, i64) {
+    fn to_target(&self, o: &Self) -> (i64, i64, i64) {
         (self.calculate_damage(o), o.power(), o.initiative)
     }
 
@@ -63,75 +108,95 @@ impl Group {
 
 #[derive(Debug)]
 struct Battle {
-    groups: Vec<Group>,
+    armies: Vec<Army>,
 }
 
 impl Battle {
+    fn new(groups: &[Vec<String>]) -> Self {
+        let mut armies = Vec::default();
+        for group in groups[0].iter().skip(1) {
+            armies.push(Army::new(armies.len(), Kind::Immune, group));
+        }
+        for group in groups[1].iter().skip(1) {
+            armies.push(Army::new(armies.len(), Kind::Infection, group));
+        }
+        Self { armies }
+    }
+
+    fn boost_immunity(&self, boost: i64) -> Self {
+        let armies = self
+            .armies
+            .iter()
+            .map(|army| army.boost(Kind::Immune, boost))
+            .collect();
+        Self { armies }
+    }
+
     fn simulate(&mut self) {
-        let mut previous = -1;
-        let mut current = 0;
-        while !self.groups.is_empty() && previous != current {
-            self.attack();
-            previous = current;
-            current = self.winning_units();
+        let (mut previous, mut current) = (-1, 0);
+        while !self.armies.is_empty() && previous != current {
+            self.round();
+            (previous, current) = (current, self.units());
         }
     }
 
-    fn attack(&mut self) {
-        self.groups.sort_by_key(|group| Reverse(group.to_choose()));
-        let mut assignments = self.assign_targets().clone();
-        assignments.sort_by_key(|(id, _)| Reverse(self.get_by_id(*id).initiative));
-        for (group_id, target_id) in assignments.into_iter() {
-            let group = self.get_by_id(group_id).clone();
-            if !group.dead() {
-                let target_index = self.groups.iter().position(|g| g.id == target_id).unwrap();
-                let target = self.groups.get_mut(target_index).unwrap();
-                let damage = group.calculate_damage(target);
-                target.hit(damage);
+    fn round(&mut self) {
+        self.armies.sort_by_key(|army| Reverse(army.to_choose()));
+        let assignments = self.assign_targets();
+        for (_, army_id, target_id) in assignments.into_iter() {
+            let (army, target) = (self.with_id(army_id), self.with_id(target_id));
+            if army.dead() {
+                continue;
             }
+            let damage = army.calculate_damage(target);
+            self.armies
+                .iter_mut()
+                .filter(|a| a.id == target_id)
+                .for_each(|a| a.hit(damage));
         }
-        self.groups.retain(|group| !group.dead());
+        self.armies.retain(|army| !army.dead());
     }
 
-    fn assign_targets(&self) -> Vec<(usize, usize)> {
-        let mut assignments = Vec::default();
-        let mut targets = HashSet::default();
-        for group in self.groups.iter() {
-            match self.get_target(group, &targets) {
+    fn assign_targets(&self) -> Vec<(i64, usize, usize)> {
+        let mut result = Vec::default();
+        let mut used = HashSet::default();
+        for army in self.armies.iter() {
+            match self.get_target(army, &used) {
                 None => (),
                 Some(target) => {
-                    assignments.push((group.id, target.id));
-                    targets.insert(target.id);
+                    result.push((army.initiative, army.id, target.id));
+                    used.insert(target.id);
                 }
             }
         }
-        assignments
+        result.sort_by_key(|(initiative, _, _)| Reverse(*initiative));
+        result
     }
 
-    fn get_target(&self, group: &Group, targets: &HashSet<usize>) -> Option<&Group> {
-        self.get_category(group.category.enemy())
+    fn get_target(&self, army: &Army, used: &HashSet<usize>) -> Option<&Army> {
+        self.with_kind(army.kind.enemy())
             .into_iter()
-            .filter(|target| !targets.contains(&target.id))
-            .filter(|target| group.calculate_damage(target) > 0)
-            .max_by_key(|target| group.to_target(target))
+            .filter(|target| !used.contains(&target.id))
+            .filter(|target| army.calculate_damage(target) > 0)
+            .max_by_key(|target| army.to_target(target))
     }
 
-    fn get_category(&self, c: Category) -> Vec<&Group> {
-        self.groups.iter().filter(|g| g.category == c).collect()
+    fn with_kind(&self, kind: Kind) -> Vec<&Army> {
+        self.armies.iter().filter(|a| a.kind == kind).collect()
     }
 
-    fn get_by_id(&self, id: usize) -> &Group {
-        self.groups.iter().find(|g| g.id == id).unwrap()
+    fn with_id(&self, id: usize) -> &Army {
+        self.armies.iter().find(|a| a.id == id).unwrap()
     }
 
     fn immune_won(&self) -> bool {
-        let immune = self.get_category(Category::Immune);
-        let infection = self.get_category(Category::Infection);
+        let immune = self.with_kind(Kind::Immune);
+        let infection = self.with_kind(Kind::Infection);
         !immune.is_empty() && infection.is_empty()
     }
 
-    fn winning_units(&self) -> i64 {
-        self.groups.iter().map(|group| group.units).sum()
+    fn units(&self) -> i64 {
+        self.armies.iter().map(|army| army.units).sum()
     }
 }
 
@@ -140,63 +205,26 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(16086, part_1());
-    answer::part2(3957, part_2().unwrap());
+    let groups = Reader::default().read_group_lines();
+    let battle = Battle::new(&groups);
+    answer::part1(16086, part_1(&battle));
+    answer::part2(3957, part_2(&battle).unwrap());
 }
 
-fn part_1() -> i64 {
-    let mut battle = get_battle(0);
+fn part_1(battle: &Battle) -> i64 {
+    let mut battle = battle.boost_immunity(0);
     battle.simulate();
-    battle.winning_units()
+    battle.units()
 }
 
-fn part_2() -> Option<i64> {
+fn part_2(battle: &Battle) -> Option<i64> {
     (1..).find_map(|boost| {
-        let mut battle = get_battle(boost);
+        let mut battle = battle.boost_immunity(boost);
         battle.simulate();
         if battle.immune_won() {
-            Some(battle.winning_units())
+            Some(battle.units())
         } else {
             None
         }
     })
-}
-
-fn get_battle(boost: i64) -> Battle {
-    fn parse_group(id: usize, category: Category, raw: &str, boost: i64) -> Group {
-        let mut traits: HashMap<String, HashSet<String>> = HashMap::default();
-        if raw.contains('(') && raw.contains(')') {
-            let (_, raw_traits) = raw.split_once('(').unwrap();
-            let (raw_traits, _) = raw_traits.split_once(')').unwrap();
-            for raw_trait in raw_traits.split("; ") {
-                let (trait_type, trait_values) = raw_trait.split_once(" to ").unwrap();
-                traits.insert(
-                    trait_type.to_string(),
-                    trait_values.split(", ").map(|s| s.to_string()).collect(),
-                );
-            }
-        }
-        let parts: Vec<&str> = raw.split_whitespace().collect();
-        Group {
-            id,
-            category,
-            units: parts[0].parse().unwrap(),
-            hp: parts[4].parse().unwrap(),
-            weaknesses: traits.entry("weak".to_string()).or_default().clone(),
-            immunities: traits.entry("immune".to_string()).or_default().clone(),
-            damage: parts[parts.len() - 6].parse::<i64>().unwrap() + boost,
-            damage_type: parts[parts.len() - 5].to_string(),
-            initiative: parts[parts.len() - 1].parse().unwrap(),
-        }
-    }
-
-    let mut groups = Vec::default();
-    let line_groups = Reader::default().read_group_lines();
-    for value in line_groups[0].iter().skip(1) {
-        groups.push(parse_group(groups.len(), Category::Immune, value, boost));
-    }
-    for value in line_groups[1].iter().skip(1) {
-        groups.push(parse_group(groups.len(), Category::Infection, value, 0));
-    }
-    Battle { groups }
 }

@@ -1,7 +1,9 @@
 use crate::{FromChar, Grid};
 use std::env;
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Cli<'a> {
@@ -82,22 +84,28 @@ impl Reader {
         self.read(|line| line.to_string())
     }
 
-    pub fn read_line(&self) -> String {
-        self.read_lines().remove(0)
-    }
-
     pub fn read_csv(&self) -> Vec<i64> {
-        self.read_line().split(',').map(Self::to_int).collect()
+        let line: String = self.read_line();
+        line.split(',').map(Self::to_int).collect()
     }
 
     pub fn read_chars(&self) -> Vec<char> {
-        self.read_line().chars().collect()
+        let line: String = self.read_line();
+        line.chars().collect()
+    }
+
+    pub fn read_line<T>(&self) -> T
+    where
+        T: FromStr,
+        T::Err: Debug,
+    {
+        self.read_from_str().remove(0)
     }
 
     pub fn read_from_str<T>(&self) -> Vec<T>
     where
-        T: std::str::FromStr,
-        T::Err: std::fmt::Debug,
+        T: FromStr,
+        T::Err: Debug,
     {
         self.read(|line| line.parse().unwrap())
     }

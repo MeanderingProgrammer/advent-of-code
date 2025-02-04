@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -58,24 +58,21 @@ impl FromStr for Monkey {
         //    If false: throw to monkey 6
 
         let lines: Vec<&str> = s.lines().collect();
-        let (_, items) = lines[1].split_once(": ").unwrap();
-        let op_val: Vec<&str> = lines[2].split_whitespace().collect();
-        let divisible_by = lines[3].split_whitespace().last().unwrap();
-        let true_monkey = lines[4].split_whitespace().last().unwrap();
-        let false_monkey = lines[5].split_whitespace().last().unwrap();
+        let [items] = Parser::nth(lines[1], ": ", [1]);
+        let [operation, value] = Parser::nth_rev(lines[2], " ", [1, 0]);
+        let [divisible_by] = Parser::values(lines[3], " ").unwrap();
+        let [true_monkey] = Parser::values(lines[4], " ").unwrap();
+        let [false_monkey] = Parser::values(lines[5], " ").unwrap();
 
         Ok(Self {
             items: items
                 .split(", ")
                 .map(|item| item.parse().unwrap())
                 .collect(),
-            operation: (
-                op_val[op_val.len() - 2].parse().unwrap(),
-                op_val[op_val.len() - 1].parse().unwrap(),
-            ),
-            divisible_by: divisible_by.parse().unwrap(),
-            true_monkey: true_monkey.parse().unwrap(),
-            false_monkey: false_monkey.parse().unwrap(),
+            operation: (operation.parse().unwrap(), value.parse().unwrap()),
+            divisible_by,
+            true_monkey,
+            false_monkey,
             inspections: 0,
         })
     }

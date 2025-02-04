@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Convert, Reader};
 
 #[derive(Debug)]
 struct Transmission {
@@ -10,7 +10,7 @@ impl Transmission {
         Self {
             digits: digits
                 .chars()
-                .map(|ch| ch.to_digit(10).unwrap() as i64)
+                .map(|ch| Convert::idx_int(ch) as i64)
                 .collect(),
         }
     }
@@ -60,13 +60,12 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(77038830, apply_fft(1, false));
-    answer::part2(28135104, apply_fft(10_000, true));
+    let line: String = Reader::default().read_line();
+    answer::part1(77038830, apply_fft(line.clone(), 1, false));
+    answer::part2(28135104, apply_fft(line.clone(), 10_000, true));
 }
 
-fn apply_fft(repeats: usize, apply_offset: bool) -> usize {
-    let lines = Reader::default().read_lines();
-    let line = lines.first().unwrap();
+fn apply_fft(line: String, repeats: usize, apply_offset: bool) -> usize {
     let mut digits = line.repeat(repeats);
     if apply_offset {
         digits = digits[first_n(&digits, 7)..].to_string();

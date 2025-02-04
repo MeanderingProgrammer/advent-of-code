@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashMap, HashSet, Reader};
+use aoc::{answer, Convert, HashMap, HashSet, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -113,8 +113,8 @@ fn get_state(s: &str) -> (u8, usize) {
     // Begin in state A.
     // Perform a diagnostic checksum after 12425180 steps.
     let lines: Vec<&str> = s.lines().collect();
-    let steps = lines[1].split_whitespace().nth(5).unwrap();
-    (to_state(lines[0]), steps.parse().unwrap())
+    let [steps] = Parser::values(lines[1], " ").unwrap();
+    (to_state(lines[0]), steps)
 }
 
 fn get_rule(s: &str) -> (u8, Rule) {
@@ -125,10 +125,9 @@ fn get_rule(s: &str) -> (u8, Rule) {
 }
 
 fn to_state(s: &str) -> u8 {
-    Convert::idx_upper(last_word(s).chars().next().unwrap())
+    Convert::idx_upper(Convert::ch(last_word(s)))
 }
 
 fn last_word(s: &str) -> &str {
-    let word = s.split_whitespace().last().unwrap();
-    &word[..word.len() - 1]
+    Parser::nth_rev(s, " ", [0])[0]
 }

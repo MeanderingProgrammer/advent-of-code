@@ -71,7 +71,7 @@ fn main() {
 }
 
 fn solution() {
-    let prefix = Reader::default().read_line();
+    let prefix: String = Reader::default().read_line();
     answer::part1(15168, generate(&prefix, 0));
     answer::part2(20864, generate(&prefix, 2_016));
 }

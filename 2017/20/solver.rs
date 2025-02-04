@@ -1,4 +1,4 @@
-use aoc::{answer, HashSet, Point3d, Reader};
+use aoc::{answer, HashSet, Parser, Point3d, Reader};
 
 #[derive(Debug, Clone)]
 struct Particle {
@@ -10,17 +10,13 @@ struct Particle {
 
 impl Particle {
     fn from_str(id: usize, s: &str) -> Self {
-        fn parse_point(s: &str) -> Point3d {
-            // _=<-119,22,36>
-            s[3..s.len() - 1].parse().unwrap()
-        }
         // p=<point>, v=<point>, a=<point>
-        let points: Vec<&str> = s.split(", ").collect();
+        let [position, velocity, acceleration] = Parser::values(s, ", ").unwrap();
         Self {
             id,
-            position: parse_point(points[0]),
-            velocity: parse_point(points[1]),
-            acceleration: parse_point(points[2]),
+            position,
+            velocity,
+            acceleration,
         }
     }
 

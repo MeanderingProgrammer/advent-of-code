@@ -24,7 +24,7 @@ fn main() {
 }
 
 fn solution() {
-    let step_size = Reader::default().read_int()[0] as usize;
+    let step_size = Reader::default().read_line();
     answer::part1(996, after_last(step_size, 2_017));
     answer::part2(1898341, after_zero(step_size, 50_000_000));
 }

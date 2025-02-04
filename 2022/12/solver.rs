@@ -40,14 +40,13 @@ fn main() {
 }
 
 fn solution() {
-    let (search, start) = get_search();
+    let grid = Reader::default().read_grid();
+    let (search, start) = get_search(grid);
     answer::part1(472, search.bfs(start).first().cloned().unwrap());
     answer::part2(465, search.shortest(index('a')).unwrap());
 }
 
-fn get_search() -> (Search, Point) {
-    let mut grid: Grid<u8> = Reader::default().read_grid();
-
+fn get_search(mut grid: Grid<u8>) -> (Search, Point) {
     let start = grid.value(&index('S'));
     grid.add(start.clone(), index('a'));
 

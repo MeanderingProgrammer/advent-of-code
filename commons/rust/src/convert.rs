@@ -19,7 +19,7 @@ impl FromChar for u8 {
 }
 
 #[derive(Debug)]
-pub struct Convert {}
+pub struct Convert;
 
 impl Convert {
     pub fn idx_int(ch: char) -> u8 {
@@ -32,6 +32,14 @@ impl Convert {
 
     pub fn idx_upper(ch: char) -> u8 {
         (ch as u8) - b'A'
+    }
+
+    pub fn char_lower(idx: u8) -> char {
+        (idx + b'a') as char
+    }
+
+    pub fn ch(s: &str) -> char {
+        s.chars().next().unwrap()
     }
 
     pub fn idx_lower_str(s: &str) -> u32 {

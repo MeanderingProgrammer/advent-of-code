@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -11,11 +11,8 @@ impl FromStr for Section {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (start, end) = s.split_once('-').unwrap();
-        Ok(Self {
-            start: start.parse().unwrap(),
-            end: end.parse().unwrap(),
-        })
+        let [start, end] = Parser::values(s, "-").unwrap();
+        Ok(Self { start, end })
     }
 }
 
@@ -41,11 +38,8 @@ impl FromStr for Assignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (section_1, section_2) = s.split_once(',').unwrap();
-        Ok(Self {
-            first: section_1.parse()?,
-            second: section_2.parse()?,
-        })
+        let [first, second] = Parser::values(s, ",").unwrap();
+        Ok(Self { first, second })
     }
 }
 

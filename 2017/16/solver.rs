@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{answer, Convert, Iter, Parser, Reader};
 use std::collections::VecDeque;
 use std::fmt;
 use std::str::FromStr;
@@ -19,15 +19,12 @@ impl FromStr for Instruction {
         match op {
             "s" => Ok(Self::Spin(s.parse().unwrap())),
             "x" => {
-                let (l, r) = s.split_once('/').unwrap();
-                Ok(Self::Exchange(l.parse().unwrap(), r.parse().unwrap()))
+                let [l, r] = Parser::values(s, "/").unwrap();
+                Ok(Self::Exchange(l, r))
             }
             "p" => {
-                let (l, r) = s.split_once('/').unwrap();
-                Ok(Self::Partner(
-                    l.chars().next().unwrap(),
-                    r.chars().next().unwrap(),
-                ))
+                let [l, r] = Parser::all(s, "/").unwrap();
+                Ok(Self::Partner(Convert::ch(l), Convert::ch(r)))
             }
             _ => Err(format!("Uknown op: {op}")),
         }
@@ -78,8 +75,8 @@ fn main() {
 }
 
 fn solution() {
-    let line = Reader::default().read_line();
-    let instructions: Vec<_> = line.split(',').map(|s| s.parse().unwrap()).collect();
+    let line: String = Reader::default().read_line();
+    let instructions = line.split(',').map(|s| s.parse().unwrap()).vec();
     let pattern = get_pattern(&instructions);
     answer::part1("eojfmbpkldghncia", &pattern[1]);
     answer::part2("iecopnahgdflmkjb", &pattern[1_000_000_000 % pattern.len()]);

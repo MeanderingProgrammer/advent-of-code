@@ -39,7 +39,8 @@ fn test_lines() {
 
 #[test]
 fn test_line() {
-    assert_eq!("abcd", reader("string-line.txt").read_line());
+    let line: String = reader("string-line.txt").read_line();
+    assert_eq!("abcd", line);
 }
 
 #[test]

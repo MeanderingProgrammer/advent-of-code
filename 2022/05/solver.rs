@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Reader};
+use aoc::{answer, HashMap, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -12,12 +12,8 @@ impl FromStr for Instruction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(' ').collect();
-        Ok(Self {
-            amount: parts[1].parse().unwrap(),
-            from: parts[3].parse().unwrap(),
-            to: parts[5].parse().unwrap(),
-        })
+        let [amount, from, to] = Parser::values(s, " ").unwrap();
+        Ok(Self { amount, from, to })
     }
 }
 

@@ -1,6 +1,6 @@
 use aoc::{answer, FromChar, Grid, HashMap, Point, Reader};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 enum State {
     Open,
     Tree,
@@ -72,14 +72,13 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(515496, run(10));
-    answer::part2(233058, run(1_000_000_000));
+    let grid = Reader::default().read_grid();
+    answer::part1(515496, run(grid.clone(), 10));
+    answer::part2(233058, run(grid.clone(), 1_000_000_000));
 }
 
-fn run(n: usize) -> usize {
-    let mut landscape = Landscape {
-        grid: Reader::default().read_grid(),
-    };
+fn run(grid: Grid<State>, n: usize) -> usize {
+    let mut landscape = Landscape { grid };
     let mut scores = vec![landscape.resource_value()];
     for _ in 0..n {
         landscape.step();

@@ -10,9 +10,8 @@ impl FromStr for Backpack {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self {
-            content: s.to_string(),
-        })
+        let content = s.to_string();
+        Ok(Self { content })
     }
 }
 

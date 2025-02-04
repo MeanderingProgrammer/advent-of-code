@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -99,17 +99,12 @@ impl FromStr for Blueprint {
         //  Each clay robot costs 2 ore.
         //  Each obsidian robot costs 3 ore and 14 clay.
         //  Each geode robot costs 2 ore and 7 obsidian.
-        let (id, minerals) = s.split_once(": ").unwrap();
-        let (_, id) = id.split_once(' ').unwrap();
-        let minerals: Vec<u8> = minerals
-            .split_whitespace()
-            .filter_map(|s| s.parse().ok())
-            .collect();
-
-        assert_eq!(6, minerals.len());
-        let [ore1, ore2, ore3, clay, ore4, obsidian] = <[u8; 6]>::try_from(&minerals[..]).unwrap();
+        let [id, minerals] = Parser::all(s, ": ").unwrap();
+        let [id] = Parser::values(id, " ").unwrap();
+        let [ore1, ore2, ore3, clay, ore4, obsidian]: [u8; 6] =
+            Parser::values(minerals, " ").unwrap();
         Ok(Self {
-            id: id.parse().unwrap(),
+            id,
             max_ore: ore1.max(ore2).max(ore3).max(ore4),
             max_clay: clay,
             max_obsidian: obsidian,

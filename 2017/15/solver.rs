@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 use rayon::prelude::*;
 
 #[derive(Debug)]
@@ -39,12 +39,10 @@ fn main() {
 }
 
 fn solution() {
-    let starts: Vec<usize> = Reader::default()
-        .read_lines()
-        .iter()
-        .map(|line| line.split(' ').last().unwrap().parse().unwrap())
-        .collect();
-    let generators = [(starts[0], 16_807, 4), (starts[1], 48_271, 8)];
+    let lines = Reader::default().read_lines();
+    let [a] = Parser::values(&lines[0], " ").unwrap();
+    let [b] = Parser::values(&lines[1], " ").unwrap();
+    let generators = [(a, 16_807, 4), (b, 48_271, 8)];
     let values: Vec<(Vec<u16>, Vec<u16>)> = generators
         .into_par_iter()
         .map(|(value, factor, multiple)| Gen { value, factor }.compute(multiple))

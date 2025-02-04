@@ -1,6 +1,5 @@
-use aoc::{answer, HashSet, Point, Reader};
+use aoc::{answer, HashSet, Iter, Point, Reader};
 use std::collections::VecDeque;
-use std::fmt::Write;
 
 #[derive(Debug)]
 struct Knot {
@@ -26,11 +25,9 @@ impl Knot {
         self.q.rotate_right(skipped % self.q.len());
         self.dense_hash()
             .chars()
-            .map(|ch| u32::from_str_radix(&ch.to_string(), 16))
-            .fold(String::default(), |mut output, hex_bytes| {
-                let _ = write!(output, "{:04b}", hex_bytes.unwrap());
-                output
-            })
+            .map(|ch| u32::from_str_radix(&ch.to_string(), 16).unwrap())
+            .map(|hex_bytes| format!("{:04b}", hex_bytes))
+            .join("")
     }
 
     fn run(&mut self) {
@@ -44,17 +41,18 @@ impl Knot {
     }
 
     fn dense_hash(&self) -> String {
-        self.q.iter().collect::<Vec<&usize>>().chunks(16).fold(
-            String::default(),
-            |mut output, chunk| {
+        self.q
+            .iter()
+            .collect::<Vec<&usize>>()
+            .chunks(16)
+            .map(|chunk| {
                 let mut hashed = 0;
-                for &value in chunk {
-                    hashed ^= value;
+                for value in chunk {
+                    hashed ^= *value;
                 }
-                let _ = write!(output, "{hashed:02x}");
-                output
-            },
-        )
+                format!("{hashed:02x}")
+            })
+            .join("")
     }
 }
 

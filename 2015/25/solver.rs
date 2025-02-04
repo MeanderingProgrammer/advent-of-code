@@ -1,23 +1,14 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Parser, Reader};
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let line = Reader::default().read_line();
-    let (row, column) = parse_line(&line);
+    let line: String = Reader::default().read_line();
+    let [row, column] = Parser::values(&line, " ").unwrap();
     let index = get_index(row, column);
     answer::part1(19980801, get_password(index));
-}
-
-fn parse_line(s: &str) -> (i64, i64) {
-    let words: Vec<&str> = s.split_whitespace().collect();
-    let (row, column) = (words[words.len() - 3], words[words.len() - 1]);
-    (
-        row[..row.len() - 1].parse().unwrap(),
-        column[..column.len() - 1].parse().unwrap(),
-    )
 }
 
 fn get_index(row: i64, column: i64) -> i64 {

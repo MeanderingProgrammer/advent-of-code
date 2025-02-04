@@ -40,7 +40,7 @@ pub trait Bus {
 }
 
 #[derive(Debug, Default)]
-pub struct NoopBus {}
+pub struct NoopBus;
 
 impl Bus for NoopBus {
     fn active(&self) -> bool {
