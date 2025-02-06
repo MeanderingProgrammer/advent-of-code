@@ -121,7 +121,7 @@ fn main() {
 }
 
 fn solution() {
-    let steps = Reader::default().read_from_str();
+    let steps = Reader::default().lines();
     let steps = final_steps(steps);
     answer::part1(561032, total(&initialization(&steps)));
     answer::part2(1322825263376414, total(&steps));

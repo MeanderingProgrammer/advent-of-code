@@ -76,7 +76,7 @@ fn main() {
 }
 
 fn solution() {
-    let points: Vec<Point3d> = Reader::default().read_from_str();
+    let points: Vec<Point3d> = Reader::default().lines();
     let grid = Grid {
         points: points.into_iter().collect(),
     };

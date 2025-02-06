@@ -186,7 +186,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let search = Compress { grid }.collapse();
     answer::part1(2154, search.run(true));
     answer::part2(6654, search.run(false));

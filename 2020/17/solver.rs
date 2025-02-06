@@ -74,7 +74,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(284, simulate::<3>(&grid));
     answer::part2(2240, simulate::<4>(&grid));
 }

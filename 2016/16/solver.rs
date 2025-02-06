@@ -6,7 +6,7 @@ fn main() {
 
 fn solution() {
     let curve: Vec<bool> = Reader::default()
-        .read_chars()
+        .chars()
         .iter()
         .map(|&ch| ch == '1')
         .collect();

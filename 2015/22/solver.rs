@@ -271,7 +271,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let settings = Settings::new(&lines);
     answer::part1(1269, settings.run(settings.game(0)).unwrap());
     answer::part2(1309, settings.run(settings.game(1)).unwrap());

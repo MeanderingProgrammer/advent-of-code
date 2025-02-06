@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let map = Map { grid };
     let results = map.results();
     answer::part1(1533, results.iter().filter(|score| score.1).count());

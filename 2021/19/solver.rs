@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Point3d, Reader};
+use aoc::{answer, HashMap, HashSet, Iter, Point3d, Reader};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -113,8 +113,8 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
-    let scanners: Vec<Scanner> = groups.iter().map(|lines| Scanner::new(lines)).collect();
+    let groups = Reader::default().groups();
+    let scanners = groups.iter().map(|lines| Scanner::new(lines)).vec();
     let joined = join_scanners(scanners);
     answer::part1(512, joined.points.len());
     answer::part2(16802, joined.largest_distance());

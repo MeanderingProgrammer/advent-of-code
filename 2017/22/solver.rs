@@ -76,7 +76,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines: Vec<String> = Reader::default().lines();
     let mut grid: HashMap<Point, State> = HashMap::default();
     for (y, line) in lines.iter().enumerate() {
         for (x, ch) in line.char_indices() {

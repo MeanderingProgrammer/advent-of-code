@@ -94,7 +94,7 @@ fn main() {
 }
 
 fn solution() {
-    let coverage = Reader::default().read_from_str();
+    let coverage = Reader::default().lines();
     answer::part1(5809294, covered_range(&coverage, 2_000_000).len());
     answer::part2(10693731308112, tuning_frequency(&coverage, 4_000_000));
 }

@@ -88,7 +88,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = Reader::default().read_from_str();
+    let values = Reader::default().lines();
     let power_grid = PowerGrid::new(values[0], 300);
     let largest_3 = power_grid.get_largest(3);
     answer::part1(Point::new(243, 43), Point::new(largest_3.0, largest_3.1));

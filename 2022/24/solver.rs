@@ -125,7 +125,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut valley = Valley::new(Reader::default().read_grid());
+    let mut valley = Valley::new(Reader::default().grid());
     let (start, end) = (valley.start.clone(), valley.end.clone());
     let to_end = valley.search(&start, &end).unwrap();
     let to_start = valley.search(&end, &start).unwrap();

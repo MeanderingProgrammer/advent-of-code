@@ -52,7 +52,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(8901, part1(&grid));
     answer::part2(9064, part2(&grid));
 }

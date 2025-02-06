@@ -26,7 +26,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     answer::part1(3512778005, run(&memory, 1));
     answer::part2(35920, run(&memory, 2));
 }

@@ -69,7 +69,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     let mut tester = Tester {
         memory,
         beam_starts: HashMap::default(),

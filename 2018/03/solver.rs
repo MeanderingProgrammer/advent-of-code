@@ -50,7 +50,7 @@ fn main() {
 }
 
 fn solution() {
-    let claims: Vec<Claim> = Reader::default().read_from_str();
+    let claims: Vec<Claim> = Reader::default().lines();
     let ids: HashSet<usize> = claims.iter().map(|claim| claim.id).collect();
     let result = overlaps(&claims);
     answer::part1(120408, result.points.len());

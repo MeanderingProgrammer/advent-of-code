@@ -41,7 +41,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     answer::part1(
         19357761,
         run_droid(

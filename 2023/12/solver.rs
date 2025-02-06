@@ -109,7 +109,7 @@ fn main() {
 }
 
 fn solution() {
-    let rows = Reader::default().read_from_str();
+    let rows = Reader::default().lines();
     let mut cache = HashMap::default();
     answer::part1(8075, run(&rows, &mut cache, 1));
     answer::part2(4232520187524, run(&rows, &mut cache, 5));

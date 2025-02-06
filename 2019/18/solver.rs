@@ -104,7 +104,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(5402, solve(grid.clone()));
     answer::part2(2138, solve(split(grid.clone())));
 }

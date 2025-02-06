@@ -34,7 +34,7 @@ fn main() {
 }
 
 fn solution() {
-    let weights = Reader::default().read_from_str();
+    let weights = Reader::default().lines();
     let organizer = Organizer { weights };
     answer::part1(10439961859, organizer.run(3));
     answer::part2(72050269, organizer.run(4));

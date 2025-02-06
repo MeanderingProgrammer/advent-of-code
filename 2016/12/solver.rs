@@ -6,7 +6,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = Reader::default().read_from_str();
+    let instructions = Reader::default().lines();
     answer::part1(318117, run(&instructions, false));
     answer::part2(9227771, run(&instructions, true));
 }

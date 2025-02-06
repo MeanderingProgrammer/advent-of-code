@@ -83,7 +83,7 @@ fn main() {
 }
 
 fn solution() {
-    let points = Reader::default().read_from_str();
+    let points = Reader::default().lines();
     let coordinates = Coordinates::new(points);
     answer::part1(3251, coordinates.largest_finite());
     answer::part2(47841, coordinates.within(10_000));

@@ -81,7 +81,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
     let image = Image::new(&groups);
     answer::part1(5437, after(&image, 2));
     answer::part2(19340, after(&image, 50));

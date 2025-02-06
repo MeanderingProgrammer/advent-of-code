@@ -1,19 +1,19 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Iter, Reader};
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let data = Reader::default().read_chars();
-    let starting_row: Vec<bool> = data.into_iter().map(|ch| ch == '.').collect();
-    answer::part1(2013, total_safe(starting_row.clone(), 40));
-    answer::part2(20006289, total_safe(starting_row.clone(), 400_000));
+    let data = Reader::default().chars();
+    let row = data.into_iter().map(|ch| ch == '.').vec();
+    answer::part1(2013, total_safe(&row, 40));
+    answer::part2(20006289, total_safe(&row, 400_000));
 }
 
-fn total_safe(starting_row: Vec<bool>, rounds: usize) -> usize {
+fn total_safe(row: &[bool], rounds: usize) -> usize {
     let mut safe = 0;
-    let mut row = starting_row;
+    let mut row = row.to_vec();
     for _ in 0..rounds {
         safe += row.iter().filter(|&&v| v).count();
         row = next_row(&row);

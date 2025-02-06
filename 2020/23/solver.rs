@@ -72,7 +72,7 @@ fn main() {
 
 fn solution() {
     let values: Vec<usize> = Reader::default()
-        .read_chars()
+        .chars()
         .into_iter()
         .map(|ch| Convert::idx_int(ch) as usize)
         .collect();

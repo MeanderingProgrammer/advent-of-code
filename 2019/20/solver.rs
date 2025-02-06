@@ -192,7 +192,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let graph = Maze::new(&lines).graph();
     answer::part1(628, solve(&graph, false));
     answer::part2(7506, solve(&graph, true));

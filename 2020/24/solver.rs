@@ -123,7 +123,7 @@ fn main() {
 fn solution() {
     let mut floor = Floor::default();
     Reader::default()
-        .read_lines()
+        .lines()
         .into_iter()
         .for_each(|path| floor.follow(path));
     let part1 = floor.black();

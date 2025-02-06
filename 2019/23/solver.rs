@@ -139,7 +139,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     let mut network = Network::new(memory);
     let history = network.run_until_repeat();
     answer::part1(16549, *history.first().unwrap());

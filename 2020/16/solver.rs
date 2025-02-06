@@ -74,7 +74,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups: Vec<Vec<String>> = Reader::default().groups();
     let rules: Vec<Rule> = groups[0].iter().map(|line| line.parse().unwrap()).collect();
     let mine: Ticket = groups[1][1].parse().unwrap();
     let nearby: Vec<Ticket> = groups[2]

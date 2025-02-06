@@ -49,7 +49,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     answer::part1(363, play_game(&memory, false));
     answer::part2(17159, play_game(&memory, true));
 }

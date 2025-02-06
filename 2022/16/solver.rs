@@ -172,7 +172,7 @@ fn main() {
 }
 
 fn solution() {
-    let valves = Reader::default().read_from_str();
+    let valves = Reader::default().lines();
     let cave = create_cave(valves, Valve::index("AA"));
     answer::part1(1873, cave.traverse::<1>(30));
     answer::part2(2425, cave.traverse::<2>(26));

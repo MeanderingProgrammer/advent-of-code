@@ -83,7 +83,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let graph = get_graph(&lines);
     answer::part1(3497, paths(graph.clone(), true));
     answer::part2(93686, paths(graph.clone(), false));

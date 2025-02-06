@@ -115,7 +115,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let mut race = Race::new(grid);
     race.solve();
     answer::part1(1399, race.cheats(100, 2));

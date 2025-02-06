@@ -58,7 +58,7 @@ fn main() {
 }
 
 fn solution() {
-    let jets = Reader::default().read_chars();
+    let jets = Reader::default().chars();
 
     let shapes = [
         // ####

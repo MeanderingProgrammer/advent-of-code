@@ -153,8 +153,8 @@ fn main() {
 }
 
 fn solution() {
-    let bricks: Vec<Brick> = Reader::default()
-        .read_lines()
+    let lines: Vec<String> = Reader::default().lines();
+    let bricks: Vec<Brick> = lines
         .iter()
         .enumerate()
         .map(|(id, s)| Brick::new(id, s))

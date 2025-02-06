@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let capacities = Reader::default().read_int();
+    let capacities = Reader::default().lines();
     let options = get_options(&capacities, 150);
     answer::part1(1304, options.len());
     answer::part2(18, num_min(&options));

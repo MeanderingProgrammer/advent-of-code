@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashMap, HashSet, Parser, Reader};
+use aoc::{answer, Convert, HashMap, HashSet, Iter, Parser, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -15,13 +15,13 @@ impl FromStr for Behavior {
         //    - Write the value 1.
         //    - Move one slot to the right.
         //    - Continue with state B.
-        let lines: Vec<&str> = s.lines().collect();
-        let write = match last_word(lines[0]) {
+        let [write, direction, state] = s.lines().array().unwrap();
+        let write = match last_word(write) {
             "0" => Ok(false),
             "1" => Ok(true),
             _ => Err(String::from("unhandled write")),
         };
-        let direction = match last_word(lines[1]) {
+        let direction = match last_word(direction) {
             "left" => Ok(-1),
             "right" => Ok(1),
             _ => Err(String::from("unhandled direction")),
@@ -29,7 +29,7 @@ impl FromStr for Behavior {
         Ok(Self {
             write: write?,
             direction: direction?,
-            next: to_state(lines[2]),
+            next: to_state(state),
         })
     }
 }
@@ -48,9 +48,9 @@ impl FromStr for Rule {
         //  <Behavior>
         //  If the current value is 1:
         //  <Behavior>
-        let lines: Vec<&str> = s.lines().collect();
-        let zero = Behavior::from_str(&lines[1..4].join("\n"))?;
-        let one = Behavior::from_str(&lines[5..8].join("\n"))?;
+        let lines = s.lines().vec();
+        let zero = lines[1..4].join("\n").parse()?;
+        let one = lines[5..8].join("\n").parse()?;
         Ok(Self { zero, one })
     }
 }
@@ -95,7 +95,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_full_groups();
+    let groups = Reader::default().full_groups();
     let (state, steps) = get_state(&groups[0]);
     let mut machine = TuringMachine {
         state,
@@ -112,9 +112,9 @@ fn solution() {
 fn get_state(s: &str) -> (u8, usize) {
     // Begin in state A.
     // Perform a diagnostic checksum after 12425180 steps.
-    let lines: Vec<&str> = s.lines().collect();
-    let [steps] = Parser::values(lines[1], " ").unwrap();
-    (to_state(lines[0]), steps)
+    let [state, steps] = s.lines().array().unwrap();
+    let [steps] = Parser::values(steps, " ").unwrap();
+    (to_state(state), steps)
 }
 
 fn get_rule(s: &str) -> (u8, Rule) {

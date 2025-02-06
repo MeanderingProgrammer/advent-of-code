@@ -49,7 +49,7 @@ fn main() {
 }
 
 fn solution() {
-    let prefix = Reader::default().read_line();
+    let prefix = Reader::default().line();
     let password = get_password(prefix);
     answer::part1("d4cd2ee1", &to_hex(&password.part_1()));
     answer::part2("f2c730e5", &to_hex(&password.part_2()));

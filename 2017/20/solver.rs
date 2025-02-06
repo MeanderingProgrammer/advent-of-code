@@ -40,8 +40,8 @@ fn main() {
 }
 
 fn solution() {
-    let particles: Vec<Particle> = Reader::default()
-        .read_lines()
+    let lines: Vec<String> = Reader::default().lines();
+    let particles: Vec<Particle> = lines
         .into_iter()
         .enumerate()
         .map(|(i, line)| Particle::from_str(i, &line))

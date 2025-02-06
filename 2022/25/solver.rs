@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let snafu_numbers = Reader::default().read_lines();
+    let snafu_numbers: Vec<String> = Reader::default().lines();
     let total_fuel: i64 = snafu_numbers
         .iter()
         .map(|snafu_number| to_decimal(snafu_number))

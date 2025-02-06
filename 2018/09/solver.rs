@@ -40,7 +40,7 @@ fn main() {
 }
 
 fn solution() {
-    let line: String = Reader::default().read_line();
+    let line: String = Reader::default().line();
     // <number> players; last marble is worth <number> points
     let [players, value] = Parser::values(&line, " ").unwrap();
     answer::part1(429943, solve(players, value));

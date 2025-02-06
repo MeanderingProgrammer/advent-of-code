@@ -1,3 +1,4 @@
+use crate::Iter;
 use std::fmt::Debug;
 use std::str::FromStr;
 
@@ -9,13 +10,7 @@ impl Parser {
     where
         P: AsRef<str>,
     {
-        let values = Self::normalize(s, pat);
-        if values.len() != N {
-            None
-        } else {
-            let mut iter = values.into_iter();
-            Some(std::array::from_fn(|_| iter.next().unwrap()))
-        }
+        Self::normalize(s, pat).into_iter().array()
     }
 
     pub fn values<const N: usize, P, T>(s: &str, pat: P) -> Option<[T; N]>
@@ -23,16 +18,10 @@ impl Parser {
         P: AsRef<str>,
         T: FromStr,
     {
-        let values: Vec<T> = Self::normalize(s, pat)
-            .iter()
+        Self::normalize(s, pat)
+            .into_iter()
             .flat_map(|s| s.parse())
-            .collect();
-        if values.len() != N {
-            None
-        } else {
-            let mut iter = values.into_iter();
-            Some(std::array::from_fn(|_| iter.next().unwrap()))
-        }
+            .array()
     }
 
     pub fn nth<const N: usize, P>(s: &str, pat: P, ns: [usize; N]) -> [&str; N]

@@ -68,7 +68,8 @@ fn main() {
 }
 
 fn solution() {
-    let mut generator = PasswordGenerator::new(Reader::default().read_line());
+    let value = Reader::default().line();
+    let mut generator = PasswordGenerator::new(value);
     answer::part1("hxbxxyzz", &run(&mut generator));
     answer::part2("hxcaabcc", &run(&mut generator));
 }

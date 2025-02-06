@@ -33,7 +33,7 @@ fn main() {
 }
 
 fn solution() {
-    let disks = Reader::default().read_from_str();
+    let disks = Reader::default().lines();
     answer::part1(121834, calculate(disks.clone(), false));
     answer::part2(3208099, calculate(disks.clone(), true));
 }

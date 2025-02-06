@@ -50,77 +50,63 @@ impl Reader {
         Self { path }
     }
 
-    pub fn read_group_int(&self) -> Vec<Vec<i64>> {
-        self.read_groups(Self::to_int)
+    pub fn grid<T: FromChar>(&self) -> Grid<T> {
+        (&self.lines()).into()
     }
 
-    pub fn read_group_lines(&self) -> Vec<Vec<String>> {
-        self.read_groups(|item| item.to_string())
+    pub fn chars(&self) -> Vec<char> {
+        let line: String = self.line();
+        line.chars().collect()
     }
 
-    pub fn read_groups<T>(&self, f: fn(&str) -> T) -> Vec<Vec<T>> {
-        self.read_lines()
+    pub fn csv<T>(&self) -> Vec<T>
+    where
+        T: FromStr,
+        T::Err: Debug,
+    {
+        let line: String = self.line();
+        line.split(',').map(|s| s.parse().unwrap()).collect()
+    }
+
+    pub fn groups<T>(&self) -> Vec<Vec<T>>
+    where
+        T: FromStr,
+        T::Err: Debug,
+    {
+        let lines: Vec<String> = self.lines();
+        lines
             .split(|line| line.is_empty())
-            .map(|group| group.iter().map(|item| f(item)).collect())
+            .map(|lines| lines.iter().map(|s| s.parse().unwrap()).collect())
             .collect()
     }
 
-    pub fn read_full_groups(&self) -> Vec<String> {
-        self.read_lines()
+    pub fn full_groups(&self) -> Vec<String> {
+        let lines: Vec<String> = self.lines();
+        lines
             .split(|line| line.is_empty())
             .map(|group| group.join("\n"))
             .collect()
     }
 
-    pub fn read_grid<T: FromChar>(&self) -> Grid<T> {
-        (&self.read_lines()).into()
-    }
-
-    pub fn read_int(&self) -> Vec<i64> {
-        self.read_from_str()
-    }
-
-    pub fn read_lines(&self) -> Vec<String> {
-        self.read(|line| line.to_string())
-    }
-
-    pub fn read_csv(&self) -> Vec<i64> {
-        let line: String = self.read_line();
-        line.split(',').map(Self::to_int).collect()
-    }
-
-    pub fn read_chars(&self) -> Vec<char> {
-        let line: String = self.read_line();
-        line.chars().collect()
-    }
-
-    pub fn read_line<T>(&self) -> T
+    pub fn line<T>(&self) -> T
     where
         T: FromStr,
         T::Err: Debug,
     {
-        self.read_from_str().remove(0)
+        self.lines().remove(0)
     }
 
-    pub fn read_from_str<T>(&self) -> Vec<T>
+    pub fn lines<T>(&self) -> Vec<T>
     where
         T: FromStr,
         T::Err: Debug,
     {
-        self.read(|line| line.parse().unwrap())
-    }
-
-    fn read<T>(&self, f: fn(&str) -> T) -> Vec<T> {
         match File::open(&self.path) {
             Ok(file) => BufReader::new(file)
                 .lines()
-                .map(|line| f(&line.unwrap()))
+                .map(|s| s.unwrap().parse().unwrap())
                 .collect(),
             Err(_) => panic!("Could not open: {}", self.path),
         }
-    }
-
-    fn to_int(value: &str) -> i64 {
-        value.trim().parse().unwrap()
     }
 }

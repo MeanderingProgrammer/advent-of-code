@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let jumps = Reader::default().read_int();
+    let jumps = Reader::default().lines();
     answer::part1(373160, run(&jumps, |v| v + 1));
     answer::part2(
         26395586,

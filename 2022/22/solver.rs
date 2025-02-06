@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, FromChar, Grid, HashMap, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Parser, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -234,13 +234,15 @@ fn main() {
 }
 
 fn solution() {
-    let (cube, instructions) = get_input();
+    let data = Reader::default().groups();
+    let cube = Cube::new(&data[0]);
+    let instructions = parse_instructions(&data[1][0]);
     answer::part1(
         3590,
         simulate(
             &cube,
             &instructions,
-            parse_mappings(vec![
+            parse_mappings(&[
                 // This will differ for different inputs
                 "A -> E:0 B:0 C:0 B:0",
                 "B -> B:0 A:0 B:0 A:0",
@@ -256,7 +258,7 @@ fn solution() {
         simulate(
             &cube,
             &instructions,
-            parse_mappings(vec![
+            parse_mappings(&[
                 // This will differ for different inputs
                 "A -> F:1 B:0 C:0 D:2",
                 "B -> F:0 E:2 C:1 A:0",
@@ -269,7 +271,15 @@ fn solution() {
     );
 }
 
-fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, Edges>) -> i32 {
+fn parse_instructions(line: &str) -> Vec<Instruction> {
+    line.replace('L', ",L,")
+        .replace('R', ",R,")
+        .split(',')
+        .map(|part| part.parse().unwrap())
+        .collect()
+}
+
+fn simulate(cube: &Cube, instructions: &[Instruction], edges: HashMap<Block, Edges>) -> i32 {
     let mut state = State::new(cube);
     for instruction in instructions {
         match instruction {
@@ -286,42 +296,24 @@ fn simulate(cube: &Cube, instructions: &Vec<Instruction>, edges: HashMap<Block, 
     state.score()
 }
 
-fn parse_mappings(edge_mappings: Vec<&str>) -> HashMap<Block, Edges> {
+fn parse_mappings(edge_mappings: &[&str]) -> HashMap<Block, Edges> {
     edge_mappings
         .iter()
         .map(|edge_mapping| parse_edge_mapping(edge_mapping))
-        .map(|(block, edges)| {
-            (
-                block,
-                Edges {
-                    above: edges[0].clone(),
-                    right: edges[1].clone(),
-                    below: edges[2].clone(),
-                    left: edges[3].clone(),
-                },
-            )
-        })
         .collect()
 }
 
-fn parse_edge_mapping(s: &str) -> (Block, Vec<Edge>) {
+fn parse_edge_mapping(s: &str) -> (Block, Edges) {
     // A -> F:1 B:0 C:0 D:2
-    let (block, edges) = s.split_once(" -> ").unwrap();
+    let [block, edges] = Parser::all(s, " -> ").unwrap();
+    let [above, right, below, left] = Parser::values(edges, " ").unwrap();
     (
         block.parse().unwrap(),
-        edges.split(' ').map(|edge| edge.parse().unwrap()).collect(),
+        Edges {
+            above,
+            right,
+            below,
+            left,
+        },
     )
-}
-
-fn get_input() -> (Cube, Vec<Instruction>) {
-    let data = Reader::default().read_group_lines();
-    (Cube::new(&data[0]), parse_instructions(&data[1][0]))
-}
-
-fn parse_instructions(line: &str) -> Vec<Instruction> {
-    line.replace('L', ",L,")
-        .replace('R', ",R,")
-        .split(',')
-        .map(|part| part.parse().unwrap())
-        .collect()
 }

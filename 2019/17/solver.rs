@@ -272,7 +272,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     let droid = VacuumDroid::default();
     let mut droid = run_droid(&memory, droid, false);
     droid.create_path();

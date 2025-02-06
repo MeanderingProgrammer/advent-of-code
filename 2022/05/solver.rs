@@ -42,7 +42,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
 
     let arrangement = get_arrangement(&groups[0]);
     let instructions: Vec<Instruction> = groups[1]

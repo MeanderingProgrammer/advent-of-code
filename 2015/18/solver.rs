@@ -56,7 +56,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(1061, run(&grid, false));
     answer::part2(1006, run(&grid, true));
 }

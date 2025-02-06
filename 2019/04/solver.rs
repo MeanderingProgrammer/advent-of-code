@@ -43,7 +43,7 @@ fn main() {
 }
 
 fn solution() {
-    let line: String = Reader::default().read_line();
+    let line: String = Reader::default().line();
     let [start, end]: [usize; 2] = Parser::values(&line, "-").unwrap();
     let passwords: Vec<Password> = (start..=end)
         .map(|value| Password {

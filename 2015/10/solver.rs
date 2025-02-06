@@ -35,7 +35,7 @@ fn main() {
 fn solution() {
     let mut game = Game {
         value: Reader::default()
-            .read_chars()
+            .chars()
             .into_iter()
             .map(Convert::idx_int)
             .collect(),

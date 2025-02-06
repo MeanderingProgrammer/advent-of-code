@@ -61,7 +61,8 @@ fn main() {
 }
 
 fn solution() {
-    let points = enabled_points(Reader::default().read_line());
+    let prefix = Reader::default().line();
+    let points = enabled_points(prefix);
     answer::part1(8190, points.len());
     answer::part2(1134, group_points(points));
 }

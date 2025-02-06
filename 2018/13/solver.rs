@@ -180,7 +180,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let mut system = CartSystem::new(&lines);
     system.run();
     answer::part1("(86, 118)", &system.crashes[0].to_string());

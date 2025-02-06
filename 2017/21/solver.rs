@@ -111,7 +111,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let patterns = get_patterns(&lines);
     answer::part1(188, run(&patterns, 5));
     answer::part2(2758764, run(&patterns, 18));

@@ -80,7 +80,7 @@ fn main() {
 }
 
 fn solution() {
-    let points = Reader::default().read_from_str();
+    let points = Reader::default().lines();
     let mut union_find = UnionFind::default();
     answer::part1(375, union_find.run(points));
 }

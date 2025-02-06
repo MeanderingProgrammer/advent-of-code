@@ -25,7 +25,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions = Reader::default().read_from_str();
+    let instructions = Reader::default().lines();
     let cycles = get_cycles(instructions);
 
     answer::part1(

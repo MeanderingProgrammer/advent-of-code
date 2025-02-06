@@ -55,7 +55,7 @@ fn main() {
 
 fn solution() {
     let masking = Masking {
-        values: Reader::default().read_int(),
+        values: Reader::default().lines(),
         preamble: 25,
     };
     let invalid = masking.first_invalid();

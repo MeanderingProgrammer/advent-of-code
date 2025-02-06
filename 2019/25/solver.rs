@@ -233,7 +233,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     let mut computer: Computer<DroidBus> = Computer::default(&memory);
     computer.run();
     answer::part1(2622472, computer.bus.get_key());

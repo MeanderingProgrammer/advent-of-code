@@ -114,7 +114,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
     let game = Game::new(Decks(get_deck(&groups[0]), get_deck(&groups[1])));
     answer::part1(32102, play(&game, false));
     answer::part2(34173, play(&game, true));

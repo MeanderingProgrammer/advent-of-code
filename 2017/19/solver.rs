@@ -77,7 +77,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let traverser = Traverser::new(grid);
     let seen = traverser.traverse();
     answer::part1("NDWHOYRUEA", &traverser.letters(&seen));

@@ -3,17 +3,23 @@ use std::fmt::{Display, Write};
 use std::hash::Hash;
 
 // Extra methods for Iterators based largely off of the Itertools crate
-pub trait Iter: Iterator {
-    fn vec(self) -> Vec<Self::Item>
-    where
-        Self: Sized,
-    {
+pub trait Iter: Iterator + Sized {
+    fn vec(self) -> Vec<Self::Item> {
         self.collect()
+    }
+
+    fn array<const N: usize>(self) -> Option<[Self::Item; N]> {
+        let values = self.vec();
+        if values.len() != N {
+            None
+        } else {
+            let mut iter = values.into_iter();
+            Some(std::array::from_fn(|_| iter.next().unwrap()))
+        }
     }
 
     fn sorted(self) -> std::vec::IntoIter<Self::Item>
     where
-        Self: Sized,
         Self::Item: Ord,
     {
         let mut values = self.vec();
@@ -23,7 +29,6 @@ pub trait Iter: Iterator {
 
     fn counts(self) -> HashMap<Self::Item, usize>
     where
-        Self: Sized,
         Self::Item: Eq + Hash,
     {
         let mut counts = HashMap::default();
@@ -33,7 +38,6 @@ pub trait Iter: Iterator {
 
     fn combinations(self, k: usize) -> Product<Self::Item>
     where
-        Self: Sized,
         Self::Item: Clone,
     {
         Product::new(self.vec(), k, ProductKind::Combination)
@@ -41,7 +45,6 @@ pub trait Iter: Iterator {
 
     fn permutations(self) -> Product<Self::Item>
     where
-        Self: Sized,
         Self::Item: Clone,
     {
         let values = self.vec();
@@ -49,23 +52,24 @@ pub trait Iter: Iterator {
         Product::new(values, k, ProductKind::Permutation)
     }
 
-    fn unique(&mut self) -> usize
+    fn unique(self) -> usize
     where
         Self::Item: Hash + Eq,
     {
         self.collect::<HashSet<_>>().len()
     }
 
-    fn join(&mut self, sep: &str) -> String
+    fn join(self, sep: &str) -> String
     where
         Self::Item: Display,
     {
-        match self.next() {
+        let mut iter = self.into_iter();
+        match iter.next() {
             None => String::default(),
             Some(first) => {
                 let mut result = String::default();
                 write!(&mut result, "{}", first).unwrap();
-                self.for_each(|value| {
+                iter.for_each(|value| {
                     result.push_str(sep);
                     write!(&mut result, "{}", value).unwrap();
                 });
@@ -74,15 +78,16 @@ pub trait Iter: Iterator {
         }
     }
 
-    fn minmax(&mut self) -> Option<(Self::Item, Self::Item)>
+    fn minmax(self) -> Option<(Self::Item, Self::Item)>
     where
         Self::Item: Clone + PartialOrd,
     {
-        match self.next() {
+        let mut iter = self.into_iter();
+        match iter.next() {
             None => None,
             Some(first) => {
                 let (mut min, mut max) = (first.clone(), first);
-                self.for_each(|value| {
+                iter.for_each(|value| {
                     if value < min {
                         min = value;
                     } else if value > max {
@@ -181,4 +186,4 @@ impl<T: Clone> Iterator for Product<T> {
     }
 }
 
-impl<T> Iter for T where T: Iterator + ?Sized {}
+impl<T> Iter for T where T: Iterator {}

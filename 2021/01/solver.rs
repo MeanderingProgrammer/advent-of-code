@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = Reader::default().read_int();
+    let values = Reader::default().lines();
     answer::part1(1292, window_increases(&values, 1));
     answer::part2(1262, window_increases(&values, 3));
 }

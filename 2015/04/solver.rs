@@ -38,7 +38,7 @@ fn main() {
 }
 
 fn solution() {
-    let prefix: String = Reader::default().read_line();
+    let prefix: String = Reader::default().line();
     answer::part1(346386, first_index(prefix.clone(), 5));
     answer::part2(9958218, first_index(prefix.clone(), 6));
 }

@@ -95,7 +95,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let mut seafloor = Seafloor::new(grid);
     answer::part1(492, seafloor.converge());
 }

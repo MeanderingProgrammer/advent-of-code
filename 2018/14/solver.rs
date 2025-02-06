@@ -68,7 +68,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal: String = Reader::default().read_line();
+    let goal: String = Reader::default().line();
     let mut recipes = Recipes::new(&goal);
     recipes.evolve();
     answer::part1("2103141159", &recipes.part1(goal.parse().unwrap()));

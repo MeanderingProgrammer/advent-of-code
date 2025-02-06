@@ -75,8 +75,7 @@ fn main() {
 }
 
 fn solution() {
-    let line: String = Reader::default().read_line();
-    let instructions = line.split(',').map(|s| s.parse().unwrap()).vec();
+    let instructions = Reader::default().csv();
     let pattern = get_pattern(&instructions);
     answer::part1("eojfmbpkldghncia", &pattern[1]);
     answer::part2("iecopnahgdflmkjb", &pattern[1_000_000_000 % pattern.len()]);

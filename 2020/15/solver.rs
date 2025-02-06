@@ -5,11 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let values: Vec<usize> = Reader::default()
-        .read_csv()
-        .into_iter()
-        .map(|value| value as usize)
-        .collect();
+    let values = Reader::default().csv();
     answer::part1(240, run(&values, 2_020, 1_000));
     answer::part2(505, run(&values, 30_000_000, 5_000_000));
 }

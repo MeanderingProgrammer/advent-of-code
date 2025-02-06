@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let goal = Reader::default().read_line();
+    let goal = Reader::default().line();
     answer::part1(665280, find_first(goal, false));
     answer::part2(705600, find_first(goal, true));
 }

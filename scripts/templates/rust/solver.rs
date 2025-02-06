@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let data = Reader::default().read_lines();
+    let data: Vec<String> = Reader::default().lines();
     println!("{:?}", data);
     answer::part1(1, 1);
     answer::part2(1, 1);

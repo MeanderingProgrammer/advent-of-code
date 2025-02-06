@@ -71,7 +71,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let cliques = get_cliques(lines);
     answer::part1(1215, part1(&cliques));
     answer::part2("bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", &part2(&cliques));

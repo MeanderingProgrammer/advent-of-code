@@ -30,7 +30,7 @@ fn main() {
 
 fn solution() {
     let mut graph: Graph = HashMap::default();
-    let lines = Reader::default().read_lines();
+    let lines: Vec<String> = Reader::default().lines();
     lines.iter().for_each(|line| {
         let [start, effect, end] = Parser::nth(line, " ", [0, 2, 10]);
         let [weight]: [i16; 1] = Parser::values(line, " ").unwrap();

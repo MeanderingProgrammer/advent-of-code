@@ -65,7 +65,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     answer::part1(38834, run(&memory, &[0, 1, 2, 3, 4], false));
     answer::part2(69113332, run(&memory, &[5, 6, 7, 8, 9], true));
 }

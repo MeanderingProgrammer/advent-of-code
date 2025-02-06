@@ -102,7 +102,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let data = BridgeBuilder::new(&lines).build();
     answer::part1(1656, data.strongest);
     answer::part2(1642, data.longest_strongest);

@@ -131,7 +131,7 @@ fn main() {
 }
 
 fn solution() {
-    let bodies = Reader::default().read_from_str();
+    let bodies = Reader::default().lines();
     let system = System { bodies };
     answer::part1(5350, run(system.clone(), 1_000));
     answer::part2(467034091553512, system_period(system.clone()));

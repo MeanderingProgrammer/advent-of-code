@@ -39,7 +39,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines: Vec<String> = Reader::default().lines();
     let [a] = Parser::values(&lines[0], " ").unwrap();
     let [b] = Parser::values(&lines[1], " ").unwrap();
     let generators = [(a, 16_807, 4), (b, 48_271, 8)];

@@ -205,7 +205,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
     let battle = Battle::new(&groups);
     answer::part1(16086, part_1(&battle));
     answer::part2(3957, part_2(&battle).unwrap());

@@ -39,7 +39,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let start = grid.value(&Element::Start);
     let path = follow(&grid, &start, None).unwrap();
     answer::part1(5516, path.len());

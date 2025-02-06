@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let elf_items: Vec<Vec<i64>> = Reader::default().read_group_int();
+    let elf_items: Vec<Vec<i64>> = Reader::default().groups();
     let mut elf_calories: Vec<i64> = elf_items.iter().map(|item| item.iter().sum()).collect();
     elf_calories.sort();
     elf_calories.reverse();

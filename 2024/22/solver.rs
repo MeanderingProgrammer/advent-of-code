@@ -57,7 +57,7 @@ fn main() {
 }
 
 fn solution() {
-    let mut secrets = Reader::default().read_from_str();
+    let mut secrets = Reader::default().lines();
     answer::part1(15608699004, part1(&mut secrets, 2000));
     answer::part2(1791, part2(&secrets));
 }

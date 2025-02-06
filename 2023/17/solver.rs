@@ -78,7 +78,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(694, min_heat(&grid, 1, 3));
     answer::part2(829, min_heat(&grid, 4, 10));
 }

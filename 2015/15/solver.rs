@@ -91,7 +91,7 @@ fn main() {
 }
 
 fn solution() {
-    let ingredients = Reader::default().read_from_str();
+    let ingredients = Reader::default().lines();
     assert_eq!(ingredients.len(), 4);
     let recipe = Recipe {
         ingredients,

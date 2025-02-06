@@ -77,7 +77,7 @@ fn main() {
 }
 
 fn solution() {
-    let directions = Reader::default().read_from_str();
+    let directions = Reader::default().lines();
     answer::part1(400410, apply_all(&directions, Action::single));
     answer::part2(15343601, apply_all(&directions, Action::dimable));
 }

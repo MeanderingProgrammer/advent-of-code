@@ -80,7 +80,7 @@ fn main() {
 }
 
 fn solution() {
-    let chart = Reader::default().read_grid();
+    let chart = Reader::default().grid();
     answer::part1(2386, run(chart.clone(), false));
     answer::part2(2091, run(chart.clone(), true));
 }

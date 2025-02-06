@@ -101,7 +101,7 @@ fn main() {
 
 fn solution() {
     let grid = Platform {
-        grid: Reader::default().read_grid(),
+        grid: Reader::default().grid(),
     };
     answer::part1(109654, grid.clone().run_once());
     answer::part2(94876, grid.clone().run_n(1000000000));

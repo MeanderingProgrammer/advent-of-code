@@ -67,7 +67,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
     let network = Network::new(&groups);
     answer::part1(24253, part1(&network));
     answer::part2(12357789728873, part2(&network));

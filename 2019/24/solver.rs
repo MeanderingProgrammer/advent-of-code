@@ -93,7 +93,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let locations: HashSet<Location> = grid
         .values(&'#')
         .into_iter()

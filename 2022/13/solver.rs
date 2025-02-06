@@ -71,8 +71,8 @@ fn main() {
 }
 
 fn solution() {
-    let packets: Vec<Packet> = Reader::default()
-        .read_lines()
+    let lines: Vec<String> = Reader::default().lines();
+    let packets: Vec<Packet> = lines
         .iter()
         .filter(|line| !line.is_empty())
         .map(|line| line.parse().unwrap())

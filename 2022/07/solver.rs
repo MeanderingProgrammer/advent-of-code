@@ -82,7 +82,7 @@ fn main() {
 
 fn solution() {
     // Originally inspired by https://fasterthanli.me/series/advent-of-code-2022/part-7
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let fs = get_file_system(&lines);
 
     let part1 = fs.directories().filter(|size| *size <= 100_000).sum();

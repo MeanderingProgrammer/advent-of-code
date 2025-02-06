@@ -276,7 +276,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     answer::part1(18282, solve(lines.clone(), false));
     answer::part2(50132, solve(lines.clone(), true));
 }

@@ -136,7 +136,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let mut cave = Cave::new(&lines);
     cave.build();
     answer::part1(11575, cave.risk());

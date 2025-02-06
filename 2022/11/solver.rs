@@ -108,7 +108,7 @@ fn solution() {
 
 fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
     let mut monkeys: Vec<Monkey> = Reader::default()
-        .read_full_groups()
+        .full_groups()
         .iter()
         .map(|group| group.parse().unwrap())
         .collect();

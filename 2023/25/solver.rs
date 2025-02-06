@@ -113,7 +113,7 @@ fn main() {
 }
 
 fn solution() {
-    let lines = Reader::default().read_lines();
+    let lines = Reader::default().lines();
     let graph = Graph::new(lines);
     answer::part1(567606, until_cut_size(graph, 3));
 }

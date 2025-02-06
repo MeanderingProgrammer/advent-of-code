@@ -81,7 +81,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().read_group_lines();
+    let groups = Reader::default().groups();
     let mut rules = parse_rules(&groups[0]);
     answer::part1(198, total_matches(&rules, &groups[1]));
     rules.update(8, "42 | 42 8".parse().unwrap());

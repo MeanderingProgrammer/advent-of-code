@@ -75,7 +75,7 @@ fn main() {
 }
 
 fn solution() {
-    let chars = Reader::default().read_chars();
+    let chars = Reader::default().chars();
     let units: Vec<Unit> = chars.into_iter().map(Unit::new).collect();
     let mut polymer = Polymer { units };
     answer::part1(11242, polymer.react());

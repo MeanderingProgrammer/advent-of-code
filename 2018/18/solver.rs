@@ -72,7 +72,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     answer::part1(515496, run(grid.clone(), 10));
     answer::part2(233058, run(grid.clone(), 1_000_000_000));
 }

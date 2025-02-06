@@ -23,7 +23,7 @@ fn main() {
 }
 
 fn solution() {
-    let values = Reader::default().read_int();
+    let values = Reader::default().lines();
     answer::part1(3466, decrypt(&values, 1, 1));
     answer::part2(9995532008348, decrypt(&values, 811_589_153, 10));
 }

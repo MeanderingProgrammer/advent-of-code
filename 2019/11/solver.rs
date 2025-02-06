@@ -58,7 +58,7 @@ fn main() {
 }
 
 fn solution() {
-    let memory = Reader::default().read_csv();
+    let memory = Reader::default().csv();
     answer::part1(1909, run(&memory, 0).grid.len());
     let expected = [
         "..##.#..#.####.####.#..#.#..#.###..#..#",

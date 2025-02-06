@@ -40,7 +40,7 @@ fn main() {
 }
 
 fn solution() {
-    let grid = Reader::default().read_grid();
+    let grid = Reader::default().grid();
     let (search, start) = get_search(grid);
     answer::part1(472, search.bfs(start).first().cloned().unwrap());
     answer::part2(465, search.shortest(index('a')).unwrap());

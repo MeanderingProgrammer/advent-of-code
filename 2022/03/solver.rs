@@ -42,7 +42,7 @@ fn main() {
 }
 
 fn solution() {
-    let backpacks: Vec<Backpack> = Reader::default().read_from_str();
+    let backpacks: Vec<Backpack> = Reader::default().lines();
 
     let p1_items = backpacks.iter().map(|backpack| backpack.shared());
     answer::part1(8298, p1_items.map(priority).sum());
