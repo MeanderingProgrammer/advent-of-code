@@ -1,4 +1,4 @@
-use aoc::{answer, HashSet, Parser, Point3d, Reader};
+use aoc::{answer, HashSet, Iter, Parser, Point3d, Reader};
 
 #[derive(Debug, Clone)]
 struct Particle {
@@ -40,12 +40,12 @@ fn main() {
 }
 
 fn solution() {
-    let lines: Vec<String> = Reader::default().lines();
-    let particles: Vec<Particle> = lines
+    let particles = Reader::default()
+        .lines::<String>()
         .into_iter()
         .enumerate()
         .map(|(i, line)| Particle::from_str(i, &line))
-        .collect();
+        .vec();
     answer::part1(161, run_simulation(particles.clone(), false)[0].id);
     answer::part2(438, run_simulation(particles.clone(), true).len());
 }

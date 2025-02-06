@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, FromChar, Grid, HashMap, Parser, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Iter, Parser, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -61,8 +61,8 @@ struct Cube {
 }
 
 impl Cube {
-    fn new(lines: &Vec<String>) -> Self {
-        let grid: Grid<Space> = lines.into();
+    fn new(s: &str) -> Self {
+        let grid: Grid<Space> = (&s.lines().map(|s| s.to_string()).vec()).into();
         let total_spaces = grid.iter().count();
         let spaces_per_face = total_spaces / 6;
         let size = (spaces_per_face as f64).sqrt() as i32;
@@ -234,9 +234,9 @@ fn main() {
 }
 
 fn solution() {
-    let data = Reader::default().groups();
+    let data = Reader::default().groups::<String>();
     let cube = Cube::new(&data[0]);
-    let instructions = parse_instructions(&data[1][0]);
+    let instructions = parse_instructions(&data[1]);
     answer::part1(
         3590,
         simulate(
@@ -271,8 +271,8 @@ fn solution() {
     );
 }
 
-fn parse_instructions(line: &str) -> Vec<Instruction> {
-    line.replace('L', ",L,")
+fn parse_instructions(s: &str) -> Vec<Instruction> {
+    s.replace('L', ",L,")
         .replace('R', ",R,")
         .split(',')
         .map(|part| part.parse().unwrap())

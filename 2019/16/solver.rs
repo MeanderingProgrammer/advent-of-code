@@ -60,7 +60,7 @@ fn main() {
 }
 
 fn solution() {
-    let line: String = Reader::default().line();
+    let line = Reader::default().line::<String>();
     answer::part1(77038830, apply_fft(line.clone(), 1, false));
     answer::part2(28135104, apply_fft(line.clone(), 10_000, true));
 }

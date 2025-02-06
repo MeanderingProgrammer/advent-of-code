@@ -112,12 +112,12 @@ struct Battle {
 }
 
 impl Battle {
-    fn new(groups: &[Vec<String>]) -> Self {
+    fn new(groups: &[String]) -> Self {
         let mut armies = Vec::default();
-        for group in groups[0].iter().skip(1) {
+        for group in groups[0].lines().skip(1) {
             armies.push(Army::new(armies.len(), Kind::Immune, group));
         }
-        for group in groups[1].iter().skip(1) {
+        for group in groups[1].lines().skip(1) {
             armies.push(Army::new(armies.len(), Kind::Infection, group));
         }
         Self { armies }

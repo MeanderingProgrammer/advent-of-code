@@ -35,6 +35,19 @@ struct Rules {
     rules: HashMap<i64, Rule>,
 }
 
+impl FromStr for Rules {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut rules = HashMap::default();
+        for line in s.lines() {
+            let [number, rule] = Parser::nth(line, ": ", [0, 1]);
+            rules.insert(number.parse().unwrap(), rule.parse().unwrap());
+        }
+        Ok(Self { rules })
+    }
+}
+
 impl Rules {
     fn matches(&self, input: &str) -> bool {
         self.remainders(vec![input], 0)
@@ -81,23 +94,14 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
-    let mut rules = parse_rules(&groups[0]);
+    let groups = Reader::default().groups::<String>();
+    let mut rules = groups[0].parse().unwrap();
     answer::part1(198, total_matches(&rules, &groups[1]));
     rules.update(8, "42 | 42 8".parse().unwrap());
     rules.update(11, "42 31 | 42 11 31".parse().unwrap());
     answer::part2(372, total_matches(&rules, &groups[1]));
 }
 
-fn total_matches(rules: &Rules, lines: &[String]) -> usize {
-    lines.iter().filter(|line| rules.matches(line)).count()
-}
-
-fn parse_rules(lines: &[String]) -> Rules {
-    let mut result = HashMap::default();
-    for line in lines.iter() {
-        let [number, rule] = Parser::nth(line, ": ", [0, 1]);
-        result.insert(number.parse().unwrap(), rule.parse().unwrap());
-    }
-    Rules { rules: result }
+fn total_matches(rules: &Rules, s: &str) -> usize {
+    s.lines().filter(|line| rules.matches(line)).count()
 }

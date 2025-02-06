@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, Reader};
+use aoc::{answer, Iter, Reader};
 
 #[derive(Debug)]
 struct Cups {
@@ -71,19 +71,17 @@ fn main() {
 }
 
 fn solution() {
-    let values: Vec<usize> = Reader::default()
-        .chars()
+    let values = Reader::default()
+        .chars::<u8>()
         .into_iter()
-        .map(|ch| Convert::idx_int(ch) as usize)
-        .collect();
-    answer::part1("45798623", &run(values.clone(), 0, 100).part_1());
-    answer::part2(
-        235551949822,
-        run(values.clone(), 1_000_000, 10_000_000).part_2(),
-    );
+        .map(|value| value as usize)
+        .vec();
+    answer::part1("45798623", &run(&values, 0, 100).part_1());
+    answer::part2(235551949822, run(&values, 1_000_000, 10_000_000).part_2());
 }
 
-fn run(mut values: Vec<usize>, cups: usize, rounds: usize) -> Cups {
+fn run(values: &[usize], cups: usize, rounds: usize) -> Cups {
+    let mut values = values.to_vec();
     for i in values.iter().max().unwrap() + 1..=cups {
         values.push(i);
     }

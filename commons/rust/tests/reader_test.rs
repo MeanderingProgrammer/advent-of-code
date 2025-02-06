@@ -1,20 +1,8 @@
 use aoc::Reader;
 
 #[test]
-fn test_group_int() {
-    let actual = reader("group-ints.txt").groups();
-    assert_eq!(vec![vec![123, 45], vec![-68, -9, 0]], actual);
-}
-
-#[test]
-fn test_group_lines() {
-    let actual: Vec<Vec<String>> = reader("group-strings.txt").groups();
-    assert_eq!(vec![vec!["ab", "cd"], vec!["efg", "hi", "j"]], actual);
-}
-
-#[test]
-fn test_full_groups() {
-    let actual = reader("group-strings.txt").full_groups();
+fn test_groups() {
+    let actual = reader("group-strings.txt").groups::<String>();
     assert_eq!(vec!["ab\ncd", "efg\nhi\nj"], actual);
 }
 
@@ -26,13 +14,13 @@ fn test_int() {
 
 #[test]
 fn test_lines() {
-    let actual: Vec<String> = reader("string-lines.txt").lines();
+    let actual = reader("string-lines.txt").lines::<String>();
     assert_eq!(vec!["zgsnvdmlfuplrubt", "zztdcqzqddaazdjp"], actual);
 }
 
 #[test]
 fn test_line() {
-    let actual: String = reader("string-line.txt").line();
+    let actual = reader("string-line.txt").line::<String>();
     assert_eq!("abcd", actual);
 }
 

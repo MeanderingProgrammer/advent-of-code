@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn solution() {
-    let line: String = Reader::default().line();
+    let line = Reader::default().line::<String>();
     let [row, column] = Parser::values(&line, " ").unwrap();
     let index = get_index(row, column);
     answer::part1(19980801, get_password(index));

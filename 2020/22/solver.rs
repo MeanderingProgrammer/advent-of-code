@@ -1,9 +1,23 @@
 use aoc::{answer, HashSet, Reader};
 use std::collections::VecDeque;
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Deck {
     cards: VecDeque<u8>,
+}
+
+impl FromStr for Deck {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let cards = s
+            .lines()
+            .skip(1)
+            .map(|value| value.parse().unwrap())
+            .collect();
+        Ok(Self { cards })
+    }
 }
 
 impl Deck {
@@ -114,20 +128,10 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
-    let game = Game::new(Decks(get_deck(&groups[0]), get_deck(&groups[1])));
+    let decks = Reader::default().groups::<Deck>();
+    let game = Game::new(Decks(decks[0].clone(), decks[1].clone()));
     answer::part1(32102, play(&game, false));
     answer::part2(34173, play(&game, true));
-}
-
-fn get_deck(values: &[String]) -> Deck {
-    Deck {
-        cards: values
-            .iter()
-            .skip(1)
-            .map(|value| value.parse().unwrap())
-            .collect(),
-    }
 }
 
 fn play(game: &Game, recursize: bool) -> usize {

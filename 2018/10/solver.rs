@@ -70,9 +70,8 @@ fn main() {
 }
 
 fn solution() {
-    let particles = Particles {
-        particles: Reader::default().lines(),
-    };
+    let particles = Reader::default().lines();
+    let particles = Particles { particles };
     let time = particles.min_area().unwrap();
     let expected = [
         ".####...#####......###..#.......#.......#.......#.......#....#",

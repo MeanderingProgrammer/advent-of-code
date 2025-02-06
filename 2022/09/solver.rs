@@ -24,7 +24,7 @@ fn main() {
 }
 
 fn solution() {
-    let motions: Vec<Motion> = Reader::default().lines();
+    let motions = Reader::default().lines();
     answer::part1(6563, follow_trail(&motions, 2));
     answer::part2(2653, follow_trail(&motions, 10));
 }

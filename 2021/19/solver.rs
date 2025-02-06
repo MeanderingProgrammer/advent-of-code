@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Iter, Point3d, Reader};
+use aoc::{answer, HashMap, HashSet, Point3d, Reader};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -20,19 +20,24 @@ struct Scanner {
     points: HashSet<Point3d>,
 }
 
-impl Scanner {
-    fn new(lines: &[String]) -> Self {
-        Self {
+impl FromStr for Scanner {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let points = s
+            .lines()
+            .skip(1)
+            .map(|line| Point3d::from_str(line).unwrap())
+            .collect();
+        Ok(Self {
             // Each scanner is assumed to be at the origin initially
             positions: vec![Point3d::default()],
-            points: lines
-                .iter()
-                .skip(1)
-                .map(|line| Point3d::from_str(line).unwrap())
-                .collect(),
-        }
+            points,
+        })
     }
+}
 
+impl Scanner {
     fn find_join(&self, other: &Scanner) -> Option<Join> {
         (0..24)
             .into_par_iter()
@@ -113,8 +118,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
-    let scanners = groups.iter().map(|lines| Scanner::new(lines)).vec();
+    let scanners = Reader::default().groups();
     let joined = join_scanners(scanners);
     answer::part1(512, joined.points.len());
     answer::part2(16802, joined.largest_distance());

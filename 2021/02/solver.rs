@@ -44,7 +44,7 @@ fn main() {
 }
 
 fn solution() {
-    let instructions: Vec<Instruction> = Reader::default().lines();
+    let instructions = Reader::default().lines::<Instruction>();
 
     let mut p = Point3d::default();
     instructions.iter().for_each(|instruction| {

@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashSet, Reader};
+use aoc::{answer, Convert, FromChar, HashSet, Reader};
 
 #[derive(Debug, Clone)]
 enum Unit {
@@ -6,14 +6,16 @@ enum Unit {
     Lower(u8),
 }
 
-impl Unit {
-    fn new(ch: char) -> Self {
-        match ch.is_ascii_uppercase() {
+impl FromChar for Unit {
+    fn from_char(ch: char) -> Option<Self> {
+        Some(match ch.is_ascii_uppercase() {
             true => Self::Upper(Convert::idx_upper(ch)),
             false => Self::Lower(Convert::idx_lower(ch)),
-        }
+        })
     }
+}
 
+impl Unit {
     fn variant(&self) -> u8 {
         match self {
             Self::Upper(variant) => *variant,
@@ -75,8 +77,7 @@ fn main() {
 }
 
 fn solution() {
-    let chars = Reader::default().chars();
-    let units: Vec<Unit> = chars.into_iter().map(Unit::new).collect();
+    let units = Reader::default().chars();
     let mut polymer = Polymer { units };
     answer::part1(11242, polymer.react());
     answer::part2(5492, best_removed(&polymer));

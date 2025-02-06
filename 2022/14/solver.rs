@@ -87,7 +87,7 @@ fn main() {
 }
 
 fn solution() {
-    let rock_formations: Vec<RockFormation> = Reader::default().lines();
+    let rock_formations = Reader::default().lines::<RockFormation>();
     let mut grid: Grid<char> = Grid::default();
     rock_formations
         .iter()

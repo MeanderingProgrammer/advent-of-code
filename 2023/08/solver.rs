@@ -25,11 +25,11 @@ struct Network {
 }
 
 impl Network {
-    fn new(groups: &[Vec<String>]) -> Self {
+    fn new(groups: &[String]) -> Self {
         Self {
-            directions: groups[0][0].chars().collect(),
+            directions: groups[0].chars().collect(),
             graph: groups[1]
-                .iter()
+                .lines()
                 .map(|line| {
                     // AAA =  <edge>
                     let (node, edge) = line.split_once(" = ").unwrap();
@@ -67,7 +67,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
+    let groups = Reader::default().groups::<String>();
     let network = Network::new(&groups);
     answer::part1(24253, part1(&network));
     answer::part2(12357789728873, part2(&network));

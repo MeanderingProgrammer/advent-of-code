@@ -5,8 +5,11 @@ fn main() {
 }
 
 fn solution() {
-    let elf_items: Vec<Vec<i64>> = Reader::default().groups();
-    let mut elf_calories: Vec<i64> = elf_items.iter().map(|item| item.iter().sum()).collect();
+    let elf_items = Reader::default().groups::<String>();
+    let mut elf_calories: Vec<i64> = elf_items
+        .iter()
+        .map(|item| item.lines().map(|s| s.parse::<i64>().unwrap()).sum())
+        .collect();
     elf_calories.sort();
     elf_calories.reverse();
     answer::part1(69501, elf_calories[0]);

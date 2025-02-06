@@ -1,4 +1,4 @@
-use aoc::{answer, Direction3d, HashMap, HashSet, Parser, Point3d, Reader};
+use aoc::{answer, Direction3d, HashMap, HashSet, Iter, Parser, Point3d, Reader};
 
 #[derive(Debug)]
 enum Axis {
@@ -153,12 +153,12 @@ fn main() {
 }
 
 fn solution() {
-    let lines: Vec<String> = Reader::default().lines();
-    let bricks: Vec<Brick> = lines
+    let bricks = Reader::default()
+        .lines::<String>()
         .iter()
         .enumerate()
         .map(|(id, s)| Brick::new(id, s))
-        .collect();
+        .vec();
     let mut stack = Stack::new(bricks);
     stack.fall();
     let counts = stack.counts();

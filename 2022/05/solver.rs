@@ -42,13 +42,10 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
+    let groups = Reader::default().groups::<String>();
 
     let arrangement = get_arrangement(&groups[0]);
-    let instructions: Vec<Instruction> = groups[1]
-        .iter()
-        .map(|raw_value| raw_value.parse().unwrap())
-        .collect();
+    let instructions: Vec<Instruction> = groups[1].lines().map(|s| s.parse().unwrap()).collect();
 
     answer::part1(
         "RNZLFZSJH",
@@ -68,9 +65,9 @@ fn solution() {
     );
 }
 
-fn get_arrangement(raw: &[String]) -> HashMap<usize, Vec<char>> {
+fn get_arrangement(s: &str) -> HashMap<usize, Vec<char>> {
     let mut arrangement: HashMap<usize, Vec<char>> = HashMap::default();
-    for row in raw.iter().rev().skip(1) {
+    for row in s.lines().rev().skip(1) {
         let row_chars: Vec<char> = row.chars().collect();
         for (i, index) in (1..row.len()).step_by(4).enumerate() {
             let pile_index = i + 1;

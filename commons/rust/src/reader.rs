@@ -54,9 +54,11 @@ impl Reader {
         (&self.lines()).into()
     }
 
-    pub fn chars(&self) -> Vec<char> {
-        let line: String = self.line();
-        line.chars().collect()
+    pub fn chars<T: FromChar>(&self) -> Vec<T> {
+        self.line::<String>()
+            .chars()
+            .map(|ch| T::from_char(ch).unwrap())
+            .collect()
     }
 
     pub fn csv<T>(&self) -> Vec<T>
@@ -64,27 +66,20 @@ impl Reader {
         T: FromStr,
         T::Err: Debug,
     {
-        let line: String = self.line();
-        line.split(',').map(|s| s.parse().unwrap()).collect()
+        self.line::<String>()
+            .split(',')
+            .map(|s| s.parse().unwrap())
+            .collect()
     }
 
-    pub fn groups<T>(&self) -> Vec<Vec<T>>
+    pub fn groups<T>(&self) -> Vec<T>
     where
         T: FromStr,
         T::Err: Debug,
     {
-        let lines: Vec<String> = self.lines();
-        lines
+        self.lines::<String>()
             .split(|line| line.is_empty())
-            .map(|lines| lines.iter().map(|s| s.parse().unwrap()).collect())
-            .collect()
-    }
-
-    pub fn full_groups(&self) -> Vec<String> {
-        let lines: Vec<String> = self.lines();
-        lines
-            .split(|line| line.is_empty())
-            .map(|group| group.join("\n"))
+            .map(|lines| lines.join("\n").parse().unwrap())
             .collect()
     }
 

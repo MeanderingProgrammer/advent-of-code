@@ -5,8 +5,11 @@ fn main() {
 }
 
 fn solution() {
-    let data = Reader::default().chars();
-    let row = data.into_iter().map(|ch| ch == '.').vec();
+    let row = Reader::default()
+        .chars::<char>()
+        .into_iter()
+        .map(|ch| ch == '.')
+        .vec();
     answer::part1(2013, total_safe(&row, 40));
     answer::part2(20006289, total_safe(&row, 400_000));
 }

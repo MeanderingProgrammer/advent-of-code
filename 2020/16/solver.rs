@@ -74,11 +74,14 @@ fn main() {
 }
 
 fn solution() {
-    let groups: Vec<Vec<String>> = Reader::default().groups();
-    let rules: Vec<Rule> = groups[0].iter().map(|line| line.parse().unwrap()).collect();
-    let mine: Ticket = groups[1][1].parse().unwrap();
+    let groups = Reader::default().groups::<String>();
+    let rules: Vec<Rule> = groups[0]
+        .lines()
+        .map(|line| line.parse().unwrap())
+        .collect();
+    let mine: Ticket = groups[1].lines().last().unwrap().parse().unwrap();
     let nearby: Vec<Ticket> = groups[2]
-        .iter()
+        .lines()
         .skip(1)
         .map(|line| line.parse().unwrap())
         .collect();

@@ -1,15 +1,15 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Iter, Reader};
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let curve: Vec<bool> = Reader::default()
-        .chars()
-        .iter()
-        .map(|&ch| ch == '1')
-        .collect();
+    let curve = Reader::default()
+        .chars::<char>()
+        .into_iter()
+        .map(|ch| ch == '1')
+        .vec();
     answer::part1("10010101010011101", &fill_disk(curve.clone(), 272));
     answer::part2("01100111101101111", &fill_disk(curve.clone(), 35_651_584));
 }

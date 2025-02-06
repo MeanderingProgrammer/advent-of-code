@@ -1,4 +1,4 @@
-use aoc::{answer, Bounds, FromChar, Grid, HashSet, Point, Reader};
+use aoc::{answer, Bounds, FromChar, Grid, HashSet, Iter, Point, Reader};
 
 #[derive(Debug, PartialEq)]
 enum Value {
@@ -24,11 +24,12 @@ struct Image {
 }
 
 impl Image {
-    fn new(groups: &[Vec<String>]) -> Self {
-        let grid: Grid<Value> = (&groups[1]).into();
+    fn new(groups: &[String]) -> Self {
+        let enhancer = groups[0].chars().map(|ch| ch == '#').collect();
+        let grid: Grid<Value> = (&groups[1].lines().map(|s| s.to_string()).vec()).into();
         Self {
             on: grid.values(&Value::On).into_iter().collect(),
-            enhancer: groups[0][0].chars().map(|ch| ch == '#').collect(),
+            enhancer,
             time: 0,
             border: Point::new(1, 1),
         }
@@ -81,7 +82,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().groups();
+    let groups = Reader::default().groups::<String>();
     let image = Image::new(&groups);
     answer::part1(5437, after(&image, 2));
     answer::part2(19340, after(&image, 50));

@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Iter, Reader};
 use std::cmp::Ordering;
 use std::str::FromStr;
 
@@ -71,12 +71,12 @@ fn main() {
 }
 
 fn solution() {
-    let lines: Vec<String> = Reader::default().lines();
-    let packets: Vec<Packet> = lines
+    let packets = Reader::default()
+        .lines::<String>()
         .iter()
         .filter(|line| !line.is_empty())
         .map(|line| line.parse().unwrap())
-        .collect();
+        .vec();
     answer::part1(4809, sum_adjacent(&packets));
     answer::part2(22600, decoder_key(&packets));
 }

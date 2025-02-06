@@ -95,7 +95,7 @@ fn main() {
 }
 
 fn solution() {
-    let groups = Reader::default().full_groups();
+    let groups = Reader::default().groups::<String>();
     let (state, steps) = get_state(&groups[0]);
     let mut machine = TuringMachine {
         state,

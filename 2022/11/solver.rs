@@ -1,7 +1,7 @@
 use aoc::{answer, Parser, Reader};
 use std::str::FromStr;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Operator {
     Add,
     Multiply,
@@ -19,7 +19,7 @@ impl FromStr for Operator {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Value {
     Old,
     Number(i64),
@@ -36,7 +36,7 @@ impl FromStr for Value {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Monkey {
     items: Vec<i64>,
     operation: (Operator, Value),
@@ -102,17 +102,12 @@ fn main() {
 }
 
 fn solution() {
-    answer::part1(56350, monkey_business(20, true));
-    answer::part2(13954061248, monkey_business(10_000, false));
+    let monkeys = Reader::default().groups();
+    answer::part1(56350, monkey_business(monkeys.clone(), 20, true));
+    answer::part2(13954061248, monkey_business(monkeys.clone(), 10_000, false));
 }
 
-fn monkey_business(rounds: usize, reduce_worry: bool) -> i64 {
-    let mut monkeys: Vec<Monkey> = Reader::default()
-        .full_groups()
-        .iter()
-        .map(|group| group.parse().unwrap())
-        .collect();
-
+fn monkey_business(mut monkeys: Vec<Monkey>, rounds: usize, reduce_worry: bool) -> i64 {
     // This can be the least common multiple, but doesn't need to be to work
     let mut multiple_of_all = 1;
     for monkey in &monkeys {
