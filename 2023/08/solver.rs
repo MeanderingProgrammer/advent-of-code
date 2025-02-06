@@ -1,4 +1,4 @@
-use aoc::{answer, math, HashMap, Parser, Reader};
+use aoc::{answer, math, HashMap, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -12,9 +12,12 @@ impl FromStr for Edge {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // (BBB, CCC)
-        let s = Parser::enclosed(s, '(', ')').unwrap();
-        let [left, right] = Parser::values(s, ", ").unwrap();
-        Ok(Self { left, right })
+        let s = Str::enclosed(s, '(', ')').unwrap();
+        let (left, right) = s.split_once(", ").unwrap();
+        Ok(Self {
+            left: left.into(),
+            right: right.into(),
+        })
     }
 }
 

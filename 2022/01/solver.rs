@@ -1,17 +1,38 @@
-use aoc::{answer, Reader};
+use aoc::{answer, Iter, Reader};
+use std::str::FromStr;
+
+#[derive(Debug)]
+struct Elf {
+    items: Vec<i64>,
+}
+
+impl FromStr for Elf {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let items = s.lines().map(|item| item.parse().unwrap()).collect();
+        Ok(Self { items })
+    }
+}
+
+impl Elf {
+    fn calories(&self) -> i64 {
+        self.items.iter().sum()
+    }
+}
 
 fn main() {
     answer::timer(solution);
 }
 
 fn solution() {
-    let elf_items = Reader::default().groups::<String>();
-    let mut elf_calories: Vec<i64> = elf_items
+    let elfs = Reader::default().groups::<Elf>();
+    let calories = elfs
         .iter()
-        .map(|item| item.lines().map(|s| s.parse::<i64>().unwrap()).sum())
-        .collect();
-    elf_calories.sort();
-    elf_calories.reverse();
-    answer::part1(69501, elf_calories[0]);
-    answer::part2(202346, elf_calories[..3].iter().sum());
+        .map(|elf| elf.calories())
+        .sorted()
+        .rev()
+        .collect::<Vec<_>>();
+    answer::part1(69501, calories[0]);
+    answer::part2(202346, calories[..3].iter().sum());
 }

@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, Reader};
+use aoc::{answer, Char, Reader};
 
 #[derive(Debug)]
 struct Transmission {
@@ -8,10 +8,7 @@ struct Transmission {
 impl Transmission {
     fn new(digits: &str) -> Self {
         Self {
-            digits: digits
-                .chars()
-                .map(|ch| Convert::idx_int(ch) as i64)
-                .collect(),
+            digits: digits.chars().map(|ch| Char::digit(ch) as i64).collect(),
         }
     }
 

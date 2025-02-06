@@ -27,10 +27,10 @@ impl Cli<'_> {
     }
 
     fn get_year_day() -> (String, String) {
-        let executable_path = env::current_exe().unwrap();
-        let binary_name = executable_path.file_name().unwrap().to_str().unwrap();
-        let binary_parts: Vec<&str> = binary_name.split('_').collect();
-        (binary_parts[1].into(), binary_parts[2].into())
+        let path = env::current_exe().unwrap();
+        let binary = path.file_name().unwrap().to_str().unwrap();
+        let parts: Vec<&str> = binary.split('_').collect();
+        (parts[1].into(), parts[2].into())
     }
 }
 
@@ -51,7 +51,7 @@ impl Reader {
     }
 
     pub fn grid<T: FromChar>(&self) -> Grid<T> {
-        (&self.lines()).into()
+        (&self.lines::<String>()).into()
     }
 
     pub fn chars<T: FromChar>(&self) -> Vec<T> {

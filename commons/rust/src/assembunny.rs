@@ -1,4 +1,4 @@
-use crate::{Convert, HashMap};
+use crate::{HashMap, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -11,7 +11,7 @@ impl FromStr for Value {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let ch = Convert::ch(s);
+        let ch = Str::first(s);
         match ch {
             'a'..='d' => Ok(Self::Register(ch)),
             _ => Ok(Self::Integer(s.parse().unwrap())),

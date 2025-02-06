@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Iter, Parser, Reader};
+use aoc::{answer, HashMap, HashSet, Iter, Reader};
 
 type Graph<'a> = HashMap<(&'a str, &'a str), i16>;
 
@@ -32,13 +32,16 @@ fn solution() {
     let mut graph: Graph = HashMap::default();
     let lines = Reader::default().lines::<String>();
     lines.iter().for_each(|line| {
-        let [start, effect, end] = Parser::nth(line, " ", [0, 2, 10]);
-        let [weight]: [i16; 1] = Parser::values(line, " ").unwrap();
+        let mut it = line.split_whitespace();
+        let start = it.next().unwrap();
+        let effect = it.nth(1).unwrap();
+        let weight: i16 = it.next().unwrap().parse().unwrap();
         let multiplier: i16 = match effect {
             "gain" => 1,
             "lose" => -1,
             _ => panic!("Unknown multiplier"),
         };
+        let end = it.nth(6).unwrap().trim_matches('.');
         graph.insert((start, end), multiplier * weight);
     });
     answer::part1(709, max_score(&graph, false));

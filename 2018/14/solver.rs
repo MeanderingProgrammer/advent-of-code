@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, Reader};
+use aoc::{answer, Char, Reader};
 
 #[derive(Debug)]
 struct Recipes {
@@ -14,7 +14,7 @@ impl Recipes {
             e1: 0,
             e2: 1,
             scores: vec![3, 7],
-            goal: goal.chars().map(Convert::idx_int).collect(),
+            goal: goal.chars().map(Char::digit).collect(),
         }
     }
 

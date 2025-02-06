@@ -5,7 +5,7 @@ fn test_combinations() {
     let values = [0, 1, 2, 3, 4];
     assert_eq!(
         vec![vec![&0], vec![&1], vec![&2], vec![&3], vec![&4]],
-        values.iter().combinations(1).vec()
+        values.iter().combinations(1).collect::<Vec<_>>()
     );
     assert_eq!(
         vec![
@@ -20,7 +20,7 @@ fn test_combinations() {
             vec![&2, &4],
             vec![&3, &4],
         ],
-        values.iter().combinations(2).vec()
+        values.iter().combinations(2).collect::<Vec<_>>()
     );
     assert_eq!(
         vec![
@@ -35,7 +35,7 @@ fn test_combinations() {
             vec![&1, &3, &4],
             vec![&2, &3, &4],
         ],
-        values.iter().combinations(3).vec()
+        values.iter().combinations(3).collect::<Vec<_>>()
     );
     assert_eq!(
         vec![
@@ -45,11 +45,11 @@ fn test_combinations() {
             vec![&0, &2, &3, &4],
             vec![&1, &2, &3, &4],
         ],
-        values.iter().combinations(4).vec()
+        values.iter().combinations(4).collect::<Vec<_>>()
     );
     assert_eq!(
         vec![vec![&0, &1, &2, &3, &4]],
-        values.iter().combinations(5).vec()
+        values.iter().combinations(5).collect::<Vec<_>>()
     );
 }
 
@@ -83,6 +83,6 @@ fn test_permutations() {
             vec![&3, &2, &0, &1],
             vec![&3, &2, &1, &0],
         ],
-        values.iter().permutations().vec()
+        values.iter().permutations().collect::<Vec<_>>()
     );
 }

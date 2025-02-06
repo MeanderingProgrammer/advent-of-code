@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -12,11 +12,13 @@ impl FromStr for Disk {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let [id, positions, start] = Parser::values(s, " ").unwrap();
+        // Disc #1 has 5 positions; at time=0, it is at position 4.
+        let s = s.replace(['#', '.'], "");
+        let parts = s.split_whitespace().collect::<Vec<_>>();
         Ok(Self {
-            id,
-            positions,
-            start,
+            id: parts[1].parse().unwrap(),
+            positions: parts[3].parse().unwrap(),
+            start: parts[11].parse().unwrap(),
         })
     }
 }

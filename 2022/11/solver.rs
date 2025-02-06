@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -58,19 +58,18 @@ impl FromStr for Monkey {
         //    If false: throw to monkey 6
 
         let lines: Vec<&str> = s.lines().collect();
-        let [items] = Parser::nth(lines[1], ": ", [1]);
-        let [operation, value] = Parser::nth_rev(lines[2], " ", [1, 0]);
-        let [divisible_by] = Parser::values(lines[3], " ").unwrap();
-        let [true_monkey] = Parser::values(lines[4], " ").unwrap();
-        let [false_monkey] = Parser::values(lines[5], " ").unwrap();
-
+        let (_, items) = lines[1].split_once(": ").unwrap();
+        let [true_monkey, false_monkey] = [lines[4], lines[5]].map(|s| Str::nth_rev(s, ' ', 0));
         Ok(Self {
             items: items
                 .split(", ")
                 .map(|item| item.parse().unwrap())
                 .collect(),
-            operation: (operation.parse().unwrap(), value.parse().unwrap()),
-            divisible_by,
+            operation: (
+                Str::nth_rev(lines[2], ' ', 1),
+                Str::nth_rev(lines[2], ' ', 0),
+            ),
+            divisible_by: Str::nth_rev(lines[3], ' ', 0),
             true_monkey,
             false_monkey,
             inspections: 0,

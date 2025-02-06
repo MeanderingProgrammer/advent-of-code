@@ -1,4 +1,4 @@
-use aoc::{answer, HashSet, Iter, Parser, Point3d, Reader};
+use aoc::{answer, HashSet, Point3d, Reader, Str};
 
 #[derive(Debug, Clone)]
 struct Particle {
@@ -11,7 +11,7 @@ struct Particle {
 impl Particle {
     fn from_str(id: usize, s: &str) -> Self {
         // p=<point>, v=<point>, a=<point>
-        let [position, velocity, acceleration] = Parser::values(s, ", ").unwrap();
+        let [position, velocity, acceleration] = [0, 1, 2].map(|i| Str::nth(s, ' ', i));
         Self {
             id,
             position,
@@ -45,7 +45,7 @@ fn solution() {
         .into_iter()
         .enumerate()
         .map(|(i, line)| Particle::from_str(i, &line))
-        .vec();
+        .collect::<Vec<_>>();
     answer::part1(161, run_simulation(particles.clone(), false)[0].id);
     answer::part2(438, run_simulation(particles.clone(), true).len());
 }

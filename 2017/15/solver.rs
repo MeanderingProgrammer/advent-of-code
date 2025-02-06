@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use rayon::prelude::*;
 
 #[derive(Debug)]
@@ -40,8 +40,7 @@ fn main() {
 
 fn solution() {
     let lines = Reader::default().lines::<String>();
-    let [a] = Parser::values(&lines[0], " ").unwrap();
-    let [b] = Parser::values(&lines[1], " ").unwrap();
+    let [a, b] = [&lines[0], &lines[1]].map(|s| Str::nth_rev(s, ' ', 0));
     let generators = [(a, 16_807, 4), (b, 48_271, 8)];
     let values: Vec<(Vec<u16>, Vec<u16>)> = generators
         .into_par_iter()

@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashMap, HashSet, Iter, Parser, Reader};
+use aoc::{answer, HashMap, HashSet, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -15,13 +15,13 @@ impl FromStr for Behavior {
         //    - Write the value 1.
         //    - Move one slot to the right.
         //    - Continue with state B.
-        let [write, direction, state] = s.lines().array().unwrap();
-        let write = match last_word(write) {
+        let lines = s.lines().collect::<Vec<_>>();
+        let write = match last(lines[0]) {
             "0" => Ok(false),
             "1" => Ok(true),
             _ => Err(String::from("unhandled write")),
         };
-        let direction = match last_word(direction) {
+        let direction = match last(lines[1]) {
             "left" => Ok(-1),
             "right" => Ok(1),
             _ => Err(String::from("unhandled direction")),
@@ -29,7 +29,7 @@ impl FromStr for Behavior {
         Ok(Self {
             write: write?,
             direction: direction?,
-            next: to_state(state),
+            next: to_state(lines[2]),
         })
     }
 }
@@ -48,7 +48,7 @@ impl FromStr for Rule {
         //  <Behavior>
         //  If the current value is 1:
         //  <Behavior>
-        let lines = s.lines().vec();
+        let lines = s.lines().collect::<Vec<_>>();
         let zero = lines[1..4].join("\n").parse()?;
         let one = lines[5..8].join("\n").parse()?;
         Ok(Self { zero, one })
@@ -112,9 +112,8 @@ fn solution() {
 fn get_state(s: &str) -> (u8, usize) {
     // Begin in state A.
     // Perform a diagnostic checksum after 12425180 steps.
-    let [state, steps] = s.lines().array().unwrap();
-    let [steps] = Parser::values(steps, " ").unwrap();
-    (to_state(state), steps)
+    let lines = s.lines().collect::<Vec<_>>();
+    (to_state(lines[0]), Str::nth_rev(lines[1], ' ', 1))
 }
 
 fn get_rule(s: &str) -> (u8, Rule) {
@@ -125,9 +124,12 @@ fn get_rule(s: &str) -> (u8, Rule) {
 }
 
 fn to_state(s: &str) -> u8 {
-    Convert::idx_upper(Convert::ch(last_word(s)))
+    Str::lower_index(last(s)) as u8
 }
 
-fn last_word(s: &str) -> &str {
-    Parser::nth_rev(s, " ", [0])[0]
+fn last(s: &str) -> &str {
+    s.split_whitespace()
+        .last()
+        .unwrap()
+        .trim_matches(['.', ':'])
 }

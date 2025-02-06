@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -81,13 +81,13 @@ impl State {
 #[derive(Debug)]
 struct Blueprint {
     id: usize,
-    max_ore: u8,
-    max_clay: u8,
-    max_obsidian: u8,
     ore_cost: Mineral,
     clay_cost: Mineral,
     obsidian_cost: Mineral,
     geode_cost: Mineral,
+    max_ore: u8,
+    max_clay: u8,
+    max_obsidian: u8,
 }
 
 impl FromStr for Blueprint {
@@ -99,19 +99,18 @@ impl FromStr for Blueprint {
         //  Each clay robot costs 2 ore.
         //  Each obsidian robot costs 3 ore and 14 clay.
         //  Each geode robot costs 2 ore and 7 obsidian.
-        let [id, minerals] = Parser::all(s, ": ").unwrap();
-        let [id] = Parser::values(id, " ").unwrap();
-        let [ore1, ore2, ore3, clay, ore4, obsidian]: [u8; 6] =
-            Parser::values(minerals, " ").unwrap();
+        let (id, s) = s.split_once(": ").unwrap();
+        let [ore1, ore2, ore3, clay, ore4, obsidian] =
+            [4, 10, 16, 19, 25, 28].map(|i| Str::nth(s, ' ', i));
         Ok(Self {
-            id,
-            max_ore: ore1.max(ore2).max(ore3).max(ore4),
-            max_clay: clay,
-            max_obsidian: obsidian,
+            id: Str::nth(id, ' ', 1),
             ore_cost: Mineral::new(ore1, 0, 0, 0),
             clay_cost: Mineral::new(ore2, 0, 0, 0),
             obsidian_cost: Mineral::new(ore3, clay, 0, 0),
             geode_cost: Mineral::new(ore4, 0, obsidian, 0),
+            max_ore: ore1.max(ore2).max(ore3).max(ore4),
+            max_clay: clay,
+            max_obsidian: obsidian,
         })
     }
 }

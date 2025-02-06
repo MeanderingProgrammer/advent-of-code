@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, FromChar, Grid, HashMap, Iter, Parser, Point, Reader};
+use aoc::{answer, Direction, FromChar, Grid, HashMap, Point, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -62,7 +62,7 @@ struct Cube {
 
 impl Cube {
     fn new(s: &str) -> Self {
-        let grid: Grid<Space> = (&s.lines().map(|s| s.to_string()).vec()).into();
+        let grid: Grid<Space> = s.into();
         let total_spaces = grid.iter().count();
         let spaces_per_face = total_spaces / 6;
         let size = (spaces_per_face as f64).sqrt() as i32;
@@ -305,8 +305,8 @@ fn parse_mappings(edge_mappings: &[&str]) -> HashMap<Block, Edges> {
 
 fn parse_edge_mapping(s: &str) -> (Block, Edges) {
     // A -> F:1 B:0 C:0 D:2
-    let [block, edges] = Parser::all(s, " -> ").unwrap();
-    let [above, right, below, left] = Parser::values(edges, " ").unwrap();
+    let (block, s) = s.split_once(" -> ").unwrap();
+    let [above, right, below, left] = [0, 1, 2, 3].map(|i| Str::nth(s, ' ', i));
     (
         block.parse().unwrap(),
         Edges {

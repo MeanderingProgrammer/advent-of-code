@@ -4,16 +4,26 @@ use std::str::FromStr;
 
 #[test]
 fn test_str() {
-    assert_eq!(Ok(Point::new(17, -5)), Point::from_str("17,-5"));
+    let point = Point::new(17, -5);
+    assert_eq!(Ok(point.clone()), "17,-5".parse());
+    assert_eq!(Ok(point.clone()), " 17 , -5 ".parse());
+    assert_eq!(Ok(point.clone()), "<17 , -5>".parse());
+    assert_eq!(Ok(point.clone()), "<x=17 , y=-5>".parse());
+    assert_eq!(Ok(point.clone()), "prefix <x=17 , y=-5>".parse());
     assert!(Point::from_str("17,-5,0").is_err());
-    assert_eq!("(17, -5)", Point::new(17, -5).to_string());
+    assert_eq!("(17, -5)", point.to_string());
 }
 
 #[test]
 fn test_str_3d() {
-    assert_eq!(Ok(Point3d::new(-1, 0, 102)), Point3d::from_str("-1,0,102"));
+    let point = Point3d::new(-1, 0, 102);
+    assert_eq!(Ok(point.clone()), "-1,0,102".parse());
+    assert_eq!(Ok(point.clone()), " -1, 0, 102 ".parse());
+    assert_eq!(Ok(point.clone()), "<-1, 0, 102>".parse());
+    assert_eq!(Ok(point.clone()), "<x=-1, y=0, z=102>".parse());
+    assert_eq!(Ok(point.clone()), "prefix <x=-1, y=0, z=102>".parse());
     assert!(Point3d::from_str("-1,0,102,0").is_err());
-    assert_eq!("(-1, 0, 102)", Point3d::new(-1, 0, 102).to_string());
+    assert_eq!("(-1, 0, 102)", point.to_string());
 }
 
 #[test]

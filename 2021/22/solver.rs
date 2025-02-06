@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -12,9 +12,12 @@ impl FromStr for Range {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // x=-48..-32 | y=26..41 | z=-47..-37
-        let [range] = Parser::nth(s, "=", [1]);
-        let [start, end] = Parser::values(range, "..").unwrap();
-        Ok(Self { start, end })
+        let (_, s) = s.split_once('=').unwrap();
+        let (start, end) = s.split_once("..").unwrap();
+        Ok(Self {
+            start: start.parse().unwrap(),
+            end: end.parse().unwrap(),
+        })
     }
 }
 
@@ -46,8 +49,12 @@ impl FromStr for Bound {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // x=<Range>,y=<Range>,z=<Range>
-        let [xs, ys, zs] = Parser::values(s, ",").unwrap();
-        Ok(Self { xs, ys, zs })
+        let ranges = s.split(',').collect::<Vec<_>>();
+        Ok(Self {
+            xs: ranges[0].parse().unwrap(),
+            ys: ranges[1].parse().unwrap(),
+            zs: ranges[2].parse().unwrap(),
+        })
     }
 }
 

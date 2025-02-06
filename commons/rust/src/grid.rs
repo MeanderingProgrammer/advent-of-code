@@ -18,11 +18,24 @@ impl<T> Default for Grid<T> {
     }
 }
 
-impl<T: FromChar> From<&Vec<String>> for Grid<T> {
-    fn from(lines: &Vec<String>) -> Self {
+impl<T> From<&str> for Grid<T>
+where
+    T: FromChar,
+{
+    fn from(value: &str) -> Self {
+        (&value.lines().collect::<Vec<_>>()).into()
+    }
+}
+
+impl<T, S> From<&Vec<S>> for Grid<T>
+where
+    T: FromChar,
+    S: AsRef<str>,
+{
+    fn from(value: &Vec<S>) -> Self {
         let mut grid = Self::default();
-        for (y, line) in lines.iter().enumerate() {
-            for (x, ch) in line.char_indices() {
+        for (y, line) in value.iter().enumerate() {
+            for (x, ch) in line.as_ref().char_indices() {
                 let point = Point::new(x as i32, y as i32);
                 if let Some(value) = T::from_char(ch) {
                     grid.add(point, value);

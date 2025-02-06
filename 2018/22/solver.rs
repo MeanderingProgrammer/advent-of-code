@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Direction, Grid, HashSet, Parser, Point, Reader};
+use aoc::{answer, Dijkstra, Direction, Grid, HashSet, Point, Reader, Str};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 enum Tool {
@@ -41,12 +41,10 @@ struct Cave {
 
 impl Cave {
     fn new(lines: &[String]) -> Self {
-        let [depth] = Parser::values(&lines[0], ": ").unwrap();
-        let [target] = Parser::values(&lines[1], ": ").unwrap();
         Self {
             buffer: 30,
-            depth,
-            target,
+            depth: Str::nth(&lines[0], ' ', 1),
+            target: Str::nth(&lines[1], ' ', 1),
             cave: Grid::default(),
         }
     }

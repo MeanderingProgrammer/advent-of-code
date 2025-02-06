@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -12,7 +12,7 @@ impl FromStr for Scanner {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let [layer, layer_range] = Parser::values(s, ": ").unwrap();
+        let [layer, layer_range] = [0, 1].map(|i| Str::nth(s, ':', i));
         Ok(Self::new(layer, layer_range))
     }
 }

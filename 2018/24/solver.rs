@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Parser, Reader};
+use aoc::{answer, HashMap, HashSet, Reader, Str};
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -32,8 +32,8 @@ struct Army {
 impl Army {
     fn new(id: usize, kind: Kind, s: &str) -> Self {
         // 18 units each with 729 hit points <traits> with an attack that does 8 radiation damage at initiative 10
-        let [units, hp, damage, initiative] = Parser::values(s, " ").unwrap();
-        let [damage_type] = Parser::nth_rev(s, " ", [4]);
+        let [units, hp] = [0, 4].map(|i| Str::nth(s, ' ', i));
+        let [damage, initiative] = [5, 0].map(|i| Str::nth_rev(s, ' ', i));
         let mut traits = Self::traits(s);
         let weaknesses = traits.remove("weak").unwrap_or_default();
         let immunities = traits.remove("immune").unwrap_or_default();
@@ -45,14 +45,14 @@ impl Army {
             weaknesses,
             immunities,
             damage,
-            damage_type: damage_type.to_string(),
+            damage_type: Str::nth_rev(s, ' ', 4),
             initiative,
         }
     }
 
     fn traits(s: &str) -> HashMap<String, HashSet<String>> {
         // (weak to fire; immune to cold, slashing)
-        match Parser::enclosed(s, '(', ')') {
+        match Str::enclosed(s, '(', ')') {
             None => HashMap::default(),
             Some(traits) => traits
                 .split("; ")

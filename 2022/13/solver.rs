@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{answer, Reader};
 use std::cmp::Ordering;
 use std::str::FromStr;
 
@@ -76,7 +76,7 @@ fn solution() {
         .iter()
         .filter(|line| !line.is_empty())
         .map(|line| line.parse().unwrap())
-        .vec();
+        .collect::<Vec<_>>();
     answer::part1(4809, sum_adjacent(&packets));
     answer::part2(22600, decoder_key(&packets));
 }

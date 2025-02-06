@@ -1,4 +1,4 @@
-use aoc::{answer, Direction3d, HashMap, HashSet, Iter, Parser, Point3d, Reader};
+use aoc::{answer, Direction3d, HashMap, HashSet, Point3d, Reader, Str};
 
 #[derive(Debug)]
 enum Axis {
@@ -38,7 +38,7 @@ struct Brick {
 impl Brick {
     fn new(id: usize, s: &str) -> Self {
         // <Point>~<Point>
-        let [p1, p2] = Parser::values(s, "~").unwrap();
+        let [p1, p2] = [0, 1].map(|i| Str::nth(s, '~', i));
         let axis = Axis::new(&p1, &p2).unwrap();
         let (v1, v2) = (axis.get(&p1), axis.get(&p2));
         let (start, end) = if v1 <= v2 { (p1, p2) } else { (p2, p1) };
@@ -158,7 +158,7 @@ fn solution() {
         .iter()
         .enumerate()
         .map(|(id, s)| Brick::new(id, s))
-        .vec();
+        .collect::<Vec<_>>();
     let mut stack = Stack::new(bricks);
     stack.fall();
     let counts = stack.counts();

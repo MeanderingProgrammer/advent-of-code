@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use std::collections::VecDeque;
 
 #[derive(Debug, Default)]
@@ -42,7 +42,7 @@ fn main() {
 fn solution() {
     let line = Reader::default().line::<String>();
     // <number> players; last marble is worth <number> points
-    let [players, value] = Parser::values(&line, " ").unwrap();
+    let [players, value] = [0, 6].map(|i| Str::nth(&line, ' ', i));
     answer::part1(429943, solve(players, value));
     answer::part2(3615691746, solve(players, value * 100));
 }

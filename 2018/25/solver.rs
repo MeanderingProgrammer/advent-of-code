@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Parser, Reader};
+use aoc::{answer, HashMap, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -13,10 +13,8 @@ impl FromStr for Point {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match Parser::values(s, ",") {
-            None => Err(format!("Unknown point format {s}")),
-            Some([w, x, y, z]) => Ok(Self { w, x, y, z }),
-        }
+        let [w, x, y, z] = [0, 1, 2, 3].map(|i| Str::nth(s, ',', i));
+        Ok(Self { w, x, y, z })
     }
 }
 

@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{answer, Reader};
 
 #[derive(Debug)]
 struct Cups {
@@ -75,7 +75,7 @@ fn solution() {
         .chars::<u8>()
         .into_iter()
         .map(|value| value as usize)
-        .vec();
+        .collect::<Vec<_>>();
     answer::part1("45798623", &run(&values, 0, 100).part_1());
     answer::part2(235551949822, run(&values, 1_000_000, 10_000_000).part_2());
 }

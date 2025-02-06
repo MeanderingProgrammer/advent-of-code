@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 
 fn main() {
     answer::timer(solution);
@@ -6,7 +6,8 @@ fn main() {
 
 fn solution() {
     let line = Reader::default().line::<String>();
-    let [row, column] = Parser::values(&line, " ").unwrap();
+    let line = line.replace([',', '.'], "");
+    let [row, column] = [2, 0].map(|i| Str::nth_rev(&line, ' ', i));
     let index = get_index(row, column);
     answer::part1(19980801, get_password(index));
 }

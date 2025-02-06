@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{answer, Reader};
 
 fn main() {
     answer::timer(solution);
@@ -9,7 +9,7 @@ fn solution() {
         .chars::<char>()
         .into_iter()
         .map(|ch| ch == '1')
-        .vec();
+        .collect::<Vec<_>>();
     answer::part1("10010101010011101", &fill_disk(curve.clone(), 272));
     answer::part2("01100111101101111", &fill_disk(curve.clone(), 35_651_584));
 }

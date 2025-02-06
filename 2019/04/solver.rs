@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader};
 
 #[derive(Debug)]
 struct Password {
@@ -44,7 +44,8 @@ fn main() {
 
 fn solution() {
     let line = Reader::default().line::<String>();
-    let [start, end]: [usize; 2] = Parser::values(&line, "-").unwrap();
+    let (start, end) = line.split_once('-').unwrap();
+    let (start, end): (usize, usize) = (start.parse().unwrap(), end.parse().unwrap());
     let passwords: Vec<Password> = (start..=end)
         .map(|value| Password {
             value: value.to_string().chars().collect(),

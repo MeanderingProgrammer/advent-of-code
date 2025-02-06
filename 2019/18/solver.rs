@@ -1,6 +1,5 @@
 use aoc::{
-    answer, BitSet, Convert, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point,
-    Reader,
+    answer, BitSet, Char, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point, Reader,
 };
 use std::collections::VecDeque;
 
@@ -21,9 +20,9 @@ impl FromChar for Element {
         } else if ch == '.' {
             Some(Self::Empty)
         } else if ch.is_ascii_lowercase() {
-            Some(Self::Key(Convert::idx_lower(ch)))
+            Some(Self::Key(Char::lower_index(ch)))
         } else if ch.is_ascii_uppercase() {
-            Some(Self::Door(Convert::idx_upper(ch)))
+            Some(Self::Door(Char::upper_index(ch)))
         } else {
             None
         }

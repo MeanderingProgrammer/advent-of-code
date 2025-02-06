@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, FromChar, HashSet, Reader};
+use aoc::{answer, Char, FromChar, HashSet, Reader};
 
 #[derive(Debug, Clone)]
 enum Unit {
@@ -9,8 +9,8 @@ enum Unit {
 impl FromChar for Unit {
     fn from_char(ch: char) -> Option<Self> {
         Some(match ch.is_ascii_uppercase() {
-            true => Self::Upper(Convert::idx_upper(ch)),
-            false => Self::Lower(Convert::idx_lower(ch)),
+            true => Self::Upper(Char::upper_index(ch)),
+            false => Self::Lower(Char::lower_index(ch)),
         })
     }
 }

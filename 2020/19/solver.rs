@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashMap, Parser, Reader};
+use aoc::{answer, HashMap, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -16,8 +16,8 @@ impl FromStr for Rule {
             s.split(' ').map(|n| n.parse().unwrap()).collect()
         }
 
-        match Parser::enclosed(s, '"', '"') {
-            Some(s) => Ok(Self::Letter(Convert::ch(s))),
+        match Str::enclosed(s, '"', '"') {
+            Some(s) => Ok(Self::Letter(Str::first(s))),
             None => {
                 if s.contains('|') {
                     let (left, right) = s.split_once(" | ").unwrap();
@@ -41,7 +41,7 @@ impl FromStr for Rules {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut rules = HashMap::default();
         for line in s.lines() {
-            let [number, rule] = Parser::nth(line, ": ", [0, 1]);
+            let (number, rule) = line.split_once(": ").unwrap();
             rules.insert(number.parse().unwrap(), rule.parse().unwrap());
         }
         Ok(Self { rules })
@@ -63,7 +63,7 @@ impl Rules {
             Rule::Letter(letter) => inputs
                 .into_iter()
                 .filter(|&input| !input.is_empty())
-                .filter(|&input| Convert::ch(input) == *letter)
+                .filter(|&input| Str::first(input) == *letter)
                 .map(|input| &input[1..])
                 .collect(),
             Rule::And(rules) => self.matching(inputs, rules),

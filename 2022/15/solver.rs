@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Parser, Point, Reader};
+use aoc::{answer, Iter, Point, Reader, Str};
 use rayon::prelude::*;
 use std::str::FromStr;
 
@@ -54,7 +54,7 @@ impl FromStr for CoverageZone {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Sensor <point>: closest beacon is <point>
-        let [center, beacon]: [Point; 2] = Parser::values(s, ": ").unwrap();
+        let [center, beacon]: [Point; 2] = [0, 1].map(|i| Str::nth(s, ':', i));
         let (x, y) = (center.x, center.y);
         let radius = center.manhattan_distance(&beacon);
 

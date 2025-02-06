@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Parser, Reader};
+use aoc::{answer, Dijkstra, Reader, Str};
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -238,8 +238,7 @@ struct Settings {
 
 impl Settings {
     fn new(lines: &[String]) -> Self {
-        let [hp] = Parser::values(&lines[0], ": ").unwrap();
-        let [attack] = Parser::values(&lines[1], ": ").unwrap();
+        let [hp, attack] = [&lines[0], &lines[1]].map(|s| Str::nth(s, ':', 1));
         Self { hp, attack }
     }
 

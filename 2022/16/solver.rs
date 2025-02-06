@@ -1,4 +1,4 @@
-use aoc::{answer, BitSet, Convert, HashMap, HeapKind, Iter, PriorityQueue, Reader};
+use aoc::{answer, BitSet, HashMap, HeapKind, Iter, PriorityQueue, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -20,16 +20,10 @@ impl FromStr for Valve {
         let delim = if plural { "valves " } else { "valve " };
         let (_, tunnels) = tunnels.split_once(delim).unwrap();
         Ok(Self {
-            name: Self::index(name),
+            name: Str::lower_index(name),
             flow_rate: flow_rate.parse().unwrap(),
-            leads_to: tunnels.split(", ").map(Self::index).collect(),
+            leads_to: tunnels.split(", ").map(Str::lower_index).collect(),
         })
-    }
-}
-
-impl Valve {
-    fn index(s: &str) -> u32 {
-        Convert::idx_lower_str(s)
     }
 }
 
@@ -173,7 +167,7 @@ fn main() {
 
 fn solution() {
     let valves = Reader::default().lines();
-    let cave = create_cave(valves, Valve::index("AA"));
+    let cave = create_cave(valves, Str::lower_index("AA"));
     answer::part1(1873, cave.traverse::<1>(30));
     answer::part2(2425, cave.traverse::<2>(26));
 }

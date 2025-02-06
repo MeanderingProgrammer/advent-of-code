@@ -1,4 +1,4 @@
-use aoc::{answer, Parser, Reader};
+use aoc::{answer, Reader, Str};
 use std::str::FromStr;
 
 #[derive(Debug, Default)]
@@ -14,13 +14,17 @@ impl FromStr for Ingredient {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let [capacity, durability, flavor, texture, calories] = Parser::values(s, " ").unwrap();
+        let (_, s) = s.split_once(": ").unwrap();
+        let parts = s
+            .split(", ")
+            .map(|s| Str::nth_rev(s, ' ', 0))
+            .collect::<Vec<_>>();
         Ok(Self {
-            capacity,
-            durability,
-            flavor,
-            texture,
-            calories,
+            capacity: parts[0],
+            durability: parts[1],
+            flavor: parts[2],
+            texture: parts[3],
+            calories: parts[4],
         })
     }
 }

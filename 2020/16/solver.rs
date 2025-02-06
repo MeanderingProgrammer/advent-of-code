@@ -1,16 +1,13 @@
-use aoc::{answer, Parser, Reader};
-use std::str::FromStr;
+use aoc::{answer, Reader};
 
 #[derive(Debug)]
 struct Range(usize, usize);
 
-impl FromStr for Range {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Range {
+    fn from(s: &str) -> Self {
         // 1-3
-        let [start, end] = Parser::values(s, "-").unwrap();
-        Ok(Self(start, end))
+        let (start, end) = s.split_once('-').unwrap();
+        Self(start.parse().unwrap(), end.parse().unwrap())
     }
 }
 
@@ -26,16 +23,15 @@ struct Rule {
     ranges: [Range; 2],
 }
 
-impl FromStr for Rule {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Rule {
+    fn from(s: &str) -> Self {
         // class: <Value> or <Value>
-        let [name, s] = Parser::all(s, ": ").unwrap();
-        Ok(Self {
+        let (name, s) = s.split_once(": ").unwrap();
+        let (r1, r2) = s.split_once(" or ").unwrap();
+        Self {
             name: name.to_string(),
-            ranges: Parser::values(s, " or ").unwrap(),
-        })
+            ranges: [r1.into(), r2.into()],
+        }
     }
 }
 
@@ -50,12 +46,10 @@ struct Ticket {
     values: Vec<usize>,
 }
 
-impl FromStr for Ticket {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Ticket {
+    fn from(s: &str) -> Self {
         let values = s.split(',').map(|value| value.parse().unwrap()).collect();
-        Ok(Self { values })
+        Self { values }
     }
 }
 
@@ -75,16 +69,9 @@ fn main() {
 
 fn solution() {
     let groups = Reader::default().groups::<String>();
-    let rules: Vec<Rule> = groups[0]
-        .lines()
-        .map(|line| line.parse().unwrap())
-        .collect();
-    let mine: Ticket = groups[1].lines().last().unwrap().parse().unwrap();
-    let nearby: Vec<Ticket> = groups[2]
-        .lines()
-        .skip(1)
-        .map(|line| line.parse().unwrap())
-        .collect();
+    let rules: Vec<Rule> = groups[0].lines().map(|line| line.into()).collect();
+    let mine: Ticket = groups[1].lines().last().unwrap().into();
+    let nearby: Vec<Ticket> = groups[2].lines().skip(1).map(|line| line.into()).collect();
     answer::part1(26980, part1(&rules, &nearby));
     answer::part2(3021381607403, part2(&rules, &mine, &nearby));
 }

@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, Iter, Parser, Reader};
+use aoc::{answer, Iter, Reader, Str};
 use std::collections::VecDeque;
 use std::fmt;
 use std::str::FromStr;
@@ -19,12 +19,12 @@ impl FromStr for Instruction {
         match op {
             "s" => Ok(Self::Spin(s.parse().unwrap())),
             "x" => {
-                let [l, r] = Parser::values(s, "/").unwrap();
-                Ok(Self::Exchange(l, r))
+                let (l, r) = s.split_once('/').unwrap();
+                Ok(Self::Exchange(l.parse().unwrap(), r.parse().unwrap()))
             }
             "p" => {
-                let [l, r] = Parser::all(s, "/").unwrap();
-                Ok(Self::Partner(Convert::ch(l), Convert::ch(r)))
+                let (l, r) = s.split_once('/').unwrap();
+                Ok(Self::Partner(Str::first(l), Str::first(r)))
             }
             _ => Err(format!("Uknown op: {op}")),
         }

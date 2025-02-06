@@ -4,25 +4,11 @@ use std::hash::Hash;
 
 // Extra methods for Iterators based largely off of the Itertools crate
 pub trait Iter: Iterator + Sized {
-    fn vec(self) -> Vec<Self::Item> {
-        self.collect()
-    }
-
-    fn array<const N: usize>(self) -> Option<[Self::Item; N]> {
-        let values = self.vec();
-        if values.len() != N {
-            None
-        } else {
-            let mut iter = values.into_iter();
-            Some(std::array::from_fn(|_| iter.next().unwrap()))
-        }
-    }
-
     fn sorted(self) -> std::vec::IntoIter<Self::Item>
     where
         Self::Item: Ord,
     {
-        let mut values = self.vec();
+        let mut values = self.collect::<Vec<_>>();
         values.sort();
         values.into_iter()
     }
@@ -34,22 +20,6 @@ pub trait Iter: Iterator + Sized {
         let mut counts = HashMap::default();
         self.for_each(|value| *counts.entry(value).or_default() += 1);
         counts
-    }
-
-    fn combinations(self, k: usize) -> Product<Self::Item>
-    where
-        Self::Item: Clone,
-    {
-        Product::new(self.vec(), k, ProductKind::Combination)
-    }
-
-    fn permutations(self) -> Product<Self::Item>
-    where
-        Self::Item: Clone,
-    {
-        let values = self.vec();
-        let k = values.len();
-        Product::new(values, k, ProductKind::Permutation)
     }
 
     fn unique(self) -> usize
@@ -97,6 +67,22 @@ pub trait Iter: Iterator + Sized {
                 Some((min, max))
             }
         }
+    }
+
+    fn combinations(self, k: usize) -> Product<Self::Item>
+    where
+        Self::Item: Clone,
+    {
+        Product::new(self.collect(), k, ProductKind::Combination)
+    }
+
+    fn permutations(self) -> Product<Self::Item>
+    where
+        Self::Item: Clone,
+    {
+        let values = self.collect::<Vec<_>>();
+        let k = values.len();
+        Product::new(values, k, ProductKind::Permutation)
     }
 }
 

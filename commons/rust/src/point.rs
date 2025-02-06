@@ -1,4 +1,4 @@
-use crate::{FromChar, Parser};
+use crate::{FromChar, Str};
 use std::cmp::Ordering;
 use std::fmt;
 use std::str::FromStr;
@@ -134,14 +134,15 @@ impl FromStr for Point {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // 10, -12 | <10, -12> | <x=10, y=-12>
-        let s = Parser::enclosed(s, '<', '>').unwrap_or(s);
-        match Parser::all(s, ",") {
-            None => Err(format!("Unknown point format {s}")),
-            Some([x, y]) => {
-                let [x] = Parser::values(x, "=").unwrap();
-                let [y] = Parser::values(y, "=").unwrap();
-                Ok(Self::new(x, y))
-            }
+        let s = Str::enclosed(s, '<', '>').unwrap_or(s);
+        let coords = s
+            .split(',')
+            .map(|coord| Str::nth_rev(coord, '=', 0))
+            .collect::<Vec<i32>>();
+        if coords.len() != 2 {
+            Err(format!("Unknown point format {s}"))
+        } else {
+            Ok(Self::new(coords[0], coords[1]))
         }
     }
 }
@@ -259,15 +260,15 @@ impl FromStr for Point3d {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // 10, -12, 5 | <10, -12, 5> | <x=10, y=-12, z=5>
-        let s = Parser::enclosed(s, '<', '>').unwrap_or(s);
-        match Parser::all(s, ",") {
-            None => Err(format!("Unknown point format {s}")),
-            Some([x, y, z]) => {
-                let [x] = Parser::values(x, "=").unwrap();
-                let [y] = Parser::values(y, "=").unwrap();
-                let [z] = Parser::values(z, "=").unwrap();
-                Ok(Self::new(x, y, z))
-            }
+        let s = Str::enclosed(s, '<', '>').unwrap_or(s);
+        let coords = s
+            .split(',')
+            .map(|coord| Str::nth_rev(coord, '=', 0))
+            .collect::<Vec<i32>>();
+        if coords.len() != 3 {
+            Err(format!("Unknown point format {s}"))
+        } else {
+            Ok(Self::new(coords[0], coords[1], coords[2]))
         }
     }
 }

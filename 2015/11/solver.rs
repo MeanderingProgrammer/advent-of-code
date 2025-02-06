@@ -1,4 +1,4 @@
-use aoc::{answer, Convert, HashSet, Reader};
+use aoc::{answer, Char, HashSet, Reader};
 
 #[derive(Debug)]
 struct PasswordGenerator {
@@ -8,7 +8,7 @@ struct PasswordGenerator {
 impl PasswordGenerator {
     fn new(value: String) -> Self {
         Self {
-            value: value.chars().map(Convert::idx_lower).collect(),
+            value: value.chars().map(Char::lower_index).collect(),
         }
     }
 
@@ -41,11 +41,7 @@ impl PasswordGenerator {
     }
 
     fn contains_invalid(&self) -> bool {
-        let invalid = HashSet::from_iter([
-            Convert::idx_lower('i'),
-            Convert::idx_lower('o'),
-            Convert::idx_lower('l'),
-        ]);
+        let invalid = HashSet::from_iter(['i', 'o', 'l'].map(Char::lower_index));
         let value = HashSet::from_iter(self.value.iter().cloned());
         invalid.intersection(&value).count() > 0
     }
@@ -59,7 +55,7 @@ impl PasswordGenerator {
     }
 
     fn get_value(&self) -> String {
-        self.value.iter().map(|i| Convert::char_lower(*i)).collect()
+        self.value.iter().map(|i| Char::lower_char(*i)).collect()
     }
 }
 

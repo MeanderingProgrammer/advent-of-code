@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{answer, Reader};
 
 fn main() {
     answer::timer(solution);
@@ -9,7 +9,7 @@ fn solution() {
         .chars::<char>()
         .into_iter()
         .map(|ch| ch == '.')
-        .vec();
+        .collect::<Vec<_>>();
     answer::part1(2013, total_safe(&row, 40));
     answer::part2(20006289, total_safe(&row, 400_000));
 }
