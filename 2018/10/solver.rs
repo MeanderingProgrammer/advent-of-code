@@ -1,4 +1,4 @@
-use aoc::{answer, Bounds, Grid, Point, Reader, Str};
+use aoc::{answer, Bounds, Grid, Point, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -12,8 +12,11 @@ impl FromStr for Particle {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // position=<point> velocity=<point>
-        let [position, velocity] = [1, 2].map(|i| Str::nth(s, '=', i));
-        Ok(Self { position, velocity })
+        let (position, velocity) = s.split_at(25);
+        Ok(Self {
+            position: position.parse().unwrap(),
+            velocity: velocity.parse().unwrap(),
+        })
     }
 }
 

@@ -1,10 +1,10 @@
-use aoc::{answer, Reader, Str};
+use aoc::{answer, Reader};
 use std::str::FromStr;
 
 #[derive(Debug)]
 struct Scanner {
     layer: usize,
-    layer_range: usize,
+    range: usize,
     roundtrip: usize,
 }
 
@@ -12,17 +12,17 @@ impl FromStr for Scanner {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let [layer, layer_range] = [0, 1].map(|i| Str::nth(s, ':', i));
-        Ok(Self::new(layer, layer_range))
+        let (layer, range) = s.split_once(": ").unwrap();
+        Ok(Self::new(layer.parse().unwrap(), range.parse().unwrap()))
     }
 }
 
 impl Scanner {
-    fn new(layer: usize, layer_range: usize) -> Self {
+    fn new(layer: usize, range: usize) -> Self {
         Self {
             layer,
-            layer_range,
-            roundtrip: (layer_range - 1) * 2,
+            range,
+            roundtrip: (range - 1) * 2,
         }
     }
 
@@ -31,7 +31,7 @@ impl Scanner {
     }
 
     fn severity(&self) -> usize {
-        self.layer * self.layer_range
+        self.layer * self.range
     }
 }
 

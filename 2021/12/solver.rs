@@ -10,15 +10,15 @@ struct Cave {
 }
 
 impl From<&str> for Cave {
-    fn from(value: &str) -> Self {
+    fn from(s: &str) -> Self {
         Self {
-            big: Str::is_upper(value),
-            value: if value == "start" {
+            big: Str::is_upper(s),
+            value: if s == "start" {
                 START
-            } else if value == "end" {
+            } else if s == "end" {
                 END
             } else {
-                Str::lower_index(value)
+                Str::lower_index(s)
             },
         }
     }

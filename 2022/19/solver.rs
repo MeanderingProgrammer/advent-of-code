@@ -100,10 +100,11 @@ impl FromStr for Blueprint {
         //  Each obsidian robot costs 3 ore and 14 clay.
         //  Each geode robot costs 2 ore and 7 obsidian.
         let (id, s) = s.split_once(": ").unwrap();
+        let (_, id) = id.split_once(' ').unwrap();
         let [ore1, ore2, ore3, clay, ore4, obsidian] =
             [4, 10, 16, 19, 25, 28].map(|i| Str::nth(s, ' ', i));
         Ok(Self {
-            id: Str::nth(id, ' ', 1),
+            id: id.parse().unwrap(),
             ore_cost: Mineral::new(ore1, 0, 0, 0),
             clay_cost: Mineral::new(ore2, 0, 0, 0),
             obsidian_cost: Mineral::new(ore3, clay, 0, 0),

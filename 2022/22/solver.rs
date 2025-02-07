@@ -29,7 +29,7 @@ impl FromStr for Edge {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (block, rotations) = s.split_once(':').unwrap();
         Ok(Self {
-            block: block.parse()?,
+            block: block.into(),
             rotations: rotations.parse().unwrap(),
         })
     }
@@ -41,6 +41,18 @@ struct Edges {
     right: Edge,
     below: Edge,
     left: Edge,
+}
+
+impl From<&str> for Edges {
+    fn from(s: &str) -> Self {
+        let [above, right, below, left] = [0, 1, 2, 3].map(|i| Str::nth(s, ' ', i));
+        Self {
+            above,
+            right,
+            below,
+            left,
+        }
+    }
 }
 
 impl Edges {
@@ -135,14 +147,12 @@ enum Instruction {
     Turn(Turn),
 }
 
-impl FromStr for Instruction {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Instruction {
+    fn from(s: &str) -> Self {
         match s {
-            "L" => Ok(Self::Turn(Turn::Left)),
-            "R" => Ok(Self::Turn(Turn::Right)),
-            amount => Ok(Self::Move(amount.parse().unwrap())),
+            "L" => Self::Turn(Turn::Left),
+            "R" => Self::Turn(Turn::Right),
+            amount => Self::Move(amount.parse().unwrap()),
         }
     }
 }
@@ -157,18 +167,16 @@ enum Block {
     F,
 }
 
-impl FromStr for Block {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Block {
+    fn from(s: &str) -> Self {
         match s {
-            "A" => Ok(Self::A),
-            "B" => Ok(Self::B),
-            "C" => Ok(Self::C),
-            "D" => Ok(Self::D),
-            "E" => Ok(Self::E),
-            "F" => Ok(Self::F),
-            _ => Err("Cannot parse block".to_string()),
+            "A" => Self::A,
+            "B" => Self::B,
+            "C" => Self::C,
+            "D" => Self::D,
+            "E" => Self::E,
+            "F" => Self::F,
+            _ => unreachable!(),
         }
     }
 }
@@ -275,7 +283,7 @@ fn parse_instructions(s: &str) -> Vec<Instruction> {
     s.replace('L', ",L,")
         .replace('R', ",R,")
         .split(',')
-        .map(|part| part.parse().unwrap())
+        .map(|part| part.into())
         .collect()
 }
 
@@ -296,24 +304,14 @@ fn simulate(cube: &Cube, instructions: &[Instruction], edges: HashMap<Block, Edg
     state.score()
 }
 
-fn parse_mappings(edge_mappings: &[&str]) -> HashMap<Block, Edges> {
-    edge_mappings
-        .iter()
-        .map(|edge_mapping| parse_edge_mapping(edge_mapping))
+fn parse_mappings(s: &[&str]) -> HashMap<Block, Edges> {
+    s.iter()
+        .map(|mapping| parse_edge_mapping(mapping))
         .collect()
 }
 
 fn parse_edge_mapping(s: &str) -> (Block, Edges) {
     // A -> F:1 B:0 C:0 D:2
-    let (block, s) = s.split_once(" -> ").unwrap();
-    let [above, right, below, left] = [0, 1, 2, 3].map(|i| Str::nth(s, ' ', i));
-    (
-        block.parse().unwrap(),
-        Edges {
-            above,
-            right,
-            below,
-            left,
-        },
-    )
+    let (block, edges) = s.split_once(" -> ").unwrap();
+    (block.into(), edges.into())
 }

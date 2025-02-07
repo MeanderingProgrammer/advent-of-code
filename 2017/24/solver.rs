@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Reader, Str};
+use aoc::{answer, HashMap, HashSet, Reader};
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 
@@ -65,7 +65,8 @@ impl BridgeBuilder {
     fn new(lines: &[String]) -> Self {
         let mut components: HashMap<u8, HashSet<u8>> = HashMap::default();
         lines.iter().for_each(|line| {
-            let [v1, v2] = [0, 1].map(|i| Str::nth(line, '/', i));
+            let (v1, v2) = line.split_once('/').unwrap();
+            let (v1, v2) = (v1.parse().unwrap(), v2.parse().unwrap());
             components.entry(v1).or_default().insert(v2);
             components.entry(v2).or_default().insert(v1);
         });

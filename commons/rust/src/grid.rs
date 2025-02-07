@@ -22,8 +22,8 @@ impl<T> From<&str> for Grid<T>
 where
     T: FromChar,
 {
-    fn from(value: &str) -> Self {
-        (&value.lines().collect::<Vec<_>>()).into()
+    fn from(s: &str) -> Self {
+        (&s.lines().collect::<Vec<_>>()).into()
     }
 }
 

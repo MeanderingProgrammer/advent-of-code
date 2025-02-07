@@ -138,7 +138,7 @@ impl FromStr for Point {
         let coords = s
             .split(',')
             .map(|coord| Str::nth_rev(coord, '=', 0))
-            .collect::<Vec<i32>>();
+            .collect::<Vec<_>>();
         if coords.len() != 2 {
             Err(format!("Unknown point format {s}"))
         } else {
@@ -264,7 +264,7 @@ impl FromStr for Point3d {
         let coords = s
             .split(',')
             .map(|coord| Str::nth_rev(coord, '=', 0))
-            .collect::<Vec<i32>>();
+            .collect::<Vec<_>>();
         if coords.len() != 3 {
             Err(format!("Unknown point format {s}"))
         } else {

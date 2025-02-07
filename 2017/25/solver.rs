@@ -1,5 +1,4 @@
 use aoc::{answer, HashMap, HashSet, Reader, Str};
-use std::str::FromStr;
 
 #[derive(Debug)]
 struct Behavior {
@@ -8,29 +7,27 @@ struct Behavior {
     next: u8,
 }
 
-impl FromStr for Behavior {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Behavior {
+    fn from(s: &str) -> Self {
         //    - Write the value 1.
         //    - Move one slot to the right.
         //    - Continue with state B.
         let lines = s.lines().collect::<Vec<_>>();
-        let write = match last(lines[0]) {
-            "0" => Ok(false),
-            "1" => Ok(true),
-            _ => Err(String::from("unhandled write")),
+        let write = match last(lines[0], '.') {
+            "0" => false,
+            "1" => true,
+            _ => unreachable!(),
         };
-        let direction = match last(lines[1]) {
-            "left" => Ok(-1),
-            "right" => Ok(1),
-            _ => Err(String::from("unhandled direction")),
+        let direction = match last(lines[1], '.') {
+            "left" => -1,
+            "right" => 1,
+            _ => unreachable!(),
         };
-        Ok(Self {
-            write: write?,
-            direction: direction?,
-            next: to_state(lines[2]),
-        })
+        Self {
+            write,
+            direction,
+            next: to_state(lines[2], '.'),
+        }
     }
 }
 
@@ -40,18 +37,16 @@ struct Rule {
     one: Behavior,
 }
 
-impl FromStr for Rule {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl From<&str> for Rule {
+    fn from(s: &str) -> Self {
         //  If the current value is 0:
         //  <Behavior>
         //  If the current value is 1:
         //  <Behavior>
         let lines = s.lines().collect::<Vec<_>>();
-        let zero = lines[1..4].join("\n").parse()?;
-        let one = lines[5..8].join("\n").parse()?;
-        Ok(Self { zero, one })
+        let zero = lines[1..4].join("\n").as_str().into();
+        let one = lines[5..8].join("\n").as_str().into();
+        Self { zero, one }
     }
 }
 
@@ -113,23 +108,20 @@ fn get_state(s: &str) -> (u8, usize) {
     // Begin in state A.
     // Perform a diagnostic checksum after 12425180 steps.
     let lines = s.lines().collect::<Vec<_>>();
-    (to_state(lines[0]), Str::nth_rev(lines[1], ' ', 1))
+    (to_state(lines[0], '.'), Str::nth_rev(lines[1], ' ', 1))
 }
 
 fn get_rule(s: &str) -> (u8, Rule) {
     // In state A:
     // <Rule>
     let (state, rule) = s.split_once('\n').unwrap();
-    (to_state(state), rule.parse().unwrap())
+    (to_state(state, ':'), rule.into())
 }
 
-fn to_state(s: &str) -> u8 {
-    Str::lower_index(last(s)) as u8
+fn to_state(s: &str, trim: char) -> u8 {
+    Str::lower_index(last(s, trim)) as u8
 }
 
-fn last(s: &str) -> &str {
-    s.split_whitespace()
-        .last()
-        .unwrap()
-        .trim_matches(['.', ':'])
+fn last(s: &str, trim: char) -> &str {
+    s.split_whitespace().last().unwrap().trim_matches(trim)
 }
