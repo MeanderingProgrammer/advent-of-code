@@ -1,5 +1,4 @@
 use crate::{FromChar, Str};
-use std::cmp::Ordering;
 use std::fmt;
 use std::str::FromStr;
 
@@ -150,18 +149,6 @@ impl FromStr for Point {
 impl fmt::Display for Point {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({}, {})", self.x, self.y)
-    }
-}
-
-impl Ord for Point {
-    fn cmp(&self, other: &Self) -> Ordering {
-        (self.y, self.x).cmp(&(other.y, other.x))
-    }
-}
-
-impl PartialOrd for Point {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
     }
 }
 

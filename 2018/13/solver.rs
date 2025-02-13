@@ -133,7 +133,7 @@ impl CartSystem {
     }
 
     fn tick(&mut self) {
-        self.carts.sort_by_key(|cart| cart.point.clone());
+        self.carts.sort_by_key(|cart| (cart.point.y, cart.point.x));
 
         let mut carts: HashMap<Point, usize> = self
             .carts
