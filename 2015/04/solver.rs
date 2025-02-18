@@ -9,6 +9,7 @@ struct State {
     result: AtomicUsize,
 }
 
+#[derive(Debug)]
 struct Miner {
     prefix: String,
     mask: u32,
