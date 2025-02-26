@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Direction, Grid, Point, Reader};
+use aoc::{Dijkstra, Direction, Grid, Point, Reader, answer};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Node {

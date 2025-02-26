@@ -1,4 +1,4 @@
-use aoc::{answer, Point, Reader, Str};
+use aoc::{Point, Reader, Str, answer};
 use std::str::FromStr;
 
 #[derive(Debug)]

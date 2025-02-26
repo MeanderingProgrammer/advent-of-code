@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{answer, Reader};
+use aoc::{Reader, answer};
 
 #[derive(Debug)]
 struct BoostProgram {

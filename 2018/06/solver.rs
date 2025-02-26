@@ -1,4 +1,4 @@
-use aoc::{answer, Bounds, HashMap, Point, Reader};
+use aoc::{Bounds, HashMap, Point, Reader, answer};
 
 #[derive(Debug)]
 struct Distance {

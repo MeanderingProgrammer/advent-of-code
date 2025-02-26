@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Reader, Str};
+use aoc::{HashMap, Reader, Str, answer};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]

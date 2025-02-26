@@ -1,4 +1,4 @@
-use aoc::{answer, HashSet, Iter, Point, Reader};
+use aoc::{HashSet, Iter, Point, Reader, answer};
 use std::collections::VecDeque;
 
 #[derive(Debug)]

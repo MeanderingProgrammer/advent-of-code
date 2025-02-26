@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, FromChar, Grid, Reader};
+use aoc::{Dijkstra, FromChar, Grid, Reader, answer};
 use std::collections::BTreeMap;
 use std::ops::Range;
 

@@ -1,4 +1,4 @@
-use aoc::{answer, FromChar, Grid, Heading, Point, Reader};
+use aoc::{FromChar, Grid, Heading, Point, Reader, answer};
 
 #[derive(Debug, Clone, PartialEq)]
 enum Seat {

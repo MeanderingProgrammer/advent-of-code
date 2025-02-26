@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Reader};
+use aoc::{HashMap, HashSet, Reader, answer};
 use std::cmp::Ordering;
 use std::collections::VecDeque;
 

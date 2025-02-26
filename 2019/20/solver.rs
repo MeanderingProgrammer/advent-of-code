@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Direction, Grid, HashMap, HashSet, Point, Reader};
+use aoc::{Dijkstra, Direction, Grid, HashMap, HashSet, Point, Reader, answer};
 use std::collections::VecDeque;
 
 #[derive(Debug)]

@@ -1,4 +1,4 @@
-use aoc::{answer, BitSet, Direction, FromChar, Grid, HashMap, Ids, Point, Reader};
+use aoc::{BitSet, Direction, FromChar, Grid, HashMap, Ids, Point, Reader, answer};
 use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq)]

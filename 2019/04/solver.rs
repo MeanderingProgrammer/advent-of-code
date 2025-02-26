@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{Reader, answer};
 
 #[derive(Debug)]
 struct Password {

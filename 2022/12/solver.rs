@@ -1,4 +1,4 @@
-use aoc::{answer, FromChar, GraphSearch, Grid, Point, Reader};
+use aoc::{FromChar, GraphSearch, Grid, Point, Reader, answer};
 
 #[derive(Debug)]
 struct Search {

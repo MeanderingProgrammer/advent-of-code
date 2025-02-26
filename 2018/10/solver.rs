@@ -1,4 +1,4 @@
-use aoc::{answer, Bounds, Grid, Point, Reader};
+use aoc::{Bounds, Grid, Point, Reader, answer};
 use std::str::FromStr;
 
 #[derive(Debug)]

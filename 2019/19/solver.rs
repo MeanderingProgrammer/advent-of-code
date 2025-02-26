@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{answer, HashMap, Reader};
+use aoc::{HashMap, Reader, answer};
 
 #[derive(Debug)]
 struct Beam {

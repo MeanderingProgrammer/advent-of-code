@@ -1,4 +1,4 @@
-use aoc::{answer, FromChar, Grid, HashMap, Point, Reader};
+use aoc::{FromChar, Grid, HashMap, Point, Reader, answer};
 
 #[derive(Debug, Clone, PartialEq)]
 enum State {

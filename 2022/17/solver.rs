@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, Grid, HashMap, Point, Reader};
+use aoc::{Direction, Grid, HashMap, Point, Reader, answer};
 
 #[derive(Debug, Clone)]
 struct Shape {

@@ -1,4 +1,4 @@
-use aoc::{answer, Char, Reader};
+use aoc::{Char, Reader, answer};
 
 #[derive(Debug)]
 struct Transmission {

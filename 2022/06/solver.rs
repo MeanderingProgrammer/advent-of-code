@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader};
+use aoc::{Iter, Reader, answer};
 
 fn main() {
     answer::timer(solution);

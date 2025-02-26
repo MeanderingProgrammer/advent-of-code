@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, HashSet, Iter, Point, Reader};
+use aoc::{Direction, HashSet, Iter, Point, Reader, answer};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Location {

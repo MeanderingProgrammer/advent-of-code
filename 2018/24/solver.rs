@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Reader, Str};
+use aoc::{HashMap, HashSet, Reader, Str, answer};
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -31,7 +31,8 @@ struct Army {
 
 impl Army {
     fn new(id: usize, kind: Kind, s: &str) -> Self {
-        // 18 units each with 729 hit points <traits> with an attack that does 8 radiation damage at initiative 10
+        // 18 units each with 729 hit points <traits> with
+        // an attack that does 8 radiation damage at initiative 10
         let [units, hp] = [0, 4].map(|i| Str::nth(s, ' ', i));
         let [damage, initiative] = [5, 0].map(|i| Str::nth_rev(s, ' ', i));
         let mut traits = Self::traits(s);

@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, Reader};
+use aoc::{HashMap, Reader, answer};
 use std::collections::VecDeque;
 use std::str::FromStr;
 

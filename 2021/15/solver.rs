@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Grid, Point, Reader};
+use aoc::{Dijkstra, Grid, Point, Reader, answer};
 
 #[derive(Debug)]
 struct Graph {

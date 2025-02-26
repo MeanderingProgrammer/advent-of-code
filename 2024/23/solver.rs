@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Iter, Reader};
+use aoc::{HashMap, HashSet, Iter, Reader, answer};
 
 #[derive(Debug, Default)]
 struct Graph {

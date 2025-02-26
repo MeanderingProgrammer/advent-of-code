@@ -1,4 +1,4 @@
-use aoc::{answer, BitSet, HashMap, HeapKind, Iter, PriorityQueue, Reader, Str};
+use aoc::{BitSet, HashMap, HeapKind, Iter, PriorityQueue, Reader, Str, answer};
 use std::str::FromStr;
 
 #[derive(Debug)]

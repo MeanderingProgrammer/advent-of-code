@@ -1,5 +1,5 @@
 use aoc::{
-    answer, BitSet, Char, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point, Reader,
+    BitSet, Char, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point, Reader, answer,
 };
 use std::collections::VecDeque;
 

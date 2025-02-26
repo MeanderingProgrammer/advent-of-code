@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{answer, Direction, HashMap, HashSet, Iter, Reader};
+use aoc::{Direction, HashMap, HashSet, Iter, Reader, answer};
 use std::collections::VecDeque;
 use std::str::FromStr;
 

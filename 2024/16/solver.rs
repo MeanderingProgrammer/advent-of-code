@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, Grid, HashMap, HashSet, HeapKind, Point, PriorityQueue, Reader};
+use aoc::{Direction, Grid, HashMap, HashSet, HeapKind, Point, PriorityQueue, Reader, answer};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct State {

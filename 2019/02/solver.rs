@@ -1,5 +1,5 @@
 use aoc::int_code::{Computer, NoopBus};
-use aoc::{answer, Reader};
+use aoc::{Reader, answer};
 
 fn main() {
     answer::timer(solution);

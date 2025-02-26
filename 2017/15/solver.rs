@@ -1,4 +1,4 @@
-use aoc::{answer, Reader, Str};
+use aoc::{Reader, Str, answer};
 use rayon::prelude::*;
 
 #[derive(Debug)]

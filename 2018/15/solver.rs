@@ -1,4 +1,4 @@
-use aoc::{answer, Grid, HashMap, HashSet, Point, Reader};
+use aoc::{Grid, HashMap, HashSet, Point, Reader, answer};
 use rayon::prelude::*;
 use std::collections::VecDeque;
 

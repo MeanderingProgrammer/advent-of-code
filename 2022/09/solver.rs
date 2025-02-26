@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, HashSet, Point, Reader};
+use aoc::{Direction, HashSet, Point, Reader, answer};
 use std::str::FromStr;
 
 #[derive(Debug)]

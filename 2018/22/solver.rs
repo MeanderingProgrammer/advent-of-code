@@ -1,4 +1,4 @@
-use aoc::{answer, Dijkstra, Direction, Grid, HashSet, Point, Reader};
+use aoc::{Dijkstra, Direction, Grid, HashSet, Point, Reader, answer};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 enum Tool {

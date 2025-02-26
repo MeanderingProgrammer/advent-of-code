@@ -1,4 +1,4 @@
-use aoc::{answer, FromChar, HashMap, Reader};
+use aoc::{FromChar, HashMap, Reader, answer};
 
 type Point = (i16, i16);
 

@@ -1,4 +1,4 @@
-use aoc::{answer, Direction, FromChar, Grid, Iter, Point, Reader};
+use aoc::{Direction, FromChar, Grid, Iter, Point, Reader, answer};
 
 #[derive(Debug)]
 enum Tile {

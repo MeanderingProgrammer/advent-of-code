@@ -1,6 +1,6 @@
-use aoc::{answer, Iter, Md5, Reader};
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use aoc::{Iter, Md5, Reader, answer};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;
 
 #[derive(Debug)]

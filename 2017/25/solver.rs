@@ -1,4 +1,4 @@
-use aoc::{answer, HashMap, HashSet, Reader, Str};
+use aoc::{HashMap, HashSet, Reader, Str, answer};
 
 #[derive(Debug)]
 struct Behavior {

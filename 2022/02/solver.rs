@@ -1,4 +1,4 @@
-use aoc::{answer, Reader};
+use aoc::{Reader, answer};
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]

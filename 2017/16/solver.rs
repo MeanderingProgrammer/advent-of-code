@@ -1,4 +1,4 @@
-use aoc::{answer, Iter, Reader, Str};
+use aoc::{Iter, Reader, Str, answer};
 use std::collections::VecDeque;
 use std::fmt;
 use std::str::FromStr;
