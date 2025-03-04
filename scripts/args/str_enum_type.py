@@ -13,7 +13,5 @@ class StrEnumType(click.Choice):
 
     @override
     def convert(self, value: str, param, ctx) -> Any:
-        value = super().convert(value=value, param=param, ctx=ctx)
-        if value is None:
-            return None
-        return self.enum_type(value)
+        result = super().convert(value=value, param=param, ctx=ctx)
+        return None if result is None else self.enum_type(result)

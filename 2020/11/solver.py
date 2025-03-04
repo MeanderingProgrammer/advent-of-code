@@ -49,8 +49,6 @@ class SeatingChart:
                 return Seat.EMPTY
             else:
                 return seat
-        else:
-            raise Exception(f"Unexepected seat: {seat}")
 
     def adjacent_occupied(self, p: Point) -> int:
         result = 0

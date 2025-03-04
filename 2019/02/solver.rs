@@ -1,5 +1,20 @@
-use aoc::int_code::{Computer, NoopBus};
+use aoc::int_code::{Bus, Computer};
 use aoc::{Reader, answer};
+
+#[derive(Debug, Default)]
+struct NoopBus;
+
+impl Bus for NoopBus {
+    fn active(&self) -> bool {
+        true
+    }
+
+    fn get_input(&mut self) -> i64 {
+        0
+    }
+
+    fn add_output(&mut self, _: i64) {}
+}
 
 fn main() {
     answer::timer(solution);

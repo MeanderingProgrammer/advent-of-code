@@ -39,21 +39,6 @@ pub trait Bus {
     fn add_output(&mut self, value: i64);
 }
 
-#[derive(Debug, Default)]
-pub struct NoopBus;
-
-impl Bus for NoopBus {
-    fn active(&self) -> bool {
-        true
-    }
-
-    fn get_input(&mut self) -> i64 {
-        0
-    }
-
-    fn add_output(&mut self, _: i64) {}
-}
-
 #[derive(Debug)]
 pub struct Computer<T> {
     pub bus: T,
