@@ -49,10 +49,7 @@ pub struct Computer<T> {
     base: usize,
 }
 
-impl<T> Computer<T>
-where
-    T: Bus,
-{
+impl<T: Bus> Computer<T> {
     pub fn run(&mut self) {
         while self.bus.active() && self.run_next() {}
     }
@@ -87,10 +84,7 @@ where
     }
 }
 
-impl<T> Computer<T>
-where
-    T: Default,
-{
+impl<T: Default> Computer<T> {
     pub fn default(memory: &[i64]) -> Self {
         Self::new(T::default(), memory)
     }

@@ -157,12 +157,12 @@ impl Point {
         Self { x, y }
     }
 
-    pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
+    pub fn add(&self, rhs: impl Into<Self>) -> Self {
         let rhs: Self = rhs.into();
         Self::new(self.x + rhs.x, self.y + rhs.y)
     }
 
-    pub fn sub<P: Into<Self>>(&self, rhs: P) -> Self {
+    pub fn sub(&self, rhs: impl Into<Self>) -> Self {
         let rhs: Self = rhs.into();
         Self::new(self.x - rhs.x, self.y - rhs.y)
     }
@@ -271,12 +271,12 @@ impl Point3d {
         Self { x, y, z }
     }
 
-    pub fn add<P: Into<Self>>(&self, rhs: P) -> Self {
+    pub fn add(&self, rhs: impl Into<Self>) -> Self {
         let rhs: Self = rhs.into();
         Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 
-    pub fn sub<P: Into<Self>>(&self, rhs: P) -> Self {
+    pub fn sub(&self, rhs: impl Into<Self>) -> Self {
         let rhs: Self = rhs.into();
         Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }

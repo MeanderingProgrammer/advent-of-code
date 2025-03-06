@@ -53,9 +53,6 @@ fn solution() {
     );
 }
 
-fn min_value<F>(points: &[Point], f: F) -> i32
-where
-    F: FnMut(&Point) -> i32,
-{
+fn min_value(points: &[Point], f: impl FnMut(&Point) -> i32) -> i32 {
     points.iter().map(f).min().unwrap()
 }

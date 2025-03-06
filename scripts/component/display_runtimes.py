@@ -22,31 +22,42 @@ class Color:
 class Column:
     name: str
     default: str | None
-    width: int
     colors: list[Color]
+    width: int
+    total: float
 
-    def __init__(self, name: str, default: str | None = None, *colors: Color) -> None:
+    def __init__(self, name: str, default: str | None, colors: list[Color]) -> None:
         self.name = name
         self.default = default
+        self.colors = colors
         self.width = len(name)
-        self.colors = list(colors)
+        self.total = 0
 
     def get(self, runtime: dict[str, Any]) -> Any:
         value = runtime.get(self.name, self.default)
         assert value is not None
         return value
 
-    def fit(self, runtime: dict[str, Any]) -> None:
-        self.width = max(self.width, len(str(self.get(runtime))))
+    def add(self, runtime: dict[str, Any]) -> None:
+        value = self.get(runtime)
+        if isinstance(value, float):
+            self.total = round(self.total + value, 3)
+        self.width = max(self.width, len(str(value)), len(str(self.total)))
 
-    def cell(self, s: Any) -> str:
-        result = str(s).ljust(self.width)
-        result = f" {result} "
-        if isinstance(s, float):
-            for color in self.colors:
-                if color.contains(s):
-                    result = color.wrap(result)
+    def cell(self, value: Any) -> str:
+        result = f" {str(value).ljust(self.width)} "
+        color = self.color(value)
+        if color is not None:
+            result = color.wrap(result)
         return result
+
+    def color(self, value: Any) -> Color | None:
+        if not isinstance(value, float) or value == self.total:
+            return None
+        for color in self.colors:
+            if color.contains(value):
+                return color
+        return None
 
 
 @dataclass
@@ -56,10 +67,19 @@ class Schema:
     def __init__(self, *columns: Column) -> None:
         self.columns = list(columns)
 
-    def fit(self, runtime: dict[str, Any]) -> None:
-        [column.fit(runtime) for column in self.columns]
+    def add(self, runtime: dict[str, Any]) -> None:
+        [column.add(runtime) for column in self.columns]
 
-    def delim(self, left: str, center: str, right: str) -> str:
+    def above(self) -> str:
+        return self.separator("┌", "┬", "┐")
+
+    def delimiter(self) -> str:
+        return self.separator("├", "┼", "┤")
+
+    def below(self) -> str:
+        return self.separator("└", "┴", "┘")
+
+    def separator(self, left: str, center: str, right: str) -> str:
         sections: list[str] = ["─" * (column.width + 2) for column in self.columns]
         return left + center.join(sections) + right
 
@@ -68,6 +88,9 @@ class Schema:
 
     def runtime(self, runtime: dict[str, Any]) -> str:
         return self.row([column.get(runtime) for column in self.columns])
+
+    def total(self) -> str:
+        return self.row([column.total for column in self.columns])
 
     def row(self, values: list[Any]) -> str:
         line: list[str] = []
@@ -97,13 +120,13 @@ class Displayer:
             Color(10, float("inf"), 31),
         ]
         schema = Schema(
-            Column("year"),
-            Column("day"),
-            Column("language"),
-            Column("execution"),
-            Column("runtime", None, *time),
-            Column("previous", "none", *time),
-            Column("delta", "none", *change),
+            Column("year", None, []),
+            Column("day", None, []),
+            Column("language", None, []),
+            Column("execution", None, []),
+            Column("runtime", None, time),
+            Column("previous", "none", time),
+            Column("delta", "none", change),
         )
 
         previous_days: dict[Day, float] = dict()
@@ -117,12 +140,14 @@ class Displayer:
             if previous is not None:
                 runtime["previous"] = round(previous, 3)
                 runtime["delta"] = round(info.runtime - previous, 3)
-            schema.fit(runtime)
+            schema.add(runtime)
             runtimes.append(runtime)
 
         print(self.label.upper())
-        print(schema.delim("┌", "┬", "┐"))
+        print(schema.above())
         print(schema.heading())
-        print(schema.delim("├", "┼", "┤"))
+        print(schema.delimiter())
         [print(schema.runtime(runtime)) for runtime in runtimes]
-        print(schema.delim("└", "┴", "┘"))
+        print(schema.delimiter())
+        print(schema.total())
+        print(schema.below())

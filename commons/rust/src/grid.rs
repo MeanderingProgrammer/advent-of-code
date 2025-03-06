@@ -18,20 +18,13 @@ impl<T> Default for Grid<T> {
     }
 }
 
-impl<T> From<&str> for Grid<T>
-where
-    T: FromChar,
-{
+impl<T: FromChar> From<&str> for Grid<T> {
     fn from(s: &str) -> Self {
         (&s.lines().collect::<Vec<_>>()).into()
     }
 }
 
-impl<T, S> From<&Vec<S>> for Grid<T>
-where
-    T: FromChar,
-    S: AsRef<str>,
-{
+impl<T: FromChar, S: AsRef<str>> From<&Vec<S>> for Grid<T> {
     fn from(value: &Vec<S>) -> Self {
         let mut grid = Self::default();
         for (y, line) in value.iter().enumerate() {
@@ -94,10 +87,7 @@ impl<T> Index<&Point> for Grid<T> {
     }
 }
 
-impl<T> Grid<T>
-where
-    T: PartialEq,
-{
+impl<T: PartialEq> Grid<T> {
     pub fn is(&self, point: &Point, target: &T) -> bool {
         match self.get(point) {
             None => false,
@@ -119,10 +109,7 @@ where
     }
 }
 
-impl<T> Grid<T>
-where
-    T: Clone,
-{
+impl<T: Clone> Grid<T> {
     pub fn get_or(&self, point: &Point, default: T) -> T {
         self.get(point).cloned().unwrap_or(default)
     }
@@ -136,10 +123,7 @@ where
     }
 }
 
-impl<T> fmt::Display for Grid<T>
-where
-    T: ToString,
-{
+impl<T: ToString> fmt::Display for Grid<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let value = if self.grid.is_empty() {
             "".to_string()
@@ -169,7 +153,7 @@ pub struct Bounds {
 }
 
 impl Bounds {
-    pub fn new<T: Borrow<Point>>(points: &[T]) -> Bounds {
+    pub fn new(points: &[impl Borrow<Point>]) -> Bounds {
         let points: Vec<&Point> = points.iter().map(|point| point.borrow()).collect();
         if points.is_empty() {
             panic!("Can't get the bounds of an empty area");
