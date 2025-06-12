@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub fn Set(comptime T: type) type {
     const Map = comptime switch (@typeInfo(T)) {
-        .Pointer => std.StringHashMap(void),
+        .pointer => std.StringHashMap(void),
         else => std.AutoHashMap(T, void),
     };
     return struct {

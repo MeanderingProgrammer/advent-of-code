@@ -1,6 +1,7 @@
 .{
-    .name = "advent-of-code",
+    .name = .advent_of_code,
     .version = "0.1.0",
     .dependencies = .{},
     .paths = .{""},
+    .fingerprint = 0x45f1999b4ba931ca,
 }

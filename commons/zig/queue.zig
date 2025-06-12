@@ -36,7 +36,7 @@ pub fn PriorityQueue(comptime T: type) type {
         }
 
         pub fn pop(self: *Self) Node {
-            return self.list.pop();
+            return self.list.pop().?;
         }
 
         pub fn is_empty(self: Self) bool {

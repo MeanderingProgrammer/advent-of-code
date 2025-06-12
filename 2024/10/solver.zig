@@ -33,7 +33,7 @@ fn process(grid: Grid, head: Point) !Info {
     var queue = std.ArrayList(Point).init(allocator);
     try queue.append(head);
     while (queue.items.len > 0) {
-        const point = queue.pop();
+        const point = queue.pop().?;
         const count = if (seen.get(point)) |current| current else 0;
         try seen.put(point, count + 1);
         const value = grid.get(point).?;

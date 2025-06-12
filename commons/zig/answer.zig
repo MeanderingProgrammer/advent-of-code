@@ -16,11 +16,11 @@ pub fn part2(comptime T: type, expected: T, result: T) void {
 
 fn part(n: usize, comptime T: type, expected: T, result: T) void {
     const fmt = comptime switch (@typeInfo(T)) {
-        .Pointer => "{s}",
+        .pointer => "{s}",
         else => "{any}",
     };
     const equal = switch (@typeInfo(T)) {
-        .Pointer => std.mem.eql(u8, expected, result),
+        .pointer => std.mem.eql(u8, expected, result),
         else => expected == result,
     };
     if (!equal) {

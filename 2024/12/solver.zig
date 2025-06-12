@@ -110,7 +110,7 @@ fn split_regions(grid: Grid) !std.ArrayList(Region) {
         var queue = std.ArrayList(Point).init(allocator);
         try queue.append(point);
         while (queue.items.len > 0) {
-            const current = queue.pop();
+            const current = queue.pop().?;
             if (seen.contains(current)) {
                 continue;
             }
