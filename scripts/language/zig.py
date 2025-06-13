@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import override
 
@@ -6,11 +6,20 @@ from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Zig(Language):
-    name: str = field(default="zig", repr=False)
-    solution_file: str = field(default="solver.zig", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "zig"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.zig"
+
+    @property
     @override
     def cmd(self) -> str:
         return "zig"
@@ -26,9 +35,9 @@ class Zig(Language):
         return []
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
         binary = f"{day.year}_{day.day}"
-        args = [] if len(run_args) == 0 else ["--"] + run_args
+        args = [] if len(args) == 0 else ["--"] + args
         return ["zig", "build", "-Doptimize=ReleaseSmall", binary] + args
 
     @override

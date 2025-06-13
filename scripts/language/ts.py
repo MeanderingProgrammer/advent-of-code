@@ -1,15 +1,24 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
 from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class TypeScript(Language):
-    name: str = field(default="ts", repr=False)
-    solution_file: str = field(default="solver.ts", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "ts"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.ts"
+
+    @property
     @override
     def cmd(self) -> str:
         return "bun"
@@ -23,8 +32,8 @@ class TypeScript(Language):
         return [["bun", "install", "--save-text-lockfile"]]
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        return ["bun", "run", str(self.solution_path(day))] + run_args
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        return ["bun", "run", str(self.solution(day))] + args
 
     @override
     def add_build(self, day: Day) -> None:

@@ -1,33 +1,45 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
 from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Python(Language):
-    name: str = field(default="python", repr=False)
-    solution_file: str = field(default="solver.py", repr=False)
-    commons_path: str = field(default="commons/python", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "python"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.py"
+
+    @property
     @override
     def cmd(self) -> str:
         return "python"
 
     @override
     def test_command(self) -> list[str]:
-        return ["pytest", "-s", self.commons_path]
+        return ["pytest", "-s", Python.commons()]
 
     @override
     def build_commands(self) -> list[list[str]]:
-        return [["pip", "install", "-q", "-e", self.commons_path]]
+        return [["pip", "install", "-q", "-e", Python.commons()]]
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        return ["python", str(self.solution_path(day))] + run_args
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        return ["python", str(self.solution(day))] + args
 
     @override
     def add_build(self, day: Day) -> None:
         # No additional build work needed
         pass
+
+    @staticmethod
+    def commons() -> str:
+        return "commons/python"

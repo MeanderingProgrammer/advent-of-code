@@ -1,34 +1,41 @@
-import abc
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
 from pathlib import Path
 
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
-class Language(abc.ABC):
-    name: str
-    solution_file: str
+class Language(ABC):
 
-    def solution_path(self, day: Day) -> Path:
-        return day.dir().joinpath(self.solution_file)
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
-    @abc.abstractmethod
+    @property
+    @abstractmethod
+    def file(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def cmd(self) -> str:
         pass
 
-    @abc.abstractmethod
+    def solution(self, day: Day) -> Path:
+        return day.dir().joinpath(self.file)
+
+    @abstractmethod
     def test_command(self) -> list[str]:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def build_commands(self) -> list[list[str]]:
         pass
 
-    @abc.abstractmethod
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
+    @abstractmethod
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def add_build(self, day: Day) -> None:
         pass

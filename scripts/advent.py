@@ -7,7 +7,6 @@ import click
 from args.generate_template import GenerateName, GenerateTemplate
 from args.language_type import LanguageType
 from args.run_template import RunName, RunTemplate
-from args.str_enum_type import StrEnumType
 from command.command import Command
 from component.day_factory import DayFactory
 from component.language_factory import LanguageFactory
@@ -40,11 +39,11 @@ def build(language: tuple[Language, ...], info: bool) -> None:
 
 
 @cli.command()
-@click.option("-t", "--template", type=StrEnumType(RunName))
+@click.option("-t", "--template", type=click.Choice(RunName, case_sensitive=False))
 @click.option("-y", "--year", type=int, multiple=True)
 @click.option("-d", "--day", type=int, multiple=True)
 @click.option("-l", "--language", type=LanguageType(), multiple=True)
-@click.option("-s", "--strategy", type=StrEnumType(StrategyName))
+@click.option("-s", "--strategy", type=click.Choice(StrategyName, case_sensitive=False))
 @click.option("-S", "--slow", type=int, default=100)
 @click.option("-T", "--test", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
@@ -88,14 +87,14 @@ def run(
             languages=LanguageFactory().resolve(language),
         ),
         slow=slow,
-        run_args=["--test"] if test else [],
+        args=["--test"] if test else [],
         save=template in [RunName.DAYS] and len(language) == 0,
     )
     run_command(runner, info)
 
 
 @cli.command()
-@click.option("-t", "--template", type=StrEnumType(GenerateName))
+@click.option("-t", "--template", type=click.Choice(GenerateName, case_sensitive=False))
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
 @click.option("-l", "--language", type=LanguageType(), default="zig")

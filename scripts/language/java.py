@@ -1,15 +1,24 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
 from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Java(Language):
-    name: str = field(default="java", repr=False)
-    solution_file: str = field(default="src/Solver.java", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "java"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "src/Solver.java"
+
+    @property
     @override
     def cmd(self) -> str:
         # Supports color with --console=rich
@@ -25,9 +34,9 @@ class Java(Language):
         return [["./gradlew", "build", "-q"]]
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        args = " ".join(run_args)
-        args = [] if len(args) == 0 else [f'--args="{args}"']
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        arg = " ".join(args)
+        args = [] if len(args) == 0 else [f'--args="{arg}"']
         return ["./gradlew", f":{Java.task(day)}:run", "-q"] + args
 
     @override

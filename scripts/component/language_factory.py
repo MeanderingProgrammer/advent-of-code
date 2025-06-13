@@ -23,7 +23,7 @@ class LanguageFactory:
         ]
         self.languages: list[Language] = []
         for language in languages:
-            if shutil.which(language.cmd()) is not None:
+            if shutil.which(language.cmd) is not None:
                 self.languages.append(language)
 
     def names(self) -> list[str]:
@@ -32,8 +32,8 @@ class LanguageFactory:
     def resolve(self, languages: tuple[Language, ...]) -> list[Language]:
         return self.languages if len(languages) == 0 else list(languages)
 
-    def from_name(self, name: str) -> Language:
+    def get(self, name: str) -> Language | None:
         for language in self.languages:
             if language.name == name:
                 return language
-        raise Exception(f"Could not find language with name: {name}")
+        return None

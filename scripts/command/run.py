@@ -71,7 +71,7 @@ class Runner(Command):
     days: list[Day]
     language_strategy: LanguageStrategy
     slow: int
-    run_args: list[str]
+    args: list[str]
     save: bool
 
     @override
@@ -111,7 +111,7 @@ class Runner(Command):
                     day=day,
                     name=language.name,
                     times=times,
-                    command=language.run_command(day, self.run_args),
+                    command=language.run_command(day, self.args),
                     executor=executor,
                 )
                 result.append(runner)

@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import override
 
@@ -8,11 +8,20 @@ from pojo.day import Day
 from tomlkit.items import AoT
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Rust(Language):
-    name: str = field(default="rust", repr=False)
-    solution_file: str = field(default="solver.rs", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "rust"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.rs"
+
+    @property
     @override
     def cmd(self) -> str:
         return "cargo"
@@ -26,15 +35,15 @@ class Rust(Language):
         return [Rust.cargo("build") + ["--bins"]]
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        args = [] if len(run_args) == 0 else ["--"] + run_args
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        args = [] if len(args) == 0 else ["--"] + args
         return Rust.cargo("run") + ["--bin", Rust.binary(day)] + args
 
     @override
     def add_build(self, day: Day) -> None:
         config = tomlkit.table()
         config["name"] = Rust.binary(day)
-        config["path"] = str(day.dir().joinpath(self.solution_file))
+        config["path"] = str(day.dir().joinpath(self.file))
 
         path = Path("Cargo.toml")
         cargo = tomlkit.parse(path.read_text())

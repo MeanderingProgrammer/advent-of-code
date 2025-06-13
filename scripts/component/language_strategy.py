@@ -18,7 +18,7 @@ class LanguageStrategy:
     def get(self, day: Day) -> list[Language]:
         languages: list[Language] = []
         for language in self.languages:
-            solution = language.solution_path(day)
+            solution = language.solution(day)
             if solution.is_file():
                 languages.append(language)
 

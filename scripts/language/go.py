@@ -1,15 +1,24 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
 from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Go(Language):
-    name: str = field(default="go", repr=False)
-    solution_file: str = field(default="solver.go", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "go"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.go"
+
+    @property
     @override
     def cmd(self) -> str:
         # Does not support color output
@@ -25,8 +34,8 @@ class Go(Language):
         return []
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        return ["go", "run", str(self.solution_path(day))] + run_args
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        return ["go", "run", str(self.solution(day))] + args
 
     @override
     def add_build(self, day: Day) -> None:

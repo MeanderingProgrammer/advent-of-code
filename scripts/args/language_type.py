@@ -10,13 +10,13 @@ class LanguageType(click.ParamType):
     factory = LanguageFactory()
 
     @override
-    def get_metavar(self, param) -> str:
-        return click.Choice(self.factory.names()).get_metavar(param)
+    def get_metavar(self, param, ctx) -> str | None:
+        return click.Choice(self.factory.names()).get_metavar(param, ctx)
 
     @override
     def convert(self, value: str, param, ctx) -> Language:
-        if value in self.factory.names():
-            return self.factory.from_name(value)
-        else:
-            error = f"{value} is not a valid language: {self.factory.names()}"
-            self.fail(error, param, ctx)
+        result = self.factory.get(value)
+        if result is None:
+            message = f"{value} is not a valid language: {self.factory.names()}"
+            self.fail(message, param, ctx)
+        return result

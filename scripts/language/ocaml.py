@@ -1,16 +1,25 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
 from language.language import Language
 from pojo.day import Day
 
 
-@dataclass(kw_only=True, init=False)
+@dataclass
 class Ocaml(Language):
-    name: str = field(default="ocaml", repr=False)
-    solution_file: str = field(default="solver.ml", repr=False)
 
+    @property
+    @override
+    def name(self) -> str:
+        return "ocaml"
+
+    @property
+    @override
+    def file(self) -> str:
+        return "solver.ml"
+
+    @property
     @override
     def cmd(self) -> str:
         return "dune"
@@ -27,8 +36,8 @@ class Ocaml(Language):
         ]
 
     @override
-    def run_command(self, day: Day, run_args: list[str]) -> list[str]:
-        return Ocaml.dune("exec") + ["--", Ocaml.binary(day)] + run_args
+    def run_command(self, day: Day, args: list[str]) -> list[str]:
+        return Ocaml.dune("exec") + ["--", Ocaml.binary(day)] + args
 
     @override
     def add_build(self, day: Day) -> None:

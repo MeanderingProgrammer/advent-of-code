@@ -53,9 +53,9 @@ class Generator(Command):
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         # Copy over language template if not already present
-        solution_path = self.language.solution_path(self.day)
-        if solution_path.exists():
-            print(f"Solution already exists under: {solution_path}")
+        solution = self.language.solution(self.day)
+        if solution.exists():
+            print(f"Solution already exists under: {solution}")
             return
         self.copy_template()
         self.language.add_build(self.day)
