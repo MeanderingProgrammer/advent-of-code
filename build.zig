@@ -1,32 +1,37 @@
 const std = @import("std");
 
-const Solutions = [_]struct { []const u8, []const u8 }{
-    .{ "2021", "01" },
-    .{ "2024", "01" },
-    .{ "2024", "02" },
-    .{ "2024", "03" },
-    .{ "2024", "04" },
-    .{ "2024", "05" },
-    .{ "2024", "06" },
-    .{ "2024", "07" },
-    .{ "2024", "08" },
-    .{ "2024", "09" },
-    .{ "2024", "10" },
-    .{ "2024", "11" },
-    .{ "2024", "12" },
-    .{ "2024", "13" },
-    .{ "2024", "14" },
-    .{ "2024", "15" },
-    .{ "2024", "16" },
-    .{ "2024", "17" },
-    .{ "2024", "18" },
-    .{ "2024", "19" },
-    .{ "2024", "20" },
-    .{ "2024", "21" },
-    .{ "2024", "22" },
-    .{ "2024", "23" },
-    .{ "2024", "24" },
-    .{ "2024", "25" },
+const Solution = struct {
+    year: []const u8,
+    day: []const u8,
+};
+
+const Solutions = [_]Solution{
+    .{ .year = "2021", .day = "01" },
+    .{ .year = "2024", .day = "01" },
+    .{ .year = "2024", .day = "02" },
+    .{ .year = "2024", .day = "03" },
+    .{ .year = "2024", .day = "04" },
+    .{ .year = "2024", .day = "05" },
+    .{ .year = "2024", .day = "06" },
+    .{ .year = "2024", .day = "07" },
+    .{ .year = "2024", .day = "08" },
+    .{ .year = "2024", .day = "09" },
+    .{ .year = "2024", .day = "10" },
+    .{ .year = "2024", .day = "11" },
+    .{ .year = "2024", .day = "12" },
+    .{ .year = "2024", .day = "13" },
+    .{ .year = "2024", .day = "14" },
+    .{ .year = "2024", .day = "15" },
+    .{ .year = "2024", .day = "16" },
+    .{ .year = "2024", .day = "17" },
+    .{ .year = "2024", .day = "18" },
+    .{ .year = "2024", .day = "19" },
+    .{ .year = "2024", .day = "20" },
+    .{ .year = "2024", .day = "21" },
+    .{ .year = "2024", .day = "22" },
+    .{ .year = "2024", .day = "23" },
+    .{ .year = "2024", .day = "24" },
+    .{ .year = "2024", .day = "25" },
 };
 
 pub fn build(b: *std.Build) void {
@@ -40,21 +45,22 @@ pub fn build(b: *std.Build) void {
     });
 
     inline for (Solutions) |solution| {
-        const year = solution[0];
-        const day = solution[1];
+        const year = solution.year;
+        const day = solution.day;
         const exe = b.addExecutable(.{
             .name = year ++ "_" ++ day,
-            .root_source_file = b.path(year ++ "/" ++ day ++ "/solver.zig"),
-            .target = target,
-            .optimize = optimize,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(year ++ "/" ++ day ++ "/solver.zig"),
+                .imports = &.{.{ .name = "aoc", .module = lib }},
+                .target = target,
+                .optimize = optimize,
+            }),
         });
-        exe.root_module.addImport("aoc", lib);
         b.installArtifact(exe);
-        const run_exe = b.addRunArtifact(exe);
+        const run = b.addRunArtifact(exe);
         if (b.args) |args| {
-            run_exe.addArgs(args);
+            run.addArgs(args);
         }
-        const run_step = b.step(exe.name, "Run " ++ year ++ " " ++ day);
-        run_step.dependOn(&run_exe.step);
+        b.step(exe.name, "Run " ++ year ++ " " ++ day).dependOn(&run.step);
     }
 }

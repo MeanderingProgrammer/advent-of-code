@@ -44,9 +44,9 @@ class Zig(Language):
     def add_build(self, day: Day) -> None:
         path = Path("build.zig")
         contents = path.read_text()
-        solutions = contents.split("\n\n")[1].splitlines()[1:-1]
+        solutions = contents.split("\n\n")[2].splitlines()[1:-1]
         old = "\n".join(solutions)
-        solutions.append(f'    .{{ "{day.year}", "{day.day}" }},')
+        solutions.append(f'    .{{ .year = "{day.year}", .day = "{day.day}" }},')
         solutions.sort()
         new = "\n".join(solutions)
         path.write_text(contents.replace(old, new))
