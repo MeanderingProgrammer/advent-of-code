@@ -6,13 +6,13 @@
     "url": "https://github.com/MeanderingProgrammer/advent-of-code.git"
   },
   "author": "MeanderingProgrammer <meanderingprogrammer@gmail.com>",
-  "description": "Public Repo for Advent of Code Solutions",
+  "description": "Advent of Code - All Years - Blazingly Fast",
   "license": "MIT",
   "workspaces": [
     "commons/ts/"
   ],
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "1.2.16"
   },
   "peerDependencies": {
     "typescript": "5.3.3"

@@ -1,4 +1,4 @@
 {
-    "name": "aoc",
-    "main": "index.ts"
+  "name": "aoc",
+  "main": "index.ts"
 }
