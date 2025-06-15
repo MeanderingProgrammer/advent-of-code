@@ -69,7 +69,7 @@ class Layout:
 @answer.timer
 def main() -> None:
     grid: set[Location] = set()
-    for point, value in Parser().as_grid().items():
+    for point, value in Parser().grid().items():
         if value == "#":
             grid.add((point, 0))
     answer.part1(32776479, part_1(grid))

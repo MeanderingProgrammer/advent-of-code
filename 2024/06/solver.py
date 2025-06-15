@@ -6,7 +6,7 @@ from aoc.point import Direction, Point, PointHelper
 
 @answer.timer
 def main() -> None:
-    grid = Parser().as_grid()
+    grid = Parser().grid()
     start = [point for point, value in grid.items() if value == "^"][0]
     path = follow(grid, start)
     assert path is not None

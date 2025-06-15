@@ -12,15 +12,15 @@ def timer(solution: Callable[[], None]) -> Callable[[], None]:
     return wrapper
 
 
-def part1[T](expected: T, result: T) -> None:
-    part(1, expected, result)
+def part1[T](expected: T, actual: T) -> None:
+    part(1, expected, actual)
 
 
-def part2[T](expected: T, result: T) -> None:
-    part(2, expected, result)
+def part2[T](expected: T, actual: T) -> None:
+    part(2, expected, actual)
 
 
-def part[T](part: int, expected: T, result: T) -> None:
-    if expected != result:
-        raise Exception(f"Part {part} incorrect, expected {expected} but got {result}")
-    print(f"Part {part}: {result}")
+def part[T](part: int, expected: T, actual: T) -> None:
+    if expected != actual:
+        raise Exception(f"Part {part} incorrect, expected {expected} but got {actual}")
+    print(f"Part {part}: {actual}")

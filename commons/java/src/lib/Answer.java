@@ -12,19 +12,19 @@ public class Answer {
         System.out.printf("Runtime (ns): %d\n", end - start);
     }
 
-    public <T> void part1(T expected, T result) {
-        part(1, expected, result);
+    public <T> void part1(T expected, T actual) {
+        part(1, expected, actual);
     }
 
-    public <T> void part2(T expected, T result) {
-        part(2, expected, result);
+    public <T> void part2(T expected, T actual) {
+        part(2, expected, actual);
     }
 
-    private <T> void part(int part, T expected, T result) {
-        if (!expected.equals(result)) {
+    private <T> void part(int part, T expected, T actual) {
+        if (!expected.equals(actual)) {
             var errorFormat = "Part %d incorrect, expected %s but got %s";
-            throw new RuntimeException(String.format(errorFormat, part, expected, result));
+            throw new RuntimeException(String.format(errorFormat, part, expected, actual));
         }
-        System.out.printf("Part %d: %s\n", part, result);
+        System.out.printf("Part %d: %s\n", part, actual);
     }
 }

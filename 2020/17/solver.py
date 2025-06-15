@@ -80,7 +80,7 @@ class State[T]:
 
 @answer.timer
 def main() -> None:
-    grid = Parser().as_grid()
+    grid = Parser().grid()
     answer.part1(284, simulate(as_3d(grid)))
     answer.part2(2240, simulate(as_4d(grid)))
 

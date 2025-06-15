@@ -10,7 +10,7 @@ HEADINGS.extend([(0, -1), (-1, -1), (-1, 0), (-1, 1)])
 
 @answer.timer
 def main() -> None:
-    grid = Parser().as_grid()
+    grid = Parser().grid()
     answer.part1(2543, part1(grid))
     answer.part2(1930, part2(grid))
 

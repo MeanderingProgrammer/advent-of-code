@@ -1,4 +1,4 @@
-import abc
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
@@ -227,16 +227,16 @@ class Instruction:
         return 1 + len(self.instruction)
 
 
-class Bus(abc.ABC):
-    @abc.abstractmethod
+class Bus(ABC):
+    @abstractmethod
     def active(self) -> bool:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_input(self) -> Any:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def add_output(self, value: Any) -> None:
         pass
 

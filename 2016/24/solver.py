@@ -54,7 +54,7 @@ class Grid:
 
 @answer.timer
 def main() -> None:
-    distances = Grid(Parser().as_grid()).compute_distances()
+    distances = Grid(Parser().grid()).compute_distances()
     answer.part1(498, traverse(distances, False))
     answer.part2(804, traverse(distances, True))
 

@@ -55,7 +55,7 @@ def main() -> None:
 
 
 def run(n: int, state_change: dict[str, str]) -> int:
-    virus = Virus(Parser().as_grid(), state_change)
+    virus = Virus(Parser().grid(), state_change)
     for _ in range(n):
         virus.burst()
     return virus.infections

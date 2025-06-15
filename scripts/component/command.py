@@ -16,8 +16,8 @@ class Executor:
             return ""
 
         result = subprocess.run(command, env=env, capture_output=True, text=True)
-        self.tee(result.stderr)
         output = self.tee(result.stdout)
+        self.tee(result.stderr)
         if result.returncode != 0:
             exit(1)
         return output

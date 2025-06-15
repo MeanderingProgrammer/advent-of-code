@@ -33,7 +33,7 @@ class Parser:
             return AdventData(self.file_name).get_file_path()
         else:
             assert self.file_name is not None
-            return str(self.file_name)
+            return self.file_name
 
     def string(self) -> str:
         f = open(self.get_file_path(), "r")
@@ -75,7 +75,7 @@ class Parser:
     def line_groups(self) -> list[list[str]]:
         return [group.split("\n") for group in self.string().split("\n\n")]
 
-    def as_grid(self) -> Grid[str]:
+    def grid(self) -> Grid[str]:
         """
         Grids are often created bottom up, where an increase in y leads a value that is
         up more. However files are read top down where an increased index means the value

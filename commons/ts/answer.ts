@@ -6,21 +6,21 @@ export class Answer {
     console.log(`Runtime (ns): ${end - start}`);
   }
 
-  static part1(expected: number, result: number): void {
-    Answer.part(1, expected, result);
+  static part1(expected: number, actual: number): void {
+    Answer.part(1, expected, actual);
   }
 
-  static part2(expected: number, result: number): void {
-    Answer.part(2, expected, result);
+  static part2(expected: number, actual: number): void {
+    Answer.part(2, expected, actual);
   }
 
-  private static part(part: number, expected: number, result: number): void {
-    if (expected != result) {
+  private static part(part: number, expected: number, actual: number): void {
+    if (expected != actual) {
       throw new Error(
-        `Part ${part} incorrect, expected ${expected} but got ${result}`,
+        `Part ${part} incorrect, expected ${expected} but got ${actual}`,
       );
     } else {
-      console.log(`Part ${part}: ${result}`);
+      console.log(`Part ${part}: ${actual}`);
     }
   }
 }

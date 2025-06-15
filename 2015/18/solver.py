@@ -45,7 +45,7 @@ class Animator:
 
 @answer.timer
 def main() -> None:
-    grid = Parser().as_grid()
+    grid = Parser().grid()
     answer.part1(1061, run(grid, False))
     answer.part2(1006, run(grid, True))
 
