@@ -8,7 +8,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const data = try Reader.init().string_lines();
+    const data = try Reader.init().stringLines();
     std.debug.print("{any}\n", .{data});
     answer.part1(usize, 1, 1);
     answer.part2(usize, 1, 1);

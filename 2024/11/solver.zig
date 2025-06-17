@@ -12,12 +12,12 @@ pub fn main() !void {
 
 fn solution() !void {
     const line = try Reader.init().string();
-    const stones = try get_stones(line);
+    const stones = try getStones(line);
     answer.part1(usize, 185894, try evolve(stones, 25));
     answer.part2(usize, 221632504974231, try evolve(stones, 75));
 }
 
-fn get_stones(line: []const u8) !Stones {
+fn getStones(line: []const u8) !Stones {
     var stones = Stones.init(allocator);
     var it = std.mem.splitScalar(u8, line, ' ');
     while (it.next()) |item| {

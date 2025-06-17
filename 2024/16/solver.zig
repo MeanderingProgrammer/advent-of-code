@@ -34,8 +34,8 @@ const Maze = struct {
 
     fn init(lines: std.ArrayList([]const u8)) !Maze {
         var grid = try Grid.init(lines);
-        const start = (try grid.get_values('S')).getLast();
-        const end = (try grid.get_values('E')).getLast();
+        const start = (try grid.getValues('S')).getLast();
+        const end = (try grid.getValues('E')).getLast();
         try grid.set(start, '.');
         try grid.set(end, '.');
         return .{
@@ -62,7 +62,7 @@ const Maze = struct {
         var q = PriorityQueue(State).init(allocator);
         try q.push(start, 0);
 
-        while (!q.is_empty()) {
+        while (!q.isEmpty()) {
             const node = q.pop();
             const current = node.value;
             const current_cost = node.cost;
@@ -110,7 +110,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const lines = try Reader.init().string_lines();
+    const lines = try Reader.init().stringLines();
     const maze = try Maze.init(lines);
     const result = try maze.solve();
     answer.part1(usize, 107512, result[0]);

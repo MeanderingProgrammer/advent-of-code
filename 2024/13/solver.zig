@@ -13,24 +13,24 @@ pub const Machine = struct {
     fn init(lines: std.ArrayList([]const u8)) !Machine {
         return .{
             // Button A: X+94, Y+34
-            .a = try parse_point(lines.items[0]),
+            .a = try parsePoint(lines.items[0]),
             // Button B: X+22, Y+67
-            .b = try parse_point(lines.items[1]),
+            .b = try parsePoint(lines.items[1]),
             // Prize: X=8400, Y=5400
-            .prize = try parse_point(lines.items[2]),
+            .prize = try parsePoint(lines.items[2]),
         };
     }
 
-    fn parse_point(line: []const u8) !Point {
+    fn parsePoint(line: []const u8) !Point {
         var label_point = std.mem.splitBackwardsScalar(u8, line, ':');
         const point_section = label_point.first();
         var point_parts = std.mem.splitScalar(u8, point_section, ',');
-        const x = try parse_coord(point_parts.next().?);
-        const y = try parse_coord(point_parts.next().?);
+        const x = try parseCoord(point_parts.next().?);
+        const y = try parseCoord(point_parts.next().?);
         return Point.init(x, y);
     }
 
-    fn parse_coord(part: []const u8) !i64 {
+    fn parseCoord(part: []const u8) !i64 {
         var it = std.mem.splitBackwardsAny(u8, part, "+=");
         const value = it.first();
         return try std.fmt.parseInt(i64, value, 10);
@@ -86,11 +86,11 @@ fn solution() !void {
     for (groups.items) |lines| {
         try machines.append(try Machine.init(lines));
     }
-    answer.part1(i64, 28138, total_tokens(machines, 0));
-    answer.part2(i64, 108394825772874, total_tokens(machines, 10000000000000));
+    answer.part1(i64, 28138, totalTokens(machines, 0));
+    answer.part2(i64, 108394825772874, totalTokens(machines, 10000000000000));
 }
 
-fn total_tokens(machines: std.ArrayList(Machine), offset: i64) i64 {
+fn totalTokens(machines: std.ArrayList(Machine), offset: i64) i64 {
     var result: i64 = 0;
     for (machines.items) |machine| {
         const tokens = machine.tokens(offset);

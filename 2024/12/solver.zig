@@ -92,12 +92,12 @@ pub fn main() !void {
 
 fn solution() !void {
     const grid = try Reader.init().grid();
-    const regions = try split_regions(grid);
+    const regions = try splitRegions(grid);
     answer.part1(usize, 1451030, total(regions, false));
     answer.part2(usize, 859494, total(regions, true));
 }
 
-fn split_regions(grid: Grid) !std.ArrayList(Region) {
+fn splitRegions(grid: Grid) !std.ArrayList(Region) {
     var regions = std.ArrayList(Region).init(allocator);
     var seen = Set(Point).init(allocator);
     var points = grid.points();

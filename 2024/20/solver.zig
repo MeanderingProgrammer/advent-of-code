@@ -37,8 +37,8 @@ const Race = struct {
     paths: std.AutoHashMap(Point, std.ArrayList(Point)),
 
     fn init(grid: *Grid) !Race {
-        const start = (try grid.get_values('S')).getLast();
-        const end = (try grid.get_values('E')).getLast();
+        const start = (try grid.getValues('S')).getLast();
+        const end = (try grid.getValues('E')).getLast();
         try grid.set(start, '.');
         try grid.set(end, '.');
         return .{
@@ -74,8 +74,8 @@ const Race = struct {
         const base_time = path.items.len;
         for (0..path.items.len) |i| {
             const point = path.items[path.items.len - 1 - i];
-            for (range_start(point.x, duration)..range_end(point.x, duration)) |x| {
-                for (range_start(point.y, duration)..range_end(point.y, duration)) |y| {
+            for (rangeStart(point.x, duration)..rangeEnd(point.x, duration)) |x| {
+                for (rangeStart(point.y, duration)..rangeEnd(point.y, duration)) |y| {
                     const option = Point.init(@intCast(x), @intCast(y));
                     const distance = point.manhattan(option);
                     if (distance < 2 or distance > duration) {
@@ -99,12 +99,12 @@ const Race = struct {
         return result;
     }
 
-    fn range_start(value: i64, offset: usize) usize {
+    fn rangeStart(value: i64, offset: usize) usize {
         const v: usize = @intCast(value);
         return if (offset >= v) 0 else v - offset;
     }
 
-    fn range_end(value: i64, offset: usize) usize {
+    fn rangeEnd(value: i64, offset: usize) usize {
         const v: usize = @intCast(value);
         return v + offset + 1;
     }

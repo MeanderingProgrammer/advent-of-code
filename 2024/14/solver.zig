@@ -14,12 +14,12 @@ const Robot = struct {
         // p=0,4 v=3,-3
         var parts = std.mem.splitScalar(u8, line, ' ');
         return .{
-            .position = try parse_point(parts.next().?),
-            .velocity = try parse_point(parts.next().?),
+            .position = try parsePoint(parts.next().?),
+            .velocity = try parsePoint(parts.next().?),
         };
     }
 
-    fn parse_point(s: []const u8) !Point {
+    fn parsePoint(s: []const u8) !Point {
         var n_p = std.mem.splitBackwardsScalar(u8, s, '=');
         var x_y = std.mem.splitScalar(u8, n_p.next().?, ',');
         const x = try std.fmt.parseInt(i64, x_y.next().?, 10);
@@ -111,24 +111,24 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const lines = try Reader.init().string_lines();
+    const lines = try Reader.init().stringLines();
     var robots = Grid.init(101, 103);
     for (lines.items) |line| {
         const robot = try Robot.init(line);
         try robots.add(robot);
     }
-    answer.part1(usize, 224357412, run_for(&robots, 100));
-    answer.part2(usize, 7083, try run_until(&robots));
+    answer.part1(usize, 224357412, runFor(&robots, 100));
+    answer.part2(usize, 7083, try runUntil(&robots));
 }
 
-fn run_for(robots: *Grid, seconds: usize) usize {
+fn runFor(robots: *Grid, seconds: usize) usize {
     for (0..seconds) |_| {
         robots.move();
     }
     return robots.safety();
 }
 
-fn run_until(robots: *Grid) !usize {
+fn runUntil(robots: *Grid) !usize {
     while (!(try robots.connected())) {
         robots.move();
     }

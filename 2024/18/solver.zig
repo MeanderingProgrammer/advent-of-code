@@ -54,14 +54,14 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const points = try Reader.init().lines(Point, parse_point);
+    const points = try Reader.init().lines(Point, parsePoint);
     const params = [2]usize{ 70, 1024 };
     const search = Search{ .points = points, .size = params[0] };
     answer.part1(usize, 318, try part1(search, params[1]));
     answer.part2([]const u8, "56,29", try part2(search, params[1]));
 }
 
-fn parse_point(line: []const u8) !Point {
+fn parsePoint(line: []const u8) !Point {
     var it = std.mem.splitScalar(u8, line, ',');
     const x = try std.fmt.parseInt(i64, it.next().?, 10);
     const y = try std.fmt.parseInt(i64, it.next().?, 10);

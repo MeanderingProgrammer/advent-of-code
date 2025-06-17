@@ -66,8 +66,8 @@ pub fn main() !void {
 fn solution() !void {
     const grid = try Reader.init().grid();
     const groups = try group(grid);
-    answer.part1(usize, 320, try num_antinodes(groups, false));
-    answer.part2(usize, 1157, try num_antinodes(groups, true));
+    answer.part1(usize, 320, try numAntinodes(groups, false));
+    answer.part2(usize, 1157, try numAntinodes(groups, true));
 }
 
 fn group(grid: Grid) !Groups {
@@ -86,7 +86,7 @@ fn group(grid: Grid) !Groups {
     return result;
 }
 
-fn num_antinodes(groups: Groups, resonate: bool) !usize {
+fn numAntinodes(groups: Groups, resonate: bool) !usize {
     var result = Set(Point).init(allocator);
     var it = groups.iterator();
     while (it.next()) |entry| {

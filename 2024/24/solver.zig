@@ -64,7 +64,7 @@ const Graph = struct {
         };
     }
 
-    fn add_output(self: *Graph, line: []const u8) !void {
+    fn addOutput(self: *Graph, line: []const u8) !void {
         // x00 = 1
         var it = std.mem.splitSequence(u8, line, ": ");
         const wire = it.next().?;
@@ -72,7 +72,7 @@ const Graph = struct {
         try self.output.put(wire, value);
     }
 
-    fn add_gate(self: *Graph, line: []const u8) !void {
+    fn addGate(self: *Graph, line: []const u8) !void {
         // ntg XOR fgs -> mjb
         var it = std.mem.splitSequence(u8, line, " -> ");
         const gate = try Gate.init(it.next().?);
@@ -194,18 +194,18 @@ pub fn main() !void {
 
 fn solution() !void {
     const groups = try Reader.init().groups();
-    const graph = try get_graph(groups);
+    const graph = try getGraph(groups);
     answer.part1(usize, 56939028423824, try part1(graph));
     answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(graph));
 }
 
-fn get_graph(groups: std.ArrayList(std.ArrayList([]const u8))) !Graph {
+fn getGraph(groups: std.ArrayList(std.ArrayList([]const u8))) !Graph {
     var graph = Graph.init();
     for (groups.items[0].items) |line| {
-        try graph.add_output(line);
+        try graph.addOutput(line);
     }
     for (groups.items[1].items) |line| {
-        try graph.add_gate(line);
+        try graph.addGate(line);
     }
     return graph;
 }
@@ -224,10 +224,10 @@ fn part2(input: Graph) ![]const u8 {
             try result.append(wires[1]);
         }
     }
-    std.mem.sort([]const u8, result.items, {}, string_less_than);
+    std.mem.sort([]const u8, result.items, {}, stringLessThan);
     return std.mem.join(allocator, ",", result.items);
 }
 
-fn string_less_than(_: void, lhs: []const u8, rhs: []const u8) bool {
+fn stringLessThan(_: void, lhs: []const u8, rhs: []const u8) bool {
     return std.mem.order(u8, lhs, rhs) == .lt;
 }

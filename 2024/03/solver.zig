@@ -106,12 +106,12 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const commands = try Reader.init().string_lines();
-    answer.part1(usize, 159892596, parse_commands(commands, false));
-    answer.part2(usize, 92626942, parse_commands(commands, true));
+    const commands = try Reader.init().stringLines();
+    answer.part1(usize, 159892596, parseCommands(commands, false));
+    answer.part2(usize, 92626942, parseCommands(commands, true));
 }
 
-fn parse_commands(commands: std.ArrayList([]const u8), toggle: bool) usize {
+fn parseCommands(commands: std.ArrayList([]const u8), toggle: bool) usize {
     var parser = Parser.init(toggle);
     for (commands.items) |command| {
         for (command) |ch| {

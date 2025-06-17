@@ -17,7 +17,7 @@ pub fn main() !void {
 
 fn solution() !void {
     const grid = try Reader.init().grid();
-    const heads = try grid.get_values('0');
+    const heads = try grid.getValues('0');
     var info = Info{ .score = 0, .rating = 0 };
     for (heads.items) |head| {
         const head_info = try process(grid, head);

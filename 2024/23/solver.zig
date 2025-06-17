@@ -24,11 +24,11 @@ const Graph = struct {
         var it = std.mem.splitScalar(u8, line, '-');
         const left = it.next().?;
         const right = it.next().?;
-        try self.add_edge(left, right);
-        try self.add_edge(right, left);
+        try self.addEdge(left, right);
+        try self.addEdge(right, left);
     }
 
-    fn add_edge(self: *Graph, from: []const u8, to: []const u8) !void {
+    fn addEdge(self: *Graph, from: []const u8, to: []const u8) !void {
         try self.nodes.add(from);
         var entry = try self.edges.getOrPut(from);
         if (!entry.found_existing) {
@@ -38,7 +38,7 @@ const Graph = struct {
     }
 
     // https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
-    fn bron_kerbosch(self: *Graph, r: Strings, p: *Strings, x: *Strings) !void {
+    fn bronKerbosch(self: *Graph, r: Strings, p: *Strings, x: *Strings) !void {
         // if P and X are both empty then
         if (p.size() == 0 and x.size() == 0) {
             // report R as a maximal clique
@@ -63,7 +63,7 @@ const Graph = struct {
             // X ⋂ N(v)
             var x_nv = try x.intersection(self.edges.get(v).?);
             // BronKerbosch(R ⋃ {v}, P ⋂ N(v), X ⋂ N(v))
-            try self.bron_kerbosch(r_v, &p_nv, &x_nv);
+            try self.bronKerbosch(r_v, &p_nv, &x_nv);
             // P := P \ {v}
             p.remove(v);
             // X := X ⋃ {v}
@@ -77,13 +77,13 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const lines = try Reader.init().string_lines();
-    const cliques = try get_cliques(lines);
+    const lines = try Reader.init().stringLines();
+    const cliques = try getCliques(lines);
     answer.part1(usize, 1215, try part1(cliques));
     answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(cliques));
 }
 
-fn get_cliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
+fn getCliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
     var graph = Graph.init();
     for (lines.items) |line| {
         try graph.add(line);
@@ -91,21 +91,21 @@ fn get_cliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
     const r = Strings.init(allocator);
     var p = try graph.nodes.clone();
     var x = Strings.init(allocator);
-    try graph.bron_kerbosch(r, &p, &x);
+    try graph.bronKerbosch(r, &p, &x);
     return graph.cliques;
 }
 
 fn part1(cliques: std.ArrayList(Strings)) !usize {
     var result = Strings.init(allocator);
     for (cliques.items) |clique| {
-        if (clique.size() >= 3 and has_chief(clique)) {
+        if (clique.size() >= 3 and hasChief(clique)) {
             try combinations(&result, try clique.list());
         }
     }
     return result.size();
 }
 
-fn has_chief(clique: Strings) bool {
+fn hasChief(clique: Strings) bool {
     var it = clique.iterator();
     while (it.next()) |v| {
         if (v.*[0] == 't') {
@@ -146,10 +146,10 @@ fn part2(cliques: std.ArrayList(Strings)) ![]const u8 {
 
 fn str(nodes: Strings) ![]const u8 {
     const result = try nodes.list();
-    std.mem.sort([]const u8, result.items, {}, string_less_than);
+    std.mem.sort([]const u8, result.items, {}, stringLessThan);
     return std.mem.join(allocator, ",", result.items);
 }
 
-fn string_less_than(_: void, lhs: []const u8, rhs: []const u8) bool {
+fn stringLessThan(_: void, lhs: []const u8, rhs: []const u8) bool {
     return std.mem.order(u8, lhs, rhs) == .lt;
 }

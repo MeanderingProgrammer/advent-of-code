@@ -15,7 +15,7 @@ const Order = struct {
         var pages = Pages.init(allocator);
         var it = std.mem.splitScalar(u8, line, ',');
         while (it.next()) |page| {
-            try pages.append(try to_int(page));
+            try pages.append(try toInt(page));
         }
         return .{ .pages = pages };
     }
@@ -73,19 +73,19 @@ pub fn main() !void {
 
 fn solution() !void {
     const groups = try Reader.init().groups();
-    const rules = try parse_rules(groups.items[0], true);
-    const deps = try parse_rules(groups.items[0], false);
-    const orders = try parse_orders(groups.items[1]);
+    const rules = try parseRules(groups.items[0], true);
+    const deps = try parseRules(groups.items[0], false);
+    const orders = try parseOrders(groups.items[1]);
     answer.part1(usize, 5248, try sum(rules, deps, orders, false));
     answer.part2(usize, 4507, try sum(rules, deps, orders, true));
 }
 
-fn parse_rules(group: std.ArrayList([]const u8), forward: bool) !Rules {
+fn parseRules(group: std.ArrayList([]const u8), forward: bool) !Rules {
     var rules = Rules.init(allocator);
     for (group.items) |line| {
         var it = std.mem.splitScalar(u8, line, '|');
-        const left = try to_int(it.next().?);
-        const right = try to_int(it.next().?);
+        const left = try toInt(it.next().?);
+        const right = try toInt(it.next().?);
         const from = if (forward) left else right;
         const to = if (forward) right else left;
         const entry = try rules.getOrPut(from);
@@ -97,7 +97,7 @@ fn parse_rules(group: std.ArrayList([]const u8), forward: bool) !Rules {
     return rules;
 }
 
-fn parse_orders(group: std.ArrayList([]const u8)) !Orders {
+fn parseOrders(group: std.ArrayList([]const u8)) !Orders {
     var orders = Orders.init(allocator);
     for (group.items) |line| {
         try orders.append(try Order.init(line));
@@ -105,7 +105,7 @@ fn parse_orders(group: std.ArrayList([]const u8)) !Orders {
     return orders;
 }
 
-fn to_int(value: []const u8) !usize {
+fn toInt(value: []const u8) !usize {
     return std.fmt.parseInt(usize, value, 10);
 }
 

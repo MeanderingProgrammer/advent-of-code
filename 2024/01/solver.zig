@@ -11,21 +11,21 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const values = try Reader.init().lines(Pair, to_pairs);
-    const left = try unzip_sort(values, true);
-    const right = try unzip_sort(values, false);
-    answer.part1(usize, 3246517, sum_diff(left, right));
+    const values = try Reader.init().lines(Pair, toPairs);
+    const left = try unzipSort(values, true);
+    const right = try unzipSort(values, false);
+    answer.part1(usize, 3246517, sumDiff(left, right));
     answer.part2(usize, 29379307, similarity(left, right));
 }
 
-fn to_pairs(line: []const u8) !Pair {
+fn toPairs(line: []const u8) !Pair {
     var pair = std.mem.tokenizeScalar(u8, line, ' ');
     const first = try std.fmt.parseInt(usize, pair.next() orelse "", 10);
     const second = try std.fmt.parseInt(usize, pair.next() orelse "", 10);
     return Pair{ first, second };
 }
 
-fn unzip_sort(values: std.ArrayList(Pair), first: bool) !std.ArrayList(usize) {
+fn unzipSort(values: std.ArrayList(Pair), first: bool) !std.ArrayList(usize) {
     var result = std.ArrayList(usize).init(allocator);
     for (values.items) |value| {
         const item = if (first) value[0] else value[1];
@@ -35,7 +35,7 @@ fn unzip_sort(values: std.ArrayList(Pair), first: bool) !std.ArrayList(usize) {
     return result;
 }
 
-fn sum_diff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
+fn sumDiff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     var result: usize = 0;
     for (0..left.items.len) |i| {
         const l = left.items[i];

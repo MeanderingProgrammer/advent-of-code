@@ -18,12 +18,12 @@ pub fn main() !void {
 
 fn solution() !void {
     const data = try Reader.init().ints();
-    const files = try get_files(data);
+    const files = try getFiles(data);
     answer.part1(usize, 6386640365805, checksum(try part1(files)));
     answer.part2(usize, 6423258376982, checksum(try part2(files)));
 }
 
-fn get_files(data: Disk) !Files {
+fn getFiles(data: Disk) !Files {
     var result = Files.init(allocator);
     var i: usize = 0;
     while (i < data.items.len) : (i += 2) {
@@ -62,8 +62,8 @@ fn part2(input: Files) !Disk {
     var files = try input.clone();
     for (0..files.items.len) |i| {
         const id = files.items.len - (i + 1);
-        const index = id_to_index(files, id).?;
-        if (first_fit(files, index)) |location| {
+        const index = idToIndex(files, id).?;
+        if (firstFit(files, index)) |location| {
             var file = files.orderedRemove(index);
             var before = &files.items[index - 1];
             var new_before = &files.items[location];
@@ -81,7 +81,7 @@ fn part2(input: Files) !Disk {
     return result;
 }
 
-fn id_to_index(files: Files, id: usize) ?usize {
+fn idToIndex(files: Files, id: usize) ?usize {
     for (files.items, 0..) |file, i| {
         if (file.id == id) {
             return i;
@@ -90,7 +90,7 @@ fn id_to_index(files: Files, id: usize) ?usize {
     return null;
 }
 
-fn first_fit(files: Files, index: usize) ?usize {
+fn firstFit(files: Files, index: usize) ?usize {
     for (0..index) |i| {
         if (files.items[i].free >= files.items[index].size) {
             return i;

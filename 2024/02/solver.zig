@@ -17,27 +17,27 @@ const Report = struct {
     }
 
     fn safe(self: Report, tolerant: bool) bool {
-        if (check_levels(self.levels.items)) |index| {
-            return tolerant and (self.safe_around(index) catch false);
+        if (checkLevels(self.levels.items)) |index| {
+            return tolerant and (self.safeAround(index) catch false);
         } else {
             return true;
         }
     }
 
-    fn safe_around(self: Report, index: isize) !bool {
+    fn safeAround(self: Report, index: isize) !bool {
         const start = @as(usize, @intCast(@max(index - 1, 0)));
         const end = @min(@as(usize, @intCast(index + 2)), self.levels.items.len);
         for (start..end) |i| {
             var clone = try self.levels.clone();
             _ = clone.orderedRemove(i);
-            if (check_levels(clone.items) == null) {
+            if (checkLevels(clone.items) == null) {
                 return true;
             }
         }
         return false;
     }
 
-    fn check_levels(levels: []usize) ?isize {
+    fn checkLevels(levels: []usize) ?isize {
         const increasing = levels[0] < levels[1];
         for (0..levels.len - 1) |i| {
             const l1 = levels[i];
@@ -60,11 +60,11 @@ pub fn main() !void {
 
 fn solution() !void {
     const reports = try Reader.init().lines(Report, Report.init);
-    answer.part1(usize, 402, count_safe(reports, false));
-    answer.part2(usize, 455, count_safe(reports, true));
+    answer.part1(usize, 402, countSafe(reports, false));
+    answer.part2(usize, 455, countSafe(reports, true));
 }
 
-fn count_safe(reports: std.ArrayList(Report), tolerant: bool) usize {
+fn countSafe(reports: std.ArrayList(Report), tolerant: bool) usize {
     var result: usize = 0;
     for (reports.items) |report| {
         result += if (report.safe(tolerant)) 1 else 0;

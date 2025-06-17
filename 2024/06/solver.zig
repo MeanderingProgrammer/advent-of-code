@@ -23,7 +23,7 @@ pub fn main() !void {
 
 fn solution() !void {
     var grid = try Reader.init().grid();
-    const start = (try grid.get_values('^')).getLast();
+    const start = (try grid.getValues('^')).getLast();
     var path = (try follow(&grid, start, null)).?;
     answer.part1(usize, 5516, path.size());
     answer.part2(usize, 2008, try obstacles(&grid, start, path));

@@ -14,7 +14,7 @@ const Warehouse = struct {
 
     fn init(lines: std.ArrayList([]const u8), wide: bool) !Warehouse {
         var grid = try Grid.init(if (wide) try enlarge(lines) else lines);
-        const start = (try grid.get_values('@')).getLast();
+        const start = (try grid.getValues('@')).getLast();
         try grid.set(start, '.');
         return .{
             .grid = grid,
@@ -115,12 +115,12 @@ pub fn main() !void {
 fn solution() !void {
     const groups = try Reader.init().groups();
     const lines = groups.items[0];
-    const directions = try get_directions(groups.items[1]);
+    const directions = try getDirections(groups.items[1]);
     answer.part1(i64, 1442192, try solve(lines, false, directions));
     answer.part2(i64, 1448458, try solve(lines, true, directions));
 }
 
-fn get_directions(lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
+fn getDirections(lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
     var directions = std.ArrayList(Direction).init(allocator);
     for (lines.items) |line| {
         for (line) |ch| {

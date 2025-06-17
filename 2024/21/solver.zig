@@ -166,7 +166,7 @@ pub fn main() !void {
 }
 
 fn solution() !void {
-    const sequences = try Reader.init().string_lines();
+    const sequences = try Reader.init().stringLines();
     answer.part1(usize, 155252, try solve(sequences, 2));
     answer.part2(usize, 195664513288128, try solve(sequences, 25));
 }

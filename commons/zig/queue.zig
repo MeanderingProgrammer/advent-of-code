@@ -17,10 +17,10 @@ pub fn PriorityQueue(comptime T: type) type {
 
         pub fn push(self: *Self, value: T, cost: usize) !void {
             const node = Node{ .value = value, .cost = cost };
-            try self.list.insert(self.get_index(cost), node);
+            try self.list.insert(self.getIndex(cost), node);
         }
 
-        fn get_index(self: *Self, cost: usize) usize {
+        fn getIndex(self: *Self, cost: usize) usize {
             var lo: usize = 0;
             var hi: usize = self.list.items.len;
             while (lo < hi) {
@@ -39,7 +39,7 @@ pub fn PriorityQueue(comptime T: type) type {
             return self.list.pop().?;
         }
 
-        pub fn is_empty(self: Self) bool {
+        pub fn isEmpty(self: Self) bool {
             return self.list.items.len == 0;
         }
     };

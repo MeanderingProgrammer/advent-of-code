@@ -7,7 +7,7 @@ const Transformers = struct {
         return line;
     }
 
-    fn to_int(line: []const u8) !usize {
+    fn toInt(line: []const u8) !usize {
         return std.fmt.parseInt(usize, line, 10);
     }
 };
@@ -32,7 +32,7 @@ pub const Reader = struct {
     }
 
     pub fn grid(self: Reader) !Grid {
-        return Grid.init(try self.string_lines());
+        return Grid.init(try self.stringLines());
     }
 
     pub fn ints(self: Reader) !std.ArrayList(usize) {
@@ -45,15 +45,15 @@ pub const Reader = struct {
     }
 
     pub fn string(self: Reader) ![]const u8 {
-        return (try self.string_lines()).items[0];
+        return (try self.stringLines()).items[0];
     }
 
-    pub fn string_lines(self: Reader) !std.ArrayList([]const u8) {
+    pub fn stringLines(self: Reader) !std.ArrayList([]const u8) {
         return self.lines([]const u8, Transformers.identity);
     }
 
-    pub fn int_lines(self: Reader) !std.ArrayList(usize) {
-        return self.lines(usize, Transformers.to_int);
+    pub fn intLines(self: Reader) !std.ArrayList(usize) {
+        return self.lines(usize, Transformers.toInt);
     }
 
     pub fn groups(self: Reader) !std.ArrayList(std.ArrayList([]const u8)) {

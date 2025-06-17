@@ -10,11 +10,11 @@ const Equation = struct {
 
     fn init(line: []const u8) !Equation {
         var it = std.mem.splitSequence(u8, line, ": ");
-        const target = try to_int(it.next().?);
+        const target = try toInt(it.next().?);
         var values = std.ArrayList(usize).init(allocator);
         var values_it = std.mem.splitScalar(u8, it.next().?, ' ');
         while (values_it.next()) |value| {
-            try values.append(try to_int(value));
+            try values.append(try toInt(value));
         }
         return .{ .target = target, .values = values };
     }
@@ -44,7 +44,7 @@ const Equation = struct {
         return std.mem.containsAtLeast(usize, values.items, 1, &.{self.target});
     }
 
-    fn to_int(s: []const u8) !usize {
+    fn toInt(s: []const u8) !usize {
         return std.fmt.parseInt(usize, s, 10);
     }
 };
