@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import override
 
 import tomlkit
+from tomlkit.items import AoT
+
 from language.language import Language
 from pojo.day import Day
-from tomlkit.items import AoT
 
 
 @dataclass
 class Rust(Language):
-
     @property
     @override
     def name(self) -> str:

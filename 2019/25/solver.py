@@ -113,8 +113,8 @@ class ItemBag:
         self.items.append(item)
 
     def next(self):
-        for l in range(1, len(self.items) + 1):
-            for subset in itertools.combinations(self.items, l):
+        for length in range(1, len(self.items) + 1):
+            for subset in itertools.combinations(self.items, length):
                 yield subset
 
 

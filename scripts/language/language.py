@@ -5,7 +5,6 @@ from pojo.day import Day
 
 
 class Language(ABC):
-
     @property
     @abstractmethod
     def name(self) -> str:

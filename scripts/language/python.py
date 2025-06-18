@@ -7,7 +7,6 @@ from pojo.day import Day
 
 @dataclass
 class Python(Language):
-
     @property
     @override
     def name(self) -> str:

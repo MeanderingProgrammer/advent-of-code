@@ -8,7 +8,6 @@ from pojo.day import Day
 
 @dataclass
 class Zig(Language):
-
     @property
     @override
     def name(self) -> str:

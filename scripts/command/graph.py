@@ -4,13 +4,13 @@ from typing import override
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
+
 from command.command import Command
 from component.figure_saver import FigureKind, FigureProps, FigureSaver
 from component.history import History
 
 
 class Grapher(Command):
-
     def __init__(self, archive: bool) -> None:
         self.saver = FigureSaver(
             archive=archive,

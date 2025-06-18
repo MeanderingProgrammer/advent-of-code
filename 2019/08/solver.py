@@ -16,7 +16,7 @@ class Layer:
 
 
 @dataclass(frozen=True)
-class LayeredImage:
+class Image:
     layers: list[Layer]
     width: int
     height: int
@@ -40,7 +40,8 @@ class LayeredImage:
 
 @answer.timer
 def main() -> None:
-    image = get_image(25, 6)
+    data = Parser().string()
+    image = get_image(data, 25, 6)
     layer = image.get_fewest()
     answer.part1(1965, layer.get_count(1) * layer.get_count(2))
     expected = [
@@ -54,19 +55,16 @@ def main() -> None:
     answer.part2("\n" + "\n".join(expected), "\n" + image.flatten())
 
 
-def get_image(width: int, height: int) -> LayeredImage:
-    data = Parser().string()
-    layers = []
-    layer_size = width * height
-    for l in range(len(data) // layer_size):
-        layer_start = l * layer_size
+def get_image(data: str, width: int, height: int) -> Image:
+    layers: list[Layer] = []
+    for layer_start in range(0, len(data), width * height):
         layer_data = []
         for h in range(height):
-            row_start = (h * width) + layer_start
-            row = data[row_start : row_start + width]
+            start = layer_start + (h * width)
+            row = data[start : start + width]
             layer_data.append(list(map(int, row)))
         layers.append(Layer(layer_data))
-    return LayeredImage(layers, width, height)
+    return Image(layers, width, height)
 
 
 if __name__ == "__main__":

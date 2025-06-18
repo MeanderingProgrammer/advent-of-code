@@ -8,7 +8,6 @@ from pojo.day import Day
 
 @dataclass
 class Ocaml(Language):
-
     @property
     @override
     def name(self) -> str:

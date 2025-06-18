@@ -11,13 +11,13 @@ def main() -> None:
 
 
 def unzip_sort(values: list[str], i: int) -> list[int]:
-    unzipped = [int(value.split()[i]) for value in values]
-    unzipped.sort()
-    return unzipped
+    result = [int(value.split()[i]) for value in values]
+    result.sort()
+    return result
 
 
 def sum_diff(left: list[int], right: list[int]) -> int:
-    return sum([abs(l - r) for l, r in zip(left, right)])
+    return sum([abs(v1 - v2) for v1, v2 in zip(left, right)])
 
 
 def similarity(left: list[int], right: list[int]) -> int:
