@@ -4,15 +4,16 @@ from dataclasses import dataclass
 from aoc import answer
 from aoc.parser import Parser
 
+type Bots = dict[int, Bot]
+type Outputs = dict[int, list[int]]
+
 
 @dataclass(frozen=True)
 class Entity:
     to: str
     value: int
 
-    def process(
-        self, value: int, bots: dict[int, "Bot"], outputs: dict[int, list[int]]
-    ) -> None:
+    def process(self, value: int, bots: Bots, outputs: Outputs) -> None:
         if self.to == "bot":
             bots[self.value].process(value, bots, outputs)
         elif self.to == "output":
@@ -29,9 +30,7 @@ class Bot:
     values: list[int]
     held: list[int]
 
-    def process(
-        self, value: int, bots: dict[int, "Bot"], outputs: dict[int, list[int]]
-    ) -> None:
+    def process(self, value: int, bots: Bots, outputs: Outputs) -> None:
         self.values.append(value)
         self.held.append(value)
         if len(self.values) == 2:
@@ -49,7 +48,7 @@ class Bot:
 @answer.timer
 def main() -> None:
     initial_values, bots = get_data()
-    outputs = defaultdict(list)
+    outputs: Outputs = defaultdict(list)
     for bot, values in initial_values.items():
         for value in values:
             bots[bot].process(value, bots, outputs)
@@ -57,9 +56,9 @@ def main() -> None:
     answer.part2(143153, multiply_outputs(outputs, [0, 1, 2]))
 
 
-def get_data() -> tuple[dict[int, list[int]], dict[int, Bot]]:
+def get_data() -> tuple[dict[int, list[int]], Bots]:
     initial_values: dict[int, list[int]] = defaultdict(list)
-    bots = dict()
+    bots: Bots = dict()
     for line in Parser().lines():
         parts = line.split()
         if parts[0] == "value":

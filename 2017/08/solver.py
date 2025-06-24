@@ -5,40 +5,38 @@ from typing import Callable
 from aoc import answer
 from aoc.parser import Parser
 
-Registers = dict[str, int]
+type Registers = dict[str, int]
+type Modifier = Callable[[Registers], None]
+type Condition = Callable[[Registers], bool]
 
 
-def modifier(
-    r_id: str, amount: int, f: Callable[[int, int], int]
-) -> Callable[[Registers], None]:
+def modifier(id: str, value: int, f: Callable[[int, int], int]) -> Modifier:
     def result(registers: Registers) -> None:
-        registers[r_id] = f(registers[r_id], amount)
+        registers[id] = f(registers[id], value)
 
     return result
 
 
-MODIFIERS = {
-    "inc": lambda r_id, value: modifier(r_id, value, lambda a, b: a + b),
-    "dec": lambda r_id, value: modifier(r_id, value, lambda a, b: a - b),
+MODIFIERS: dict[str, Callable[[str, int], Modifier]] = {
+    "inc": lambda id, value: modifier(id, value, lambda a, b: a + b),
+    "dec": lambda id, value: modifier(id, value, lambda a, b: a - b),
 }
 
 
-def condition(
-    r_id: str, value: int, f: Callable[[int, int], bool]
-) -> Callable[[Registers], bool]:
+def condition(id: str, value: int, f: Callable[[int, int], bool]) -> Condition:
     def result(registers: Registers) -> bool:
-        return f(registers[r_id], value)
+        return f(registers[id], value)
 
     return result
 
 
-CONDITIONS = {
-    ">": lambda r_id, value: condition(r_id, value, lambda a, b: a > b),
-    "<": lambda r_id, value: condition(r_id, value, lambda a, b: a < b),
-    "==": lambda r_id, value: condition(r_id, value, lambda a, b: a == b),
-    "!=": lambda r_id, value: condition(r_id, value, lambda a, b: a != b),
-    ">=": lambda r_id, value: condition(r_id, value, lambda a, b: a >= b),
-    "<=": lambda r_id, value: condition(r_id, value, lambda a, b: a <= b),
+CONDITIONS: dict[str, Callable[[str, int], Condition]] = {
+    ">": lambda id, value: condition(id, value, lambda a, b: a > b),
+    "<": lambda id, value: condition(id, value, lambda a, b: a < b),
+    "==": lambda id, value: condition(id, value, lambda a, b: a == b),
+    "!=": lambda id, value: condition(id, value, lambda a, b: a != b),
+    ">=": lambda id, value: condition(id, value, lambda a, b: a >= b),
+    "<=": lambda id, value: condition(id, value, lambda a, b: a <= b),
 }
 
 

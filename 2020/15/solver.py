@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,7 +7,7 @@ from aoc.parser import Parser
 @dataclass
 class Stats:
     new: int
-    old: Optional[int] = None
+    old: int | None = None
 
     def next(self) -> int:
         return 0 if self.old is None else self.new - self.old
@@ -26,7 +25,7 @@ def main() -> None:
 
 
 def run(values: list[int], n: int) -> int:
-    number_stats: list[Optional[Stats]] = [None] * n
+    number_stats: list[Stats | None] = [None] * n
     for i, value in enumerate(values):
         number_stats[value] = Stats(i)
     number = values[-1]

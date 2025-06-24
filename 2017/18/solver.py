@@ -1,6 +1,6 @@
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,12 +10,12 @@ class Computer:
     def __init__(self, id: int, instructions: list["Instruction"]):
         self.regs: dict[str, int] = defaultdict(int)
         self.regs["p"] = id
-        self.ip = 0
-        self.instructions = instructions
-        self.sent = 0
+        self.ip: int = 0
+        self.instructions: list[Instruction] = instructions
+        self.sent: int = 0
         self.o: list[int] | Self = []
         self.q: deque[int] = deque()
-        self.waiting = False
+        self.waiting: bool = False
 
     def run(self) -> None:
         while self.has_next() and not self.waiting:
@@ -46,7 +46,7 @@ class Computer:
         self.q.append(value)
         self.waiting = False
 
-    def get(self) -> Optional[int]:
+    def get(self) -> int | None:
         if len(self.q) == 0:
             return None
         else:

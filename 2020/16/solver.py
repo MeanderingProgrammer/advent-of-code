@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from functools import reduce
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -19,7 +18,7 @@ class ValueRange:
 class Rule:
     field_name: str
     value_ranges: list[ValueRange]
-    row: Optional[int]
+    row: int | None
 
     def matches(self, value: int) -> bool:
         return any([value_range.contains(value) for value_range in self.value_ranges])
@@ -102,7 +101,7 @@ def assign_rules(rules: list[Rule], tickets: list[Ticket]) -> None:
 def get_possible_rules(rules: list[Rule], values: list[int]) -> list[Rule]:
     possible_rules = [rule for rule in rules if rule.row is None]
     for value in values:
-        matching_rules = []
+        matching_rules: list[Rule] = []
         for rule in possible_rules:
             if rule.matches(value):
                 matching_rules.append(rule)

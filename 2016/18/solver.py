@@ -19,7 +19,7 @@ def total_safe(starting_row: list[bool], n: int) -> int:
 
 
 def next_row(row: list[bool]) -> list[bool]:
-    result = []
+    result: list[bool] = []
     for i in range(len(row)):
         element = get_element(
             row[i - 1] if i > 0 else True,

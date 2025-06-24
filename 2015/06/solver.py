@@ -2,6 +2,7 @@ from typing import Callable
 
 from aoc import answer
 from aoc.parser import Parser
+from aoc.point import Point
 
 Actions = dict[str, Callable[[int], int]]
 
@@ -21,9 +22,9 @@ DIMABLE: Actions = dict(
 class Direction:
     def __init__(self, value: str):
         values = value.split()
-        self.action = values[-4]
-        self.start = Direction.to_point(values[-3])
-        self.end = Direction.to_point(values[-1])
+        self.action: str = values[-4]
+        self.start: Point = Direction.to_point(values[-3])
+        self.end: Point = Direction.to_point(values[-1])
 
     def apply(self, grid: list[int], actions: Actions) -> None:
         for x in range(self.start[0], self.end[0] + 1):
@@ -32,9 +33,9 @@ class Direction:
                 grid[index] = actions[self.action](grid[index])
 
     @staticmethod
-    def to_point(coords: str) -> tuple[int, int]:
+    def to_point(coords: str) -> Point:
         values = coords.split(",")
-        return (int(values[0]), int(values[1]))
+        return int(values[0]), int(values[1])
 
 
 @answer.timer

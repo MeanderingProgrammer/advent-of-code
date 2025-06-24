@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -85,7 +85,7 @@ def main() -> None:
     answer.part2(61, count_steps(additional_items))
 
 
-def count_steps(additional_items: list[str]) -> Optional[int]:
+def count_steps(additional_items: list[str]) -> int | None:
     start = get_start_state(additional_items)
     end = get_end_state(start)
     search = Search[State](

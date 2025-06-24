@@ -1,19 +1,19 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
+from aoc.point import Point, PointHelper
 
 OPEN, TREES, YARD = ".", "|", "#"
-NEIGHBORS = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
 
 
 @dataclass(frozen=True)
 class Landscape:
-    grid: dict[tuple[int, int], str]
+    grid: Grid[str]
 
     def step(self) -> None:
-        new_grid = dict()
+        new_grid: Grid[str] = dict()
         for point, value in self.grid.items():
             if value == OPEN:
                 if self.count(point, TREES) >= 3:
@@ -29,10 +29,8 @@ class Landscape:
         for point in new_grid:
             self.grid[point] = new_grid[point]
 
-    def count(self, point: tuple[int, int], value: str) -> int:
-        neighbors = [
-            (point[0] + neighbor[0], point[1] + neighbor[1]) for neighbor in NEIGHBORS
-        ]
+    def count(self, point: Point, value: str) -> int:
+        neighbors = PointHelper.neighbors_diagonal(point)
         return sum([self.grid.get(neighbor) == value for neighbor in neighbors])
 
     def resource_value(self) -> int:
@@ -61,15 +59,15 @@ def run_for(n: int) -> int:
     return scores[-1]
 
 
-def find_pattern(values: list[int]) -> tuple[Optional[int], list[int]]:
+def find_pattern(values: list[int]) -> tuple[int | None, list[int]]:
     for i in range(1, len(values) - 1):
         if values[i] == values[-1] and values[i - 1] == values[-2]:
             return i - 1, values[i - 1 : -2]
     return None, []
 
 
-def get_grid() -> dict[tuple[int, int], str]:
-    grid = dict()
+def get_grid() -> Grid[str]:
+    grid: Grid[str] = dict()
     for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
             grid[(x, y)] = value

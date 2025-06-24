@@ -2,7 +2,9 @@ from dataclasses import dataclass
 from typing import Self
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
+from aoc.point import Point
 
 
 class Tile:
@@ -71,7 +73,7 @@ class Tile:
 
 @dataclass(frozen=True)
 class Puzzle:
-    board: dict[tuple[int, int], Tile]
+    board: Grid[Tile]
 
     def add(self, tile: Tile) -> bool:
         if len(self.board) == 0:
@@ -86,13 +88,13 @@ class Puzzle:
                     return True
         return False
 
-    def get_all_available(self) -> set[tuple[int, int]]:
-        available: set[tuple[int, int]] = set()
+    def get_all_available(self) -> set[Point]:
+        available: set[Point] = set()
         for position in self.board:
             available.update(Puzzle.get_adjacent(position))
         return available
 
-    def get_edges_needed(self, position: tuple[int, int]) -> list[str | None]:
+    def get_edges_needed(self, position: Point) -> list[str | None]:
         edges_needed: list[str | None] = []
         for i, adjacent in enumerate(Puzzle.get_adjacent(position)):
             opposing_edge = (i + 2) % 4
@@ -120,7 +122,7 @@ class Puzzle:
         return combined
 
     @staticmethod
-    def get_adjacent(position: tuple[int, int]) -> list[tuple[int, int]]:
+    def get_adjacent(position: Point) -> list[Point]:
         return [
             (position[0] - 1, position[1]),  # LEFT
             (position[0], position[1] + 1),  # TOP
@@ -141,7 +143,7 @@ class Puzzle:
 class Search:
     def __init__(self, image: list[str]):
         self.dimensions: tuple[int, int] = (len(image[0]), len(image))
-        self.points: list[tuple[int, int]] = Search.get_positive_points(image)
+        self.points: list[Point] = Search.get_positive_points(image)
 
     def find_num_matches(self, tile: Tile) -> int:
         num_matches = 0
@@ -151,17 +153,17 @@ class Search:
                 num_matches += 1
         return num_matches
 
-    def starting_points(self, dimensions: tuple[int, int]) -> list[tuple[int, int]]:
+    def starting_points(self, dimensions: tuple[int, int]) -> list[Point]:
         max_x = dimensions[0] - self.dimensions[0]
         max_y = dimensions[1] - self.dimensions[1]
 
-        starting_points: list[tuple[int, int]] = []
+        starting_points: list[Point] = []
         for x in range(max_x):
             for y in range(max_y):
                 starting_points.append((x, y))
         return starting_points
 
-    def crop(self, point: tuple[int, int], tile: Tile) -> list[str]:
+    def crop(self, point: Point, tile: Tile) -> list[str]:
         cropped: list[str] = []
         for i in range(self.dimensions[1]):
             row = tile.data[i + point[1]]
@@ -176,8 +178,8 @@ class Search:
         return True
 
     @staticmethod
-    def get_positive_points(image: list[str]) -> list[tuple[int, int]]:
-        positive_points: list[tuple[int, int]] = []
+    def get_positive_points(image: list[str]) -> list[Point]:
+        positive_points: list[Point] = []
         for row in range(len(image)):
             for col in range(len(image[row])):
                 value = image[row][col]

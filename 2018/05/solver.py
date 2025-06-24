@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -17,7 +17,7 @@ class Polymer:
             reaction_index = self.get_reaction_index(reaction_index)
         return len(self.units)
 
-    def get_reaction_index(self, previous: Optional[int]) -> Optional[int]:
+    def get_reaction_index(self, previous: int | None) -> int | None:
         for i in range(previous or 0, len(self.units) - 1):
             u1, u2 = self.units[i], self.units[i + 1]
             if u1.islower() != u2.islower() and u1.lower() == u2.lower():

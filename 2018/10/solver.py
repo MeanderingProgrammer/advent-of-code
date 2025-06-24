@@ -65,7 +65,7 @@ def min_area(particles: Particles) -> int:
 
 
 def get_particles() -> Particles:
-    particles = []
+    particles: list[Particle] = []
     pattern = "^position=<(.*), (.*)> velocity=<(.*), (.*)>$"
     for line in Parser().lines():
         match = re.match(pattern, line)

@@ -97,7 +97,7 @@ def get_grid() -> Grid[str]:
                 points.append((x, y))
         return points
 
-    grid = dict()
+    grid: Grid[str] = dict()
     for line in Parser().lines():
         for point in parse_point_range(line):
             grid[point] = CLAY

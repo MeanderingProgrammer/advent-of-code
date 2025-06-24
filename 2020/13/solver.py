@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -7,9 +6,9 @@ from aoc.parser import Parser
 
 @dataclass(frozen=True)
 class Bus:
-    interval: Optional[int]
+    interval: int | None
 
-    def wait_time(self, arrival: int) -> Optional[int]:
+    def wait_time(self, arrival: int) -> int | None:
         if self.interval is None:
             return None
         late_time = arrival % self.interval

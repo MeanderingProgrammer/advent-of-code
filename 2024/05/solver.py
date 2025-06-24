@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -31,7 +31,7 @@ class Order:
             pages.append(page)
         return type(self)(pages)
 
-    def next(self, deps: Rules) -> Optional[int]:
+    def next(self, deps: Rules) -> int | None:
         for i, page in enumerate(self.pages):
             if not self.has(deps.get(page, [])):
                 return self.pages.pop(i)

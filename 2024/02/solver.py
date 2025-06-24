@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -19,7 +18,7 @@ class Report:
                     return True
         return False
 
-    def check(self, i: Optional[int]) -> Optional[int]:
+    def check(self, i: int | None) -> int | None:
         levels = self.levels
         if i is not None:
             levels = levels.copy()

@@ -4,8 +4,8 @@ from aoc.parser import Parser
 
 class BoardingPass:
     def __init__(self, identifier: str):
-        self.row = int(identifier[:7].replace("B", "1").replace("F", "0"), 2)
-        self.seat = int(identifier[7:].replace("R", "1").replace("L", "0"), 2)
+        self.row: int = int(identifier[:7].replace("B", "1").replace("F", "0"), 2)
+        self.seat: int = int(identifier[7:].replace("R", "1").replace("L", "0"), 2)
 
     def get_id(self) -> int:
         return (self.row * 8) + self.seat

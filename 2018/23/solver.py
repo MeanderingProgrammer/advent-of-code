@@ -60,7 +60,8 @@ def distance_of_most_overlap(bots: list[NanoBot]) -> int:
         # distance plus its radius are no longer in the range of this bot
         heapq.heappush(queue, (len(bot) + bot.r + 1, False))
 
-    bots_in_range, in_range_distances = 0, defaultdict(set)
+    bots_in_range = 0
+    in_range_distances: dict[int, set[int]] = defaultdict(set)
     while len(queue) > 0:
         distance, add = heapq.heappop(queue)
         bots_in_range += 1 if add else -1

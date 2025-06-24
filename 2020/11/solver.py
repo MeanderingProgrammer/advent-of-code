@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -26,11 +27,11 @@ class Seat(StrEnum):
 
 @dataclass(frozen=True)
 class SeatingChart:
-    chart: dict[Point, Seat]
+    chart: Grid[Seat]
     look: bool
 
     def next(self) -> Self:
-        next_chart = dict()
+        next_chart: Grid[Seat] = dict()
         for p, seat in self.chart.items():
             next_chart[p] = self.next_seat(p, seat)
         return type(self)(chart=next_chart, look=self.look)
@@ -58,7 +59,7 @@ class SeatingChart:
                 result += 1
         return result
 
-    def explore_direction(self, p: Point, direction: Point) -> Optional[Seat]:
+    def explore_direction(self, p: Point, direction: Point) -> Seat | None:
         point = PointHelper.add(p, direction)
         seat = self.chart.get(point)
         if not self.look:
@@ -88,7 +89,7 @@ def run_until_stable(look: bool) -> int:
 
 
 def get_chart(look: bool) -> SeatingChart:
-    chart = dict()
+    chart: Grid[Seat] = dict()
     for y, row in enumerate(Parser().nested_lines()):
         for x, value in enumerate(row):
             chart[(x, y)] = Seat(value)

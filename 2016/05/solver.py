@@ -1,4 +1,5 @@
 import hashlib
+from typing import Callable
 
 from aoc import answer
 from aoc.parser import Parser
@@ -11,7 +12,7 @@ def main() -> None:
     answer.part2("f2c730e5", generate_password(door_id, populate_v2))
 
 
-def generate_password(door_id: str, populator) -> str:
+def generate_password(door_id: str, populator: Callable[[list[str], str], None]) -> str:
     password, i = [""] * 8, 0
     while not all(password):
         value = door_id + str(i)

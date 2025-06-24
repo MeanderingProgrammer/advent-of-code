@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -40,7 +39,7 @@ class State:
         for i, change in changes.items():
             self.state[i] = change
 
-    def get_matching(self, rules: list[Rule], i: int) -> Optional[Rule]:
+    def get_matching(self, rules: list[Rule], i: int) -> Rule | None:
         for rule in rules:
             values = [
                 self.state.get(index, ".")

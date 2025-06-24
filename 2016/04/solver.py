@@ -12,7 +12,7 @@ class Room:
     checksum: str
 
     def valid(self) -> bool:
-        frequencies = defaultdict(int)
+        frequencies: dict[str, int] = defaultdict(int)
         for ch in self.name:
             frequencies[ch] += 1
         expected_checksum = list(set([ch for ch in self.name if ch != "-"]))

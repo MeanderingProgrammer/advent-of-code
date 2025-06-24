@@ -1,8 +1,9 @@
 import heapq
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -26,8 +27,8 @@ class Region:
         depth: int,
         target: Point,
         location: Point,
-        left: Optional[Self],
-        above: Optional[Self],
+        left: Self | None,
+        above: Self | None,
     ) -> None:
         index = None
         if location in [(0, 0), target]:
@@ -45,9 +46,6 @@ class Region:
         self.tools = VALID_TOOL[self.kind]
 
 
-Grid = dict[Point, Region]
-
-
 @answer.timer
 def main() -> None:
     lines = Parser().lines()
@@ -59,8 +57,9 @@ def main() -> None:
     answer.part2(1068, traverse(cave, ((0, 0), TORCH), target))
 
 
-def build_out_cave(depth: int, target: Point) -> Grid:
-    grid, buff = dict(), 30
+def build_out_cave(depth: int, target: Point) -> Grid[Region]:
+    buff = 30
+    grid: Grid[Region] = dict()
     for x in range(target[0] + 1 + buff):
         for y in range(target[1] + 1 + buff):
             location = (x, y)
@@ -70,15 +69,15 @@ def build_out_cave(depth: int, target: Point) -> Grid:
     return grid
 
 
-def risk_within(cave: Grid, target: Point) -> int:
-    risk_levels = []
+def risk_within(cave: Grid[Region], target: Point) -> int:
+    result = 0
     for point, region in cave.items():
         if point[0] <= target[0] and point[1] <= target[1]:
-            risk_levels.append(region.kind)
-    return sum(risk_levels)
+            result += region.kind
+    return result
 
 
-def traverse(cave: Grid, start: State, end: Point) -> Optional[int]:
+def traverse(cave: Grid[Region], start: State, end: Point) -> int | None:
     queue: list[tuple[int, State]] = []
     seen: set[State] = set()
 

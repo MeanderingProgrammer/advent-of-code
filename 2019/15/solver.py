@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import override
 
 from aoc import answer
+from aoc.grid import Grid
 from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
@@ -17,7 +18,7 @@ class RepairDroid(Bus):
     position: Point = (0, 0)
     next_position: tuple[int, Point] | None = None
     path: list[tuple[int, Point]] = field(default_factory=lambda: [(0, (0, 0))])
-    grid: dict[Point, int] = field(default_factory=lambda: {(0, 0): EMPTY})
+    grid: Grid[int] = field(default_factory=lambda: {(0, 0): EMPTY})
 
     @override
     def active(self) -> bool:
@@ -61,7 +62,7 @@ class RepairDroid(Bus):
 
 @dataclass(frozen=True)
 class Traverser:
-    grid: dict[Point, int]
+    grid: Grid[int]
 
     def bfs(self, start: Point) -> int:
         queue: list[tuple[int, Point]] = [(0, start)]

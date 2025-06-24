@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import override
 
 from aoc import answer
 from aoc.parser import Parser
@@ -95,6 +96,7 @@ class Scrambler:
         self.value = self.value[:-amount]
         self.value = from_end + self.value
 
+    @override
     def __str__(self) -> str:
         return "".join(self.value)
 

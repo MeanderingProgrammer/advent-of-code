@@ -46,9 +46,9 @@ class Parameter:
 
 class Operator:
     def __init__(self, register: bool, f: Callable[[int, int], int]):
-        self.v1 = Parameter(True)
-        self.v2 = Parameter(register)
-        self.f = f
+        self.v1: Parameter = Parameter(True)
+        self.v2: Parameter = Parameter(register)
+        self.f: Callable[[int, int], int] = f
 
     def process(self, instruction: Instruction, regs: Registers) -> None:
         a = self.v1.get(instruction.one(), regs)
@@ -78,7 +78,7 @@ class Or(Operator):
 
 class Set:
     def __init__(self, register: bool):
-        self.v1 = Parameter(register)
+        self.v1: Parameter = Parameter(register)
 
     def process(self, instruction: Instruction, regs: Registers) -> None:
         value = self.v1.get(instruction.one(), regs)
@@ -87,9 +87,9 @@ class Set:
 
 class Comparison:
     def __init__(self, reg1: bool, reg2: bool, f: Callable[[int, int], bool]):
-        self.v1 = Parameter(reg1)
-        self.v2 = Parameter(reg2)
-        self.f = f
+        self.v1: Parameter = Parameter(reg1)
+        self.v2: Parameter = Parameter(reg2)
+        self.f: Callable[[int, int], bool] = f
 
     def process(self, instruction: Instruction, regs: Registers) -> None:
         a = self.v1.get(instruction.one(), regs)

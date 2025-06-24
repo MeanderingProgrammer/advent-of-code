@@ -114,6 +114,7 @@ def parse_instructions(lines: list[str]) -> list[Instruction]:
 class Computer:
     registers: dict[str, int]
     num_outputs: int | None = None
+    instructions: list[Instruction] = field(default_factory=list)
     outputs: list[int] = field(default_factory=list)
     ip: int = 0
 

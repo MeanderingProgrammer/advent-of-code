@@ -1,17 +1,19 @@
 from dataclasses import dataclass
-from typing import Any, Self
+from typing import Callable, Self
 
 from aoc import answer
 from aoc.parser import Parser
 
-COMMANDS_V1 = {
+type Command = Callable[[Position, Position, int], tuple[Position, Position]]
+
+COMMANDS_V1: dict[str, Command] = {
     "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
     "N": lambda point, pos, amount: (point, pos + Position(0, amount)),
     "E": lambda point, pos, amount: (point, pos + Position(amount, 0)),
     "F": lambda point, pos, amount: (point, pos + point * amount),
 }
 
-COMMANDS_V2 = {
+COMMANDS_V2: dict[str, Command] = {
     "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
     "N": lambda point, pos, amount: (point + Position(0, amount), pos),
     "E": lambda point, pos, amount: (point + Position(amount, 0), pos),
@@ -51,7 +53,7 @@ class Instruction:
 
 @dataclass
 class Ship:
-    commands: dict[str, Any]
+    commands: dict[str, Command]
     point: Position
     position: Position
 

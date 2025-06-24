@@ -7,7 +7,7 @@ from aoc.int_code import Bus, Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
-DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+DIRECTIONS: list[Point] = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
 
 @dataclass
@@ -17,7 +17,7 @@ class Direction:
     def rotate(self, value: int) -> None:
         self.index += value if value == 1 else -1
 
-    def step(self, position: Point) -> tuple[int, int]:
+    def step(self, position: Point) -> Point:
         to_go = DIRECTIONS[self.index % len(DIRECTIONS)]
         return PointHelper.add(position, to_go)
 

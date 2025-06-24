@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,7 +8,7 @@ from aoc.parser import Parser
 @dataclass
 class Value:
     value: list[str]
-    evaluated: Optional[int] = None
+    evaluated: int | None = None
 
     def evaluate(self, diagram: dict[str, Self]) -> int:
         if self.evaluated is None:
@@ -48,10 +48,10 @@ def main() -> None:
     answer.part2(14710, evaluate(first))
 
 
-def evaluate(b_override: Optional[int]) -> int:
+def evaluate(b: int | None) -> int:
     diagram: dict[str, Value] = get_diagram()
-    if b_override is not None:
-        diagram["b"] = Value(str(b_override).split())
+    if b is not None:
+        diagram["b"] = Value(str(b).split())
     return diagram["a"].evaluate(diagram)
 
 

@@ -3,7 +3,6 @@ import sys
 from dataclasses import dataclass
 
 from .grid import Grid
-from .point import Point
 
 
 @dataclass(frozen=True)
@@ -84,7 +83,7 @@ class Parser:
         often in these scenarios you simply build a grid such that a higher y goes further
         down, but I dislike the directional semantics around that approach.
         """
-        grid: dict[Point, str] = dict()
+        grid: Grid[str] = dict()
         lines = self.lines()
         max_y = len(lines) - 1
         for y, line in enumerate(lines):

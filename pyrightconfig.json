@@ -1,5 +1,8 @@
 {
     "extraPaths": [
         "commons/python"
-    ]
+    ],
+    "reportAny": false,
+    "reportExplicitAny": false,
+    "reportUnusedCallResult": false
 }

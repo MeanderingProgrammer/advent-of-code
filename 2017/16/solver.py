@@ -1,5 +1,6 @@
 from collections import deque
 from dataclasses import dataclass
+from typing import override
 
 from aoc import answer
 from aoc.parser import Parser
@@ -22,6 +23,7 @@ class Dance:
         i2 = self.dancers.index(p2)
         self.exchange(i1, i2)
 
+    @override
     def __str__(self) -> str:
         return "".join(self.dancers)
 

@@ -1,7 +1,6 @@
 import re
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -32,7 +31,7 @@ class TimeRange:
 @dataclass
 class GuardEvents:
     time_ranges: list[TimeRange]
-    start: Optional[int] = None
+    start: int | None = None
 
     def add(self, event: Event) -> None:
         if self.start is None:

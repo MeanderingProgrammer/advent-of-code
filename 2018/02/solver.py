@@ -18,7 +18,7 @@ def count_contain_exactly(values: list[str], n: int) -> int:
 
 
 def contains_exactly(value: str, n: int) -> bool:
-    frequencies = defaultdict(int)
+    frequencies: dict[str, int] = defaultdict(int)
     for character in value:
         frequencies[character] += 1
     return n in frequencies.values()

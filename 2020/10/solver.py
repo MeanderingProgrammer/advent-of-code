@@ -10,7 +10,7 @@ class Adapters:
     data: list[int]
 
     def chains(self) -> dict[int, int]:
-        chains = defaultdict(int)
+        chains: dict[int, int] = defaultdict(int)
         for i in range(1, len(self.data)):
             chains[self.data[i] - self.data[i - 1]] += 1
         return chains

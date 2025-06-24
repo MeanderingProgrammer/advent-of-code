@@ -4,10 +4,10 @@ from aoc.parser import Parser
 
 class Recipes:
     def __init__(self, goal: int):
-        self.scores = [3, 7]
-        self.elf_1 = 0
-        self.elf_2 = 1
-        self.digits = [int(digit) for digit in str(goal)]
+        self.scores: list[int] = [3, 7]
+        self.elf_1: int = 0
+        self.elf_2: int = 1
+        self.digits: list[int] = [int(digit) for digit in str(goal)]
 
     def evolve(self) -> str:
         while not self.found(0) and not self.found(1):

@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self, override
 
 from aoc import answer
 from aoc.parser import Parser
@@ -41,8 +41,11 @@ class Group:
         self.units -= damage // self.hp
         self.power = self.units * self.damage
 
-    def __eq__(self, o) -> bool:
-        return o is not None and self.id == o.id
+    @override
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Group):
+            return NotImplemented
+        return self.id == o.id
 
 
 @dataclass(frozen=True)
@@ -78,7 +81,7 @@ class Battle:
                 targets.add(target.id)
         return assignments
 
-    def get_target(self, group: Group, targets: set[int]) -> Optional[Group]:
+    def get_target(self, group: Group, targets: set[int]) -> Group | None:
         options = self.get_category(not group.is_immune)
         options = [option for option in options if option.id not in targets]
         options.sort(key=lambda option: group.to_target(option), reverse=True)
