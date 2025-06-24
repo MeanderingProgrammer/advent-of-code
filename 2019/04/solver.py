@@ -21,7 +21,8 @@ class Password:
         return 2 in self.same_counts()
 
     def same_counts(self) -> list[int]:
-        ahead_same, i = [], 0
+        ahead_same: list[int] = []
+        i = 0
         while i < len(self.value):
             length = self.get_length_of_same(i)
             ahead_same.append(length)

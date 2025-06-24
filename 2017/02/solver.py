@@ -11,11 +11,11 @@ def main() -> None:
 
 
 def calculate_checksum(f: Callable[[list[int]], int]) -> int:
-    checksums = []
+    result = 0
     for line in Parser().lines():
         values = [int(value) for value in line.split()]
-        checksums.append(f(values))
-    return sum(checksums)
+        result += f(values)
+    return result
 
 
 def checksum_v1(values: list[int]) -> int:

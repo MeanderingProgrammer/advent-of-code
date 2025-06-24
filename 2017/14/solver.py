@@ -33,7 +33,7 @@ class Knot:
 
     @staticmethod
     def dense_hash(values: list[int]) -> str:
-        hashed = []
+        hashed: list[str] = []
         for i in range(0, len(values), 16):
             block = values[i : i + 16]
             hashed.append(Knot.hash_block(block))

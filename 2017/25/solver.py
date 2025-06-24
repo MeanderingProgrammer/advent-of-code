@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.parser import Parser
 
@@ -6,20 +8,20 @@ MOVEMENTS: dict[str, int] = dict(left=-1, right=1)
 
 class Rule:
     def __init__(self, raw: list[str]):
-        self.write = int(self.get_last(raw[0]))
-        self.move = MOVEMENTS[self.get_last(raw[1])]
-        self.next_state = self.get_last(raw[2])
+        self.write: int = int(Rule.get_last(raw[0]))
+        self.move: int = MOVEMENTS[self.get_last(raw[1])]
+        self.next_state: str = Rule.get_last(raw[2])
 
     @staticmethod
-    def get_last(raw):
+    def get_last(raw: str) -> str:
         return raw.split()[-1][:-1]
 
 
-class ConditionalRule:
+class Conditional:
     def __init__(self, raw: list[str]):
-        self.conditions = {}
+        self.conditions: dict[int, Rule] = {}
         for i in range(0, len(raw), 4):
-            self.conditions[self.get_value(raw[i])] = Rule(raw[i + 1 : i + 4])
+            self.conditions[Conditional.get_value(raw[i])] = Rule(raw[i + 1 : i + 4])
 
     def get(self, value: int) -> Rule:
         return self.conditions[value]
@@ -29,13 +31,12 @@ class ConditionalRule:
         return int(raw.split()[-1][:-1])
 
 
+@dataclass
 class TuringMachine:
-    def __init__(self, state: str, rules: dict[str, ConditionalRule]):
-        self.state = state
-        self.rules = rules
-
-        self.pos = 0
-        self.tape = dict()
+    state: str
+    rules: dict[str, Conditional]
+    pos: int
+    tape: dict[int, int]
 
     def step(self) -> None:
         value = self.tape.get(self.pos, 0)
@@ -52,22 +53,22 @@ class TuringMachine:
 @answer.timer
 def main() -> None:
     state, rules = get_state_rules()
-    machine = TuringMachine(state[0], rules)
+    machine = TuringMachine(state[0], rules, 0, dict())
     for _ in range(state[1]):
         machine.step()
     answer.part1(3099, machine.checksum())
 
 
-def get_state_rules() -> tuple[tuple[str, int], dict[str, ConditionalRule]]:
+def get_state_rules() -> tuple[tuple[str, int], dict[str, Conditional]]:
     groups = Parser().line_groups()
     state = get_state(groups[0])
-    rules = {}
+    rules: dict[str, Conditional] = dict()
     for group in groups[1:]:
-        rules[get_name(group[0])] = ConditionalRule(group[1:])
+        rules[get_name(group[0])] = Conditional(group[1:])
     return state, rules
 
 
-def get_state(raw) -> tuple[str, int]:
+def get_state(raw: list[str]) -> tuple[str, int]:
     start = get_name(raw[0])
     steps = int(raw[1].split()[-2])
     return start, steps

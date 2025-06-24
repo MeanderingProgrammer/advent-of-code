@@ -1,6 +1,5 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -23,7 +22,7 @@ class Graph:
                     queue.append(adjacent)
         return seen
 
-    def get_ungrouped(self, grouped: set[str]) -> Optional[str]:
+    def get_ungrouped(self, grouped: set[str]) -> str | None:
         all_keys: set[str] = set(self.graph.keys())
         remainder: set[str] = all_keys - grouped
         return None if len(remainder) == 0 else next(iter(remainder))
@@ -38,7 +37,7 @@ def main() -> None:
 
     heads: set[str] = set(["0"])
     grouped: set[str] = connected_to_0
-    head: Optional[str] = graph.get_ungrouped(grouped)
+    head: str | None = graph.get_ungrouped(grouped)
     while head is not None:
         heads.add(head)
         grouped |= graph.connected(head)

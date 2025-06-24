@@ -1,14 +1,14 @@
-import abc
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional, override
+from typing import override
 
 
-class Instruction(abc.ABC):
-    @abc.abstractmethod
+class Instruction(ABC):
+    @abstractmethod
     def run(self, computer: "Computer") -> int:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def toggle(self) -> "Instruction":
         pass
 
@@ -88,7 +88,7 @@ class Output(Instruction):
 
 
 def parse_instructions(lines: list[str]) -> list[Instruction]:
-    instructions = []
+    instructions: list[Instruction] = []
     for line in lines:
         parts = line.split()
         op = parts[0]
@@ -113,7 +113,7 @@ def parse_instructions(lines: list[str]) -> list[Instruction]:
 @dataclass
 class Computer:
     registers: dict[str, int]
-    num_outputs: Optional[int] = None
+    num_outputs: int | None = None
     outputs: list[int] = field(default_factory=list)
     ip: int = 0
 

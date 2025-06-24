@@ -22,10 +22,10 @@ class Computer:
             ip += move
 
 
+@dataclass(frozen=True)
 class Instruction:
-    def __init__(self, raw):
-        self.op, args = raw.split(" ", 1)
-        self.args = [arg for arg in args.split(", ")]
+    op: str
+    args: list[str]
 
     def run(self, computer: Computer) -> int:
         if self.op == "hlf":
@@ -53,16 +53,21 @@ class Instruction:
         else:
             raise Exception(f"Unknown operation: {self.op}")
 
+    @staticmethod
+    def new(line: str) -> "Instruction":
+        op, args = line.split(" ", 1)
+        return Instruction(op, args.split(", "))
+
 
 @answer.timer
 def main() -> None:
-    answer.part1(170, run_computer(0))
-    answer.part2(247, run_computer(1))
+    instructions = [Instruction.new(line) for line in Parser().lines()]
+    answer.part1(170, run(instructions, 0))
+    answer.part2(247, run(instructions, 1))
 
 
-def run_computer(a_value: int) -> int:
-    computer = Computer(registers=dict(a=a_value, b=0))
-    instructions = [Instruction(line) for line in Parser().lines()]
+def run(instructions: list[Instruction], a: int) -> int:
+    computer = Computer(registers=dict(a=a, b=0))
     computer.run(instructions)
     return computer.get("b")
 

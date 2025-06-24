@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import Any, override
 
 from command.command import Command
 from component.command import Executor
@@ -35,7 +35,7 @@ class Build(Command):
     languages: list[Language]
 
     @override
-    def info(self) -> dict:
+    def info(self) -> dict[str, Any]:
         return {build.key(): build.value() for build in self.builds()}
 
     @override

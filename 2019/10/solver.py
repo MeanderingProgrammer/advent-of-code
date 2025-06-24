@@ -30,7 +30,7 @@ class Point:
 
 class Grid:
     def __init__(self, data: list[str]):
-        self.asteroids = []
+        self.asteroids: list[Point] = []
         for y, row in enumerate(data):
             for x, value in enumerate(row):
                 if value == "#":
@@ -54,7 +54,7 @@ class Grid:
         return destruction_order
 
     def get_angles(self, start: Point) -> dict[float, list[Point]]:
-        angles = defaultdict(list)
+        angles: dict[float, list[Point]] = defaultdict(list)
         [angles[start.angle(end)].append(end) for end in self.asteroids if end != start]
         return angles
 

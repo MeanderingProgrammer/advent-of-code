@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Callable, NamedTuple, Optional, Self
+from typing import Callable, NamedTuple, Self, override
 
 from aoc import answer
 from aoc.parser import Parser
@@ -23,10 +23,16 @@ class Point(NamedTuple):
             type(self)(self.x - 1, self.y),
         ]
 
-    def __lt__(self, o) -> bool:
+    @override
+    def __lt__(self, o: tuple[int, ...]) -> bool:
+        if not isinstance(o, Point):
+            return NotImplemented
         return (self.y, self.x) < (o.y, o.x)
 
-    def __gt__(self, o) -> bool:
+    @override
+    def __gt__(self, o: tuple[int, ...]) -> bool:
+        if not isinstance(o, Point):
+            return NotImplemented
         return (self.y, self.x) > (o.y, o.x)
 
 
@@ -44,7 +50,7 @@ class Character:
     def attack(self, target: Self) -> None:
         target.hp -= self.damage
 
-    def find_target(self, opponents: list[Self]) -> Optional[Self]:
+    def find_target(self, opponents: list[Self]) -> Self | None:
         reach = self.position.neighbors()
         targets = [opponent for opponent in opponents if opponent.position in reach]
         if len(targets) == 0:
@@ -58,7 +64,7 @@ class Game:
     characters: list[Character]
     until_elf_death: bool
 
-    def play(self) -> Optional[int]:
+    def play(self) -> int | None:
         round = 0
         while True:
             status = self.round()
@@ -69,7 +75,7 @@ class Game:
             round += 1
         return round * sum([character.hp for character in self.characters])
 
-    def round(self) -> Optional[bool]:
+    def round(self) -> bool | None:
         ordered = sorted(self.characters, key=lambda character: character.position)
         for character in ordered:
             if character.alive:
@@ -78,7 +84,7 @@ class Game:
                     return status
         return True
 
-    def move(self, character: Character) -> Optional[bool]:
+    def move(self, character: Character) -> bool | None:
         opponents = [
             opponent for opponent in self.characters if opponent.team != character.team
         ]
@@ -102,17 +108,17 @@ class Game:
 
     def get_move(
         self, character: Character, opponents: list[Character]
-    ) -> Optional[Point]:
+    ) -> Point | None:
         occupied = set([other.position for other in self.characters])
 
         def get_adjacent(point: Point) -> list[Point]:
-            result = []
+            result: list[Point] = []
             for adjacent in point.neighbors():
                 if adjacent in self.open_path and adjacent not in occupied:
                     result.append(adjacent)
             return result
 
-        targets = []
+        targets: list[Point] = []
         for opponent in opponents:
             targets.extend(get_adjacent(opponent.position))
         distances = self.calculate_distances(character.position, get_adjacent)
@@ -170,7 +176,7 @@ def get_game(data: list[list[str]], elf_damage: int, until_elf_death: bool) -> G
 
 
 def get_open_path(data: list[list[str]]) -> set[Point]:
-    open_path = set()
+    open_path: set[Point] = set()
     for y, row in enumerate(data):
         for x, value in enumerate(row):
             if value != "#":
@@ -184,7 +190,7 @@ def get_characters(data: list[list[str]], elf_damage: int) -> list[Character]:
         G=(Team.GOBLIN, 3),
         E=(Team.ELF, elf_damage),
     )
-    characters = []
+    characters: list[Character] = []
     for y, row in enumerate(data):
         for x, value in enumerate(row):
             if value in traits_mapping:

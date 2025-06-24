@@ -1,13 +1,16 @@
+from dataclasses import dataclass
+
 from aoc import answer
+from aoc.grid import Grid
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
 
+@dataclass
 class PowerGrid:
-    def __init__(self, serial_number: int, grid_size: int):
-        self.serial_number = serial_number
-        self.grid_size = grid_size
-        self.grid = {}
+    serial_number: int
+    grid_size: int
+    grid: Grid[int]
 
     def initialize(self) -> None:
         for x in range(1, self.grid_size + 1):
@@ -63,7 +66,7 @@ class PowerGrid:
 
 @answer.timer
 def main() -> None:
-    power_grid = PowerGrid(Parser().integer(), 300)
+    power_grid = PowerGrid(Parser().integer(), 300, dict())
     power_grid.initialize()
     answer.part1((243, 43), power_grid.get_largest(3)[0])
     answer.part2((236, 151, 15), power_grid.get_largest_any())

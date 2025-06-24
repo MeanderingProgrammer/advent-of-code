@@ -1,6 +1,6 @@
 import heapq
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable
 
 
 @dataclass(frozen=True)
@@ -9,13 +9,13 @@ class Search[T]:
     end: T
     neighbors: Callable[[T], list[T]]
 
-    def bfs(self) -> Optional[int]:
+    def bfs(self) -> int | None:
         return self.traverse(front=True)
 
-    def dfs(self) -> Optional[int]:
+    def dfs(self) -> int | None:
         return self.traverse(front=False)
 
-    def traverse(self, front: bool) -> Optional[int]:
+    def traverse(self, front: bool) -> int | None:
         queue: list[tuple[int, T]] = [(0, self.start)]
         seen: set[T] = set()
         while len(queue) > 0:
@@ -38,7 +38,7 @@ class Dijkstra[T]:
     done: Callable[[T], bool]
     neighbors: Callable[[T], list[tuple[int, T]]]
 
-    def run(self) -> Optional[int]:
+    def run(self) -> int | None:
         queue: list[tuple[int, T]] = [(0, self.start)]
         seen: set[T] = set()
         while len(queue) > 0:

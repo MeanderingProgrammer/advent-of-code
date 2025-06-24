@@ -1,7 +1,7 @@
 import re
 import time
 from dataclasses import dataclass
-from typing import override
+from typing import Any, override
 
 from command.command import Command
 from component.command import Executor
@@ -20,7 +20,7 @@ class LanguageRunner:
     command: list[str]
     executor: Executor
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> dict[str, Any]:
         return dict(
             year=self.day.year,
             day=self.day.day,
@@ -75,7 +75,7 @@ class Runner(Command):
     save: bool
 
     @override
-    def info(self) -> dict:
+    def info(self) -> dict[str, Any]:
         return dict(
             executions=[runner.as_dict() for runner in self.runners()],
             slow=self.slow,

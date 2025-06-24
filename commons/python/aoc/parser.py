@@ -1,7 +1,6 @@
 import argparse
 import sys
 from dataclasses import dataclass
-from typing import Optional
 
 from .grid import Grid
 from .point import Point
@@ -9,7 +8,7 @@ from .point import Point
 
 @dataclass(frozen=True)
 class AdventData:
-    file_name: Optional[str] = None
+    file_name: str | None = None
 
     def get_file_path(self) -> str:
         year, day = sys.path[0].split("/")[-2:]
@@ -25,7 +24,7 @@ class AdventData:
 
 @dataclass(frozen=True)
 class Parser:
-    file_name: Optional[str] = None
+    file_name: str | None = None
     data_file: bool = True
 
     def get_file_path(self) -> str:

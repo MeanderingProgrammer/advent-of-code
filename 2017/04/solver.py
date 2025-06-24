@@ -1,41 +1,29 @@
 from collections import defaultdict
-from dataclasses import dataclass
 
 from aoc import answer
 from aoc.parser import Parser
 
 
-@dataclass(frozen=True)
-class Password:
-    words: list[str]
-
-    def valid(self, check_anagram: bool) -> bool:
-        frequency = defaultdict(int)
-        for word in self.words:
-            word = Password.anagram(word) if check_anagram else word
-            frequency[word] += 1
-        return all([value == 1 for value in frequency.values()])
-
-    @staticmethod
-    def anagram(word: str) -> frozenset:
-        anagram = defaultdict(int)
-        for letter in word:
-            anagram[letter] += 1
-        return frozenset(anagram.items())
-
-
 @answer.timer
 def main() -> None:
-    answer.part1(466, count_valid(False))
-    answer.part2(251, count_valid(True))
+    lines = Parser().lines()
+    answer.part1(466, count(lines, False))
+    answer.part2(251, count(lines, True))
 
 
-def count_valid(check_anagram: bool) -> int:
-    are_valid: list[bool] = []
-    for line in Parser().lines():
-        valid = Password(line.split()).valid(check_anagram)
-        are_valid.append(valid)
-    return sum(are_valid)
+def count(lines: list[str], anagram: bool) -> int:
+    result: int = 0
+    for line in lines:
+        result += 1 if valid(line.split(), anagram) else 0
+    return result
+
+
+def valid(words: list[str], anagram: bool) -> bool:
+    frequency: dict[str, int] = defaultdict(int)
+    for word in words:
+        word = "".join(sorted(word)) if anagram else word
+        frequency[word] += 1
+    return all([value == 1 for value in frequency.values()])
 
 
 if __name__ == "__main__":

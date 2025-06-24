@@ -18,7 +18,7 @@ class Regex:
     current: Point
     previous: Point
     positions: list[Point]
-    distances: dict
+    distances: dict[Point, int]
 
     def calculate_distances(self) -> None:
         # This only works because all options in a parenthesized expression

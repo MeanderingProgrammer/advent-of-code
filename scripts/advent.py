@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import json
-from typing import Optional
 
 import click
 
@@ -49,11 +48,11 @@ def build(language: tuple[Language, ...], info: bool) -> None:
 @click.option("-T", "--test", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
 def run(
-    template: Optional[RunName],
+    template: RunName | None,
     year: tuple[int, ...],
     day: tuple[int, ...],
     language: tuple[Language, ...],
-    strategy: Optional[StrategyName],
+    strategy: StrategyName | None,
     slow: int,
     test: bool,
     info: bool,
@@ -102,9 +101,9 @@ def run(
 @click.option("-p", "--puzzle", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
 def generate(
-    template: Optional[GenerateName],
-    year: Optional[int],
-    day: Optional[int],
+    template: GenerateName | None,
+    year: int | None,
+    day: int | None,
     language: Language,
     puzzle: bool,
     info: bool,

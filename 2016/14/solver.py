@@ -21,11 +21,11 @@ def main() -> None:
 
 def generate(prefix: str, num_hashes: int) -> int:
     i = 0
-    hash_infos = deque()
+    hash_infos: deque[HashInfo] = deque()
     while i < 1_000:
         hash_infos.append(get_hash(prefix, i, num_hashes))
         i += 1
-    keys = []
+    keys: list[int] = []
     while len(keys) < 64:
         hash_info = hash_infos.popleft()
         hash_infos.append(get_hash(prefix, i, num_hashes))
@@ -45,7 +45,7 @@ def get_hash(prefix: str, index: int, n: int) -> HashInfo:
 
 
 def get_repeats(hashed: str, length: int) -> list[str]:
-    repeats = []
+    repeats: list[str] = []
     for i in range(len(hashed) - length + 1):
         value = hashed[i : i + length]
         if len(set([v for v in value])) == 1:

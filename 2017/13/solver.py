@@ -41,11 +41,11 @@ def get_scanners() -> list[Scanner]:
 
 
 def trip_severity(scanners: list[Scanner]) -> int:
-    severities = []
+    result = 0
     for scanner in scanners:
         if scanner.caught(0):
-            severities.append(scanner.severity())
-    return sum(severities)
+            result += scanner.severity()
+    return result
 
 
 def is_caught(scanners: list[Scanner], offset: int) -> bool:

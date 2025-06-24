@@ -7,8 +7,8 @@ from language.language import Language
 
 
 class LanguageType(click.ParamType):
-    name = "language"
-    factory = LanguageFactory()
+    name: str = "language"
+    factory: LanguageFactory = LanguageFactory()
 
     @override
     def get_metavar(self, param, ctx) -> str | None:

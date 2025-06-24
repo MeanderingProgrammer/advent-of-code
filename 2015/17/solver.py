@@ -12,7 +12,7 @@ def main() -> None:
 
 
 def get_combinations(capacities: list[int], volume: int) -> list[tuple[int, ...]]:
-    combinations = []
+    combinations: list[tuple[int, ...]] = []
     for i in range(2, len(capacities)):
         for combination in itertools.combinations(capacities, i):
             if sum(combination) == volume:

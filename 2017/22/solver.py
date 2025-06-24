@@ -3,59 +3,65 @@ from collections import deque
 from aoc import answer
 from aoc.grid import Grid, GridHelper
 from aoc.parser import Parser
-from aoc.point import PointHelper
+from aoc.point import Point, PointHelper
 
 CLEAN = "."
 WEAKENED = "W"
 FLAGGED = "F"
 INFECTED = "#"
 
-STATE_DIRECTION_CHANGE = {WEAKENED: 0, CLEAN: 1, FLAGGED: 2, INFECTED: -1}
+DIRECTION_CHANGE = {WEAKENED: 0, CLEAN: 1, FLAGGED: 2, INFECTED: -1}
 
 
 class Virus:
-    def __init__(self, grid: Grid, state_chage: dict[str, str]):
-        self.grid = grid
-        self.state_chage = state_chage
-        self.position = (Virus.mid(GridHelper.xs(grid)), Virus.mid(GridHelper.ys(grid)))
+    def __init__(self, grid: Grid[str], change: dict[str, str]) -> None:
+        self.grid: Grid[str] = grid
+        self.change: dict[str, str] = change
+        self.position: Point = (
+            Virus.mid(GridHelper.xs(grid)),
+            Virus.mid(GridHelper.ys(grid)),
+        )
 
-        self.directions = deque([(0, 1), (-1, 0), (0, -1), (1, 0)])
-        self.infections = 0
+        self.directions: deque[Point] = deque([(0, 1), (-1, 0), (0, -1), (1, 0)])
+        self.infections: int = 0
 
     def burst(self) -> None:
-        state: str = self.grid.get(self.position, CLEAN)
+        state = self.grid.get(self.position, CLEAN)
 
-        new_state = self.state_chage[state]
+        new_state = self.change[state]
         self.grid[self.position] = new_state
         if new_state == INFECTED:
             self.infections += 1
 
-        self.directions.rotate(-STATE_DIRECTION_CHANGE[state])
+        self.directions.rotate(-DIRECTION_CHANGE[state])
         self.position = PointHelper.add(self.position, self.directions[0])
 
     @staticmethod
     def mid(values: set[int]):
-        as_list = list(values)
-        as_list.sort()
-        return as_list[len(values) // 2]
+        vals = sorted(values)
+        return vals[len(vals) // 2]
 
 
 @answer.timer
 def main() -> None:
-    simplified_state_change = {CLEAN: INFECTED, INFECTED: CLEAN}
-    answer.part1(5575, run(10_000, simplified_state_change))
+    grid = Parser().grid()
 
-    expanded_state_change = {
+    simple = {
+        CLEAN: INFECTED,
+        INFECTED: CLEAN,
+    }
+    answer.part1(5575, run(Virus(grid.copy(), simple), 10_000))
+
+    expanded = {
         CLEAN: WEAKENED,
         WEAKENED: INFECTED,
         FLAGGED: CLEAN,
         INFECTED: FLAGGED,
     }
-    answer.part2(2511991, run(10_000_000, expanded_state_change))
+    answer.part2(2511991, run(Virus(grid.copy(), expanded), 10_000_000))
 
 
-def run(n: int, state_change: dict[str, str]) -> int:
-    virus = Virus(Parser().grid(), state_change)
+def run(virus: Virus, n: int) -> int:
     for _ in range(n):
         virus.burst()
     return virus.infections

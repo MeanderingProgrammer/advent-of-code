@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -141,7 +141,7 @@ def main() -> None:
     answer.part2(1309, play_game(hp, attack, 1))
 
 
-def play_game(hp: int, attack: int, damage: int) -> Optional[int]:
+def play_game(hp: int, attack: int, damage: int) -> int | None:
     start = Game(
         player=Stats(hp=50, attack=500),
         enemy=Stats(hp=hp, attack=attack),

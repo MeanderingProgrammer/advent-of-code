@@ -1,6 +1,7 @@
 import itertools
+from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Generator, Self
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser

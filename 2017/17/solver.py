@@ -6,8 +6,8 @@ from aoc.parser import Parser
 
 class Lock:
     def __init__(self, steps: int):
-        self.q = deque()
-        self.steps = steps
+        self.q: deque[int] = deque()
+        self.steps: int = steps
 
     def insert(self, value: int) -> None:
         self.q.rotate(-(self.steps + 1))

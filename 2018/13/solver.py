@@ -155,7 +155,7 @@ def run_system() -> CartSystem:
 
 
 def get_track(data: Grid[str]) -> Grid[str]:
-    track = dict()
+    track: Grid[str] = dict()
     for point, value in data.items():
         if value != " ":
             value = "-" if value in [LEFT, RIGHT] else value

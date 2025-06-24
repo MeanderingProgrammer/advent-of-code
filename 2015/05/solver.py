@@ -11,7 +11,7 @@ class Word:
 
     @property
     def groups(self) -> list[str]:
-        groups = []
+        groups: list[str] = []
         for i in range(len(self.value) - 1):
             groups.append(self.value[i] + self.value[i + 1])
         return groups
@@ -46,7 +46,7 @@ class Word:
 
     def repeat_non_overlapping(self) -> bool:
         groups = self.groups
-        group_frequencies = defaultdict(int)
+        group_frequencies: dict[str, int] = defaultdict(int)
         group_frequencies[groups[0]] += 1
         for i, group in enumerate(groups[1:]):
             num_needed = 1 if group != groups[i] else 2
@@ -71,11 +71,11 @@ def main() -> None:
 
 
 def total_nice_words(words: list[Word], new_rules: bool) -> int:
-    nice_words = []
+    result = 0
     for word in words:
         is_nice = word.nice_2() if new_rules else word.nice_1()
-        nice_words.append(is_nice)
-    return sum(nice_words)
+        result += 1 if is_nice else 0
+    return result
 
 
 if __name__ == "__main__":

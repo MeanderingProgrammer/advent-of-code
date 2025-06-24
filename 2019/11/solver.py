@@ -47,7 +47,7 @@ class PaintBot(Bus):
         self.color = not self.color
 
     def grid_str(self) -> str:
-        grid = dict()
+        grid: Grid[str] = dict()
         for point, value in self.grid.items():
             grid[point] = "." if value == 0 else "#"
         return GridHelper.to_str(grid)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -15,7 +15,7 @@ class Packet:
 
 class Network:
     def __init__(self, memory: list[int]):
-        self.nat: Optional[Packet] = None
+        self.nat: Packet | None = None
         self.network: list[Node] = [
             Node(Computer(bus=NodeBus(network=self, packets=[i]), memory=memory.copy()))
             for i in range(50)
@@ -48,7 +48,7 @@ class Network:
 
 @dataclass(frozen=True)
 class Node:
-    computer: Computer
+    computer: Computer["NodeBus"]
 
     def run(self) -> None:
         self.computer.bus.running = True

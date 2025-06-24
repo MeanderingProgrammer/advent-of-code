@@ -3,12 +3,14 @@ from dataclasses import dataclass
 from aoc import answer
 from aoc.parser import Parser
 
+type AllRules = dict[int, LetterRule | OrRule | AndRule]
+
 
 @dataclass(frozen=True)
 class LetterRule:
     letter: str
 
-    def matches(self, _: dict, value: str, index: int) -> set[int]:
+    def matches(self, _: AllRules, value: str, index: int) -> set[int]:
         if index < len(value) and value[index] == self.letter:
             return set([index + 1])
         else:
@@ -19,10 +21,10 @@ class LetterRule:
 class AndRule:
     rules: list[int]
 
-    def matches(self, rules: dict, value: str, index: int) -> set[int]:
+    def matches(self, rules: AllRules, value: str, index: int) -> set[int]:
         result: set[int] = set([index])
         for rule in self.rules:
-            new_matches = set()
+            new_matches: set[int] = set()
             for match_index in result:
                 new_matches.update(rules[rule].matches(rules, value, match_index))
             result = new_matches
@@ -33,7 +35,7 @@ class AndRule:
 class OrRule:
     rules: list[AndRule]
 
-    def matches(self, rules: dict, value: str, index: int) -> set[int]:
+    def matches(self, rules: AllRules, value: str, index: int) -> set[int]:
         result: set[int] = set()
         for rule in self.rules:
             result.update(rule.matches(rules, value, index))
@@ -42,7 +44,7 @@ class OrRule:
 
 @dataclass(frozen=True)
 class Rules:
-    rules: dict[int, LetterRule | OrRule | AndRule]
+    rules: AllRules
 
     def does_match(self, value: str) -> bool:
         return len(value) in self.rules[0].matches(self.rules, value, 0)
@@ -67,7 +69,7 @@ def get_rules(lines: list[str], part2: bool) -> Rules:
     def parse_or_rule(rules: str) -> OrRule:
         return OrRule(rules=[parse_and_rule(rule) for rule in rules.split(" | ")])
 
-    rules: dict[int, LetterRule | OrRule | AndRule] = dict()
+    rules: AllRules = dict()
     for line in lines:
         number, rule = line.split(": ")
         if rule.startswith('"') and rule.endswith('"'):

@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -9,7 +8,7 @@ from aoc.parser import Parser
 @dataclass
 class Worker:
     base_time: int
-    task: Optional[str] = None
+    task: str | None = None
     time_spent_on_task: int = 0
 
     def clear(self) -> None:
@@ -95,7 +94,7 @@ class Graph:
             tasks_seen=set(),
             tasks_remaining=[],
         )
-        completed = []
+        completed: list[str] = []
         duration = 0
         while len(completed) != len(self.nodes):
             duration += 1

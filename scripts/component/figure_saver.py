@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import StrEnum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import matplotlib.pyplot as plt
 
@@ -16,7 +16,7 @@ class FigureProps:
     name: str
     figure: Any
     kind: FigureKind
-    legend: Optional[dict] = None
+    legend: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -24,7 +24,7 @@ class FigureSaver:
     archive: bool
     now: str
 
-    def info(self) -> dict:
+    def info(self) -> dict[str, Any]:
         return dict(
             archive=self.archive,
             now=self.now,
@@ -65,7 +65,9 @@ class FigureSaver:
         else:
             raise Exception(f"Unhandled figure kind: {props.kind}")
 
-    def save_matplotlib(self, fig: Any, legend: Optional[dict], path: Path) -> None:
+    def save_matplotlib(
+        self, fig: Any, legend: dict[str, Any] | None, path: Path
+    ) -> None:
         if legend is not None:
             fig.get_figure().legend(**legend)
         plt.tight_layout()

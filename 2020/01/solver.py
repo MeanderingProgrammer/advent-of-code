@@ -1,5 +1,3 @@
-from typing import Optional
-
 from aoc import answer
 from aoc.parser import Parser
 
@@ -11,7 +9,7 @@ def main() -> None:
     answer.part2(295086480, find_triple(values, 2020))
 
 
-def find_pair(values: list[int], goal: int, ignore: set[int]) -> Optional[int]:
+def find_pair(values: list[int], goal: int, ignore: set[int]) -> int | None:
     for value in values:
         if value not in ignore:
             needed = goal - value

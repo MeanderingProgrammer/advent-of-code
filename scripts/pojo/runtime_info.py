@@ -21,7 +21,7 @@ class RuntimeInfo:
         )
 
     @staticmethod
-    def from_dict(value: dict) -> "RuntimeInfo":
+    def from_dict(value: dict[str, Any]) -> "RuntimeInfo":
         return RuntimeInfo(
             day=Day(
                 year=str(value["year"]),

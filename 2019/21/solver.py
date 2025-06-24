@@ -1,4 +1,4 @@
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -11,8 +11,8 @@ class JumpDroid(Bus):
         for action in actions:
             program.extend([value for value in action])
             program.append("\n")
-        self.program = program
-        self.value = None
+        self.program: list[str] = program
+        self.value: int | None = None
 
     @override
     def active(self) -> bool:
@@ -79,7 +79,7 @@ def main() -> None:
     )
 
 
-def run_droid(memory: list[int], *actions: str) -> Optional[int]:
+def run_droid(memory: list[int], *actions: str) -> int | None:
     droid = JumpDroid(list(actions))
     Computer(bus=droid, memory=memory.copy()).run()
     return droid.value

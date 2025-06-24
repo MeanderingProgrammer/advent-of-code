@@ -1,5 +1,3 @@
-from typing import Optional
-
 from aoc import answer
 from aoc.parser import Parser
 
@@ -20,7 +18,7 @@ class PasswordGenerator:
         for i in range(index + 1, len(self.value)):
             self.value[i] = 0
 
-    def get_last_index_under(self, n: int) -> Optional[int]:
+    def get_last_index_under(self, n: int) -> int | None:
         for i in range(len(self.value) - 1, -1, -1):
             if self.value[i] < n:
                 return i

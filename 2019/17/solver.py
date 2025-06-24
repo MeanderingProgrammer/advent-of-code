@@ -1,5 +1,6 @@
+from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import Generator, Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -25,7 +26,7 @@ class DroidState:
             code = self.set_direction()
         return instructions
 
-    def set_direction(self) -> Optional[str]:
+    def set_direction(self) -> str | None:
         index = DIRECTIONS.index(self.direction)
         directions = dict(
             L=DIRECTIONS[index - 1],
@@ -56,7 +57,7 @@ class Instruction:
                 return True
         return False
 
-    def get_end(self, i: int) -> Optional[int]:
+    def get_end(self, i: int) -> int | None:
         for start in self.starts:
             if i == start:
                 return start + len(self.function)
@@ -113,7 +114,7 @@ class Compression:
                 i += 1
         return bounds
 
-    def first_out(self, instructions: list[Instruction]) -> Optional[int]:
+    def first_out(self, instructions: list[Instruction]) -> int | None:
         for i in range(len(self.instructions)):
             if not any([instruction.contains(i) for instruction in instructions]):
                 return i
@@ -121,7 +122,7 @@ class Compression:
 
     def create_routine(self, name_instruction: dict[str, Instruction]) -> list[str]:
         i = 0
-        routine = []
+        routine: list[str] = []
         while i < len(self.instructions):
             for name, instruction in name_instruction.items():
                 end = instruction.get_end(i)
@@ -137,9 +138,9 @@ class VacuumDroid(Bus):
     current: Point
     scafolding: list[Point] = field(default_factory=list)
     instructions: list[int] = field(default_factory=list)
-    state: Optional[DroidState] = None
+    state: DroidState | None = None
     running: bool = False
-    value: Optional[int] = None
+    value: int | None = None
 
     @override
     def active(self) -> bool:
@@ -210,7 +211,7 @@ def total_alignment(memory: list[int], droid: VacuumDroid) -> int:
     return sum([point[0] * point[1] for point in intersections])
 
 
-def dust_collected(memory: list[int], droid: VacuumDroid) -> Optional[int]:
+def dust_collected(memory: list[int], droid: VacuumDroid) -> int | None:
     droid.create_path()
     droid.running = True
     run_droid(memory, droid, True)

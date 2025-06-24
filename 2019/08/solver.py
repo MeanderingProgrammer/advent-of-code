@@ -26,7 +26,7 @@ class Image:
         return self.layers[counts.index(min(counts))]
 
     def flatten(self) -> str:
-        rows = []
+        rows: list[str] = []
         for r in range(self.height):
             row = [self.get_pixel(r, c) for c in range(self.width)]
             rows.append("".join(row))
@@ -58,7 +58,7 @@ def main() -> None:
 def get_image(data: str, width: int, height: int) -> Image:
     layers: list[Layer] = []
     for layer_start in range(0, len(data), width * height):
-        layer_data = []
+        layer_data: list[list[int]] = []
         for h in range(height):
             start = layer_start + (h * width)
             row = data[start : start + width]

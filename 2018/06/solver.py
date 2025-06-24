@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -23,7 +22,7 @@ class PointGrid:
                 }
 
     def largest_finite(self) -> int:
-        regions = defaultdict(list)
+        regions: dict[Point, list[Point]] = defaultdict(list)
         for point in self.distances:
             closest = self.get_closest(point)
             if closest is not None:
@@ -31,7 +30,7 @@ class PointGrid:
         finite = [cluster for cluster in regions.values() if self.finite(cluster)]
         return max([len(cluster) for cluster in finite])
 
-    def get_closest(self, point: Point) -> Optional[Point]:
+    def get_closest(self, point: Point) -> Point | None:
         distances = self.distances[point]
         min_distance = min(distances.values())
         points = list(filter(lambda p: distances[p] == min_distance, distances))

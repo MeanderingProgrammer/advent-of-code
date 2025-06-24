@@ -1,6 +1,6 @@
 from collections import defaultdict
+from collections.abc import Generator
 from dataclasses import dataclass
-from typing import Generator, Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -19,7 +19,7 @@ class BridgeBuilder:
     def build(self) -> list[Bridge]:
         return list(self.generate(None))
 
-    def generate(self, bridge: Optional[Bridge]) -> Generator[Bridge, None, None]:
+    def generate(self, bridge: Bridge | None) -> Generator[Bridge, None, None]:
         bridge = bridge or []
         start = bridge[-1][1] if len(bridge) > 0 else 0
         for end in self.components[start]:
@@ -38,7 +38,7 @@ def main() -> None:
 
 
 def get_bridge_builder() -> BridgeBuilder:
-    components = defaultdict(set)
+    components: dict[int, set[int]] = defaultdict(set)
     for line in Parser().lines():
         p1, p2 = [int(x) for x in line.split("/")]
         components[p1].add(p2)

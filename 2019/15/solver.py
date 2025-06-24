@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -15,7 +15,7 @@ OPPOSITES: dict[int, int] = {1: 2, 2: 1, 3: 4, 4: 3}
 class RepairDroid(Bus):
     completed: bool = False
     position: Point = (0, 0)
-    next_position: Optional[tuple[int, Point]] = None
+    next_position: tuple[int, Point] | None = None
     path: list[tuple[int, Point]] = field(default_factory=lambda: [(0, (0, 0))])
     grid: dict[Point, int] = field(default_factory=lambda: {(0, 0): EMPTY})
 
@@ -24,7 +24,7 @@ class RepairDroid(Bus):
         return not self.completed
 
     @override
-    def get_input(self) -> Optional[int]:
+    def get_input(self) -> int:
         unexplored = self.get_unexplored()
         if unexplored is not None:
             self.next_position = unexplored
@@ -37,8 +37,9 @@ class RepairDroid(Bus):
             return OPPOSITES[previous[0]]
         else:
             self.completed = True
+            return 0
 
-    def get_unexplored(self) -> Optional[tuple[int, Point]]:
+    def get_unexplored(self) -> tuple[int, Point] | None:
         for code, direction in DIRECTIONS.items():
             next_position = PointHelper.add(self.position, direction)
             if next_position not in self.grid:

@@ -5,36 +5,36 @@ type Grid[T] = dict[Point, T]
 
 class GridHelper:
     @staticmethod
-    def xs(g: Grid) -> set[int]:
+    def xs[T](g: Grid[T]) -> set[int]:
         return set([point[0] for point in g])
 
     @staticmethod
-    def ys(g: Grid) -> set[int]:
+    def ys[T](g: Grid[T]) -> set[int]:
         return set([point[1] for point in g])
 
     @staticmethod
-    def rotate(g: Grid) -> Grid:
-        result = dict()
+    def rotate[T](g: Grid[T]) -> Grid[T]:
+        result: Grid[T] = dict()
         for point, value in g.items():
             result[PointHelper.rotate(point)] = value
         return result
 
     @staticmethod
-    def reflect(g: Grid) -> Grid:
-        result = dict()
+    def reflect[T](g: Grid[T]) -> Grid[T]:
+        result: Grid[T] = dict()
         for point, value in g.items():
             result[PointHelper.reflect(point)] = value
         return result
 
     @staticmethod
-    def mirror(g: Grid) -> Grid:
-        result = dict()
+    def mirror[T](g: Grid[T]) -> Grid[T]:
+        result: Grid[T] = dict()
         for point, value in g.items():
             result[PointHelper.mirror(point)] = value
         return result
 
     @staticmethod
-    def to_str(g: Grid) -> str:
+    def to_str[T](g: Grid[T]) -> str:
         rows: list[str] = []
         xs, ys = GridHelper.xs(g), GridHelper.ys(g)
         for y in range(max(ys), min(ys) - 1, -1):

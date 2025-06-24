@@ -50,7 +50,8 @@ def run_simulation(cleanup: bool) -> list[Particle]:
 
     particles = [parse_particle(i, line) for i, line in enumerate(Parser().lines())]
     for _ in range(1_000):
-        seen, bad_positions = set(), set()
+        seen: set[Vector] = set()
+        bad_positions: set[Vector] = set()
         for particle in particles:
             particle.step()
             if cleanup:

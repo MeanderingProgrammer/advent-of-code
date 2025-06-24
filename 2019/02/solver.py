@@ -1,4 +1,4 @@
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -35,7 +35,7 @@ def run(memory: list[int], v1: int, v2: int) -> int:
     return memory[0]
 
 
-def get_goal(memory: list[int]) -> Optional[int]:
+def get_goal(memory: list[int]) -> int | None:
     for noun in range(100):
         for verb in range(100):
             if run(memory, noun, verb) == 19_690_720:

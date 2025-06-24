@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum, auto
 from pathlib import Path
-from typing import override
+from typing import Any, override
 
 from command.command import Command
 from language.language import Language
@@ -24,7 +24,7 @@ class Generator(Command):
     puzzle: bool
 
     @override
-    def info(self) -> dict:
+    def info(self) -> dict[str, Any]:
         return dict(
             year=self.day.year,
             day=self.day.day,

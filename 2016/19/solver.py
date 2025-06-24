@@ -1,4 +1,5 @@
 from collections import deque
+from typing import Callable
 
 from aoc import answer
 from aoc.parser import Parser
@@ -35,12 +36,12 @@ def get_patterns() -> None:
     run_for_pattern(location_v2)
 
 
-def run_for_pattern(location):
+def run_for_pattern(location: Callable[[int], int]):
     for i in range(1, 100):
         print(i, run_with_n(location, i))
 
 
-def run_with_n(location, n):
+def run_with_n(location: Callable[[int], int], n: int):
     elves, elves_left = get_start_state(n)
     while elves_left > 1:
         del elves[location(elves_left)]
@@ -57,7 +58,7 @@ def location_v2(elves_left: int) -> int:
     return elves_left // 2
 
 
-def get_start_state(n):
+def get_start_state(n: int) -> tuple[deque[int], int]:
     return deque(range(n)), n
 
 

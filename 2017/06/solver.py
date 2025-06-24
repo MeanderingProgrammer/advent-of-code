@@ -28,7 +28,7 @@ class Memory:
 @answer.timer
 def main() -> None:
     memory = Memory(tuple(Parser().int_entries()))
-    seen = set()
+    seen: set[Memory] = set()
 
     def unique(memory: Memory) -> bool:
         seen_before = memory in seen

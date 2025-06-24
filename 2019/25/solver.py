@@ -1,7 +1,8 @@
 import itertools
+from collections.abc import Generator
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -41,7 +42,7 @@ class View:
 @dataclass
 class Game:
     instruction: str = ""
-    view: Optional[View] = None
+    view: View | None = None
 
     def add(self, ch: str) -> None:
         self.instruction += ch
@@ -127,13 +128,13 @@ class DroidBus(Bus):
 
         # State information to be able to traverse ship
         self.grid: Graph = Graph(graph=dict())
-        self.previous: Optional[tuple[str, Direction]] = None
+        self.previous: tuple[str, Direction] | None = None
         self.history: list[Direction] = []
         self.path_to_checkpoint: list[Direction] = []
 
         # For solving final puzzle where all items are needed
         self.items: ItemBag = ItemBag(items=[])
-        self.item_generator = self.items.next()
+        self.item_generator: Generator[tuple[str, ...], None, None] = self.items.next()
 
     @override
     def active(self) -> bool:
@@ -173,11 +174,12 @@ class DroidBus(Bus):
         unexplored = self.grid.get_unexplored(location, self.game.directions())
 
         self.game = Game()
+        command = None
         if len(unexplored) > 0:
-            command: Direction = unexplored[0]
+            command = unexplored[0]
             self.history.append(command)
         elif len(self.history) > 0:
-            command: Direction = OPPOSITES[self.history[-1]]
+            command = OPPOSITES[self.history[-1]]
             self.history = self.history[:-1]
         else:
             return False

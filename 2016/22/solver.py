@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.grid import Grid
@@ -16,10 +17,10 @@ class Node:
     def empty(self) -> bool:
         return self.used == 0
 
-    def can_store(self, o) -> bool:
+    def can_store(self, o: Self) -> bool:
         return self.available >= o.used
 
-    def could_store(self, o) -> bool:
+    def could_store(self, o: Self) -> bool:
         return self.total >= o.used
 
 
@@ -38,7 +39,7 @@ def get_nodes() -> Grid[Node]:
     def parse_size(s: str) -> int:
         return int(s[:-1])
 
-    nodes = dict()
+    nodes: Grid[Node] = dict()
     for line in Parser().lines()[2:]:
         point, total, used, available, _ = line.split()
         nodes[parse_point(point)] = Node(
@@ -76,7 +77,7 @@ def calculate_transfers(nodes: Grid[Node]) -> int:
 
 
 def get_adjacent(nodes: Grid[Node], point: Point) -> list[Point]:
-    result = []
+    result: list[Point] = []
     for adjacent in PointHelper.neighbors(point):
         if adjacent in nodes and nodes[point].could_store(nodes[adjacent]):
             result.append(adjacent)

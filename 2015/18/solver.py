@@ -67,7 +67,7 @@ def run(grid: Grid[str], force_corners: bool) -> int:
     return animator.lights_on()
 
 
-def points_on(grid: Grid) -> set[Point]:
+def points_on(grid: Grid[str]) -> set[Point]:
     on: set[Point] = set()
     for point, value in grid.items():
         if value == "#":

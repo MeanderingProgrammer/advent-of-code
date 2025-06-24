@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from aoc import answer
 from aoc.parser import Parser
@@ -14,7 +13,7 @@ class Node:
 @dataclass
 class Graph:
     graph: dict[Node, set[str]]
-    to_change: Optional[int] = None
+    to_change: int | None = None
 
     def add_node(self, node: Node) -> None:
         self.graph[node] = set()

@@ -23,7 +23,7 @@ class DayFactory:
         valid_years = self.valid_years()
         valid_days = self.valid_days()
 
-        days = []
+        days: list[Day] = []
         for solution_directory in Path(".").glob("2*/*"):
             year, day = solution_directory.parts
             if year in valid_years and day in valid_days:

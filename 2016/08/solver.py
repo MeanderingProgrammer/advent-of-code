@@ -11,7 +11,7 @@ class Operation:
     w: int
     h: int
 
-    def apply(self, display: Grid) -> None:
+    def apply(self, display: Grid[str]) -> None:
         if self.value[0] == "rect":
             c, r = [int(v) for v in self.value[1].split("x")]
             for x in range(c):

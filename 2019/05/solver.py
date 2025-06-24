@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -9,7 +9,7 @@ from aoc.parser import Parser
 @dataclass
 class BasicProgram(Bus):
     system_id: int
-    diagnostic_code: Optional[int] = None
+    diagnostic_code: int | None = None
 
     @override
     def active(self) -> bool:
@@ -31,7 +31,7 @@ def main() -> None:
     answer.part2(3508186, run_program(memory, 5))
 
 
-def run_program(memory: list[int], system_id: int) -> Optional[int]:
+def run_program(memory: list[int], system_id: int) -> int | None:
     program = BasicProgram(system_id)
     Computer(bus=program, memory=memory.copy()).run()
     return program.diagnostic_code

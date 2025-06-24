@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from aoc import answer
 from aoc.grid import Grid
 from aoc.parser import Parser
@@ -6,27 +8,22 @@ from aoc.point import Point, PointHelper
 DIRECTIONS: list[Point] = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
 
+@dataclass
 class Traverser:
-    def __init__(self, grid: Grid[str]):
-        self.grid = grid
-        self.pos = self.get_start()
-        self.direction = DIRECTIONS[1]
-        self.seen = [self.pos]
-
-    def get_start(self) -> Point:
-        for point in self.grid:
-            if point[1] == 0:
-                return point
-        raise Exception("Failed")
+    grid: Grid[str]
+    pos: Point
+    direction: Point
+    seen: list[Point]
 
     def traverse(self) -> None:
         done = False
+        self.seen.append(self.pos)
         while not done:
             options = self.get_options()
             if len(options) == 0:
                 done = True
             elif len(options) == 1:
-                self.direction, self.pos = options[0]
+                self.pos, self.direction = options[0]
                 self.seen.append(self.pos)
             else:
                 raise Exception(f"No Idea: {self.pos} -> {options}")
@@ -34,16 +31,16 @@ class Traverser:
     def get_options(self) -> list[tuple[Point, Point]]:
         forward = PointHelper.add(self.pos, self.direction)
         if forward in self.grid:
-            return [(self.direction, forward)]
+            return [(forward, self.direction)]
         else:
-            options = []
+            options: list[tuple[Point, Point]] = []
             for direction in DIRECTIONS:
                 new_pos = PointHelper.add(self.pos, direction)
-                if self.valid_position(new_pos):
-                    options.append((direction, new_pos))
+                if self.valid(new_pos):
+                    options.append((new_pos, direction))
             return options
 
-    def valid_position(self, position: Point) -> bool:
+    def valid(self, position: Point) -> bool:
         return position in self.grid and position not in self.seen
 
     def letters(self) -> str:
@@ -60,19 +57,25 @@ class Traverser:
 
 @answer.timer
 def main() -> None:
-    traverser = Traverser(get_grid())
+    data = Parser().nested_lines()
+    grid, start = get_grid(data)
+    traverser = Traverser(grid, start, DIRECTIONS[1], [])
     traverser.traverse()
     answer.part1("NDWHOYRUEA", traverser.letters())
     answer.part2(17540, traverser.steps())
 
 
-def get_grid() -> Grid[str]:
-    grid: Grid = dict()
-    for y, line in enumerate(Parser().nested_lines()):
+def get_grid(data: list[list[str]]) -> tuple[Grid[str], Point]:
+    grid: Grid[str] = dict()
+    start = None
+    for y, line in enumerate(data):
         for x, value in enumerate(line):
             if value != " ":
-                grid[(x, y)] = value
-    return grid
+                point = (x, y)
+                grid[point] = value
+                start = point if y == 0 else start
+    assert start is not None
+    return grid, start
 
 
 if __name__ == "__main__":

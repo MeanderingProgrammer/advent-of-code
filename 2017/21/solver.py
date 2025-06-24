@@ -37,7 +37,7 @@ def get_patterns() -> dict[str, list[str]]:
     for line in Parser().lines():
         parts: list[str] = line.split(" => ")
         output: list[str] = parts[1].split("/")
-        grid: Grid = dict()
+        grid: Grid[str] = dict()
         for y, row in enumerate(parts[0].split("/")):
             for x, value in enumerate(row):
                 grid[(x, y)] = value

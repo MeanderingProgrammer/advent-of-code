@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, override
+from typing import override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -11,7 +11,7 @@ from aoc.point import Point
 class Beam(Bus):
     point: Point
     called: bool = False
-    value: Optional[int] = None
+    value: int | None = None
 
     @override
     def active(self) -> bool:
@@ -61,11 +61,11 @@ def main() -> None:
 
 
 def affected_points(tester: Tester, size: int) -> int:
-    affected = []
+    result = 0
     for y in range(size):
         for x in range(size):
-            affected.append(tester.test((x, y)))
-    return sum(affected)
+            result += tester.test((x, y))
+    return result
 
 
 def bounding_point(tester: Tester, size: int) -> int:

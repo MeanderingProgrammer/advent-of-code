@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import override
+from typing import Any, override
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -12,13 +12,13 @@ from component.history import History
 
 class Grapher(Command):
     def __init__(self, archive: bool) -> None:
-        self.saver = FigureSaver(
+        self.saver: FigureSaver = FigureSaver(
             archive=archive,
             now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
         )
 
     @override
-    def info(self) -> dict:
+    def info(self) -> dict[str, Any]:
         return self.saver.info()
 
     @override

@@ -1,5 +1,5 @@
 from itertools import permutations
-from typing import override
+from typing import Self, override
 
 from aoc import answer
 from aoc.int_code import Bus, Computer
@@ -8,11 +8,11 @@ from aoc.parser import Parser
 
 class Amplifier(Bus):
     def __init__(self, memory: list[int], setting: int, pause: bool):
-        self.computer = Computer(bus=self, memory=memory)
-        self.inputs = [setting]
-        self.outputs = []
-        self.load = False
-        self.pause = pause
+        self.computer: Computer[Self] = Computer(bus=self, memory=memory)
+        self.inputs: list[int] = [setting]
+        self.outputs: list[int] = []
+        self.load: bool = False
+        self.pause: bool = pause
 
     def run(self) -> bool:
         self.load = False
@@ -41,15 +41,17 @@ def main() -> None:
 
 
 def run(memory: list[int], sequence: list[int], pause: bool) -> int:
-    values = []
+    result: int = 0
     for possibility in permutations(sequence):
         value = check(memory, possibility, pause)
-        values.append(value)
-    return max(values)
+        result = max(result, value)
+    return result
 
 
 def check(memory: list[int], sequence: tuple[int, ...], pause: bool) -> int:
-    amplifiers = [Amplifier(memory.copy(), entry, pause) for entry in sequence]
+    amplifiers: list[Amplifier] = [
+        Amplifier(memory.copy(), entry, pause) for entry in sequence
+    ]
     output, state = 0, True
     while state:
         for amplifier in amplifiers:

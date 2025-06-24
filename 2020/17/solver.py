@@ -85,7 +85,7 @@ def main() -> None:
     answer.part2(2240, simulate(as_4d(grid)))
 
 
-def simulate(state: State) -> int:
+def simulate[T](state: State[T]) -> int:
     for _ in range(6):
         state.step()
     return state.get_active()

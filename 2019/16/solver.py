@@ -6,7 +6,7 @@ PATTERN = [0, 1, 0, -1]
 
 class Transmission:
     def __init__(self, raw: str, apply_offset: bool):
-        self.digits = [int(value) for value in raw]
+        self.digits: list[int] = [int(value) for value in raw]
         if apply_offset:
             self.digits = self.digits[self.first_n(7) :]
 
@@ -23,7 +23,8 @@ class Transmission:
     def offset(self) -> None:
         # Going from back to front each digit is the current sum % 10
         # This only applies in the middle of a set of digits and does not hold to the start
-        new_digits, current_sum = [], 0
+        new_digits: list[int] = []
+        current_sum = 0
         for digit in reversed(self.digits):
             current_sum += digit
             new_digits.append(current_sum % 10)
