@@ -1,34 +1,30 @@
 import json
-from typing import Any
 
 from aoc import answer
 from aoc.parser import Parser
 
+Doc = str | int | list["Doc"] | dict[str, "Doc"]
+
 
 @answer.timer
 def main() -> None:
-    answer.part1(111754, get_total(False))
-    answer.part2(65402, get_total(True))
+    data = json.loads(Parser().string())
+    answer.part1(111754, total(data, False))
+    answer.part2(65402, total(data, True))
 
 
-def get_total(ignore_red: bool) -> int:
-    return total(json.loads(Parser().string()), ignore_red)
-
-
-def total(value: Any, ignore_red: bool) -> int:
-    result = 0
-    if isinstance(value, list):
-        result += sum([total(entry, ignore_red) for entry in value])
-    elif isinstance(value, dict):
-        if not ignore_red or "red" not in value.values():
-            result += sum([total(entry, ignore_red) for entry in value.values()])
+def total(value: Doc, ignore_red: bool) -> int:
+    if isinstance(value, str):
+        return 0
     elif isinstance(value, int):
-        result += value
-    elif isinstance(value, str):
-        result += 0
+        return value
+    elif isinstance(value, list):
+        return sum([total(entry, ignore_red) for entry in value])
     else:
-        raise Exception(f"Unhandled: {value}, Type: {type(value)}")
-    return result
+        if ignore_red and "red" in value.values():
+            return 0
+        else:
+            return sum([total(entry, ignore_red) for entry in value.values()])
 
 
 if __name__ == "__main__":

@@ -80,7 +80,7 @@ class Grapher(Command):
         )
 
     def cumulative_sum(self, runtimes: pd.DataFrame) -> FigureProps:
-        runtimes_only: pd.DataFrame = runtimes[["runtime"]]  # type: ignore
+        runtimes_only = runtimes[["runtime"]]
         sorted_runtimes = runtimes_only.sort_values("runtime").reset_index(drop=True)
         return FigureProps(
             name="cumulative_sum",
