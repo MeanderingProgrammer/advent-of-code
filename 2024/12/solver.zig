@@ -6,13 +6,13 @@ const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Region = struct {
     plant: u8,
     points: Set(Point),
 
-    fn init(plant: u8) Region {
+    fn init(allocator: Allocator, plant: u8) Region {
         return .{
             .plant = plant,
             .points = Set(Point).init(allocator),
@@ -90,14 +90,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const grid = try Reader.init().grid();
-    const regions = try splitRegions(grid);
+fn solution(allocator: Allocator) !void {
+    const grid = try Reader.init(allocator).grid();
+    const regions = try splitRegions(allocator, grid);
     answer.part1(usize, 1451030, total(regions, false));
     answer.part2(usize, 859494, total(regions, true));
 }
 
-fn splitRegions(grid: Grid) !std.ArrayList(Region) {
+fn splitRegions(allocator: Allocator, grid: Grid) !std.ArrayList(Region) {
     var regions = std.ArrayList(Region).init(allocator);
     var seen = Set(Point).init(allocator);
     var points = grid.points();
@@ -106,7 +106,7 @@ fn splitRegions(grid: Grid) !std.ArrayList(Region) {
         if (seen.contains(point)) {
             continue;
         }
-        var region = Region.init(grid.get(point).?);
+        var region = Region.init(allocator, grid.get(point).?);
         var queue = std.ArrayList(Point).init(allocator);
         try queue.append(point);
         while (queue.items.len > 0) {

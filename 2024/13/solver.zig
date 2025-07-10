@@ -3,7 +3,7 @@ const answer = aoc.answer;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 pub const Machine = struct {
     a: Point,
@@ -80,8 +80,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
     var machines = std.ArrayList(Machine).init(allocator);
     for (groups.items) |lines| {
         try machines.append(try Machine.init(lines));

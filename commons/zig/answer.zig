@@ -1,8 +1,11 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
-pub fn timer(solution: fn () anyerror!void) !void {
+pub fn timer(solution: fn (Allocator) anyerror!void) !void {
     var start = try std.time.Timer.start();
-    try solution();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    try solution(arena.allocator());
     write("Runtime (ns): {}\n", .{start.read()});
 }
 

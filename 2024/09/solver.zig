@@ -2,7 +2,7 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Disk = std.ArrayList(usize);
 const Files = std.ArrayList(File);
@@ -16,14 +16,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const data = try Reader.init().ints();
-    const files = try getFiles(data);
-    answer.part1(usize, 6386640365805, checksum(try part1(files)));
-    answer.part2(usize, 6423258376982, checksum(try part2(files)));
+fn solution(allocator: Allocator) !void {
+    const data = try Reader.init(allocator).ints();
+    const files = try getFiles(allocator, data);
+    answer.part1(usize, 6386640365805, checksum(try part1(allocator, files)));
+    answer.part2(usize, 6423258376982, checksum(try part2(allocator, files)));
 }
 
-fn getFiles(data: Disk) !Files {
+fn getFiles(allocator: Allocator, data: Disk) !Files {
     var result = Files.init(allocator);
     var i: usize = 0;
     while (i < data.items.len) : (i += 2) {
@@ -37,7 +37,7 @@ fn getFiles(data: Disk) !Files {
     return result;
 }
 
-fn part1(input: Files) !Disk {
+fn part1(allocator: Allocator, input: Files) !Disk {
     var files = try input.clone();
     var i: usize = 0;
     var result = Disk.init(allocator);
@@ -58,7 +58,7 @@ fn part1(input: Files) !Disk {
     return result;
 }
 
-fn part2(input: Files) !Disk {
+fn part2(allocator: Allocator, input: Files) !Disk {
     var files = try input.clone();
     for (0..files.items.len) |i| {
         const id = files.items.len - (i + 1);

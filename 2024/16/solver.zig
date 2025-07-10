@@ -7,7 +7,7 @@ const PriorityQueue = aoc.queue.PriorityQueue;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const State = struct {
     point: Point,
@@ -28,17 +28,19 @@ const State = struct {
 };
 
 const Maze = struct {
+    allocator: Allocator,
     grid: Grid,
     start: Point,
     end: Point,
 
-    fn init(lines: std.ArrayList([]const u8)) !Maze {
-        var grid = try Grid.init(lines);
+    fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Maze {
+        var grid = try Grid.init(allocator, lines);
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
         try grid.set(start, '.');
         try grid.set(end, '.');
         return .{
+            .allocator = allocator,
             .grid = grid,
             .start = start,
             .end = end,
@@ -47,19 +49,19 @@ const Maze = struct {
 
     fn solve(self: Maze) !struct { usize, usize } {
         var min_cost: usize = 0;
-        var end_seen = Set(Point).init(allocator);
+        var end_seen = Set(Point).init(self.allocator);
 
         const start = State.init(self.start, Direction.e);
 
-        var distances = std.AutoHashMap(State, usize).init(allocator);
+        var distances = std.AutoHashMap(State, usize).init(self.allocator);
         try distances.put(start, 0);
 
-        var start_seen = Set(Point).init(allocator);
+        var start_seen = Set(Point).init(self.allocator);
         try start_seen.add(start.point);
-        var state_seen = std.AutoHashMap(State, Set(Point)).init(allocator);
+        var state_seen = std.AutoHashMap(State, Set(Point)).init(self.allocator);
         try state_seen.put(start, start_seen);
 
-        var q = PriorityQueue(State).init(allocator);
+        var q = PriorityQueue(State).init(self.allocator);
         try q.push(start, 0);
 
         while (!q.isEmpty()) {
@@ -109,9 +111,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const lines = try Reader.init().stringLines();
-    const maze = try Maze.init(lines);
+fn solution(allocator: Allocator) !void {
+    const lines = try Reader.init(allocator).stringLines();
+    const maze = try Maze.init(allocator, lines);
     const result = try maze.solve();
     answer.part1(usize, 107512, result[0]);
     answer.part2(usize, 561, result[1]);

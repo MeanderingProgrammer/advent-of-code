@@ -1,14 +1,15 @@
-const std = @import("std");
 const Point = @import("point.zig").Point;
-const allocator = std.heap.page_allocator;
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 const Map = std.AutoHashMap(Point, u8);
 pub const Grid = struct {
+    allocator: Allocator,
     height: usize,
     width: usize,
     grid: Map,
 
-    pub fn init(lines: std.ArrayList([]const u8)) !Grid {
+    pub fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Grid {
         var grid = Map.init(allocator);
         for (lines.items, 0..) |line, y| {
             for (line, 0..) |value, x| {
@@ -17,6 +18,7 @@ pub const Grid = struct {
             }
         }
         return .{
+            .allocator = allocator,
             .height = lines.items.len,
             .width = lines.items[0].len,
             .grid = grid,
@@ -36,7 +38,7 @@ pub const Grid = struct {
     }
 
     pub fn getValues(self: Grid, value: u8) !std.ArrayList(Point) {
-        var result = std.ArrayList(Point).init(allocator);
+        var result = std.ArrayList(Point).init(self.allocator);
         var it = self.grid.iterator();
         while (it.next()) |entry| {
             if (entry.value_ptr.* == value) {
@@ -47,7 +49,7 @@ pub const Grid = struct {
     }
 
     pub fn string(self: Grid) ![]const u8 {
-        var result = std.ArrayList(u8).init(allocator);
+        var result = std.ArrayList(u8).init(self.allocator);
         for (0..self.height) |y| {
             for (0..self.width) |x| {
                 const point = Point.init(@intCast(x), @intCast(y));

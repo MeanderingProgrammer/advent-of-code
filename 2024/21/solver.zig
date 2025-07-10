@@ -3,7 +3,7 @@ const answer = aoc.answer;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Section = struct {
     start: u8,
@@ -13,12 +13,13 @@ const Section = struct {
 const Sections = std.AutoHashMap(Section, usize);
 
 const Keypad = struct {
+    allocator: Allocator,
     grid: std.AutoHashMap(u8, Point),
     home: Point,
     illegal: Point,
     cache: std.AutoHashMap(Section, std.ArrayList(Section)),
 
-    fn init(numeric: bool) !Keypad {
+    fn init(allocator: Allocator, numeric: bool) !Keypad {
         var grid = std.AutoHashMap(u8, Point).init(allocator);
         if (numeric) {
             // | 7 | 8 | 9 |
@@ -47,6 +48,7 @@ const Keypad = struct {
         }
         const home = grid.get('A').?;
         return .{
+            .allocator = allocator,
             .grid = grid,
             .home = home,
             .illegal = Point.init(0, home.y),
@@ -55,7 +57,7 @@ const Keypad = struct {
     }
 
     fn run(self: *Keypad, sections: Sections) !Sections {
-        var result = Sections.init(allocator);
+        var result = Sections.init(self.allocator);
         var it = sections.iterator();
         while (it.next()) |entry| {
             const section = entry.key_ptr.*;
@@ -87,7 +89,7 @@ const Keypad = struct {
         const dx = end.x - start.x;
         const dy = end.y - start.y;
 
-        var result = std.ArrayList(Section).init(allocator);
+        var result = std.ArrayList(Section).init(self.allocator);
         var previous: u8 = 'A';
         if ((dx > 0 and !self.illegal.eql(vertical)) or self.illegal.eql(horizontal)) {
             previous = try append(&result, previous, dy, true);
@@ -114,20 +116,22 @@ const Keypad = struct {
 };
 
 const Layers = struct {
+    allocator: Allocator,
     numeric: Keypad,
     direction: Keypad,
     size: usize,
 
-    fn init(size: usize) !Layers {
+    fn init(allocator: Allocator, size: usize) !Layers {
         return .{
-            .numeric = try Keypad.init(true),
-            .direction = try Keypad.init(false),
+            .allocator = allocator,
+            .numeric = try Keypad.init(allocator, true),
+            .direction = try Keypad.init(allocator, false),
             .size = size,
         };
     }
 
     fn complexity(self: *Layers, sequence: []const u8) !usize {
-        var result = try convert(sequence);
+        var result = try self.convert(sequence);
         result = try self.numeric.run(result);
         for (0..self.size) |_| {
             result = try self.direction.run(result);
@@ -140,8 +144,8 @@ const Layers = struct {
         return length * value;
     }
 
-    fn convert(sequence: []const u8) !Sections {
-        var result = Sections.init(allocator);
+    fn convert(self: *Layers, sequence: []const u8) !Sections {
+        var result = Sections.init(self.allocator);
         var start: u8 = 'A';
         for (sequence) |end| {
             const section = Section{ .start = start, .end = end };
@@ -165,14 +169,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const sequences = try Reader.init().stringLines();
-    answer.part1(usize, 155252, try solve(sequences, 2));
-    answer.part2(usize, 195664513288128, try solve(sequences, 25));
+fn solution(allocator: Allocator) !void {
+    const sequences = try Reader.init(allocator).stringLines();
+    answer.part1(usize, 155252, try solve(allocator, sequences, 2));
+    answer.part2(usize, 195664513288128, try solve(allocator, sequences, 25));
 }
 
-fn solve(sequences: std.ArrayList([]const u8), size: usize) !usize {
-    var layers = try Layers.init(size);
+fn solve(allocator: Allocator, sequences: std.ArrayList([]const u8), size: usize) !usize {
+    var layers = try Layers.init(allocator, size);
     var result: usize = 0;
     for (sequences.items) |sequence| {
         result += try layers.complexity(sequence);

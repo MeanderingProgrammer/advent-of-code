@@ -4,23 +4,24 @@ const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Search = struct {
+    allocator: Allocator,
     points: std.ArrayList(Point),
     size: i64,
 
     fn solve(self: Search, n: usize) !?usize {
-        var walls = Set(Point).init(allocator);
+        var walls = Set(Point).init(self.allocator);
         defer walls.deinit();
         for (0..n) |i| {
             try walls.add(self.points.items[i]);
         }
 
-        var seen = Set(Point).init(allocator);
+        var seen = Set(Point).init(self.allocator);
         defer seen.deinit();
 
-        var q = std.ArrayList(struct { Point, usize }).init(allocator);
+        var q = std.ArrayList(struct { Point, usize }).init(self.allocator);
         defer q.deinit();
         try q.append(.{ Point.init(0, 0), 0 });
 
@@ -53,15 +54,15 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const points = try Reader.init().lines(Point, parsePoint);
+fn solution(allocator: Allocator) !void {
+    const points = try Reader.init(allocator).lines(Point, parsePoint);
     const params = [2]usize{ 70, 1024 };
-    const search = Search{ .points = points, .size = params[0] };
+    const search = Search{ .allocator = allocator, .points = points, .size = params[0] };
     answer.part1(usize, 318, try part1(search, params[1]));
-    answer.part2([]const u8, "56,29", try part2(search, params[1]));
+    answer.part2([]const u8, "56,29", try part2(allocator, search, params[1]));
 }
 
-fn parsePoint(line: []const u8) !Point {
+fn parsePoint(_: Allocator, line: []const u8) !Point {
     var it = std.mem.splitScalar(u8, line, ',');
     const x = try std.fmt.parseInt(i64, it.next().?, 10);
     const y = try std.fmt.parseInt(i64, it.next().?, 10);
@@ -72,7 +73,7 @@ fn part1(search: Search, n: usize) !usize {
     return (try search.solve(n)).?;
 }
 
-fn part2(search: Search, start: usize) ![]const u8 {
+fn part2(allocator: Allocator, search: Search, start: usize) ![]const u8 {
     var lo: usize = start;
     var hi: usize = search.points.items.len - 1;
     while (lo < hi) {

@@ -4,7 +4,7 @@ const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Robot = struct {
     position: Point,
@@ -57,13 +57,15 @@ const Robot = struct {
 };
 
 const Grid = struct {
+    allocator: Allocator,
     x: i64,
     y: i64,
     robots: std.ArrayList(Robot),
     moves: usize,
 
-    fn init(x: i64, y: i64) Grid {
+    fn init(allocator: Allocator, x: i64, y: i64) Grid {
         return .{
+            .allocator = allocator,
             .x = x,
             .y = y,
             .robots = std.ArrayList(Robot).init(allocator),
@@ -93,7 +95,7 @@ const Grid = struct {
     }
 
     fn connected(self: Grid) !bool {
-        var points = Set(Point).init(allocator);
+        var points = Set(Point).init(self.allocator);
         defer points.deinit();
         for (self.robots.items) |robot| {
             const point = robot.position;
@@ -110,9 +112,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const lines = try Reader.init().stringLines();
-    var robots = Grid.init(101, 103);
+fn solution(allocator: Allocator) !void {
+    const lines = try Reader.init(allocator).stringLines();
+    var robots = Grid.init(allocator, 101, 103);
     for (lines.items) |line| {
         const robot = try Robot.init(line);
         try robots.add(robot);

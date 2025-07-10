@@ -5,16 +5,17 @@ const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Points = std.ArrayList(Point);
 const Groups = std.AutoHashMap(u8, Group);
 const Group = struct {
+    allocator: Allocator,
     grid: Grid,
     points: Points,
 
-    fn init(grid: Grid) Group {
-        return .{ .grid = grid, .points = Points.init(allocator) };
+    fn init(allocator: Allocator, grid: Grid) Group {
+        return .{ .allocator = allocator, .grid = grid, .points = Points.init(allocator) };
     }
 
     fn append(self: *Group, point: Point) !void {
@@ -22,7 +23,7 @@ const Group = struct {
     }
 
     fn antinodes(self: *Group, resonate: bool) !Points {
-        var result = Points.init(allocator);
+        var result = Points.init(self.allocator);
         const points = self.points.items;
         for (points, 0..) |p1, i| {
             for ((i + 1)..points.len) |j| {
@@ -63,14 +64,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const grid = try Reader.init().grid();
-    const groups = try group(grid);
-    answer.part1(usize, 320, try numAntinodes(groups, false));
-    answer.part2(usize, 1157, try numAntinodes(groups, true));
+fn solution(allocator: Allocator) !void {
+    const grid = try Reader.init(allocator).grid();
+    const groups = try group(allocator, grid);
+    answer.part1(usize, 320, try numAntinodes(allocator, groups, false));
+    answer.part2(usize, 1157, try numAntinodes(allocator, groups, true));
 }
 
-fn group(grid: Grid) !Groups {
+fn group(allocator: Allocator, grid: Grid) !Groups {
     var result = Groups.init(allocator);
     var points = grid.points();
     while (points.next()) |point| {
@@ -78,7 +79,7 @@ fn group(grid: Grid) !Groups {
         if (value != '.') {
             const entry = try result.getOrPut(value);
             if (!entry.found_existing) {
-                entry.value_ptr.* = Group.init(grid);
+                entry.value_ptr.* = Group.init(allocator, grid);
             }
             try entry.value_ptr.append(point.*);
         }
@@ -86,7 +87,7 @@ fn group(grid: Grid) !Groups {
     return result;
 }
 
-fn numAntinodes(groups: Groups, resonate: bool) !usize {
+fn numAntinodes(allocator: Allocator, groups: Groups, resonate: bool) !usize {
     var result = Set(Point).init(allocator);
     var it = groups.iterator();
     while (it.next()) |entry| {

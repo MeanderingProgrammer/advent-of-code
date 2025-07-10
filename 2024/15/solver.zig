@@ -6,23 +6,25 @@ const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Warehouse = struct {
+    allocator: Allocator,
     grid: Grid,
     position: Point,
 
-    fn init(lines: std.ArrayList([]const u8), wide: bool) !Warehouse {
-        var grid = try Grid.init(if (wide) try enlarge(lines) else lines);
+    fn init(allocator: Allocator, lines: std.ArrayList([]const u8), wide: bool) !Warehouse {
+        var grid = try Grid.init(allocator, if (wide) try enlarge(allocator, lines) else lines);
         const start = (try grid.getValues('@')).getLast();
         try grid.set(start, '.');
         return .{
+            .allocator = allocator,
             .grid = grid,
             .position = start,
         };
     }
 
-    fn enlarge(lines: std.ArrayList([]const u8)) !std.ArrayList([]const u8) {
+    fn enlarge(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList([]const u8) {
         var result = std.ArrayList([]const u8).init(allocator);
         for (lines.items) |line| {
             var l = std.ArrayList(u8).init(allocator);
@@ -60,10 +62,10 @@ const Warehouse = struct {
     }
 
     fn move(self: *Warehouse, direction: Direction) !?std.AutoHashMap(Point, u8) {
-        var result = std.AutoHashMap(Point, u8).init(allocator);
+        var result = std.AutoHashMap(Point, u8).init(self.allocator);
         try result.put(self.position, '.');
         while (true) {
-            var additional = Set(Point).init(allocator);
+            var additional = Set(Point).init(self.allocator);
             var exiting_it = result.keyIterator();
             while (exiting_it.next()) |p| {
                 const point = p.*.plus(direction.point());
@@ -112,15 +114,15 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
     const lines = groups.items[0];
-    const directions = try getDirections(groups.items[1]);
-    answer.part1(i64, 1442192, try solve(lines, false, directions));
-    answer.part2(i64, 1448458, try solve(lines, true, directions));
+    const directions = try getDirections(allocator, groups.items[1]);
+    answer.part1(i64, 1442192, try solve(allocator, lines, false, directions));
+    answer.part2(i64, 1448458, try solve(allocator, lines, true, directions));
 }
 
-fn getDirections(lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
+fn getDirections(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
     var directions = std.ArrayList(Direction).init(allocator);
     for (lines.items) |line| {
         for (line) |ch| {
@@ -130,8 +132,8 @@ fn getDirections(lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
     return directions;
 }
 
-fn solve(lines: std.ArrayList([]const u8), wide: bool, directions: std.ArrayList(Direction)) !i64 {
-    var warehouse = try Warehouse.init(lines, wide);
+fn solve(allocator: Allocator, lines: std.ArrayList([]const u8), wide: bool, directions: std.ArrayList(Direction)) !i64 {
+    var warehouse = try Warehouse.init(allocator, lines, wide);
     for (directions.items) |direction| {
         try warehouse.go(direction);
     }

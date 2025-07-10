@@ -2,7 +2,7 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Computer = struct {
     a: usize,
@@ -12,7 +12,7 @@ const Computer = struct {
     ip: usize,
     out: std.ArrayList(usize),
 
-    fn init(a: usize, memory: std.ArrayList(usize)) !Computer {
+    fn init(allocator: Allocator, a: usize, memory: std.ArrayList(usize)) !Computer {
         return .{
             .a = a,
             .b = 0,
@@ -88,13 +88,13 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
     const a = try parseRegister(groups.items[0]);
-    const memory = try parseMemory(groups.items[1]);
-    var computer = try Computer.init(a, memory);
-    answer.part1([]const u8, "7,0,3,1,2,6,3,7,1", try part1(&computer));
-    answer.part2(usize, 109020013201563, try part2(&computer));
+    const memory = try parseMemory(allocator, groups.items[1]);
+    var computer = try Computer.init(allocator, a, memory);
+    answer.part1([]const u8, "7,0,3,1,2,6,3,7,1", try part1(allocator, &computer));
+    answer.part2(usize, 109020013201563, try part2(allocator, &computer));
 }
 
 fn parseRegister(lines: std.ArrayList([]const u8)) !usize {
@@ -103,7 +103,7 @@ fn parseRegister(lines: std.ArrayList([]const u8)) !usize {
     return try std.fmt.parseInt(usize, it.first(), 10);
 }
 
-fn parseMemory(lines: std.ArrayList([]const u8)) !std.ArrayList(usize) {
+fn parseMemory(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(usize) {
     // Program: 0,1,5,4,3,0
     var it = std.mem.splitBackwardsScalar(u8, lines.items[0], ' ');
     var result = std.ArrayList(usize).init(allocator);
@@ -114,7 +114,7 @@ fn parseMemory(lines: std.ArrayList([]const u8)) !std.ArrayList(usize) {
     return result;
 }
 
-fn part1(computer: *Computer) ![]const u8 {
+fn part1(allocator: Allocator, computer: *Computer) ![]const u8 {
     try computer.run();
     var values = std.ArrayList([]const u8).init(allocator);
     for (computer.out.items) |value| {
@@ -123,11 +123,11 @@ fn part1(computer: *Computer) ![]const u8 {
     return try std.mem.join(allocator, ",", values.items);
 }
 
-fn part2(computer: *Computer) !usize {
-    return (try recursiveBacktracking(computer, 0, 0)).?;
+fn part2(allocator: Allocator, computer: *Computer) !usize {
+    return (try recursiveBacktracking(allocator, computer, 0, 0)).?;
 }
 
-fn recursiveBacktracking(computer: *Computer, a: usize, i: usize) !?usize {
+fn recursiveBacktracking(allocator: Allocator, computer: *Computer, a: usize, i: usize) !?usize {
     // There are 4 key aspects of the input program:
     //  1) 5,5 -> out.add(b % 8)        add bottom 3 bits of "b" to the output
     //  2) 2,4 -> b = a % 8             bottom 3 bits of "b" are determined by bottom 3 bits
@@ -147,9 +147,9 @@ fn recursiveBacktracking(computer: *Computer, a: usize, i: usize) !?usize {
         return a;
     }
     const out = program[program.len - 1 - i];
-    const options = try getOptions(computer, out, a * 8);
+    const options = try getOptions(allocator, computer, out, a * 8);
     for (options.items) |option| {
-        const result = try recursiveBacktracking(computer, a * 8 + option, i + 1);
+        const result = try recursiveBacktracking(allocator, computer, a * 8 + option, i + 1);
         if (result != null) {
             return result;
         }
@@ -157,7 +157,7 @@ fn recursiveBacktracking(computer: *Computer, a: usize, i: usize) !?usize {
     return null;
 }
 
-fn getOptions(computer: *Computer, out: usize, a: usize) !std.ArrayList(usize) {
+fn getOptions(allocator: Allocator, computer: *Computer, out: usize, a: usize) !std.ArrayList(usize) {
     var result = std.ArrayList(usize).init(allocator);
     for (0..8) |i| {
         computer.reset(a + i);

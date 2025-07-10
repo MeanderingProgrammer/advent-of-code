@@ -2,6 +2,7 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 const State = enum {
     start,
@@ -105,8 +106,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const commands = try Reader.init().stringLines();
+fn solution(allocator: Allocator) !void {
+    const commands = try Reader.init(allocator).stringLines();
     answer.part1(usize, 159892596, parseCommands(commands, false));
     answer.part2(usize, 92626942, parseCommands(commands, true));
 }

@@ -2,7 +2,7 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Version = enum {
     Lock,
@@ -58,12 +58,12 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
-    answer.part1(usize, 3439, try solve(groups));
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
+    answer.part1(usize, 3439, try solve(allocator, groups));
 }
 
-fn solve(groups: std.ArrayList(std.ArrayList([]const u8))) !usize {
+fn solve(allocator: Allocator, groups: std.ArrayList(std.ArrayList([]const u8))) !usize {
     var keys = std.ArrayList([5]usize).init(allocator);
     var locks = std.ArrayList([5]usize).init(allocator);
     for (groups.items) |lines| {

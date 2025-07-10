@@ -2,13 +2,14 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const values = try Reader.init().intLines();
+fn solution(allocator: Allocator) !void {
+    const values = try Reader.init(allocator).intLines();
     answer.part1(usize, 1292, windowIncreases(values, 1));
     answer.part2(usize, 1262, windowIncreases(values, 3));
 }

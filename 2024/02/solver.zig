@@ -2,12 +2,12 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Report = struct {
     levels: std.ArrayList(usize),
 
-    fn init(line: []const u8) !Report {
+    fn init(allocator: Allocator, line: []const u8) !Report {
         var levels = std.ArrayList(usize).init(allocator);
         var it = std.mem.tokenizeScalar(u8, line, ' ');
         while (it.next()) |item| {
@@ -58,8 +58,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const reports = try Reader.init().lines(Report, Report.init);
+fn solution(allocator: Allocator) !void {
+    const reports = try Reader.init(allocator).lines(Report, Report.init);
     answer.part1(usize, 402, countSafe(reports, false));
     answer.part2(usize, 455, countSafe(reports, true));
 }

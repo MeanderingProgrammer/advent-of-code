@@ -2,13 +2,14 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Equation = struct {
+    allocator: Allocator,
     target: usize,
     values: std.ArrayList(usize),
 
-    fn init(line: []const u8) !Equation {
+    fn init(allocator: Allocator, line: []const u8) !Equation {
         var it = std.mem.splitSequence(u8, line, ": ");
         const target = try toInt(it.next().?);
         var values = std.ArrayList(usize).init(allocator);
@@ -16,11 +17,11 @@ const Equation = struct {
         while (values_it.next()) |value| {
             try values.append(try toInt(value));
         }
-        return .{ .target = target, .values = values };
+        return .{ .allocator = allocator, .target = target, .values = values };
     }
 
     fn valid(self: Equation, concat: bool) !bool {
-        var values = std.ArrayList(usize).init(allocator);
+        var values = std.ArrayList(usize).init(self.allocator);
         defer values.deinit();
         try values.append(self.values.items[0]);
         for (1..self.values.items.len) |i| {
@@ -53,8 +54,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const equations = try Reader.init().lines(Equation, Equation.init);
+fn solution(allocator: Allocator) !void {
+    const equations = try Reader.init(allocator).lines(Equation, Equation.init);
     answer.part1(usize, 1289579105366, try calibration(equations, false));
     answer.part2(usize, 92148721834692, try calibration(equations, true));
 }

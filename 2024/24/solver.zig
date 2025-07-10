@@ -2,7 +2,7 @@ const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Logic = enum {
     AND,
@@ -47,11 +47,13 @@ const Gate = struct {
 };
 
 const Graph = struct {
+    allocator: Allocator,
     output: std.StringHashMap(u8),
     gates: std.StringHashMap(Gate),
 
-    fn init() Graph {
+    fn init(allocator: Allocator) Graph {
         return .{
+            .allocator = allocator,
             .output = std.StringHashMap(u8).init(allocator),
             .gates = std.StringHashMap(Gate).init(allocator),
         };
@@ -59,6 +61,7 @@ const Graph = struct {
 
     fn clone(self: Graph) !Graph {
         return .{
+            .allocator = self.allocator,
             .output = try self.output.clone(),
             .gates = try self.gates.clone(),
         };
@@ -101,7 +104,7 @@ const Graph = struct {
     }
 
     fn resolved(self: *Graph) !std.ArrayList([]const u8) {
-        var result = std.ArrayList([]const u8).init(allocator);
+        var result = std.ArrayList([]const u8).init(self.allocator);
         var it = self.gates.iterator();
         while (it.next()) |entry| {
             const gate = entry.value_ptr;
@@ -114,8 +117,7 @@ const Graph = struct {
 
     fn get(self: Graph, ch: u8) !usize {
         const n = self.count(ch);
-        var result = try allocator.alloc(u8, n);
-        defer allocator.free(result);
+        var result = try self.allocator.alloc(u8, n);
         var output = self.output.iterator();
         while (output.next()) |entry| {
             const wire = entry.key_ptr.*;
@@ -141,12 +143,12 @@ const Graph = struct {
 
     // Unsure if this solution is general but good enough for my input
     fn fix(self: *Graph, i: u8) !?struct { []const u8, []const u8 } {
-        const z = try node('z', i);
+        const z = try self.node('z', i);
         const root = self.gates.get(z).?;
         const xor = self.find(.{
-            .in1 = try node('x', i),
+            .in1 = try self.node('x', i),
             .logic = Logic.XOR,
-            .in2 = try node('y', i),
+            .in2 = try self.node('y', i),
         }).?;
         if (root.logic != Logic.XOR) {
             const replace = self.like(xor, Logic.XOR).?;
@@ -179,8 +181,8 @@ const Graph = struct {
         return null;
     }
 
-    fn node(ch: u8, i: u8) ![]const u8 {
-        var result = try allocator.alloc(u8, 3);
+    fn node(self: *Graph, ch: u8, i: u8) ![]const u8 {
+        var result = try self.allocator.alloc(u8, 3);
         result[0] = ch;
         result[1] = '0' + (i / 10);
         result[2] = '0' + (i % 10);
@@ -192,15 +194,15 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
-    const graph = try getGraph(groups);
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
+    const graph = try getGraph(allocator, groups);
     answer.part1(usize, 56939028423824, try part1(graph));
-    answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(graph));
+    answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(allocator, graph));
 }
 
-fn getGraph(groups: std.ArrayList(std.ArrayList([]const u8))) !Graph {
-    var graph = Graph.init();
+fn getGraph(allocator: Allocator, groups: std.ArrayList(std.ArrayList([]const u8))) !Graph {
+    var graph = Graph.init(allocator);
     for (groups.items[0].items) |line| {
         try graph.addOutput(line);
     }
@@ -215,7 +217,7 @@ fn part1(input: Graph) !usize {
     return try graph.simulate();
 }
 
-fn part2(input: Graph) ![]const u8 {
+fn part2(allocator: Allocator, input: Graph) ![]const u8 {
     var graph = try input.clone();
     var result = std.ArrayList([]const u8).init(allocator);
     for (1..graph.count('x')) |i| {

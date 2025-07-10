@@ -4,7 +4,7 @@ const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Info = struct {
     score: usize,
@@ -15,12 +15,12 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const grid = try Reader.init().grid();
+fn solution(allocator: Allocator) !void {
+    const grid = try Reader.init(allocator).grid();
     const heads = try grid.getValues('0');
     var info = Info{ .score = 0, .rating = 0 };
     for (heads.items) |head| {
-        const head_info = try process(grid, head);
+        const head_info = try process(allocator, grid, head);
         info.score += head_info.score;
         info.rating += head_info.rating;
     }
@@ -28,7 +28,7 @@ fn solution() !void {
     answer.part2(usize, 1686, info.rating);
 }
 
-fn process(grid: Grid, head: Point) !Info {
+fn process(allocator: Allocator, grid: Grid, head: Point) !Info {
     var seen = std.AutoHashMap(Point, usize).init(allocator);
     var queue = std.ArrayList(Point).init(allocator);
     try queue.append(head);

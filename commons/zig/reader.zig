@@ -1,21 +1,22 @@
-const std = @import("std");
 const Grid = @import("grid.zig").Grid;
-const allocator = std.heap.page_allocator;
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 const Transformers = struct {
-    fn identity(line: []const u8) ![]const u8 {
+    fn identity(_: Allocator, line: []const u8) ![]const u8 {
         return line;
     }
 
-    fn toInt(line: []const u8) !usize {
+    fn toInt(_: Allocator, line: []const u8) !usize {
         return std.fmt.parseInt(usize, line, 10);
     }
 };
 
 pub const Reader = struct {
+    allocator: Allocator,
     path: []const u8,
 
-    pub fn init() Reader {
+    pub fn init(allocator: Allocator) Reader {
         var args = std.process.args();
 
         const executable = args.next() orelse "";
@@ -28,16 +29,16 @@ pub const Reader = struct {
         const file = if (std.mem.eql(u8, test_value, "--test")) "sample.txt" else "data.txt";
 
         const path = std.mem.join(allocator, "/", &[_][]const u8{ "data", year, day, file }) catch "";
-        return .{ .path = path };
+        return .{ .allocator = allocator, .path = path };
     }
 
     pub fn grid(self: Reader) !Grid {
-        return Grid.init(try self.stringLines());
+        return Grid.init(self.allocator, try self.stringLines());
     }
 
     pub fn ints(self: Reader) !std.ArrayList(usize) {
         const line = try self.string();
-        var result = std.ArrayList(usize).init(allocator);
+        var result = std.ArrayList(usize).init(self.allocator);
         for (line) |ch| {
             try result.append(ch - '0');
         }
@@ -57,9 +58,9 @@ pub const Reader = struct {
     }
 
     pub fn groups(self: Reader) !std.ArrayList(std.ArrayList([]const u8)) {
-        var result = std.ArrayList(std.ArrayList([]const u8)).init(allocator);
+        var result = std.ArrayList(std.ArrayList([]const u8)).init(self.allocator);
         for ((try self.read("\n\n")).items) |item| {
-            var group = std.ArrayList([]const u8).init(allocator);
+            var group = std.ArrayList([]const u8).init(self.allocator);
             var it = std.mem.splitSequence(u8, item, "\n");
             while (it.next()) |line| {
                 if (line.len > 0) {
@@ -71,10 +72,10 @@ pub const Reader = struct {
         return result;
     }
 
-    pub fn lines(self: Reader, comptime T: type, f: fn ([]const u8) anyerror!T) !std.ArrayList(T) {
-        var result = std.ArrayList(T).init(allocator);
+    pub fn lines(self: Reader, comptime T: type, f: fn (Allocator, []const u8) anyerror!T) !std.ArrayList(T) {
+        var result = std.ArrayList(T).init(self.allocator);
         for ((try self.read("\n")).items) |line| {
-            try result.append(try f(line));
+            try result.append(try f(self.allocator, line));
         }
         return result;
     }
@@ -83,10 +84,10 @@ pub const Reader = struct {
         var file = try std.fs.cwd().openFile(self.path, .{});
         defer file.close();
 
-        const buffer = try allocator.alloc(u8, try file.getEndPos());
+        const buffer = try self.allocator.alloc(u8, try file.getEndPos());
         _ = try file.readAll(buffer);
 
-        var result = std.ArrayList([]const u8).init(allocator);
+        var result = std.ArrayList([]const u8).init(self.allocator);
         var it = std.mem.splitSequence(u8, buffer, delimiter);
         while (it.next()) |item| {
             if (item.len > 0) {

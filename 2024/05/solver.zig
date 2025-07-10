@@ -3,21 +3,22 @@ const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const Pages = std.ArrayList(usize);
 const Rules = std.AutoHashMap(usize, Pages);
 const Orders = std.ArrayList(Order);
 const Order = struct {
+    allocator: Allocator,
     pages: Pages,
 
-    fn init(line: []const u8) !Order {
+    fn init(allocator: Allocator, line: []const u8) !Order {
         var pages = Pages.init(allocator);
         var it = std.mem.splitScalar(u8, line, ',');
         while (it.next()) |page| {
             try pages.append(try toInt(page));
         }
-        return .{ .pages = pages };
+        return .{ .allocator = allocator, .pages = pages };
     }
 
     fn middle(self: Order) usize {
@@ -25,7 +26,7 @@ const Order = struct {
     }
 
     fn valid(self: Order, rules: Rules) !bool {
-        var seen = Set(usize).init(allocator);
+        var seen = Set(usize).init(self.allocator);
         for (self.pages.items) |page| {
             try seen.add(page);
             if (rules.get(page)) |illegal| {
@@ -40,11 +41,11 @@ const Order = struct {
     }
 
     fn fix(self: *Order, deps: Rules) !Order {
-        var pages = Pages.init(allocator);
+        var pages = Pages.init(self.allocator);
         while (self.pages.items.len > 0) {
             try pages.append(self.next(deps).?);
         }
-        return Order{ .pages = pages };
+        return Order{ .allocator = self.allocator, .pages = pages };
     }
 
     fn next(self: *Order, deps: Rules) ?usize {
@@ -71,16 +72,16 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const groups = try Reader.init().groups();
-    const rules = try parseRules(groups.items[0], true);
-    const deps = try parseRules(groups.items[0], false);
-    const orders = try parseOrders(groups.items[1]);
+fn solution(allocator: Allocator) !void {
+    const groups = try Reader.init(allocator).groups();
+    const rules = try parseRules(allocator, groups.items[0], true);
+    const deps = try parseRules(allocator, groups.items[0], false);
+    const orders = try parseOrders(allocator, groups.items[1]);
     answer.part1(usize, 5248, try sum(rules, deps, orders, false));
     answer.part2(usize, 4507, try sum(rules, deps, orders, true));
 }
 
-fn parseRules(group: std.ArrayList([]const u8), forward: bool) !Rules {
+fn parseRules(allocator: Allocator, group: std.ArrayList([]const u8), forward: bool) !Rules {
     var rules = Rules.init(allocator);
     for (group.items) |line| {
         var it = std.mem.splitScalar(u8, line, '|');
@@ -97,10 +98,10 @@ fn parseRules(group: std.ArrayList([]const u8), forward: bool) !Rules {
     return rules;
 }
 
-fn parseOrders(group: std.ArrayList([]const u8)) !Orders {
+fn parseOrders(allocator: Allocator, group: std.ArrayList([]const u8)) !Orders {
     var orders = Orders.init(allocator);
     for (group.items) |line| {
-        try orders.append(try Order.init(line));
+        try orders.append(try Order.init(allocator, line));
     }
     return orders;
 }

@@ -5,13 +5,14 @@ const Point = aoc.point.Point;
 const Heading = aoc.point.Heading;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const grid = try Reader.init().grid();
+fn solution(allocator: Allocator) !void {
+    const grid = try Reader.init(allocator).grid();
     answer.part1(usize, 2543, part1(grid));
     answer.part2(usize, 1930, part2(grid));
 }

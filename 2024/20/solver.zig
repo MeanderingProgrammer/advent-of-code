@@ -4,24 +4,26 @@ const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 
 const State = struct {
+    allocator: Allocator,
     point: Point,
     path: std.ArrayList(Point),
 
-    fn init(point: Point) !State {
+    fn init(allocator: Allocator, point: Point) !State {
         var path = std.ArrayList(Point).init(allocator);
         try path.append(point);
-        return .{ .point = point, .path = path };
+        return .{ .allocator = allocator, .point = point, .path = path };
     }
 
     fn neighbors(self: State) !std.ArrayList(State) {
-        var result = std.ArrayList(State).init(allocator);
+        var result = std.ArrayList(State).init(self.allocator);
         for (self.point.neighbors()) |point| {
             var path = try self.path.clone();
             try path.append(point);
             try result.append(State{
+                .allocator = self.allocator,
                 .point = point,
                 .path = path,
             });
@@ -31,17 +33,19 @@ const State = struct {
 };
 
 const Race = struct {
+    allocator: Allocator,
     grid: Grid,
     start: Point,
     end: Point,
     paths: std.AutoHashMap(Point, std.ArrayList(Point)),
 
-    fn init(grid: *Grid) !Race {
+    fn init(allocator: Allocator, grid: *Grid) !Race {
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
         try grid.set(start, '.');
         try grid.set(end, '.');
         return .{
+            .allocator = allocator,
             .grid = grid.*,
             .start = start,
             .end = end,
@@ -50,8 +54,8 @@ const Race = struct {
     }
 
     fn solve(self: *Race) !void {
-        var q = std.ArrayList(State).init(allocator);
-        try q.append(try State.init(self.end));
+        var q = std.ArrayList(State).init(self.allocator);
+        try q.append(try State.init(self.allocator, self.end));
         while (q.items.len > 0) {
             var current = q.orderedRemove(0);
             if (self.paths.contains(current.point)) {
@@ -114,9 +118,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    var grid = try Reader.init().grid();
-    var race = try Race.init(&grid);
+fn solution(allocator: Allocator) !void {
+    var grid = try Reader.init(allocator).grid();
+    var race = try Race.init(allocator, &grid);
     try race.solve();
     answer.part1(usize, 1399, try race.cheats(100, 2));
     answer.part2(usize, 994807, try race.cheats(100, 20));

@@ -3,17 +3,19 @@ const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
 const std = @import("std");
-const allocator = std.heap.page_allocator;
+const Allocator = std.mem.Allocator;
 const rand = std.crypto.random;
 
 const Strings = Set([]const u8);
 const Graph = struct {
+    allocator: Allocator,
     nodes: Strings,
     edges: std.StringHashMap(Strings),
     cliques: std.ArrayList(Strings),
 
-    fn init() Graph {
+    fn init(allocator: Allocator) Graph {
         return .{
+            .allocator = allocator,
             .nodes = Strings.init(allocator),
             .edges = std.StringHashMap(Strings).init(allocator),
             .cliques = std.ArrayList(Strings).init(allocator),
@@ -32,7 +34,7 @@ const Graph = struct {
         try self.nodes.add(from);
         var entry = try self.edges.getOrPut(from);
         if (!entry.found_existing) {
-            entry.value_ptr.* = Strings.init(allocator);
+            entry.value_ptr.* = Strings.init(self.allocator);
         }
         try entry.value_ptr.add(to);
     }
@@ -76,15 +78,15 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution() !void {
-    const lines = try Reader.init().stringLines();
-    const cliques = try getCliques(lines);
-    answer.part1(usize, 1215, try part1(cliques));
-    answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(cliques));
+fn solution(allocator: Allocator) !void {
+    const lines = try Reader.init(allocator).stringLines();
+    const cliques = try getCliques(allocator, lines);
+    answer.part1(usize, 1215, try part1(allocator, cliques));
+    answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(allocator, cliques));
 }
 
-fn getCliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
-    var graph = Graph.init();
+fn getCliques(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
+    var graph = Graph.init(allocator);
     for (lines.items) |line| {
         try graph.add(line);
     }
@@ -95,11 +97,11 @@ fn getCliques(lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
     return graph.cliques;
 }
 
-fn part1(cliques: std.ArrayList(Strings)) !usize {
+fn part1(allocator: Allocator, cliques: std.ArrayList(Strings)) !usize {
     var result = Strings.init(allocator);
     for (cliques.items) |clique| {
         if (clique.size() >= 3 and hasChief(clique)) {
-            try combinations(&result, try clique.list());
+            try combinations(allocator, &result, try clique.list());
         }
     }
     return result.size();
@@ -115,7 +117,7 @@ fn hasChief(clique: Strings) bool {
     return false;
 }
 
-fn combinations(result: *Strings, clique: std.ArrayList([]const u8)) !void {
+fn combinations(allocator: Allocator, result: *Strings, clique: std.ArrayList([]const u8)) !void {
     for (0..clique.items.len - 2) |i| {
         for (i + 1..clique.items.len - 1) |j| {
             for (j + 1..clique.items.len) |k| {
@@ -127,24 +129,24 @@ fn combinations(result: *Strings, clique: std.ArrayList([]const u8)) !void {
                     try option.add(iv);
                     try option.add(jv);
                     try option.add(kv);
-                    try result.add(try str(option));
+                    try result.add(try str(allocator, option));
                 }
             }
         }
     }
 }
 
-fn part2(cliques: std.ArrayList(Strings)) ![]const u8 {
+fn part2(allocator: Allocator, cliques: std.ArrayList(Strings)) ![]const u8 {
     var index: usize = 0;
     for (1..cliques.items.len) |i| {
         if (cliques.items[i].size() > cliques.items[index].size()) {
             index = i;
         }
     }
-    return try str(cliques.items[index]);
+    return try str(allocator, cliques.items[index]);
 }
 
-fn str(nodes: Strings) ![]const u8 {
+fn str(allocator: Allocator, nodes: Strings) ![]const u8 {
     const result = try nodes.list();
     std.mem.sort([]const u8, result.items, {}, stringLessThan);
     return std.mem.join(allocator, ",", result.items);
