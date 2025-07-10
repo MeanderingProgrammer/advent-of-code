@@ -1,4 +1,4 @@
-use aoc::{Grid, HashMap, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 struct Square(Vec<String>);

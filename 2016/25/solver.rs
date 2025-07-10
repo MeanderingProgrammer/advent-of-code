@@ -1,5 +1,5 @@
 use aoc::assembunny::{Computer, Instruction, Value};
-use aoc::{Reader, answer};
+use aoc::prelude::*;
 
 fn main() {
     answer::timer(solution);

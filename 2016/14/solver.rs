@@ -1,4 +1,4 @@
-use aoc::{Md5, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 use std::collections::VecDeque;
 

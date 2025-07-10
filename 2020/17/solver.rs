@@ -1,4 +1,4 @@
-use aoc::{Grid, HashSet, Iter, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Point<const N: usize> {

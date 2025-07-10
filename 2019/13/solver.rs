@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{HashMap, Iter, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, Default)]
 struct Game {

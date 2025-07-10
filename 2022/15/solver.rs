@@ -1,4 +1,4 @@
-use aoc::{Iter, Point, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 use std::str::FromStr;
 

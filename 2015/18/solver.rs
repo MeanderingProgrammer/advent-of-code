@@ -1,4 +1,4 @@
-use aoc::{Grid, HashSet, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct Animator {

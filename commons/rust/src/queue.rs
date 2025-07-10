@@ -1,4 +1,4 @@
-use crate::HashMap;
+use crate::prelude::*;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::hash::Hash;

@@ -1,4 +1,4 @@
-use aoc::{Direction, Direction3d, Heading, Point, Point3d};
+use aoc::prelude::*;
 use std::collections::HashSet;
 use std::str::FromStr;
 

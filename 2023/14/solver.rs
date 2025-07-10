@@ -1,4 +1,4 @@
-use aoc::{Direction, FromChar, Grid, HashMap, Point, Reader, answer};
+use aoc::prelude::*;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]

@@ -1,4 +1,4 @@
-use aoc::{HashMap, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 use std::thread;
 

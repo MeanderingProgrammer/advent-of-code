@@ -1,4 +1,4 @@
-use aoc::{Grid, HashSet, Heading, Iter, Point, Reader, answer};
+use aoc::prelude::*;
 
 type Dir = (Heading, Heading, Heading);
 

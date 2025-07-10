@@ -1,4 +1,4 @@
-use aoc::{Direction3d, HashMap, HashSet, Point3d, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 enum Axis {

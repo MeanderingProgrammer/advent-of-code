@@ -1,4 +1,4 @@
-use aoc::{Iter, Point3d, Reader, answer, math};
+use aoc::prelude::*;
 use std::cmp::Ordering;
 use std::str::FromStr;
 use std::sync::mpsc;

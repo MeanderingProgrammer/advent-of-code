@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{Direction, Grid, HashMap, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct PaintBot {

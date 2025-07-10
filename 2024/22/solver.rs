@@ -1,4 +1,4 @@
-use aoc::{HashMap, HashSet, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 use std::str::FromStr;
 

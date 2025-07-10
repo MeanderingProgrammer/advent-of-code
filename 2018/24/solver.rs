@@ -1,4 +1,4 @@
-use aoc::{HashMap, HashSet, Reader, Str, answer};
+use aoc::prelude::*;
 use std::cmp::Reverse;
 
 #[derive(Debug, Clone, PartialEq)]

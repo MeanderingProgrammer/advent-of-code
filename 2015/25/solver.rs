@@ -1,4 +1,4 @@
-use aoc::{Reader, Str, answer};
+use aoc::prelude::*;
 
 fn main() {
     answer::timer(solution);

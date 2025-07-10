@@ -1,4 +1,4 @@
-use aoc::{Char, FromChar, HashSet, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, Clone)]
 enum Unit {

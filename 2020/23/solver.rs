@@ -1,4 +1,4 @@
-use aoc::{Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct Cups {

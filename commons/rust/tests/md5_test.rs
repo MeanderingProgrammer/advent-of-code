@@ -1,4 +1,4 @@
-use aoc::Md5;
+use aoc::prelude::*;
 
 #[test]
 fn test_compute() {

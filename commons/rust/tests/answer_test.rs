@@ -1,4 +1,4 @@
-use aoc::answer;
+use aoc::prelude::*;
 
 #[test]
 fn test_correct() {

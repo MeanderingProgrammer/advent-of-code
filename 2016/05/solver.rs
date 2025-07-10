@@ -1,4 +1,4 @@
-use aoc::{Iter, Md5, Reader, answer};
+use aoc::prelude::*;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;

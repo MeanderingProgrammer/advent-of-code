@@ -1,4 +1,4 @@
-use crate::HashMap;
+use crate::prelude::*;
 use std::cmp::Eq;
 use std::hash::Hash;
 

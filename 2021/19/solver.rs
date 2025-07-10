@@ -1,4 +1,4 @@
-use aoc::{HashMap, HashSet, Point3d, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 use std::str::FromStr;
 

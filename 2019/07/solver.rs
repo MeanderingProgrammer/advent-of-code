@@ -1,5 +1,5 @@
 use aoc::int_code::{Bus, Computer};
-use aoc::{Iter, Reader, answer};
+use aoc::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug)]

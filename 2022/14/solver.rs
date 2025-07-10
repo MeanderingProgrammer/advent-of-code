@@ -1,4 +1,4 @@
-use aoc::{Grid, Heading, Point, Reader, answer};
+use aoc::prelude::*;
 use std::str::FromStr;
 
 #[derive(Debug)]

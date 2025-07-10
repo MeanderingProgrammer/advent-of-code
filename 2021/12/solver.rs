@@ -1,4 +1,4 @@
-use aoc::{GraphSearch, HashMap, Reader, Str, answer};
+use aoc::prelude::*;
 
 const START: u32 = 0;
 const END: u32 = 1;

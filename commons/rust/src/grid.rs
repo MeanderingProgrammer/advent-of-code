@@ -1,4 +1,4 @@
-use crate::{FromChar, HashMap, Iter, Point};
+use crate::prelude::*;
 use std::borrow::Borrow;
 use std::cmp::PartialEq;
 use std::fmt;

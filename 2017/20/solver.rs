@@ -1,4 +1,4 @@
-use aoc::{HashSet, Point3d, Reader, Str, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, Clone)]
 struct Particle {

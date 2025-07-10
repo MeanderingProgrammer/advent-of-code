@@ -1,4 +1,4 @@
-use aoc::{HashMap, Point, Point3d, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
 struct FuelCell {

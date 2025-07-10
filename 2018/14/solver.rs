@@ -1,4 +1,4 @@
-use aoc::{Char, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct Recipes {

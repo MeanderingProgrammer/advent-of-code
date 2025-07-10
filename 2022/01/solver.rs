@@ -1,4 +1,4 @@
-use aoc::{Iter, Reader, answer};
+use aoc::prelude::*;
 use std::str::FromStr;
 
 #[derive(Debug)]

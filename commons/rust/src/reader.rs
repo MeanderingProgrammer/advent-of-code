@@ -1,4 +1,4 @@
-use crate::{FromChar, Grid};
+use crate::prelude::*;
 use std::env;
 use std::fmt::Debug;
 use std::fs::File;

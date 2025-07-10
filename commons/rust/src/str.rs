@@ -1,4 +1,4 @@
-use crate::Char;
+use crate::prelude::*;
 use std::fmt::Debug;
 use std::str::FromStr;
 

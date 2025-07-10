@@ -1,4 +1,4 @@
-use aoc::{Direction, FromChar, Grid, HashSet, Point, Reader, answer};
+use aoc::prelude::*;
 use rayon::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]

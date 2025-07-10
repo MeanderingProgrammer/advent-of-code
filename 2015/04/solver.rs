@@ -1,4 +1,4 @@
-use aoc::{Md5, Reader, answer};
+use aoc::prelude::*;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::thread;
 

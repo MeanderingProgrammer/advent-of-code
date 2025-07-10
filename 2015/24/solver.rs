@@ -1,4 +1,4 @@
-use aoc::{Iter, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct Organizer {

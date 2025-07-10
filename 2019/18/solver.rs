@@ -1,6 +1,4 @@
-use aoc::{
-    BitSet, Char, Dijkstra, FromChar, Grid, HashMap, HashSet, Heading, Ids, Point, Reader, answer,
-};
+use aoc::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]

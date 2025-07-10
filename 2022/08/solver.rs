@@ -1,4 +1,4 @@
-use aoc::{Direction, Grid, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct Map {

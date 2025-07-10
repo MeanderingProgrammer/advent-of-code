@@ -1,4 +1,4 @@
-use aoc::{Dijkstra, Reader, answer};
+use aoc::prelude::*;
 use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

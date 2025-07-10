@@ -1,4 +1,4 @@
-use aoc::Iter;
+use aoc::prelude::*;
 
 #[test]
 fn test_combinations() {

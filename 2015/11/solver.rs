@@ -1,4 +1,4 @@
-use aoc::{Char, HashSet, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 struct PasswordGenerator {

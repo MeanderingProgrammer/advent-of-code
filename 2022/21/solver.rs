@@ -1,4 +1,4 @@
-use aoc::{HashMap, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 enum Operation {

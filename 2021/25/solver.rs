@@ -1,4 +1,4 @@
-use aoc::{FromChar, Grid, HashSet, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 enum Cucumber {

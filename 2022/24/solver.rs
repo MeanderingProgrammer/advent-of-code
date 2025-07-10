@@ -1,4 +1,4 @@
-use aoc::{Direction, FromChar, Grid, HashSet, Point, Reader, answer};
+use aoc::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

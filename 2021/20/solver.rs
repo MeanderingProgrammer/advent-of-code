@@ -1,4 +1,4 @@
-use aoc::{Bounds, FromChar, Grid, HashSet, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug, PartialEq)]
 enum Value {

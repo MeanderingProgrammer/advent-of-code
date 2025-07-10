@@ -1,4 +1,4 @@
-use aoc::{HashMap, HashSet, Iter, Reader, answer};
+use aoc::prelude::*;
 
 type Graph<'a> = HashMap<(&'a str, &'a str), i16>;
 

@@ -1,4 +1,4 @@
-use aoc::{Reader, answer};
+use aoc::prelude::*;
 use std::collections::VecDeque;
 
 #[derive(Debug)]

@@ -1,4 +1,4 @@
-use aoc::{Direction, FromChar, Grid, HashMap, Point, Reader, answer};
+use aoc::prelude::*;
 
 #[derive(Debug)]
 enum Motion {

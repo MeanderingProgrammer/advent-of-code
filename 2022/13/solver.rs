@@ -1,4 +1,4 @@
-use aoc::{Reader, answer};
+use aoc::prelude::*;
 use std::cmp::Ordering;
 use std::str::FromStr;
 

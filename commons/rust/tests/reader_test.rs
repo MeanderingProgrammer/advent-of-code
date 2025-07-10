@@ -1,4 +1,4 @@
-use aoc::Reader;
+use aoc::prelude::*;
 
 #[test]
 fn test_groups() {
