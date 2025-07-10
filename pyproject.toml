@@ -1,10 +1,10 @@
 [tool.basedpyright]
-extraPaths = [ "commons/python" ]
-executionEnvironments = [ { root = "scripts" } ]
+extraPaths = ["commons/python"]
+executionEnvironments = [{ root = "scripts" }]
 reportAny = false
 reportExplicitAny = false
 reportMissingTypeStubs = false
 reportUnusedCallResult = false
 
 [tool.ruff]
-src = [ "scripts" ]
+src = ["scripts"]
