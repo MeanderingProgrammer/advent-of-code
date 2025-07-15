@@ -1,10 +1,10 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const State = struct {
     allocator: Allocator,
@@ -14,7 +14,11 @@ const State = struct {
     fn init(allocator: Allocator, point: Point) !State {
         var path = std.ArrayList(Point).init(allocator);
         try path.append(point);
-        return .{ .allocator = allocator, .point = point, .path = path };
+        return .{
+            .allocator = allocator,
+            .point = point,
+            .path = path,
+        };
     }
 
     fn neighbors(self: State) !std.ArrayList(State) {
@@ -34,16 +38,16 @@ const State = struct {
 
 const Race = struct {
     allocator: Allocator,
-    grid: Grid,
+    grid: Grid(u8),
     start: Point,
     end: Point,
     paths: std.AutoHashMap(Point, std.ArrayList(Point)),
 
-    fn init(allocator: Allocator, grid: *Grid) !Race {
+    fn init(allocator: Allocator, grid: *Grid(u8)) !Race {
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
-        try grid.set(start, '.');
-        try grid.set(end, '.');
+        try grid.put(start, '.');
+        try grid.put(end, '.');
         return .{
             .allocator = allocator,
             .grid = grid.*,

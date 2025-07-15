@@ -1,8 +1,8 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Stones = std.AutoHashMap(usize, usize);
 
@@ -21,7 +21,7 @@ fn getStones(allocator: Allocator, line: []const u8) !Stones {
     var stones = Stones.init(allocator);
     var it = std.mem.splitScalar(u8, line, ' ');
     while (it.next()) |item| {
-        const stone = try std.fmt.parseInt(usize, item, 10);
+        const stone = try aoc.util.decimal(usize, item);
         try increment(&stones, stone, 1);
     }
     return stones;

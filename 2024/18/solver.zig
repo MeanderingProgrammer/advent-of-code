@@ -1,10 +1,10 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Search = struct {
     allocator: Allocator,
@@ -64,8 +64,8 @@ fn solution(allocator: Allocator) !void {
 
 fn parsePoint(_: Allocator, line: []const u8) !Point {
     var it = std.mem.splitScalar(u8, line, ',');
-    const x = try std.fmt.parseInt(i64, it.next().?, 10);
-    const y = try std.fmt.parseInt(i64, it.next().?, 10);
+    const x = try aoc.util.decimal(i64, it.next().?);
+    const y = try aoc.util.decimal(i64, it.next().?);
     return Point.init(x, y);
 }
 

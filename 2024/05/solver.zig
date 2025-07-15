@@ -1,13 +1,14 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Pages = std.ArrayList(usize);
 const Rules = std.AutoHashMap(usize, Pages);
 const Orders = std.ArrayList(Order);
+
 const Order = struct {
     allocator: Allocator,
     pages: Pages,
@@ -16,9 +17,12 @@ const Order = struct {
         var pages = Pages.init(allocator);
         var it = std.mem.splitScalar(u8, line, ',');
         while (it.next()) |page| {
-            try pages.append(try toInt(page));
+            try pages.append(try aoc.util.decimal(usize, page));
         }
-        return .{ .allocator = allocator, .pages = pages };
+        return .{
+            .allocator = allocator,
+            .pages = pages,
+        };
     }
 
     fn middle(self: Order) usize {
@@ -45,7 +49,10 @@ const Order = struct {
         while (self.pages.items.len > 0) {
             try pages.append(self.next(deps).?);
         }
-        return Order{ .allocator = self.allocator, .pages = pages };
+        return .{
+            .allocator = self.allocator,
+            .pages = pages,
+        };
     }
 
     fn next(self: *Order, deps: Rules) ?usize {
@@ -85,8 +92,8 @@ fn parseRules(allocator: Allocator, group: std.ArrayList([]const u8), forward: b
     var rules = Rules.init(allocator);
     for (group.items) |line| {
         var it = std.mem.splitScalar(u8, line, '|');
-        const left = try toInt(it.next().?);
-        const right = try toInt(it.next().?);
+        const left = try aoc.util.decimal(usize, it.next().?);
+        const right = try aoc.util.decimal(usize, it.next().?);
         const from = if (forward) left else right;
         const to = if (forward) right else left;
         const entry = try rules.getOrPut(from);
@@ -104,10 +111,6 @@ fn parseOrders(allocator: Allocator, group: std.ArrayList([]const u8)) !Orders {
         try orders.append(try Order.init(allocator, line));
     }
     return orders;
-}
-
-fn toInt(value: []const u8) !usize {
-    return std.fmt.parseInt(usize, value, 10);
 }
 
 fn sum(rules: Rules, deps: Rules, orders: Orders, fix: bool) !usize {

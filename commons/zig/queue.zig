@@ -7,13 +7,16 @@ pub fn PriorityQueue(comptime T: type) type {
         cost: usize,
     };
     const List = std.ArrayList(Node);
+
     return struct {
         list: List,
 
         const Self = @This();
 
         pub fn init(allocator: Allocator) Self {
-            return .{ .list = List.init(allocator) };
+            return .{
+                .list = List.init(allocator),
+            };
         }
 
         pub fn push(self: *Self, value: T, cost: usize) !void {

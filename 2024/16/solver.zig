@@ -1,3 +1,5 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Direction = aoc.point.Direction;
@@ -6,15 +8,18 @@ const Point = aoc.point.Point;
 const PriorityQueue = aoc.queue.PriorityQueue;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Pair = struct { usize, usize };
 
 const State = struct {
     point: Point,
     direction: Direction,
 
     fn init(point: Point, direction: Direction) State {
-        return .{ .point = point, .direction = direction };
+        return .{
+            .point = point,
+            .direction = direction,
+        };
     }
 
     fn next(self: State) State {
@@ -29,16 +34,17 @@ const State = struct {
 
 const Maze = struct {
     allocator: Allocator,
-    grid: Grid,
+    grid: Grid(u8),
     start: Point,
     end: Point,
 
     fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Maze {
-        var grid = try Grid.init(allocator, lines);
+        var grid = Grid(u8).init(allocator);
+        try grid.addLines(lines);
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
-        try grid.set(start, '.');
-        try grid.set(end, '.');
+        try grid.put(start, '.');
+        try grid.put(end, '.');
         return .{
             .allocator = allocator,
             .grid = grid,
@@ -47,7 +53,7 @@ const Maze = struct {
         };
     }
 
-    fn solve(self: Maze) !struct { usize, usize } {
+    fn solve(self: Maze) !Pair {
         var min_cost: usize = 0;
         var end_seen = Set(Point).init(self.allocator);
 

@@ -1,16 +1,9 @@
-const Grid = @import("grid.zig").Grid;
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const Grid = @import("grid.zig").Grid;
+const util = @import("util.zig");
 
-const Transformers = struct {
-    fn identity(_: Allocator, line: []const u8) ![]const u8 {
-        return line;
-    }
-
-    fn toInt(_: Allocator, line: []const u8) !usize {
-        return std.fmt.parseInt(usize, line, 10);
-    }
-};
+const Strings = std.ArrayList([]const u8);
 
 pub const Reader = struct {
     allocator: Allocator,
@@ -29,11 +22,16 @@ pub const Reader = struct {
         const file = if (std.mem.eql(u8, test_value, "--test")) "sample.txt" else "data.txt";
 
         const path = std.mem.join(allocator, "/", &[_][]const u8{ "data", year, day, file }) catch "";
-        return .{ .allocator = allocator, .path = path };
+        return .{
+            .allocator = allocator,
+            .path = path,
+        };
     }
 
-    pub fn grid(self: Reader) !Grid {
-        return Grid.init(self.allocator, try self.stringLines());
+    pub fn grid(self: Reader) !Grid(u8) {
+        var result = Grid(u8).init(self.allocator);
+        try result.addLines(try self.stringLines());
+        return result;
     }
 
     pub fn ints(self: Reader) !std.ArrayList(usize) {
@@ -49,18 +47,26 @@ pub const Reader = struct {
         return (try self.stringLines()).items[0];
     }
 
-    pub fn stringLines(self: Reader) !std.ArrayList([]const u8) {
-        return self.lines([]const u8, Transformers.identity);
+    pub fn stringLines(self: Reader) !Strings {
+        return self.lines([]const u8, identity);
+    }
+
+    fn identity(_: Allocator, s: []const u8) ![]const u8 {
+        return s;
     }
 
     pub fn intLines(self: Reader) !std.ArrayList(usize) {
-        return self.lines(usize, Transformers.toInt);
+        return self.lines(usize, decimal);
     }
 
-    pub fn groups(self: Reader) !std.ArrayList(std.ArrayList([]const u8)) {
-        var result = std.ArrayList(std.ArrayList([]const u8)).init(self.allocator);
+    fn decimal(_: Allocator, s: []const u8) !usize {
+        return util.decimal(usize, s);
+    }
+
+    pub fn groups(self: Reader) !std.ArrayList(Strings) {
+        var result = std.ArrayList(Strings).init(self.allocator);
         for ((try self.read("\n\n")).items) |item| {
-            var group = std.ArrayList([]const u8).init(self.allocator);
+            var group = Strings.init(self.allocator);
             var it = std.mem.splitSequence(u8, item, "\n");
             while (it.next()) |line| {
                 if (line.len > 0) {
@@ -80,14 +86,14 @@ pub const Reader = struct {
         return result;
     }
 
-    fn read(self: Reader, delimiter: []const u8) !std.ArrayList([]const u8) {
+    fn read(self: Reader, delimiter: []const u8) !Strings {
         var file = try std.fs.cwd().openFile(self.path, .{});
         defer file.close();
 
         const buffer = try self.allocator.alloc(u8, try file.getEndPos());
         _ = try file.readAll(buffer);
 
-        var result = std.ArrayList([]const u8).init(self.allocator);
+        var result = Strings.init(self.allocator);
         var it = std.mem.splitSequence(u8, buffer, delimiter);
         while (it.next()) |item| {
             if (item.len > 0) {

@@ -1,12 +1,13 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
+const random = std.crypto.random;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
-const rand = std.crypto.random;
 
 const Strings = Set([]const u8);
+
 const Graph = struct {
     allocator: Allocator,
     nodes: Strings,
@@ -48,7 +49,7 @@ const Graph = struct {
             return;
         }
         // choose a pivot vertex u in P ⋃ X
-        const i = rand.uintLessThan(usize, p.size() + x.size());
+        const i = random.uintLessThan(usize, p.size() + x.size());
         const u = if (i < p.size()) p.nth(i) else x.nth(i - p.size());
         // P \ N(u)
         var p_nu = try p.clone();

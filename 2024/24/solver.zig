@@ -1,8 +1,11 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Pair = struct { []const u8, []const u8 };
+const Strings = std.ArrayList([]const u8);
 
 const Logic = enum {
     AND,
@@ -71,7 +74,7 @@ const Graph = struct {
         // x00 = 1
         var it = std.mem.splitSequence(u8, line, ": ");
         const wire = it.next().?;
-        const value = try std.fmt.parseInt(u8, it.next().?, 10);
+        const value = try aoc.util.decimal(u8, it.next().?);
         try self.output.put(wire, value);
     }
 
@@ -103,8 +106,8 @@ const Graph = struct {
         return try self.get('z');
     }
 
-    fn resolved(self: *Graph) !std.ArrayList([]const u8) {
-        var result = std.ArrayList([]const u8).init(self.allocator);
+    fn resolved(self: *Graph) !Strings {
+        var result = Strings.init(self.allocator);
         var it = self.gates.iterator();
         while (it.next()) |entry| {
             const gate = entry.value_ptr;
@@ -123,7 +126,7 @@ const Graph = struct {
             const wire = entry.key_ptr.*;
             const value = entry.value_ptr.*;
             if (wire[0] == ch) {
-                const i = try std.fmt.parseInt(usize, wire[1..], 10);
+                const i = try aoc.util.decimal(usize, wire[1..]);
                 result[n - 1 - i] = '0' + value;
             }
         }
@@ -142,7 +145,7 @@ const Graph = struct {
     }
 
     // Unsure if this solution is general but good enough for my input
-    fn fix(self: *Graph, i: u8) !?struct { []const u8, []const u8 } {
+    fn fix(self: *Graph, i: u8) !?Pair {
         const z = try self.node('z', i);
         const root = self.gates.get(z).?;
         const xor = self.find(.{
@@ -201,7 +204,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(allocator, graph));
 }
 
-fn getGraph(allocator: Allocator, groups: std.ArrayList(std.ArrayList([]const u8))) !Graph {
+fn getGraph(allocator: Allocator, groups: std.ArrayList(Strings)) !Graph {
     var graph = Graph.init(allocator);
     for (groups.items[0].items) |line| {
         try graph.addOutput(line);
@@ -219,7 +222,7 @@ fn part1(input: Graph) !usize {
 
 fn part2(allocator: Allocator, input: Graph) ![]const u8 {
     var graph = try input.clone();
-    var result = std.ArrayList([]const u8).init(allocator);
+    var result = Strings.init(allocator);
     for (1..graph.count('x')) |i| {
         if (try graph.fix(@intCast(i))) |wires| {
             try result.append(wires[0]);

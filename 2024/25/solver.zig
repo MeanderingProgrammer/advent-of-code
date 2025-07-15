@@ -1,14 +1,16 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Strings = std.ArrayList([]const u8);
 
 const Version = enum {
     Lock,
     Key,
 
-    fn init(lines: std.ArrayList([]const u8)) !Version {
+    fn init(lines: Strings) !Version {
         if (all(lines, 5, 0)) {
             return Version.Lock;
         } else if (all(lines, 5, 6)) {
@@ -18,7 +20,7 @@ const Version = enum {
         }
     }
 
-    fn all(lines: std.ArrayList([]const u8), width: usize, y: usize) bool {
+    fn all(lines: Strings, width: usize, y: usize) bool {
         for (0..width) |x| {
             if (lines.items[y][x] != '#') {
                 return false;
@@ -32,7 +34,7 @@ const Schematic = struct {
     version: Version,
     values: [5]usize,
 
-    fn init(lines: std.ArrayList([]const u8)) !Schematic {
+    fn init(lines: Strings) !Schematic {
         const version = try Version.init(lines);
         var values = [5]usize{ 0, 0, 0, 0, 0 };
         for (0..5) |x| {
@@ -44,7 +46,7 @@ const Schematic = struct {
         };
     }
 
-    fn gap(lines: std.ArrayList([]const u8), x: usize) ?usize {
+    fn gap(lines: Strings, x: usize) ?usize {
         for (1..7) |y| {
             if (lines.items[y - 1][x] != lines.items[y][x]) {
                 return y;
@@ -63,7 +65,7 @@ fn solution(allocator: Allocator) !void {
     answer.part1(usize, 3439, try solve(allocator, groups));
 }
 
-fn solve(allocator: Allocator, groups: std.ArrayList(std.ArrayList([]const u8))) !usize {
+fn solve(allocator: Allocator, groups: std.ArrayList(Strings)) !usize {
     var keys = std.ArrayList([5]usize).init(allocator);
     var locks = std.ArrayList([5]usize).init(allocator);
     for (groups.items) |lines| {

@@ -1,9 +1,9 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 pub const Machine = struct {
     a: Point,
@@ -22,18 +22,17 @@ pub const Machine = struct {
     }
 
     fn parsePoint(line: []const u8) !Point {
-        var label_point = std.mem.splitBackwardsScalar(u8, line, ':');
-        const point_section = label_point.first();
-        var point_parts = std.mem.splitScalar(u8, point_section, ',');
-        const x = try parseCoord(point_parts.next().?);
-        const y = try parseCoord(point_parts.next().?);
+        var label = std.mem.splitBackwardsScalar(u8, line, ':');
+        const section = label.first();
+        var it = std.mem.splitScalar(u8, section, ',');
+        const x = try parseCoord(it.next().?);
+        const y = try parseCoord(it.next().?);
         return Point.init(x, y);
     }
 
     fn parseCoord(part: []const u8) !i64 {
         var it = std.mem.splitBackwardsAny(u8, part, "+=");
-        const value = it.first();
-        return try std.fmt.parseInt(i64, value, 10);
+        return try aoc.util.decimal(i64, it.first());
     }
 
     fn tokens(self: Machine, offset: i64) i64 {

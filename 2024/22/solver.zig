@@ -1,9 +1,11 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Secrets = std.ArrayList(Secret);
 
 const Secret = struct {
     value: usize,
@@ -61,8 +63,8 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 1791, try part2(allocator, secrets));
 }
 
-fn getSecrets(allocator: Allocator, starts: std.ArrayList(usize), n: usize) !std.ArrayList(Secret) {
-    var result = std.ArrayList(Secret).init(allocator);
+fn getSecrets(allocator: Allocator, starts: std.ArrayList(usize), n: usize) !Secrets {
+    var result = Secrets.init(allocator);
     for (starts.items) |start| {
         var secret = Secret.init(allocator, start);
         try secret.evolve(n);
@@ -71,7 +73,7 @@ fn getSecrets(allocator: Allocator, starts: std.ArrayList(usize), n: usize) !std
     return result;
 }
 
-fn part1(secrets: std.ArrayList(Secret)) usize {
+fn part1(secrets: Secrets) usize {
     var result: usize = 0;
     for (secrets.items) |secret| {
         result += secret.value;
@@ -79,7 +81,7 @@ fn part1(secrets: std.ArrayList(Secret)) usize {
     return result;
 }
 
-fn part2(allocator: Allocator, secrets: std.ArrayList(Secret)) !usize {
+fn part2(allocator: Allocator, secrets: Secrets) !usize {
     var result: usize = 0;
     const options = try getOptions(allocator, secrets);
     var it = options.iterator();
@@ -92,7 +94,7 @@ fn part2(allocator: Allocator, secrets: std.ArrayList(Secret)) !usize {
     return result;
 }
 
-fn getOptions(allocator: Allocator, secrets: std.ArrayList(Secret)) !Set([4]i64) {
+fn getOptions(allocator: Allocator, secrets: Secrets) !Set([4]i64) {
     var options = Set([4]i64).init(allocator);
     for (secrets.items) |secret| {
         var it = secret.sequences.keyIterator();
@@ -103,7 +105,7 @@ fn getOptions(allocator: Allocator, secrets: std.ArrayList(Secret)) !Set([4]i64)
     return options;
 }
 
-fn bananas(secrets: std.ArrayList(Secret), sequence: [4]i64) usize {
+fn bananas(secrets: Secrets, sequence: [4]i64) usize {
     var result: usize = 0;
     for (secrets.items) |secret| {
         if (secret.sequences.get(sequence)) |price| {

@@ -6,6 +6,7 @@ pub fn Set(comptime T: type) type {
         .pointer => std.StringHashMap(void),
         else => std.AutoHashMap(T, void),
     };
+
     return struct {
         allocator: Allocator,
         map: Map,
@@ -13,7 +14,10 @@ pub fn Set(comptime T: type) type {
         const Self = @This();
 
         pub fn init(allocator: Allocator) Self {
-            return .{ .allocator = allocator, .map = Map.init(allocator) };
+            return .{
+                .allocator = allocator,
+                .map = Map.init(allocator),
+            };
         }
 
         pub fn deinit(self: *Self) void {
@@ -25,8 +29,10 @@ pub fn Set(comptime T: type) type {
         }
 
         pub fn clone(self: Self) !Self {
-            const map = try self.map.clone();
-            return .{ .allocator = self.allocator, .map = map };
+            return .{
+                .allocator = self.allocator,
+                .map = try self.map.clone(),
+            };
         }
 
         pub fn add(self: *Self, value: T) !void {

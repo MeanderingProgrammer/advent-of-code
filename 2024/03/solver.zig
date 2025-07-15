@@ -1,8 +1,8 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const State = enum {
     start,
@@ -25,7 +25,10 @@ const Move = struct {
     to: State,
 
     fn init(from: State, to: State) Move {
-        return .{ .from = from, .to = to };
+        return .{
+            .from = from,
+            .to = to,
+        };
     }
 };
 

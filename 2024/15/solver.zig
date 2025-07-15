@@ -1,3 +1,5 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Direction = aoc.point.Direction;
@@ -5,18 +7,19 @@ const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Strings = std.ArrayList([]const u8);
 
 const Warehouse = struct {
     allocator: Allocator,
-    grid: Grid,
+    grid: Grid(u8),
     position: Point,
 
-    fn init(allocator: Allocator, lines: std.ArrayList([]const u8), wide: bool) !Warehouse {
-        var grid = try Grid.init(allocator, if (wide) try enlarge(allocator, lines) else lines);
+    fn init(allocator: Allocator, lines: Strings, wide: bool) !Warehouse {
+        var grid = Grid(u8).init(allocator);
+        try grid.addLines(if (wide) try enlarge(allocator, lines) else lines);
         const start = (try grid.getValues('@')).getLast();
-        try grid.set(start, '.');
+        try grid.put(start, '.');
         return .{
             .allocator = allocator,
             .grid = grid,
@@ -24,8 +27,8 @@ const Warehouse = struct {
         };
     }
 
-    fn enlarge(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList([]const u8) {
-        var result = std.ArrayList([]const u8).init(allocator);
+    fn enlarge(allocator: Allocator, lines: Strings) !Strings {
+        var result = Strings.init(allocator);
         for (lines.items) |line| {
             var l = std.ArrayList(u8).init(allocator);
             for (line) |ch| {
@@ -50,23 +53,23 @@ const Warehouse = struct {
             var unset_it = points.iterator();
             while (unset_it.next()) |entry| {
                 const point = entry.key_ptr.*;
-                try self.grid.set(point, '.');
+                try self.grid.put(point, '.');
             }
             var set_it = points.iterator();
             while (set_it.next()) |entry| {
                 const point = entry.key_ptr.*;
                 const value = entry.value_ptr.*;
-                try self.grid.set(point.plus(direction.point()), value);
+                try self.grid.put(point.plus(direction.point()), value);
             }
         }
     }
 
-    fn move(self: *Warehouse, direction: Direction) !?std.AutoHashMap(Point, u8) {
-        var result = std.AutoHashMap(Point, u8).init(self.allocator);
+    fn move(self: *Warehouse, direction: Direction) !?Grid(u8) {
+        var result = Grid(u8).init(self.allocator);
         try result.put(self.position, '.');
         while (true) {
             var additional = Set(Point).init(self.allocator);
-            var exiting_it = result.keyIterator();
+            var exiting_it = result.points();
             while (exiting_it.next()) |p| {
                 const point = p.*.plus(direction.point());
                 if (!result.contains(point)) {
@@ -122,7 +125,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2(i64, 1448458, try solve(allocator, lines, true, directions));
 }
 
-fn getDirections(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Direction) {
+fn getDirections(allocator: Allocator, lines: Strings) !std.ArrayList(Direction) {
     var directions = std.ArrayList(Direction).init(allocator);
     for (lines.items) |line| {
         for (line) |ch| {
@@ -132,7 +135,7 @@ fn getDirections(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.Ar
     return directions;
 }
 
-fn solve(allocator: Allocator, lines: std.ArrayList([]const u8), wide: bool, directions: std.ArrayList(Direction)) !i64 {
+fn solve(allocator: Allocator, lines: Strings, wide: bool, directions: std.ArrayList(Direction)) !i64 {
     var warehouse = try Warehouse.init(allocator, lines, wide);
     for (directions.items) |direction| {
         try warehouse.go(direction);

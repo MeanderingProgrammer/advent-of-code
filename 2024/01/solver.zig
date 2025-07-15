@@ -1,10 +1,11 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Pair = struct { usize, usize };
+const Integers = std.ArrayList(usize);
 
 pub fn main() !void {
     try answer.timer(solution);
@@ -20,13 +21,13 @@ fn solution(allocator: Allocator) !void {
 
 fn toPairs(_: Allocator, line: []const u8) !Pair {
     var pair = std.mem.tokenizeScalar(u8, line, ' ');
-    const first = try std.fmt.parseInt(usize, pair.next() orelse "", 10);
-    const second = try std.fmt.parseInt(usize, pair.next() orelse "", 10);
-    return Pair{ first, second };
+    const first = try aoc.util.decimal(usize, pair.next() orelse "");
+    const second = try aoc.util.decimal(usize, pair.next() orelse "");
+    return .{ first, second };
 }
 
-fn unzipSort(allocator: Allocator, values: std.ArrayList(Pair), first: bool) !std.ArrayList(usize) {
-    var result = std.ArrayList(usize).init(allocator);
+fn unzipSort(allocator: Allocator, values: std.ArrayList(Pair), first: bool) !Integers {
+    var result = Integers.init(allocator);
     for (values.items) |value| {
         const item = if (first) value[0] else value[1];
         try result.append(item);
@@ -35,7 +36,7 @@ fn unzipSort(allocator: Allocator, values: std.ArrayList(Pair), first: bool) !st
     return result;
 }
 
-fn sumDiff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
+fn sumDiff(left: Integers, right: Integers) usize {
     var result: usize = 0;
     for (0..left.items.len) |i| {
         const l = left.items[i];
@@ -45,7 +46,7 @@ fn sumDiff(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     return result;
 }
 
-fn similarity(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
+fn similarity(left: Integers, right: Integers) usize {
     var result: usize = 0;
     for (0..left.items.len) |i| {
         const l = left.items[i];
@@ -54,7 +55,7 @@ fn similarity(left: std.ArrayList(usize), right: std.ArrayList(usize)) usize {
     return result;
 }
 
-fn count(values: std.ArrayList(usize), target: usize) usize {
+fn count(values: Integers, target: usize) usize {
     var result: usize = 0;
     for (values.items) |value| {
         result += if (value == target) 1 else 0;

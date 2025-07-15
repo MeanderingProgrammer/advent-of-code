@@ -1,20 +1,25 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
+
+const Strings = std.ArrayList([]const u8);
 
 const Patterns = struct {
-    towels: std.ArrayList([]const u8),
+    towels: Strings,
     cache: std.StringHashMap(usize),
 
-    fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Patterns {
-        var towels = std.ArrayList([]const u8).init(allocator);
+    fn init(allocator: Allocator, lines: Strings) !Patterns {
+        var towels = Strings.init(allocator);
         var it = std.mem.splitSequence(u8, lines.items[0], ", ");
         while (it.next()) |towel| {
             try towels.append(towel);
         }
-        return .{ .towels = towels, .cache = std.StringHashMap(usize).init(allocator) };
+        return .{
+            .towels = towels,
+            .cache = std.StringHashMap(usize).init(allocator),
+        };
     }
 
     fn ways(self: *Patterns, target: []const u8) !usize {
@@ -48,7 +53,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 724388733465031, try arrangements(&patterns, targets));
 }
 
-fn possible(patterns: *Patterns, targets: std.ArrayList([]const u8)) !usize {
+fn possible(patterns: *Patterns, targets: Strings) !usize {
     var result: usize = 0;
     for (targets.items) |target| {
         result += if (try patterns.ways(target) > 0) 1 else 0;
@@ -56,7 +61,7 @@ fn possible(patterns: *Patterns, targets: std.ArrayList([]const u8)) !usize {
     return result;
 }
 
-fn arrangements(patterns: *Patterns, targets: std.ArrayList([]const u8)) !usize {
+fn arrangements(patterns: *Patterns, targets: Strings) !usize {
     var result: usize = 0;
     for (targets.items) |target| {
         result += try patterns.ways(target);

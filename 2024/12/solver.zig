@@ -1,3 +1,5 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Grid = aoc.grid.Grid;
@@ -5,8 +7,6 @@ const Heading = aoc.point.Heading;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Region = struct {
     plant: u8,
@@ -97,7 +97,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 859494, total(regions, true));
 }
 
-fn splitRegions(allocator: Allocator, grid: Grid) !std.ArrayList(Region) {
+fn splitRegions(allocator: Allocator, grid: Grid(u8)) !std.ArrayList(Region) {
     var regions = std.ArrayList(Region).init(allocator);
     var seen = Set(Point).init(allocator);
     var points = grid.points();

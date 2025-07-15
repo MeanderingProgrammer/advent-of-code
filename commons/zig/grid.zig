@@ -1,62 +1,85 @@
-const Point = @import("point.zig").Point;
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const Point = @import("point.zig").Point;
 
-const Map = std.AutoHashMap(Point, u8);
-pub const Grid = struct {
-    allocator: Allocator,
-    height: usize,
-    width: usize,
-    grid: Map,
+pub fn Grid(comptime T: type) type {
+    const Map = std.AutoHashMap(Point, T);
 
-    pub fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Grid {
-        var grid = Map.init(allocator);
-        for (lines.items, 0..) |line, y| {
-            for (line, 0..) |value, x| {
-                const point = Point.init(@intCast(x), @intCast(y));
-                try grid.put(point, value);
+    return struct {
+        allocator: Allocator,
+        grid: Map,
+
+        const Self = @This();
+
+        pub fn init(allocator: Allocator) Self {
+            return .{
+                .allocator = allocator,
+                .grid = Map.init(allocator),
+            };
+        }
+
+        pub fn contains(self: Self, point: Point) bool {
+            return self.grid.contains(point);
+        }
+
+        pub fn get(self: Self, point: Point) ?T {
+            return self.grid.get(point);
+        }
+
+        pub fn put(self: *Self, point: Point, value: T) !void {
+            try self.grid.put(point, value);
+        }
+
+        pub fn addLines(self: *Self, lines: std.ArrayList([]const T)) !void {
+            for (lines.items, 0..) |line, y| {
+                for (line, 0..) |value, x| {
+                    const point = Point.init(@intCast(x), @intCast(y));
+                    try self.put(point, value);
+                }
             }
         }
-        return .{
-            .allocator = allocator,
-            .height = lines.items.len,
-            .width = lines.items[0].len,
-            .grid = grid,
-        };
-    }
 
-    pub fn points(self: Grid) Map.KeyIterator {
-        return self.grid.keyIterator();
-    }
-
-    pub fn get(self: Grid, point: Point) ?u8 {
-        return self.grid.get(point);
-    }
-
-    pub fn set(self: *Grid, point: Point, value: u8) !void {
-        try self.grid.put(point, value);
-    }
-
-    pub fn getValues(self: Grid, value: u8) !std.ArrayList(Point) {
-        var result = std.ArrayList(Point).init(self.allocator);
-        var it = self.grid.iterator();
-        while (it.next()) |entry| {
-            if (entry.value_ptr.* == value) {
-                try result.append(entry.key_ptr.*);
-            }
+        pub fn points(self: Self) Map.KeyIterator {
+            return self.grid.keyIterator();
         }
-        return result;
-    }
 
-    pub fn string(self: Grid) ![]const u8 {
-        var result = std.ArrayList(u8).init(self.allocator);
-        for (0..self.height) |y| {
-            for (0..self.width) |x| {
-                const point = Point.init(@intCast(x), @intCast(y));
-                try result.append(self.get(point).?);
-            }
-            try result.append('\n');
+        pub fn iterator(self: *const Self) Map.Iterator {
+            return self.grid.iterator();
         }
-        return result.items;
-    }
-};
+
+        pub fn getValues(self: *const Self, value: T) !std.ArrayList(Point) {
+            var result = std.ArrayList(Point).init(self.allocator);
+            var it = self.iterator();
+            while (it.next()) |entry| {
+                if (entry.value_ptr.* == value) {
+                    try result.append(entry.key_ptr.*);
+                }
+            }
+            return result;
+        }
+
+        pub fn string(self: Self) ![]const u8 {
+            var bound = Point.init(0, 0);
+            var it = self.points();
+            while (it.next()) |point| {
+                bound.x = @max(bound.x, point.x);
+                bound.y = @max(bound.y, point.y);
+            }
+
+            var result = std.ArrayList(u8).init(self.allocator);
+            var y: i64 = 0;
+            while (y <= bound.y) : (y += 1) {
+                var x: i64 = 0;
+                while (x <= bound.x) : (x += 1) {
+                    if (self.get(Point.init(x, y))) |value| {
+                        try std.fmt.format(result.writer(), "{any}", .{value});
+                    } else {
+                        try result.append('.');
+                    }
+                }
+                try result.append('\n');
+            }
+            return result.items;
+        }
+    };
+}

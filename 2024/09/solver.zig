@@ -1,11 +1,12 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Disk = std.ArrayList(usize);
 const Files = std.ArrayList(File);
+
 const File = struct {
     id: usize,
     size: usize,

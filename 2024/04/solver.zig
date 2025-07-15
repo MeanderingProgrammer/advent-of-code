@@ -1,11 +1,11 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Heading = aoc.point.Heading;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
     try answer.timer(solution);
@@ -17,7 +17,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 1930, part2(grid));
 }
 
-fn part1(grid: Grid) usize {
+fn part1(grid: Grid(u8)) usize {
     var result: usize = 0;
     var points = grid.points();
     while (points.next()) |point| {
@@ -29,7 +29,7 @@ fn part1(grid: Grid) usize {
     return result;
 }
 
-fn part2(grid: Grid) usize {
+fn part2(grid: Grid(u8)) usize {
     var result: usize = 0;
     var points = grid.points();
     while (points.next()) |p1| {
@@ -41,11 +41,11 @@ fn part2(grid: Grid) usize {
     return result;
 }
 
-fn mas(grid: Grid, start: Point, heading: Heading) bool {
+fn mas(grid: Grid(u8), start: Point, heading: Heading) bool {
     return has(grid, start, heading, "MAS") or has(grid, start, heading, "SAM");
 }
 
-fn has(grid: Grid, start: Point, heading: Heading, goal: []const u8) bool {
+fn has(grid: Grid(u8), start: Point, heading: Heading, goal: []const u8) bool {
     var point = start;
     for (goal) |ch| {
         const matches = if (grid.get(point)) |value| ch == value else false;

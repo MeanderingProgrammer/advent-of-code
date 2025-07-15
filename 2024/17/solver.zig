@@ -1,8 +1,8 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Computer = struct {
     a: usize,
@@ -100,7 +100,7 @@ fn solution(allocator: Allocator) !void {
 fn parseRegister(lines: std.ArrayList([]const u8)) !usize {
     // Register A: 729
     var it = std.mem.splitBackwardsScalar(u8, lines.items[0], ' ');
-    return try std.fmt.parseInt(usize, it.first(), 10);
+    return try aoc.util.decimal(usize, it.first());
 }
 
 fn parseMemory(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(usize) {
@@ -109,7 +109,7 @@ fn parseMemory(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.Arra
     var result = std.ArrayList(usize).init(allocator);
     var command_it = std.mem.splitScalar(u8, it.first(), ',');
     while (command_it.next()) |ch| {
-        try result.append(try std.fmt.parseInt(usize, ch, 10));
+        try result.append(try aoc.util.decimal(usize, ch));
     }
     return result;
 }

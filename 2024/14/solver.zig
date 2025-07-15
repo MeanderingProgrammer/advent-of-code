@@ -1,10 +1,10 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Robot = struct {
     position: Point,
@@ -22,8 +22,8 @@ const Robot = struct {
     fn parsePoint(s: []const u8) !Point {
         var n_p = std.mem.splitBackwardsScalar(u8, s, '=');
         var x_y = std.mem.splitScalar(u8, n_p.next().?, ',');
-        const x = try std.fmt.parseInt(i64, x_y.next().?, 10);
-        const y = try std.fmt.parseInt(i64, x_y.next().?, 10);
+        const x = try aoc.util.decimal(i64, x_y.next().?);
+        const y = try aoc.util.decimal(i64, x_y.next().?);
         return Point.init(x, y);
     }
 

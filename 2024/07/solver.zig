@@ -1,8 +1,8 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Equation = struct {
     allocator: Allocator,
@@ -11,13 +11,17 @@ const Equation = struct {
 
     fn init(allocator: Allocator, line: []const u8) !Equation {
         var it = std.mem.splitSequence(u8, line, ": ");
-        const target = try toInt(it.next().?);
+        const target = try aoc.util.decimal(usize, it.next().?);
         var values = std.ArrayList(usize).init(allocator);
         var values_it = std.mem.splitScalar(u8, it.next().?, ' ');
         while (values_it.next()) |value| {
-            try values.append(try toInt(value));
+            try values.append(try aoc.util.decimal(usize, value));
         }
-        return .{ .allocator = allocator, .target = target, .values = values };
+        return .{
+            .allocator = allocator,
+            .target = target,
+            .values = values,
+        };
     }
 
     fn valid(self: Equation, concat: bool) !bool {
@@ -43,10 +47,6 @@ const Equation = struct {
             }
         }
         return std.mem.containsAtLeast(usize, values.items, 1, &.{self.target});
-    }
-
-    fn toInt(s: []const u8) !usize {
-        return std.fmt.parseInt(usize, s, 10);
     }
 };
 

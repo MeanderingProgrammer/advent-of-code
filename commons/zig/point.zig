@@ -88,7 +88,10 @@ pub const Point = struct {
     y: i64,
 
     pub fn init(x: i64, y: i64) Point {
-        return .{ .x = x, .y = y };
+        return .{
+            .x = x,
+            .y = y,
+        };
     }
 
     pub fn negate(self: Point) Point {

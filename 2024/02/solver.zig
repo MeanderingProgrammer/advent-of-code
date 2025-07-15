@@ -1,8 +1,8 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Reader = aoc.reader.Reader;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Report = struct {
     levels: std.ArrayList(usize),
@@ -11,9 +11,11 @@ const Report = struct {
         var levels = std.ArrayList(usize).init(allocator);
         var it = std.mem.tokenizeScalar(u8, line, ' ');
         while (it.next()) |item| {
-            try levels.append(try std.fmt.parseInt(usize, item, 10));
+            try levels.append(try aoc.util.decimal(usize, item));
         }
-        return .{ .levels = levels };
+        return .{
+            .levels = levels,
+        };
     }
 
     fn safe(self: Report, tolerant: bool) bool {

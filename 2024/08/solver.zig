@@ -1,21 +1,26 @@
+const std = @import("std");
+const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
 const Grid = aoc.grid.Grid;
 const Point = aoc.point.Point;
 const Reader = aoc.reader.Reader;
 const Set = aoc.set.Set;
-const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 const Points = std.ArrayList(Point);
 const Groups = std.AutoHashMap(u8, Group);
+
 const Group = struct {
     allocator: Allocator,
-    grid: Grid,
+    grid: Grid(u8),
     points: Points,
 
-    fn init(allocator: Allocator, grid: Grid) Group {
-        return .{ .allocator = allocator, .grid = grid, .points = Points.init(allocator) };
+    fn init(allocator: Allocator, grid: Grid(u8)) Group {
+        return .{
+            .allocator = allocator,
+            .grid = grid,
+            .points = Points.init(allocator),
+        };
     }
 
     fn append(self: *Group, point: Point) !void {
@@ -71,7 +76,7 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 1157, try numAntinodes(allocator, groups, true));
 }
 
-fn group(allocator: Allocator, grid: Grid) !Groups {
+fn group(allocator: Allocator, grid: Grid(u8)) !Groups {
     var result = Groups.init(allocator);
     var points = grid.points();
     while (points.next()) |point| {
