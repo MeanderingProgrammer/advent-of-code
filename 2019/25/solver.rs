@@ -192,8 +192,12 @@ impl DroidBus {
     }
 
     fn get_key(&self) -> i64 {
-        let lines = self.instruction.split('\n').filter(|s| !s.is_empty());
-        let last_line = lines.last().unwrap().split_whitespace().collect::<Vec<_>>();
+        let mut lines = self.instruction.split('\n').filter(|s| !s.is_empty());
+        let last_line = lines
+            .next_back()
+            .unwrap()
+            .split_whitespace()
+            .collect::<Vec<_>>();
         last_line[last_line.len() - 8].parse().unwrap()
     }
 }
