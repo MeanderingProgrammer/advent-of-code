@@ -1,40 +1,22 @@
-from abc import ABC, abstractmethod
-from pathlib import Path
+from typing import Protocol
 
 from pojo.day import Day
 
 
-class Language(ABC):
+class Language(Protocol):
     @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
+    def name(self) -> str: ...
 
     @property
-    @abstractmethod
-    def file(self) -> str:
-        pass
+    def file(self) -> str: ...
 
     @property
-    @abstractmethod
-    def cmd(self) -> str:
-        pass
+    def cmd(self) -> str: ...
 
-    def solution(self, day: Day) -> Path:
-        return day.dir().joinpath(self.file)
+    def test(self) -> list[str]: ...
 
-    @abstractmethod
-    def test_command(self) -> list[str]:
-        pass
+    def build(self) -> list[list[str]]: ...
 
-    @abstractmethod
-    def build_commands(self) -> list[list[str]]:
-        pass
+    def run(self, day: Day, args: list[str]) -> list[str]: ...
 
-    @abstractmethod
-    def run_command(self, day: Day, args: list[str]) -> list[str]:
-        pass
-
-    @abstractmethod
-    def add_build(self, day: Day) -> None:
-        pass
+    def setup(self, day: Day) -> None: ...

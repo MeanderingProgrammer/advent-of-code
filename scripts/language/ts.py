@@ -1,40 +1,24 @@
 from dataclasses import dataclass
-from typing import override
 
-from language.language import Language
 from pojo.day import Day
 
 
-@dataclass
-class TypeScript(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "ts"
+@dataclass(frozen=True)
+class TypeScript:
+    name: str = "ts"
+    file: str = "solver.ts"
+    cmd: str = "bun"
 
-    @property
-    @override
-    def file(self) -> str:
-        return "solver.ts"
-
-    @property
-    @override
-    def cmd(self) -> str:
-        return "bun"
-
-    @override
-    def test_command(self) -> list[str]:
+    def test(self) -> list[str]:
         return []
 
-    @override
-    def build_commands(self) -> list[list[str]]:
+    def build(self) -> list[list[str]]:
         return [["bun", "install", "--save-text-lockfile"]]
 
-    @override
-    def run_command(self, day: Day, args: list[str]) -> list[str]:
-        return ["bun", "run", str(self.solution(day))] + args
+    def run(self, day: Day, args: list[str]) -> list[str]:
+        solution = day.file(self.file)
+        return ["bun", "run", str(solution)] + args
 
-    @override
-    def add_build(self, day: Day) -> None:
-        # No additional build work needed
+    def setup(self, day: Day) -> None:
+        # no additional setup needed
         pass

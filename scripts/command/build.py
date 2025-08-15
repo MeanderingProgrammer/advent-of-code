@@ -47,8 +47,8 @@ class Build(Command):
         return [
             LanguageBuild(
                 name=language.name,
-                build=language.build_commands(),
-                test=language.test_command(),
+                build=language.build(),
+                test=language.test(),
                 executor=executor,
             )
             for language in self.languages

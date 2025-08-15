@@ -1,42 +1,26 @@
 from dataclasses import dataclass
-from typing import override
 
-from language.language import Language
 from pojo.day import Day
 
 
-@dataclass
-class Python(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "python"
+@dataclass(frozen=True)
+class Python:
+    name: str = "python"
+    file: str = "solver.py"
+    cmd: str = "python"
 
-    @property
-    @override
-    def file(self) -> str:
-        return "solver.py"
-
-    @property
-    @override
-    def cmd(self) -> str:
-        return "python"
-
-    @override
-    def test_command(self) -> list[str]:
+    def test(self) -> list[str]:
         return ["pytest", "-s", Python.commons()]
 
-    @override
-    def build_commands(self) -> list[list[str]]:
+    def build(self) -> list[list[str]]:
         return [["pip", "install", "-q", "-e", Python.commons()]]
 
-    @override
-    def run_command(self, day: Day, args: list[str]) -> list[str]:
-        return ["python", str(self.solution(day))] + args
+    def run(self, day: Day, args: list[str]) -> list[str]:
+        solution = day.file(self.file)
+        return ["python", str(solution)] + args
 
-    @override
-    def add_build(self, day: Day) -> None:
-        # No additional build work needed
+    def setup(self, day: Day) -> None:
+        # no additional setup needed
         pass
 
     @staticmethod

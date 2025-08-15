@@ -1,45 +1,26 @@
 from dataclasses import dataclass
-from typing import override
 
-from language.language import Language
 from pojo.day import Day
 
 
-@dataclass
-class Java(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "java"
+@dataclass(frozen=True)
+class Java:
+    name: str = "java"
+    file: str = "src/Solver.java"
+    cmd: str = "gradle"
 
-    @property
-    @override
-    def file(self) -> str:
-        return "src/Solver.java"
-
-    @property
-    @override
-    def cmd(self) -> str:
-        # Supports color with --console=rich
-        # However it destroys the output
-        return "gradle"
-
-    @override
-    def test_command(self) -> list[str]:
+    def test(self) -> list[str]:
         return ["./gradlew", "test"]
 
-    @override
-    def build_commands(self) -> list[list[str]]:
+    def build(self) -> list[list[str]]:
         return [["./gradlew", "build", "-q"]]
 
-    @override
-    def run_command(self, day: Day, args: list[str]) -> list[str]:
+    def run(self, day: Day, args: list[str]) -> list[str]:
         arg = " ".join(args)
         args = [] if len(args) == 0 else [f'--args="{arg}"']
         return ["./gradlew", f":{Java.task(day)}:run", "-q"] + args
 
-    @override
-    def add_build(self, day: Day) -> None:
+    def setup(self, day: Day) -> None:
         f = open("settings.gradle.kts", "a")
         f.write("\n")
         f.write(f'include("{Java.task(day)}")\n')

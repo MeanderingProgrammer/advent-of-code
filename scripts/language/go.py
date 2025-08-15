@@ -1,42 +1,25 @@
 from dataclasses import dataclass
-from typing import override
 
-from language.language import Language
 from pojo.day import Day
 
 
-@dataclass
-class Go(Language):
-    @property
-    @override
-    def name(self) -> str:
-        return "go"
+@dataclass(frozen=True)
+class Go:
+    name: str = "go"
+    file: str = "solver.go"
+    cmd: str = "go"
 
-    @property
-    @override
-    def file(self) -> str:
-        return "solver.go"
-
-    @property
-    @override
-    def cmd(self) -> str:
-        # Does not support color output
-        return "go"
-
-    @override
-    def test_command(self) -> list[str]:
+    def test(self) -> list[str]:
         return ["go", "test", "-v", "./..."]
 
-    @override
-    def build_commands(self) -> list[list[str]]:
-        # For now we use go run, which both compiles and runs our code
+    def build(self) -> list[list[str]]:
+        # for now use go run, which both compiles and runs code
         return []
 
-    @override
-    def run_command(self, day: Day, args: list[str]) -> list[str]:
-        return ["go", "run", str(self.solution(day))] + args
+    def run(self, day: Day, args: list[str]) -> list[str]:
+        solution = day.file(self.file)
+        return ["go", "run", str(solution)] + args
 
-    @override
-    def add_build(self, day: Day) -> None:
-        # No additional build work needed
+    def setup(self, day: Day) -> None:
+        # no additional setup needed
         pass

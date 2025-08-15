@@ -111,7 +111,7 @@ class Runner(Command):
                     day=day,
                     name=language.name,
                     times=times,
-                    command=language.run_command(day, self.args),
+                    command=language.run(day, self.args),
                     executor=executor,
                 )
                 result.append(runner)

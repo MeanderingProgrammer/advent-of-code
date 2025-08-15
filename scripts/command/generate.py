@@ -53,12 +53,12 @@ class Generator(Command):
         # Create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         # Copy over language template if not already present
-        solution = self.language.solution(self.day)
+        solution = self.day.file(self.language.file)
         if solution.exists():
             print(f"Solution already exists under: {solution}")
             return
         self.copy_template()
-        self.language.add_build(self.day)
+        self.language.setup(self.day)
 
     def copy_template(self) -> None:
         template_dir = Path(f"scripts/templates/{self.language.name}")
@@ -68,7 +68,7 @@ class Generator(Command):
             if not template_file.is_file():
                 continue
             file_path = template_file.relative_to(template_dir)
-            destination = self.day.dir().joinpath(file_path)
+            destination = self.day.file(file_path)
             # Create parent directory if needed for nested solution files
             if not destination.parent.exists():
                 destination.parent.mkdir(parents=True)
