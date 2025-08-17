@@ -1,10 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Grid = aoc.grid.Grid;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
 
 const Info = struct {
     score: usize,
@@ -15,12 +11,12 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const grid = try Reader.init(allocator).grid();
+fn solution(c: *aoc.Context) !void {
+    const grid = try aoc.Reader.init(c.allocator()).grid();
     const heads = try grid.getValues('0');
     var info = Info{ .score = 0, .rating = 0 };
     for (heads.items) |head| {
-        const head_info = try process(allocator, grid, head);
+        const head_info = try process(c.allocator(), grid, head);
         info.score += head_info.score;
         info.rating += head_info.rating;
     }
@@ -28,9 +24,9 @@ fn solution(allocator: Allocator) !void {
     answer.part2(usize, 1686, info.rating);
 }
 
-fn process(allocator: Allocator, grid: Grid(u8), head: Point) !Info {
-    var seen = Grid(usize).init(allocator);
-    var queue = std.ArrayList(Point).init(allocator);
+fn process(allocator: std.mem.Allocator, grid: aoc.Grid(u8), head: aoc.Point) !Info {
+    var seen = aoc.Grid(usize).init(allocator);
+    var queue = std.ArrayList(aoc.Point).init(allocator);
     try queue.append(head);
     while (queue.items.len > 0) {
         const point = queue.pop().?;

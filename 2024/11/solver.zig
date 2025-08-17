@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Stones = std.AutoHashMap(usize, usize);
 
@@ -10,14 +8,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const line = try Reader.init(allocator).string();
-    const stones = try getStones(allocator, line);
-    answer.part1(usize, 185894, try evolve(allocator, stones, 25));
-    answer.part2(usize, 221632504974231, try evolve(allocator, stones, 75));
+fn solution(c: *aoc.Context) !void {
+    const line = try aoc.Reader.init(c.allocator()).string();
+    const stones = try getStones(c.allocator(), line);
+    answer.part1(usize, 185894, try evolve(c.allocator(), stones, 25));
+    answer.part2(usize, 221632504974231, try evolve(c.allocator(), stones, 75));
 }
 
-fn getStones(allocator: Allocator, line: []const u8) !Stones {
+fn getStones(allocator: std.mem.Allocator, line: []const u8) !Stones {
     var stones = Stones.init(allocator);
     var it = std.mem.splitScalar(u8, line, ' ');
     while (it.next()) |item| {
@@ -27,7 +25,7 @@ fn getStones(allocator: Allocator, line: []const u8) !Stones {
     return stones;
 }
 
-fn evolve(allocator: Allocator, input: Stones, blinks: usize) !usize {
+fn evolve(allocator: std.mem.Allocator, input: Stones, blinks: usize) !usize {
     var stones = try input.clone();
     for (0..blinks) |_| {
         var next = Stones.init(allocator);

@@ -1,20 +1,17 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const random = std.crypto.random;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
-const Strings = Set([]const u8);
+const Strings = aoc.Set([]const u8);
 
 const Graph = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     nodes: Strings,
     edges: std.StringHashMap(Strings),
     cliques: std.ArrayList(Strings),
 
-    fn init(allocator: Allocator) Graph {
+    fn init(allocator: std.mem.Allocator) Graph {
         return .{
             .allocator = allocator,
             .nodes = Strings.init(allocator),
@@ -79,14 +76,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const lines = try Reader.init(allocator).stringLines();
-    const cliques = try getCliques(allocator, lines);
-    answer.part1(usize, 1215, try part1(allocator, cliques));
-    answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(allocator, cliques));
+fn solution(c: *aoc.Context) !void {
+    const lines = try aoc.Reader.init(c.allocator()).stringLines();
+    const cliques = try getCliques(c.allocator(), lines);
+    answer.part1(usize, 1215, try part1(c.allocator(), cliques));
+    answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(c.allocator(), cliques));
 }
 
-fn getCliques(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
+fn getCliques(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
     var graph = Graph.init(allocator);
     for (lines.items) |line| {
         try graph.add(line);
@@ -98,7 +95,7 @@ fn getCliques(allocator: Allocator, lines: std.ArrayList([]const u8)) !std.Array
     return graph.cliques;
 }
 
-fn part1(allocator: Allocator, cliques: std.ArrayList(Strings)) !usize {
+fn part1(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) !usize {
     var result = Strings.init(allocator);
     for (cliques.items) |clique| {
         if (clique.size() >= 3 and hasChief(clique)) {
@@ -118,7 +115,7 @@ fn hasChief(clique: Strings) bool {
     return false;
 }
 
-fn combinations(allocator: Allocator, result: *Strings, clique: std.ArrayList([]const u8)) !void {
+fn combinations(allocator: std.mem.Allocator, result: *Strings, clique: std.ArrayList([]const u8)) !void {
     for (0..clique.items.len - 2) |i| {
         for (i + 1..clique.items.len - 1) |j| {
             for (j + 1..clique.items.len) |k| {
@@ -137,7 +134,7 @@ fn combinations(allocator: Allocator, result: *Strings, clique: std.ArrayList([]
     }
 }
 
-fn part2(allocator: Allocator, cliques: std.ArrayList(Strings)) ![]const u8 {
+fn part2(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) ![]const u8 {
     var index: usize = 0;
     for (1..cliques.items.len) |i| {
         if (cliques.items[i].size() > cliques.items[index].size()) {
@@ -147,7 +144,7 @@ fn part2(allocator: Allocator, cliques: std.ArrayList(Strings)) ![]const u8 {
     return try str(allocator, cliques.items[index]);
 }
 
-fn str(allocator: Allocator, nodes: Strings) ![]const u8 {
+fn str(allocator: std.mem.Allocator, nodes: Strings) ![]const u8 {
     const result = try nodes.list();
     std.mem.sort([]const u8, result.items, {}, stringLessThan);
     return std.mem.join(allocator, ",", result.items);

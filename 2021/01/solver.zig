@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Integers = std.ArrayList(usize);
 
@@ -10,8 +8,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const values = try Reader.init(allocator).intLines();
+fn solution(c: *aoc.Context) !void {
+    const values = try aoc.Reader.init(c.allocator()).intLines();
     answer.part1(usize, 1292, windowIncreases(values, 1));
     answer.part2(usize, 1262, windowIncreases(values, 3));
 }

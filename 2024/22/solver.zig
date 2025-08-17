@@ -1,9 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const Secrets = std.ArrayList(Secret);
 
@@ -12,7 +9,7 @@ const Secret = struct {
     changes: std.ArrayList(i64),
     sequences: std.AutoHashMap([4]i64, usize),
 
-    fn init(allocator: Allocator, start: usize) Secret {
+    fn init(allocator: std.mem.Allocator, start: usize) Secret {
         return .{
             .value = start,
             .changes = std.ArrayList(i64).init(allocator),
@@ -56,14 +53,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const starts = try Reader.init(allocator).intLines();
-    const secrets = try getSecrets(allocator, starts, 2000);
+fn solution(c: *aoc.Context) !void {
+    const starts = try aoc.Reader.init(c.allocator()).intLines();
+    const secrets = try getSecrets(c.allocator(), starts, 2000);
     answer.part1(usize, 15608699004, part1(secrets));
-    answer.part2(usize, 1791, try part2(allocator, secrets));
+    answer.part2(usize, 1791, try part2(c.allocator(), secrets));
 }
 
-fn getSecrets(allocator: Allocator, starts: std.ArrayList(usize), n: usize) !Secrets {
+fn getSecrets(allocator: std.mem.Allocator, starts: std.ArrayList(usize), n: usize) !Secrets {
     var result = Secrets.init(allocator);
     for (starts.items) |start| {
         var secret = Secret.init(allocator, start);
@@ -81,7 +78,7 @@ fn part1(secrets: Secrets) usize {
     return result;
 }
 
-fn part2(allocator: Allocator, secrets: Secrets) !usize {
+fn part2(allocator: std.mem.Allocator, secrets: Secrets) !usize {
     var result: usize = 0;
     const options = try getOptions(allocator, secrets);
     var it = options.iterator();
@@ -94,8 +91,8 @@ fn part2(allocator: Allocator, secrets: Secrets) !usize {
     return result;
 }
 
-fn getOptions(allocator: Allocator, secrets: Secrets) !Set([4]i64) {
-    var options = Set([4]i64).init(allocator);
+fn getOptions(allocator: std.mem.Allocator, secrets: Secrets) !aoc.Set([4]i64) {
+    var options = aoc.Set([4]i64).init(allocator);
     for (secrets.items) |secret| {
         var it = secret.sequences.keyIterator();
         while (it.next()) |sequence| {

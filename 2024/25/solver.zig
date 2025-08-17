@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Strings = std.ArrayList([]const u8);
 
@@ -60,12 +58,12 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const groups = try Reader.init(allocator).groups();
-    answer.part1(usize, 3439, try solve(allocator, groups));
+fn solution(c: *aoc.Context) !void {
+    const groups = try aoc.Reader.init(c.allocator()).groups();
+    answer.part1(usize, 3439, try solve(c.allocator(), groups));
 }
 
-fn solve(allocator: Allocator, groups: std.ArrayList(Strings)) !usize {
+fn solve(allocator: std.mem.Allocator, groups: std.ArrayList(Strings)) !usize {
     var keys = std.ArrayList([5]usize).init(allocator);
     var locks = std.ArrayList([5]usize).init(allocator);
     for (groups.items) |lines| {

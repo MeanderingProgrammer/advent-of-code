@@ -1,7 +1,10 @@
 pub const answer = @import("answer.zig");
-pub const grid = @import("grid.zig");
-pub const point = @import("point.zig");
-pub const queue = @import("queue.zig");
-pub const reader = @import("reader.zig");
-pub const set = @import("set.zig");
+pub const Context = @import("context.zig").Context;
+pub const Grid = @import("grid.zig").Grid;
+pub const Direction = @import("point.zig").Direction;
+pub const Heading = @import("point.zig").Heading;
+pub const Point = @import("point.zig").Point;
+pub const PriorityQueue = @import("queue.zig").PriorityQueue;
+pub const Reader = @import("reader.zig").Reader;
+pub const Set = @import("set.zig").Set;
 pub const util = @import("util.zig");

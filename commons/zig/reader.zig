@@ -1,15 +1,14 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const Grid = @import("grid.zig").Grid;
 const util = @import("util.zig");
 
 const Strings = std.ArrayList([]const u8);
 
 pub const Reader = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     path: []const u8,
 
-    pub fn init(allocator: Allocator) Reader {
+    pub fn init(allocator: std.mem.Allocator) Reader {
         var args = std.process.args();
 
         const executable = args.next() orelse "";
@@ -51,7 +50,7 @@ pub const Reader = struct {
         return self.lines([]const u8, identity);
     }
 
-    fn identity(_: Allocator, s: []const u8) ![]const u8 {
+    fn identity(_: std.mem.Allocator, s: []const u8) ![]const u8 {
         return s;
     }
 
@@ -59,7 +58,7 @@ pub const Reader = struct {
         return self.lines(usize, decimal);
     }
 
-    fn decimal(_: Allocator, s: []const u8) !usize {
+    fn decimal(_: std.mem.Allocator, s: []const u8) !usize {
         return util.decimal(usize, s);
     }
 
@@ -78,7 +77,7 @@ pub const Reader = struct {
         return result;
     }
 
-    pub fn lines(self: Reader, comptime T: type, f: fn (Allocator, []const u8) anyerror!T) !std.ArrayList(T) {
+    pub fn lines(self: Reader, comptime T: type, f: fn (std.mem.Allocator, []const u8) anyerror!T) !std.ArrayList(T) {
         var result = std.ArrayList(T).init(self.allocator);
         for ((try self.read("\n")).items) |line| {
             try result.append(try f(self.allocator, line));

@@ -1,5 +1,4 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 pub fn Set(comptime T: type) type {
     const Map = comptime switch (@typeInfo(T)) {
@@ -8,12 +7,12 @@ pub fn Set(comptime T: type) type {
     };
 
     return struct {
-        allocator: Allocator,
+        allocator: std.mem.Allocator,
         map: Map,
 
         const Self = @This();
 
-        pub fn init(allocator: Allocator) Self {
+        pub fn init(allocator: std.mem.Allocator) Self {
             return .{
                 .allocator = allocator,
                 .map = Map.init(allocator),

@@ -1,17 +1,16 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const Point = @import("point.zig").Point;
 
 pub fn Grid(comptime T: type) type {
     const Map = std.AutoHashMap(Point, T);
 
     return struct {
-        allocator: Allocator,
+        allocator: std.mem.Allocator,
         grid: Map,
 
         const Self = @This();
 
-        pub fn init(allocator: Allocator) Self {
+        pub fn init(allocator: std.mem.Allocator) Self {
             return .{
                 .allocator = allocator,
                 .grid = Map.init(allocator),

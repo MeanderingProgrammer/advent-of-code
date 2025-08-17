@@ -1,21 +1,14 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Direction = aoc.point.Direction;
-const Grid = aoc.grid.Grid;
-const Point = aoc.point.Point;
-const PriorityQueue = aoc.queue.PriorityQueue;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const Pair = struct { usize, usize };
 
 const State = struct {
-    point: Point,
-    direction: Direction,
+    point: aoc.Point,
+    direction: aoc.Direction,
 
-    fn init(point: Point, direction: Direction) State {
+    fn init(point: aoc.Point, direction: aoc.Direction) State {
         return .{
             .point = point,
             .direction = direction,
@@ -33,13 +26,13 @@ const State = struct {
 };
 
 const Maze = struct {
-    allocator: Allocator,
-    grid: Grid(u8),
-    start: Point,
-    end: Point,
+    allocator: std.mem.Allocator,
+    grid: aoc.Grid(u8),
+    start: aoc.Point,
+    end: aoc.Point,
 
-    fn init(allocator: Allocator, lines: std.ArrayList([]const u8)) !Maze {
-        var grid = Grid(u8).init(allocator);
+    fn init(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !Maze {
+        var grid = aoc.Grid(u8).init(allocator);
         try grid.addLines(lines);
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
@@ -55,19 +48,19 @@ const Maze = struct {
 
     fn solve(self: Maze) !Pair {
         var min_cost: usize = 0;
-        var end_seen = Set(Point).init(self.allocator);
+        var end_seen = aoc.Set(aoc.Point).init(self.allocator);
 
-        const start = State.init(self.start, Direction.e);
+        const start = State.init(self.start, aoc.Direction.e);
 
         var distances = std.AutoHashMap(State, usize).init(self.allocator);
         try distances.put(start, 0);
 
-        var start_seen = Set(Point).init(self.allocator);
+        var start_seen = aoc.Set(aoc.Point).init(self.allocator);
         try start_seen.add(start.point);
-        var state_seen = std.AutoHashMap(State, Set(Point)).init(self.allocator);
+        var state_seen = std.AutoHashMap(State, aoc.Set(aoc.Point)).init(self.allocator);
         try state_seen.put(start, start_seen);
 
-        var q = PriorityQueue(State).init(self.allocator);
+        var q = aoc.PriorityQueue(State).init(self.allocator);
         try q.push(start, 0);
 
         while (!q.isEmpty()) {
@@ -117,9 +110,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const lines = try Reader.init(allocator).stringLines();
-    const maze = try Maze.init(allocator, lines);
+fn solution(c: *aoc.Context) !void {
+    const lines = try aoc.Reader.init(c.allocator()).stringLines();
+    const maze = try Maze.init(c.allocator(), lines);
     const result = try maze.solve();
     answer.part1(usize, 107512, result[0]);
     answer.part2(usize, 561, result[1]);

@@ -1,5 +1,4 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 
 pub fn PriorityQueue(comptime T: type) type {
     const Node = struct {
@@ -13,7 +12,7 @@ pub fn PriorityQueue(comptime T: type) type {
 
         const Self = @This();
 
-        pub fn init(allocator: Allocator) Self {
+        pub fn init(allocator: std.mem.Allocator) Self {
             return .{
                 .list = List.init(allocator),
             };

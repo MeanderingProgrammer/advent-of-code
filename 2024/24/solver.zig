@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Pair = struct { []const u8, []const u8 };
 const Strings = std.ArrayList([]const u8);
@@ -50,11 +48,11 @@ const Gate = struct {
 };
 
 const Graph = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     output: std.StringHashMap(u8),
     gates: std.StringHashMap(Gate),
 
-    fn init(allocator: Allocator) Graph {
+    fn init(allocator: std.mem.Allocator) Graph {
         return .{
             .allocator = allocator,
             .output = std.StringHashMap(u8).init(allocator),
@@ -197,14 +195,14 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const groups = try Reader.init(allocator).groups();
-    const graph = try getGraph(allocator, groups);
+fn solution(c: *aoc.Context) !void {
+    const groups = try aoc.Reader.init(c.allocator()).groups();
+    const graph = try getGraph(c.allocator(), groups);
     answer.part1(usize, 56939028423824, try part1(graph));
-    answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(allocator, graph));
+    answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(c.allocator(), graph));
 }
 
-fn getGraph(allocator: Allocator, groups: std.ArrayList(Strings)) !Graph {
+fn getGraph(allocator: std.mem.Allocator, groups: std.ArrayList(Strings)) !Graph {
     var graph = Graph.init(allocator);
     for (groups.items[0].items) |line| {
         try graph.addOutput(line);
@@ -220,7 +218,7 @@ fn part1(input: Graph) !usize {
     return try graph.simulate();
 }
 
-fn part2(allocator: Allocator, input: Graph) ![]const u8 {
+fn part2(allocator: std.mem.Allocator, input: Graph) ![]const u8 {
     var graph = try input.clone();
     var result = Strings.init(allocator);
     for (1..graph.count('x')) |i| {

@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Pair = struct { usize, usize };
 const Integers = std.ArrayList(usize);
@@ -11,22 +9,22 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const values = try Reader.init(allocator).lines(Pair, toPairs);
-    const left = try unzipSort(allocator, values, true);
-    const right = try unzipSort(allocator, values, false);
+fn solution(c: *aoc.Context) !void {
+    const values = try aoc.Reader.init(c.allocator()).lines(Pair, toPairs);
+    const left = try unzipSort(c.allocator(), values, true);
+    const right = try unzipSort(c.allocator(), values, false);
     answer.part1(usize, 3246517, sumDiff(left, right));
     answer.part2(usize, 29379307, similarity(left, right));
 }
 
-fn toPairs(_: Allocator, line: []const u8) !Pair {
+fn toPairs(_: std.mem.Allocator, line: []const u8) !Pair {
     var pair = std.mem.tokenizeScalar(u8, line, ' ');
     const first = try aoc.util.decimal(usize, pair.next() orelse "");
     const second = try aoc.util.decimal(usize, pair.next() orelse "");
     return .{ first, second };
 }
 
-fn unzipSort(allocator: Allocator, values: std.ArrayList(Pair), first: bool) !Integers {
+fn unzipSort(allocator: std.mem.Allocator, values: std.ArrayList(Pair), first: bool) !Integers {
     var result = Integers.init(allocator);
     for (values.items) |value| {
         const item = if (first) value[0] else value[1];

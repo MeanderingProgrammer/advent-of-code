@@ -1,18 +1,14 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Grid = aoc.grid.Grid;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
 
 const State = struct {
-    allocator: Allocator,
-    point: Point,
-    path: std.ArrayList(Point),
+    allocator: std.mem.Allocator,
+    point: aoc.Point,
+    path: std.ArrayList(aoc.Point),
 
-    fn init(allocator: Allocator, point: Point) !State {
-        var path = std.ArrayList(Point).init(allocator);
+    fn init(allocator: std.mem.Allocator, point: aoc.Point) !State {
+        var path = std.ArrayList(aoc.Point).init(allocator);
         try path.append(point);
         return .{
             .allocator = allocator,
@@ -37,13 +33,13 @@ const State = struct {
 };
 
 const Race = struct {
-    allocator: Allocator,
-    grid: Grid(u8),
-    start: Point,
-    end: Point,
-    paths: std.AutoHashMap(Point, std.ArrayList(Point)),
+    allocator: std.mem.Allocator,
+    grid: aoc.Grid(u8),
+    start: aoc.Point,
+    end: aoc.Point,
+    paths: std.AutoHashMap(aoc.Point, std.ArrayList(aoc.Point)),
 
-    fn init(allocator: Allocator, grid: *Grid(u8)) !Race {
+    fn init(allocator: std.mem.Allocator, grid: *aoc.Grid(u8)) !Race {
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
         try grid.put(start, '.');
@@ -53,7 +49,7 @@ const Race = struct {
             .grid = grid.*,
             .start = start,
             .end = end,
-            .paths = std.AutoHashMap(Point, std.ArrayList(Point)).init(allocator),
+            .paths = std.AutoHashMap(aoc.Point, std.ArrayList(aoc.Point)).init(allocator),
         };
     }
 
@@ -84,7 +80,7 @@ const Race = struct {
             const point = path.items[path.items.len - 1 - i];
             for (rangeStart(point.x, duration)..rangeEnd(point.x, duration)) |x| {
                 for (rangeStart(point.y, duration)..rangeEnd(point.y, duration)) |y| {
-                    const option = Point.init(@intCast(x), @intCast(y));
+                    const option = aoc.Point.init(@intCast(x), @intCast(y));
                     const distance = point.manhattan(option);
                     if (distance < 2 or distance > duration) {
                         continue;
@@ -122,9 +118,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    var grid = try Reader.init(allocator).grid();
-    var race = try Race.init(allocator, &grid);
+fn solution(c: *aoc.Context) !void {
+    var grid = try aoc.Reader.init(c.allocator()).grid();
+    var race = try Race.init(c.allocator(), &grid);
     try race.solve();
     answer.part1(usize, 1399, try race.cheats(100, 2));
     answer.part2(usize, 994807, try race.cheats(100, 20));

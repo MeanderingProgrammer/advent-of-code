@@ -1,8 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Strings = std.ArrayList([]const u8);
 
@@ -10,7 +8,7 @@ const Patterns = struct {
     towels: Strings,
     cache: std.StringHashMap(usize),
 
-    fn init(allocator: Allocator, lines: Strings) !Patterns {
+    fn init(allocator: std.mem.Allocator, lines: Strings) !Patterns {
         var towels = Strings.init(allocator);
         var it = std.mem.splitSequence(u8, lines.items[0], ", ");
         while (it.next()) |towel| {
@@ -45,9 +43,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const groups = try Reader.init(allocator).groups();
-    var patterns = try Patterns.init(allocator, groups.items[0]);
+fn solution(c: *aoc.Context) !void {
+    const groups = try aoc.Reader.init(c.allocator()).groups();
+    var patterns = try Patterns.init(c.allocator(), groups.items[0]);
     const targets = groups.items[1];
     answer.part1(usize, 367, try possible(&patterns, targets));
     answer.part2(usize, 724388733465031, try arrangements(&patterns, targets));

@@ -1,25 +1,19 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Grid = aoc.grid.Grid;
-const Heading = aoc.point.Heading;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const Region = struct {
     plant: u8,
-    points: Set(Point),
+    points: aoc.Set(aoc.Point),
 
-    fn init(allocator: Allocator, plant: u8) Region {
+    fn init(allocator: std.mem.Allocator, plant: u8) Region {
         return .{
             .plant = plant,
-            .points = Set(Point).init(allocator),
+            .points = aoc.Set(aoc.Point).init(allocator),
         };
     }
 
-    fn add(self: *Region, point: Point) !void {
+    fn add(self: *Region, point: aoc.Point) !void {
         try self.points.add(point);
     }
 
@@ -35,19 +29,19 @@ const Region = struct {
             if (self.neighbors(point) == 4) {
                 continue;
             }
-            corners += self.outer(point, Heading.n);
-            corners += self.outer(point, Heading.e);
-            corners += self.outer(point, Heading.s);
-            corners += self.outer(point, Heading.w);
-            corners += self.inner(point, Heading.n, Heading.nw);
-            corners += self.inner(point, Heading.n, Heading.ne);
-            corners += self.inner(point, Heading.s, Heading.sw);
-            corners += self.inner(point, Heading.s, Heading.se);
+            corners += self.outer(point, aoc.Heading.n);
+            corners += self.outer(point, aoc.Heading.e);
+            corners += self.outer(point, aoc.Heading.s);
+            corners += self.outer(point, aoc.Heading.w);
+            corners += self.inner(point, aoc.Heading.n, aoc.Heading.nw);
+            corners += self.inner(point, aoc.Heading.n, aoc.Heading.ne);
+            corners += self.inner(point, aoc.Heading.s, aoc.Heading.sw);
+            corners += self.inner(point, aoc.Heading.s, aoc.Heading.se);
         }
         return corners;
     }
 
-    fn outer(self: Region, point: *Point, start: Heading) usize {
+    fn outer(self: Region, point: *aoc.Point, start: aoc.Heading) usize {
         var heading = start;
         for (0..3) |_| {
             if (self.has(point, heading)) {
@@ -58,11 +52,11 @@ const Region = struct {
         return 1;
     }
 
-    fn inner(self: Region, point: *Point, gap: Heading, edge: Heading) usize {
+    fn inner(self: Region, point: *aoc.Point, gap: aoc.Heading, edge: aoc.Heading) usize {
         return if (!self.has(point, gap) and self.has(point, edge)) 1 else 0;
     }
 
-    fn has(self: Region, point: *Point, heading: Heading) bool {
+    fn has(self: Region, point: *aoc.Point, heading: aoc.Heading) bool {
         return self.points.contains(point.plus(heading.point()));
     }
 
@@ -75,7 +69,7 @@ const Region = struct {
         return result;
     }
 
-    fn neighbors(self: Region, point: *Point) usize {
+    fn neighbors(self: Region, point: *aoc.Point) usize {
         var result: usize = 0;
         for (point.neighbors()) |neighbor| {
             if (self.points.contains(neighbor)) {
@@ -90,16 +84,16 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const grid = try Reader.init(allocator).grid();
-    const regions = try splitRegions(allocator, grid);
+fn solution(c: *aoc.Context) !void {
+    const grid = try aoc.Reader.init(c.allocator()).grid();
+    const regions = try splitRegions(c.allocator(), grid);
     answer.part1(usize, 1451030, total(regions, false));
     answer.part2(usize, 859494, total(regions, true));
 }
 
-fn splitRegions(allocator: Allocator, grid: Grid(u8)) !std.ArrayList(Region) {
+fn splitRegions(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !std.ArrayList(Region) {
     var regions = std.ArrayList(Region).init(allocator);
-    var seen = Set(Point).init(allocator);
+    var seen = aoc.Set(aoc.Point).init(allocator);
     var points = grid.points();
     while (points.next()) |p| {
         const point = p.*;
@@ -107,7 +101,7 @@ fn splitRegions(allocator: Allocator, grid: Grid(u8)) !std.ArrayList(Region) {
             continue;
         }
         var region = Region.init(allocator, grid.get(point).?);
-        var queue = std.ArrayList(Point).init(allocator);
+        var queue = std.ArrayList(aoc.Point).init(allocator);
         try queue.append(point);
         while (queue.items.len > 0) {
             const current = queue.pop().?;

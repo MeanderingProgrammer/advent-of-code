@@ -1,14 +1,10 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const Robot = struct {
-    position: Point,
-    velocity: Point,
+    position: aoc.Point,
+    velocity: aoc.Point,
 
     fn init(line: []const u8) !Robot {
         // p=0,4 v=3,-3
@@ -19,12 +15,12 @@ const Robot = struct {
         };
     }
 
-    fn parsePoint(s: []const u8) !Point {
+    fn parsePoint(s: []const u8) !aoc.Point {
         var n_p = std.mem.splitBackwardsScalar(u8, s, '=');
         var x_y = std.mem.splitScalar(u8, n_p.next().?, ',');
         const x = try aoc.util.decimal(i64, x_y.next().?);
         const y = try aoc.util.decimal(i64, x_y.next().?);
-        return Point.init(x, y);
+        return aoc.Point.init(x, y);
     }
 
     fn move(self: *Robot, x: i64, y: i64) void {
@@ -57,13 +53,13 @@ const Robot = struct {
 };
 
 const Grid = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     x: i64,
     y: i64,
     robots: std.ArrayList(Robot),
     moves: usize,
 
-    fn init(allocator: Allocator, x: i64, y: i64) Grid {
+    fn init(allocator: std.mem.Allocator, x: i64, y: i64) Grid {
         return .{
             .allocator = allocator,
             .x = x,
@@ -95,7 +91,7 @@ const Grid = struct {
     }
 
     fn connected(self: Grid) !bool {
-        var points = Set(Point).init(self.allocator);
+        var points = aoc.Set(aoc.Point).init(self.allocator);
         defer points.deinit();
         for (self.robots.items) |robot| {
             const point = robot.position;
@@ -112,9 +108,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const lines = try Reader.init(allocator).stringLines();
-    var robots = Grid.init(allocator, 101, 103);
+fn solution(c: *aoc.Context) !void {
+    const lines = try aoc.Reader.init(c.allocator()).stringLines();
+    var robots = Grid.init(c.allocator(), 101, 103);
     for (lines.items) |line| {
         const robot = try Robot.init(line);
         try robots.add(robot);

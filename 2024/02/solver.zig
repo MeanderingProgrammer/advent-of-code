@@ -1,13 +1,11 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Report = struct {
     levels: std.ArrayList(usize),
 
-    fn init(allocator: Allocator, line: []const u8) !Report {
+    fn init(allocator: std.mem.Allocator, line: []const u8) !Report {
         var levels = std.ArrayList(usize).init(allocator);
         var it = std.mem.tokenizeScalar(u8, line, ' ');
         while (it.next()) |item| {
@@ -60,8 +58,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const reports = try Reader.init(allocator).lines(Report, Report.init);
+fn solution(c: *aoc.Context) !void {
+    const reports = try aoc.Reader.init(c.allocator()).lines(Report, Report.init);
     answer.part1(usize, 402, countSafe(reports, false));
     answer.part2(usize, 455, countSafe(reports, true));
 }

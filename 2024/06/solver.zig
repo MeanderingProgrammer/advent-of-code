@@ -1,18 +1,12 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Grid = aoc.grid.Grid;
-const Direction = aoc.point.Direction;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const State = struct {
-    point: Point,
-    direction: Direction,
+    point: aoc.Point,
+    direction: aoc.Direction,
 
-    fn next(self: State) Point {
+    fn next(self: State) aoc.Point {
         return self.point.plus(self.direction.point());
     }
 };
@@ -21,18 +15,18 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const grid = try Reader.init(allocator).grid();
+fn solution(c: *aoc.Context) !void {
+    const grid = try aoc.Reader.init(c.allocator()).grid();
     const start = (try grid.getValues('^')).getLast();
-    var path = (try follow(allocator, grid, start, null)).?;
+    var path = (try follow(c.allocator(), grid, start, null)).?;
     answer.part1(usize, 5516, path.size());
-    answer.part2(usize, 2008, try obstacles(allocator, grid, start, path));
+    answer.part2(usize, 2008, try obstacles(c.allocator(), grid, start, path));
 }
 
-fn follow(allocator: Allocator, grid: Grid(u8), start: Point, obstacle: ?Point) !?Set(Point) {
-    var seen = Set(State).init(allocator);
+fn follow(allocator: std.mem.Allocator, grid: aoc.Grid(u8), start: aoc.Point, obstacle: ?aoc.Point) !?aoc.Set(aoc.Point) {
+    var seen = aoc.Set(State).init(allocator);
     defer seen.deinit();
-    var state = State{ .point = start, .direction = Direction.n };
+    var state = State{ .point = start, .direction = aoc.Direction.n };
     while (grid.get(state.point) != null) {
         if (seen.contains(state)) {
             return null;
@@ -45,7 +39,7 @@ fn follow(allocator: Allocator, grid: Grid(u8), start: Point, obstacle: ?Point) 
             state.point = next;
         }
     }
-    var points = Set(Point).init(allocator);
+    var points = aoc.Set(aoc.Point).init(allocator);
     if (obstacle == null) {
         var it = seen.iterator();
         while (it.next()) |s| {
@@ -55,7 +49,7 @@ fn follow(allocator: Allocator, grid: Grid(u8), start: Point, obstacle: ?Point) 
     return points;
 }
 
-fn obstacles(allocator: Allocator, grid: Grid(u8), start: Point, options: Set(Point)) !usize {
+fn obstacles(allocator: std.mem.Allocator, grid: aoc.Grid(u8), start: aoc.Point, options: aoc.Set(aoc.Point)) !usize {
     var result: usize = 0;
     var it = options.iterator();
     while (it.next()) |point| {

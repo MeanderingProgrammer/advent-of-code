@@ -1,15 +1,13 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Reader = aoc.reader.Reader;
 
 const Equation = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     target: usize,
     values: std.ArrayList(usize),
 
-    fn init(allocator: Allocator, line: []const u8) !Equation {
+    fn init(allocator: std.mem.Allocator, line: []const u8) !Equation {
         var it = std.mem.splitSequence(u8, line, ": ");
         const target = try aoc.util.decimal(usize, it.next().?);
         var values = std.ArrayList(usize).init(allocator);
@@ -54,8 +52,8 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const equations = try Reader.init(allocator).lines(Equation, Equation.init);
+fn solution(c: *aoc.Context) !void {
+    const equations = try aoc.Reader.init(c.allocator()).lines(Equation, Equation.init);
     answer.part1(usize, 1289579105366, try calibration(equations, false));
     answer.part2(usize, 92148721834692, try calibration(equations, true));
 }

@@ -1,10 +1,6 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
-
 const Counts = std.AutoHashMap(Section, usize);
 const Sections = std.ArrayList(Section);
 
@@ -14,45 +10,45 @@ const Section = struct {
 };
 
 const Keypad = struct {
-    allocator: Allocator,
-    grid: std.AutoHashMap(u8, Point),
-    home: Point,
-    illegal: Point,
+    allocator: std.mem.Allocator,
+    grid: std.AutoHashMap(u8, aoc.Point),
+    home: aoc.Point,
+    illegal: aoc.Point,
     cache: std.AutoHashMap(Section, Sections),
 
-    fn init(allocator: Allocator, numeric: bool) !Keypad {
-        var grid = std.AutoHashMap(u8, Point).init(allocator);
+    fn init(allocator: std.mem.Allocator, numeric: bool) !Keypad {
+        var grid = std.AutoHashMap(u8, aoc.Point).init(allocator);
         if (numeric) {
             // | 7 | 8 | 9 |
-            try grid.put('7', Point.init(0, 0));
-            try grid.put('8', Point.init(1, 0));
-            try grid.put('9', Point.init(2, 0));
+            try grid.put('7', aoc.Point.init(0, 0));
+            try grid.put('8', aoc.Point.init(1, 0));
+            try grid.put('9', aoc.Point.init(2, 0));
             // | 4 | 5 | 6 |
-            try grid.put('4', Point.init(0, 1));
-            try grid.put('5', Point.init(1, 1));
-            try grid.put('6', Point.init(2, 1));
+            try grid.put('4', aoc.Point.init(0, 1));
+            try grid.put('5', aoc.Point.init(1, 1));
+            try grid.put('6', aoc.Point.init(2, 1));
             // | 1 | 2 | 3 |
-            try grid.put('1', Point.init(0, 2));
-            try grid.put('2', Point.init(1, 2));
-            try grid.put('3', Point.init(2, 2));
+            try grid.put('1', aoc.Point.init(0, 2));
+            try grid.put('2', aoc.Point.init(1, 2));
+            try grid.put('3', aoc.Point.init(2, 2));
             // |   | 0 | A |
-            try grid.put('0', Point.init(1, 3));
-            try grid.put('A', Point.init(2, 3));
+            try grid.put('0', aoc.Point.init(1, 3));
+            try grid.put('A', aoc.Point.init(2, 3));
         } else {
             // |   | ^ | A |
-            try grid.put('^', Point.init(1, 0));
-            try grid.put('A', Point.init(2, 0));
+            try grid.put('^', aoc.Point.init(1, 0));
+            try grid.put('A', aoc.Point.init(2, 0));
             // | < | v | > |
-            try grid.put('<', Point.init(0, 1));
-            try grid.put('v', Point.init(1, 1));
-            try grid.put('>', Point.init(2, 1));
+            try grid.put('<', aoc.Point.init(0, 1));
+            try grid.put('v', aoc.Point.init(1, 1));
+            try grid.put('>', aoc.Point.init(2, 1));
         }
         const home = grid.get('A').?;
         return .{
             .allocator = allocator,
             .grid = grid,
             .home = home,
-            .illegal = Point.init(0, home.y),
+            .illegal = aoc.Point.init(0, home.y),
             .cache = std.AutoHashMap(Section, Sections).init(allocator),
         };
     }
@@ -83,9 +79,9 @@ const Keypad = struct {
         const end = self.grid.get(section.end).?;
 
         // Moving vertically first is illegal since we would enter illegal corner
-        const vertical = Point.init(start.x, end.y);
+        const vertical = aoc.Point.init(start.x, end.y);
         // Moving horizontally first is illegal since we would enter illegal corner
-        const horizontal = Point.init(end.x, start.y);
+        const horizontal = aoc.Point.init(end.x, start.y);
 
         const dx = end.x - start.x;
         const dy = end.y - start.y;
@@ -117,12 +113,12 @@ const Keypad = struct {
 };
 
 const Layers = struct {
-    allocator: Allocator,
+    allocator: std.mem.Allocator,
     numeric: Keypad,
     direction: Keypad,
     size: usize,
 
-    fn init(allocator: Allocator, size: usize) !Layers {
+    fn init(allocator: std.mem.Allocator, size: usize) !Layers {
         return .{
             .allocator = allocator,
             .numeric = try Keypad.init(allocator, true),
@@ -170,13 +166,13 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const sequences = try Reader.init(allocator).stringLines();
-    answer.part1(usize, 155252, try solve(allocator, sequences, 2));
-    answer.part2(usize, 195664513288128, try solve(allocator, sequences, 25));
+fn solution(c: *aoc.Context) !void {
+    const sequences = try aoc.Reader.init(c.allocator()).stringLines();
+    answer.part1(usize, 155252, try solve(c.allocator(), sequences, 2));
+    answer.part2(usize, 195664513288128, try solve(c.allocator(), sequences, 25));
 }
 
-fn solve(allocator: Allocator, sequences: std.ArrayList([]const u8), size: usize) !usize {
+fn solve(allocator: std.mem.Allocator, sequences: std.ArrayList([]const u8), size: usize) !usize {
     var layers = try Layers.init(allocator, size);
     var result: usize = 0;
     for (sequences.items) |sequence| {

@@ -1,14 +1,11 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
 
 pub const Machine = struct {
-    a: Point,
-    b: Point,
-    prize: Point,
+    a: aoc.Point,
+    b: aoc.Point,
+    prize: aoc.Point,
 
     fn init(lines: std.ArrayList([]const u8)) !Machine {
         return .{
@@ -21,13 +18,13 @@ pub const Machine = struct {
         };
     }
 
-    fn parsePoint(line: []const u8) !Point {
+    fn parsePoint(line: []const u8) !aoc.Point {
         var label = std.mem.splitBackwardsScalar(u8, line, ':');
         const section = label.first();
         var it = std.mem.splitScalar(u8, section, ',');
         const x = try parseCoord(it.next().?);
         const y = try parseCoord(it.next().?);
-        return Point.init(x, y);
+        return aoc.Point.init(x, y);
     }
 
     fn parseCoord(part: []const u8) !i64 {
@@ -79,9 +76,9 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const groups = try Reader.init(allocator).groups();
-    var machines = std.ArrayList(Machine).init(allocator);
+fn solution(c: *aoc.Context) !void {
+    const groups = try aoc.Reader.init(c.allocator()).groups();
+    var machines = std.ArrayList(Machine).init(c.allocator());
     for (groups.items) |lines| {
         try machines.append(try Machine.init(lines));
     }

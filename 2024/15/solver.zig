@@ -1,22 +1,16 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Direction = aoc.point.Direction;
-const Grid = aoc.grid.Grid;
-const Point = aoc.point.Point;
-const Reader = aoc.reader.Reader;
-const Set = aoc.set.Set;
 
 const Strings = std.ArrayList([]const u8);
 
 const Warehouse = struct {
-    allocator: Allocator,
-    grid: Grid(u8),
-    position: Point,
+    allocator: std.mem.Allocator,
+    grid: aoc.Grid(u8),
+    position: aoc.Point,
 
-    fn init(allocator: Allocator, lines: Strings, wide: bool) !Warehouse {
-        var grid = Grid(u8).init(allocator);
+    fn init(allocator: std.mem.Allocator, lines: Strings, wide: bool) !Warehouse {
+        var grid = aoc.Grid(u8).init(allocator);
         try grid.addLines(if (wide) try enlarge(allocator, lines) else lines);
         const start = (try grid.getValues('@')).getLast();
         try grid.put(start, '.');
@@ -27,7 +21,7 @@ const Warehouse = struct {
         };
     }
 
-    fn enlarge(allocator: Allocator, lines: Strings) !Strings {
+    fn enlarge(allocator: std.mem.Allocator, lines: Strings) !Strings {
         var result = Strings.init(allocator);
         for (lines.items) |line| {
             var l = std.ArrayList(u8).init(allocator);
@@ -47,7 +41,7 @@ const Warehouse = struct {
         return result;
     }
 
-    fn go(self: *Warehouse, direction: Direction) !void {
+    fn go(self: *Warehouse, direction: aoc.Direction) !void {
         if (try self.move(direction)) |points| {
             self.position = self.position.plus(direction.point());
             var unset_it = points.iterator();
@@ -64,11 +58,11 @@ const Warehouse = struct {
         }
     }
 
-    fn move(self: *Warehouse, direction: Direction) !?Grid(u8) {
-        var result = Grid(u8).init(self.allocator);
+    fn move(self: *Warehouse, direction: aoc.Direction) !?aoc.Grid(u8) {
+        var result = aoc.Grid(u8).init(self.allocator);
         try result.put(self.position, '.');
         while (true) {
-            var additional = Set(Point).init(self.allocator);
+            var additional = aoc.Set(aoc.Point).init(self.allocator);
             var exiting_it = result.points();
             while (exiting_it.next()) |p| {
                 const point = p.*.plus(direction.point());
@@ -80,10 +74,10 @@ const Warehouse = struct {
                         try additional.add(point);
                     } else if (value == '[') {
                         try additional.add(point);
-                        try additional.add(point.plus(Direction.e.point()));
+                        try additional.add(point.plus(aoc.Direction.e.point()));
                     } else if (value == ']') {
                         try additional.add(point);
-                        try additional.add(point.plus(Direction.w.point()));
+                        try additional.add(point.plus(aoc.Direction.w.point()));
                     }
                 }
             }
@@ -117,25 +111,25 @@ pub fn main() !void {
     try answer.timer(solution);
 }
 
-fn solution(allocator: Allocator) !void {
-    const groups = try Reader.init(allocator).groups();
+fn solution(c: *aoc.Context) !void {
+    const groups = try aoc.Reader.init(c.allocator()).groups();
     const lines = groups.items[0];
-    const directions = try getDirections(allocator, groups.items[1]);
-    answer.part1(i64, 1442192, try solve(allocator, lines, false, directions));
-    answer.part2(i64, 1448458, try solve(allocator, lines, true, directions));
+    const directions = try getDirections(c.allocator(), groups.items[1]);
+    answer.part1(i64, 1442192, try solve(c.allocator(), lines, false, directions));
+    answer.part2(i64, 1448458, try solve(c.allocator(), lines, true, directions));
 }
 
-fn getDirections(allocator: Allocator, lines: Strings) !std.ArrayList(Direction) {
-    var directions = std.ArrayList(Direction).init(allocator);
+fn getDirections(allocator: std.mem.Allocator, lines: Strings) !std.ArrayList(aoc.Direction) {
+    var directions = std.ArrayList(aoc.Direction).init(allocator);
     for (lines.items) |line| {
         for (line) |ch| {
-            try directions.append(Direction.init(ch).?);
+            try directions.append(aoc.Direction.init(ch).?);
         }
     }
     return directions;
 }
 
-fn solve(allocator: Allocator, lines: Strings, wide: bool, directions: std.ArrayList(Direction)) !i64 {
+fn solve(allocator: std.mem.Allocator, lines: Strings, wide: bool, directions: std.ArrayList(aoc.Direction)) !i64 {
     var warehouse = try Warehouse.init(allocator, lines, wide);
     for (directions.items) |direction| {
         try warehouse.go(direction);
