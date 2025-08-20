@@ -1,31 +1,40 @@
+# docker build -t advent .
+# docker run --rm -it advent /bin/bash
 FROM ubuntu:24.04
 
-# copy working directory
-COPY . /advent
-WORKDIR /advent
+# settings
+ARG PYTHON_VERSION="3.13"
+ARG RUST_VERSION="1.87.0"
+ENV DEBIAN_FRONTEND=noninteractive
 
-# basic setup
+# copy project directory
+WORKDIR /app
+COPY . .
+
+# setup: install
 RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    curl \
     build-essential \
+    curl \
+    software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-# python
-RUN add-apt-repository ppa:deadsnakes/ppa -y \
-    && apt-get update && apt-get install -y \
-    python3.13-venv \
+# setup: repositories
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+
+# python: install
+RUN apt-get update && apt-get install -y \
+    python${PYTHON_VERSION}-venv \
     && rm -rf /var/lib/apt/lists/*
 
-# python environment
-RUN python3.13 -m venv venv
-ENV PATH="/advent/venv/bin:$PATH"
+# python: setup
+RUN python${PYTHON_VERSION} -m venv venv
+ENV PATH="/app/venv/bin:$PATH"
 RUN pip install -r scripts/requirements.txt
 
-# rust
+# rust: install
 RUN apt-get update && apt-get install -y \
     rustup \
     && rm -rf /var/lib/apt/lists/*
 
-# rust environment
-RUN rustup toolchain install 1.87.0 && rustup default 1.87.0
+# rust: setup
+RUN rustup default ${RUST_VERSION}
