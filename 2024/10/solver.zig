@@ -1,4 +1,7 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -24,9 +27,9 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 1686, info.rating);
 }
 
-fn process(allocator: std.mem.Allocator, grid: aoc.Grid(u8), head: aoc.Point) !Info {
+fn process(allocator: Allocator, grid: aoc.Grid(u8), head: aoc.Point) !Info {
     var seen = aoc.Grid(usize).init(allocator);
-    var queue = std.ArrayList(aoc.Point).init(allocator);
+    var queue = List(aoc.Point).init(allocator);
     try queue.append(head);
     while (queue.items.len > 0) {
         const point = queue.pop().?;

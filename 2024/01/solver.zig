@@ -1,9 +1,11 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const Pair = struct { usize, usize };
-const Integers = std.ArrayList(usize);
 
 pub fn main() !void {
     try answer.timer(solution);
@@ -17,15 +19,15 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 29379307, similarity(left, right));
 }
 
-fn toPairs(_: std.mem.Allocator, line: []const u8) !Pair {
+fn toPairs(_: Allocator, line: []const u8) !Pair {
     var pair = std.mem.tokenizeScalar(u8, line, ' ');
     const first = try aoc.util.decimal(usize, pair.next() orelse "");
     const second = try aoc.util.decimal(usize, pair.next() orelse "");
     return .{ first, second };
 }
 
-fn unzipSort(allocator: std.mem.Allocator, values: std.ArrayList(Pair), first: bool) !Integers {
-    var result = Integers.init(allocator);
+fn unzipSort(allocator: Allocator, values: List(Pair), first: bool) !List(usize) {
+    var result = List(usize).init(allocator);
     for (values.items) |value| {
         const item = if (first) value[0] else value[1];
         try result.append(item);
@@ -34,7 +36,7 @@ fn unzipSort(allocator: std.mem.Allocator, values: std.ArrayList(Pair), first: b
     return result;
 }
 
-fn sumDiff(left: Integers, right: Integers) usize {
+fn sumDiff(left: List(usize), right: List(usize)) usize {
     var result: usize = 0;
     for (0..left.items.len) |i| {
         const l = left.items[i];
@@ -44,7 +46,7 @@ fn sumDiff(left: Integers, right: Integers) usize {
     return result;
 }
 
-fn similarity(left: Integers, right: Integers) usize {
+fn similarity(left: List(usize), right: List(usize)) usize {
     var result: usize = 0;
     for (0..left.items.len) |i| {
         const l = left.items[i];
@@ -53,7 +55,7 @@ fn similarity(left: Integers, right: Integers) usize {
     return result;
 }
 
-fn count(values: Integers, target: usize) usize {
+fn count(values: List(usize), target: usize) usize {
     var result: usize = 0;
     for (values.items) |value| {
         result += if (value == target) 1 else 0;

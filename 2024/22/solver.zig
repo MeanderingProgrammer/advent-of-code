@@ -1,19 +1,21 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
-const Secrets = std.ArrayList(Secret);
-
 const Secret = struct {
     value: usize,
-    changes: std.ArrayList(i64),
-    sequences: std.AutoHashMap([4]i64, usize),
+    changes: List(i64),
+    sequences: Map([4]i64, usize),
 
-    fn init(allocator: std.mem.Allocator, start: usize) Secret {
+    fn init(allocator: Allocator, start: usize) Secret {
         return .{
             .value = start,
-            .changes = std.ArrayList(i64).init(allocator),
-            .sequences = std.AutoHashMap([4]i64, usize).init(allocator),
+            .changes = List(i64).init(allocator),
+            .sequences = Map([4]i64, usize).init(allocator),
         };
     }
 
@@ -60,8 +62,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 1791, try part2(c.allocator(), secrets));
 }
 
-fn getSecrets(allocator: std.mem.Allocator, starts: std.ArrayList(usize), n: usize) !Secrets {
-    var result = Secrets.init(allocator);
+fn getSecrets(allocator: Allocator, starts: List(usize), n: usize) !List(Secret) {
+    var result = List(Secret).init(allocator);
     for (starts.items) |start| {
         var secret = Secret.init(allocator, start);
         try secret.evolve(n);
@@ -70,7 +72,7 @@ fn getSecrets(allocator: std.mem.Allocator, starts: std.ArrayList(usize), n: usi
     return result;
 }
 
-fn part1(secrets: Secrets) usize {
+fn part1(secrets: List(Secret)) usize {
     var result: usize = 0;
     for (secrets.items) |secret| {
         result += secret.value;
@@ -78,7 +80,7 @@ fn part1(secrets: Secrets) usize {
     return result;
 }
 
-fn part2(allocator: std.mem.Allocator, secrets: Secrets) !usize {
+fn part2(allocator: Allocator, secrets: List(Secret)) !usize {
     var result: usize = 0;
     const options = try getOptions(allocator, secrets);
     var it = options.iterator();
@@ -91,7 +93,7 @@ fn part2(allocator: std.mem.Allocator, secrets: Secrets) !usize {
     return result;
 }
 
-fn getOptions(allocator: std.mem.Allocator, secrets: Secrets) !aoc.Set([4]i64) {
+fn getOptions(allocator: Allocator, secrets: List(Secret)) !aoc.Set([4]i64) {
     var options = aoc.Set([4]i64).init(allocator);
     for (secrets.items) |secret| {
         var it = secret.sequences.keyIterator();
@@ -102,7 +104,7 @@ fn getOptions(allocator: std.mem.Allocator, secrets: Secrets) !aoc.Set([4]i64) {
     return options;
 }
 
-fn bananas(secrets: Secrets, sequence: [4]i64) usize {
+fn bananas(secrets: List(Secret), sequence: [4]i64) usize {
     var result: usize = 0;
     for (secrets.items) |secret| {
         if (secret.sequences.get(sequence)) |price| {

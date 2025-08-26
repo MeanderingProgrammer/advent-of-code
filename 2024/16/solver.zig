@@ -1,4 +1,8 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -26,12 +30,12 @@ const State = struct {
 };
 
 const Maze = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     grid: aoc.Grid(u8),
     start: aoc.Point,
     end: aoc.Point,
 
-    fn init(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !Maze {
+    fn init(allocator: Allocator, lines: List([]const u8)) !Maze {
         var grid = aoc.Grid(u8).init(allocator);
         try grid.addLines(lines);
         const start = (try grid.getValues('S')).getLast();
@@ -52,12 +56,12 @@ const Maze = struct {
 
         const start = State.init(self.start, aoc.Direction.e);
 
-        var distances = std.AutoHashMap(State, usize).init(self.allocator);
+        var distances = Map(State, usize).init(self.allocator);
         try distances.put(start, 0);
 
         var start_seen = aoc.Set(aoc.Point).init(self.allocator);
         try start_seen.add(start.point);
-        var state_seen = std.AutoHashMap(State, aoc.Set(aoc.Point)).init(self.allocator);
+        var state_seen = Map(State, aoc.Set(aoc.Point)).init(self.allocator);
         try state_seen.put(start, start_seen);
 
         var q = aoc.PriorityQueue(State).init(self.allocator);

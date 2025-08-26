@@ -1,10 +1,13 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const Search = struct {
-    allocator: std.mem.Allocator,
-    points: std.ArrayList(aoc.Point),
+    allocator: Allocator,
+    points: List(aoc.Point),
     size: i64,
 
     fn solve(self: Search, n: usize) !?usize {
@@ -17,7 +20,7 @@ const Search = struct {
         var seen = aoc.Set(aoc.Point).init(self.allocator);
         defer seen.deinit();
 
-        var q = std.ArrayList(struct { aoc.Point, usize }).init(self.allocator);
+        var q = List(struct { aoc.Point, usize }).init(self.allocator);
         defer q.deinit();
         try q.append(.{ aoc.Point.init(0, 0), 0 });
 
@@ -58,7 +61,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2([]const u8, "56,29", try part2(c.allocator(), search, params[1]));
 }
 
-fn parsePoint(_: std.mem.Allocator, line: []const u8) !aoc.Point {
+fn parsePoint(_: Allocator, line: []const u8) !aoc.Point {
     var it = std.mem.splitScalar(u8, line, ',');
     const x = try aoc.util.decimal(i64, it.next().?);
     const y = try aoc.util.decimal(i64, it.next().?);
@@ -69,7 +72,7 @@ fn part1(search: Search, n: usize) !usize {
     return (try search.solve(n)).?;
 }
 
-fn part2(allocator: std.mem.Allocator, search: Search, start: usize) ![]const u8 {
+fn part2(allocator: Allocator, search: Search, start: usize) ![]const u8 {
     var lo: usize = start;
     var hi: usize = search.points.items.len - 1;
     while (lo < hi) {

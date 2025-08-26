@@ -1,16 +1,19 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const Equation = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     target: usize,
-    values: std.ArrayList(usize),
+    values: List(usize),
 
-    fn init(allocator: std.mem.Allocator, line: []const u8) !Equation {
+    fn init(allocator: Allocator, line: []const u8) !Equation {
         var it = std.mem.splitSequence(u8, line, ": ");
         const target = try aoc.util.decimal(usize, it.next().?);
-        var values = std.ArrayList(usize).init(allocator);
+        var values = List(usize).init(allocator);
         var values_it = std.mem.splitScalar(u8, it.next().?, ' ');
         while (values_it.next()) |value| {
             try values.append(try aoc.util.decimal(usize, value));
@@ -23,7 +26,7 @@ const Equation = struct {
     }
 
     fn valid(self: Equation, concat: bool) !bool {
-        var values = std.ArrayList(usize).init(self.allocator);
+        var values = List(usize).init(self.allocator);
         defer values.deinit();
         try values.append(self.values.items[0]);
         for (1..self.values.items.len) |i| {
@@ -58,7 +61,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 92148721834692, try calibration(equations, true));
 }
 
-fn calibration(equations: std.ArrayList(Equation), concat: bool) !usize {
+fn calibration(equations: List(Equation), concat: bool) !usize {
     var result: usize = 0;
     for (equations.items) |equation| {
         result += if (try equation.valid(concat)) equation.target else 0;

@@ -1,4 +1,6 @@
 const std = @import("std");
+const List = std.array_list.Managed;
+
 const Point = @import("point.zig").Point;
 
 pub fn Grid(comptime T: type) type {
@@ -29,7 +31,7 @@ pub fn Grid(comptime T: type) type {
             try self.grid.put(point, value);
         }
 
-        pub fn addLines(self: *Self, lines: std.ArrayList([]const T)) !void {
+        pub fn addLines(self: *Self, lines: List([]const T)) !void {
             for (lines.items, 0..) |line, y| {
                 for (line, 0..) |value, x| {
                     const point = Point.init(@intCast(x), @intCast(y));
@@ -46,8 +48,8 @@ pub fn Grid(comptime T: type) type {
             return self.grid.iterator();
         }
 
-        pub fn getValues(self: *const Self, value: T) !std.ArrayList(Point) {
-            var result = std.ArrayList(Point).init(self.allocator);
+        pub fn getValues(self: *const Self, value: T) !List(Point) {
+            var result = List(Point).init(self.allocator);
             var it = self.iterator();
             while (it.next()) |entry| {
                 if (entry.value_ptr.* == value) {
@@ -65,7 +67,7 @@ pub fn Grid(comptime T: type) type {
                 bound.y = @max(bound.y, point.y);
             }
 
-            var result = std.ArrayList(u8).init(self.allocator);
+            var result = List(u8).init(self.allocator);
             var y: i64 = 0;
             while (y <= bound.y) : (y += 1) {
                 var x: i64 = 0;

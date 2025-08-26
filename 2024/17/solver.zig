@@ -1,4 +1,7 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -6,18 +9,18 @@ const Computer = struct {
     a: usize,
     b: usize,
     c: usize,
-    memory: std.ArrayList(usize),
+    memory: List(usize),
     ip: usize,
-    out: std.ArrayList(usize),
+    out: List(usize),
 
-    fn init(allocator: std.mem.Allocator, a: usize, memory: std.ArrayList(usize)) !Computer {
+    fn init(allocator: Allocator, a: usize, memory: List(usize)) !Computer {
         return .{
             .a = a,
             .b = 0,
             .c = 0,
             .memory = memory,
             .ip = 0,
-            .out = std.ArrayList(usize).init(allocator),
+            .out = List(usize).init(allocator),
         };
     }
 
@@ -95,16 +98,16 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 109020013201563, try part2(c.allocator(), &computer));
 }
 
-fn parseRegister(lines: std.ArrayList([]const u8)) !usize {
+fn parseRegister(lines: List([]const u8)) !usize {
     // Register A: 729
     var it = std.mem.splitBackwardsScalar(u8, lines.items[0], ' ');
     return try aoc.util.decimal(usize, it.first());
 }
 
-fn parseMemory(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(usize) {
+fn parseMemory(allocator: Allocator, lines: List([]const u8)) !List(usize) {
     // Program: 0,1,5,4,3,0
     var it = std.mem.splitBackwardsScalar(u8, lines.items[0], ' ');
-    var result = std.ArrayList(usize).init(allocator);
+    var result = List(usize).init(allocator);
     var command_it = std.mem.splitScalar(u8, it.first(), ',');
     while (command_it.next()) |ch| {
         try result.append(try aoc.util.decimal(usize, ch));
@@ -112,20 +115,20 @@ fn parseMemory(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !
     return result;
 }
 
-fn part1(allocator: std.mem.Allocator, computer: *Computer) ![]const u8 {
+fn part1(allocator: Allocator, computer: *Computer) ![]const u8 {
     try computer.run();
-    var values = std.ArrayList([]const u8).init(allocator);
+    var values = List([]const u8).init(allocator);
     for (computer.out.items) |value| {
         try values.append(try std.fmt.allocPrint(allocator, "{}", .{value}));
     }
     return try std.mem.join(allocator, ",", values.items);
 }
 
-fn part2(allocator: std.mem.Allocator, computer: *Computer) !usize {
+fn part2(allocator: Allocator, computer: *Computer) !usize {
     return (try recursiveBacktracking(allocator, computer, 0, 0)).?;
 }
 
-fn recursiveBacktracking(allocator: std.mem.Allocator, computer: *Computer, a: usize, i: usize) !?usize {
+fn recursiveBacktracking(allocator: Allocator, computer: *Computer, a: usize, i: usize) !?usize {
     // There are 4 key aspects of the input program:
     //  1) 5,5 -> out.add(b % 8)        add bottom 3 bits of "b" to the output
     //  2) 2,4 -> b = a % 8             bottom 3 bits of "b" are determined by bottom 3 bits
@@ -155,8 +158,8 @@ fn recursiveBacktracking(allocator: std.mem.Allocator, computer: *Computer, a: u
     return null;
 }
 
-fn getOptions(allocator: std.mem.Allocator, computer: *Computer, out: usize, a: usize) !std.ArrayList(usize) {
-    var result = std.ArrayList(usize).init(allocator);
+fn getOptions(allocator: Allocator, computer: *Computer, out: usize, a: usize) !List(usize) {
+    var result = List(usize).init(allocator);
     for (0..8) |i| {
         computer.reset(a + i);
         try computer.run();

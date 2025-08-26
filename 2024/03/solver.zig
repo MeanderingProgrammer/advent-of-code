@@ -1,4 +1,6 @@
 const std = @import("std");
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -113,7 +115,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 92626942, parseCommands(commands, true));
 }
 
-fn parseCommands(commands: std.ArrayList([]const u8), toggle: bool) usize {
+fn parseCommands(commands: List([]const u8), toggle: bool) usize {
     var parser = Parser.init(toggle);
     for (commands.items) |command| {
         for (command) |ch| {

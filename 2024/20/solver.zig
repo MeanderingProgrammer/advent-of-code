@@ -1,14 +1,18 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const State = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     point: aoc.Point,
-    path: std.ArrayList(aoc.Point),
+    path: List(aoc.Point),
 
-    fn init(allocator: std.mem.Allocator, point: aoc.Point) !State {
-        var path = std.ArrayList(aoc.Point).init(allocator);
+    fn init(allocator: Allocator, point: aoc.Point) !State {
+        var path = List(aoc.Point).init(allocator);
         try path.append(point);
         return .{
             .allocator = allocator,
@@ -17,8 +21,8 @@ const State = struct {
         };
     }
 
-    fn neighbors(self: State) !std.ArrayList(State) {
-        var result = std.ArrayList(State).init(self.allocator);
+    fn neighbors(self: State) !List(State) {
+        var result = List(State).init(self.allocator);
         for (self.point.neighbors()) |point| {
             var path = try self.path.clone();
             try path.append(point);
@@ -33,13 +37,13 @@ const State = struct {
 };
 
 const Race = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     grid: aoc.Grid(u8),
     start: aoc.Point,
     end: aoc.Point,
-    paths: std.AutoHashMap(aoc.Point, std.ArrayList(aoc.Point)),
+    paths: Map(aoc.Point, List(aoc.Point)),
 
-    fn init(allocator: std.mem.Allocator, grid: *aoc.Grid(u8)) !Race {
+    fn init(allocator: Allocator, grid: *aoc.Grid(u8)) !Race {
         const start = (try grid.getValues('S')).getLast();
         const end = (try grid.getValues('E')).getLast();
         try grid.put(start, '.');
@@ -49,12 +53,12 @@ const Race = struct {
             .grid = grid.*,
             .start = start,
             .end = end,
-            .paths = std.AutoHashMap(aoc.Point, std.ArrayList(aoc.Point)).init(allocator),
+            .paths = Map(aoc.Point, List(aoc.Point)).init(allocator),
         };
     }
 
     fn solve(self: *Race) !void {
-        var q = std.ArrayList(State).init(self.allocator);
+        var q = List(State).init(self.allocator);
         try q.append(try State.init(self.allocator, self.end));
         while (q.items.len > 0) {
             var current = q.orderedRemove(0);

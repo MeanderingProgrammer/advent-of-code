@@ -1,20 +1,21 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
-const Points = std.ArrayList(aoc.Point);
-const Groups = std.AutoHashMap(u8, Group);
-
 const Group = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     grid: aoc.Grid(u8),
-    points: Points,
+    points: List(aoc.Point),
 
-    fn init(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) Group {
+    fn init(allocator: Allocator, grid: aoc.Grid(u8)) Group {
         return .{
             .allocator = allocator,
             .grid = grid,
-            .points = Points.init(allocator),
+            .points = List(aoc.Point).init(allocator),
         };
     }
 
@@ -22,8 +23,8 @@ const Group = struct {
         try self.points.append(point);
     }
 
-    fn antinodes(self: *Group, resonate: bool) !Points {
-        var result = Points.init(self.allocator);
+    fn antinodes(self: *Group, resonate: bool) !List(aoc.Point) {
+        var result = List(aoc.Point).init(self.allocator);
         const points = self.points.items;
         for (points, 0..) |p1, i| {
             for ((i + 1)..points.len) |j| {
@@ -43,14 +44,14 @@ const Group = struct {
         return result;
     }
 
-    fn walk(self: *Group, points: *Points, start: aoc.Point, slope: aoc.Point) !void {
+    fn walk(self: *Group, points: *List(aoc.Point), start: aoc.Point, slope: aoc.Point) !void {
         var point = start;
         while (try self.add(points, point)) {
             point = point.plus(slope);
         }
     }
 
-    fn add(self: *Group, points: *Points, point: aoc.Point) !bool {
+    fn add(self: *Group, points: *List(aoc.Point), point: aoc.Point) !bool {
         if (self.grid.get(point) == null) {
             return false;
         } else {
@@ -71,8 +72,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 1157, try numAntinodes(c.allocator(), groups, true));
 }
 
-fn group(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !Groups {
-    var result = Groups.init(allocator);
+fn group(allocator: Allocator, grid: aoc.Grid(u8)) !Map(u8, Group) {
+    var result = Map(u8, Group).init(allocator);
     var points = grid.points();
     while (points.next()) |point| {
         const value = grid.get(point.*).?;
@@ -87,7 +88,7 @@ fn group(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !Groups {
     return result;
 }
 
-fn numAntinodes(allocator: std.mem.Allocator, groups: Groups, resonate: bool) !usize {
+fn numAntinodes(allocator: Allocator, groups: Map(u8, Group), resonate: bool) !usize {
     var result = aoc.Set(aoc.Point).init(allocator);
     var it = groups.iterator();
     while (it.next()) |entry| {

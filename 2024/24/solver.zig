@@ -1,9 +1,12 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.StringHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const Pair = struct { []const u8, []const u8 };
-const Strings = std.ArrayList([]const u8);
 
 const Logic = enum {
     AND,
@@ -48,15 +51,15 @@ const Gate = struct {
 };
 
 const Graph = struct {
-    allocator: std.mem.Allocator,
-    output: std.StringHashMap(u8),
-    gates: std.StringHashMap(Gate),
+    allocator: Allocator,
+    output: Map(u8),
+    gates: Map(Gate),
 
-    fn init(allocator: std.mem.Allocator) Graph {
+    fn init(allocator: Allocator) Graph {
         return .{
             .allocator = allocator,
-            .output = std.StringHashMap(u8).init(allocator),
-            .gates = std.StringHashMap(Gate).init(allocator),
+            .output = Map(u8).init(allocator),
+            .gates = Map(Gate).init(allocator),
         };
     }
 
@@ -104,8 +107,8 @@ const Graph = struct {
         return try self.get('z');
     }
 
-    fn resolved(self: *Graph) !Strings {
-        var result = Strings.init(self.allocator);
+    fn resolved(self: *Graph) !List([]const u8) {
+        var result = List([]const u8).init(self.allocator);
         var it = self.gates.iterator();
         while (it.next()) |entry| {
             const gate = entry.value_ptr;
@@ -202,7 +205,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2([]const u8, "frn,gmq,vtj,wnf,wtt,z05,z21,z39", try part2(c.allocator(), graph));
 }
 
-fn getGraph(allocator: std.mem.Allocator, groups: std.ArrayList(Strings)) !Graph {
+fn getGraph(allocator: Allocator, groups: List(List([]const u8))) !Graph {
     var graph = Graph.init(allocator);
     for (groups.items[0].items) |line| {
         try graph.addOutput(line);
@@ -218,9 +221,9 @@ fn part1(input: Graph) !usize {
     return try graph.simulate();
 }
 
-fn part2(allocator: std.mem.Allocator, input: Graph) ![]const u8 {
+fn part2(allocator: Allocator, input: Graph) ![]const u8 {
     var graph = try input.clone();
-    var result = Strings.init(allocator);
+    var result = List([]const u8).init(allocator);
     for (1..graph.count('x')) |i| {
         if (try graph.fix(@intCast(i))) |wires| {
             try result.append(wires[0]);

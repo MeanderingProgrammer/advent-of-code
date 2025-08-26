@@ -1,12 +1,14 @@
 const std = @import("std");
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
 const Report = struct {
-    levels: std.ArrayList(usize),
+    levels: List(usize),
 
     fn init(allocator: std.mem.Allocator, line: []const u8) !Report {
-        var levels = std.ArrayList(usize).init(allocator);
+        var levels = List(usize).init(allocator);
         var it = std.mem.tokenizeScalar(u8, line, ' ');
         while (it.next()) |item| {
             try levels.append(try aoc.util.decimal(usize, item));
@@ -64,7 +66,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 455, countSafe(reports, true));
 }
 
-fn countSafe(reports: std.ArrayList(Report), tolerant: bool) usize {
+fn countSafe(reports: List(Report), tolerant: bool) usize {
     var result: usize = 0;
     for (reports.items) |report| {
         result += if (report.safe(tolerant)) 1 else 0;

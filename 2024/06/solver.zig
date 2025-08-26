@@ -1,4 +1,6 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -23,7 +25,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 2008, try obstacles(c.allocator(), grid, start, path));
 }
 
-fn follow(allocator: std.mem.Allocator, grid: aoc.Grid(u8), start: aoc.Point, obstacle: ?aoc.Point) !?aoc.Set(aoc.Point) {
+fn follow(allocator: Allocator, grid: aoc.Grid(u8), start: aoc.Point, obstacle: ?aoc.Point) !?aoc.Set(aoc.Point) {
     var seen = aoc.Set(State).init(allocator);
     defer seen.deinit();
     var state = State{ .point = start, .direction = aoc.Direction.n };
@@ -49,7 +51,7 @@ fn follow(allocator: std.mem.Allocator, grid: aoc.Grid(u8), start: aoc.Point, ob
     return points;
 }
 
-fn obstacles(allocator: std.mem.Allocator, grid: aoc.Grid(u8), start: aoc.Point, options: aoc.Set(aoc.Point)) !usize {
+fn obstacles(allocator: Allocator, grid: aoc.Grid(u8), start: aoc.Point, options: aoc.Set(aoc.Point)) !usize {
     var result: usize = 0;
     var it = options.iterator();
     while (it.next()) |point| {

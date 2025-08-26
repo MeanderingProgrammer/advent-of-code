@@ -1,4 +1,5 @@
 const std = @import("std");
+const List = std.array_list.Managed;
 
 pub fn Set(comptime T: type) type {
     const Map = comptime switch (@typeInfo(T)) {
@@ -87,8 +88,8 @@ pub fn Set(comptime T: type) type {
             return it.next().?.*;
         }
 
-        pub fn list(self: Self) !std.ArrayList(T) {
-            var result = std.ArrayList(T).init(self.allocator);
+        pub fn list(self: Self) !List(T) {
+            var result = List(T).init(self.allocator);
             var it = self.iterator();
             while (it.next()) |value| {
                 try result.append(value.*);

@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const Context = @import("context.zig").Context;
 
 pub fn timer(solution: fn (*Context) anyerror!void) !void {
@@ -6,7 +7,7 @@ pub fn timer(solution: fn (*Context) anyerror!void) !void {
     var c = Context.init();
     defer c.deinit();
     try solution(&c);
-    write("Runtime (ns): {}\n", .{start.read()});
+    try write("Runtime (ns): {}\n", .{start.read()});
 }
 
 pub fn part1(comptime T: type, expected: T, actual: T) void {
@@ -31,9 +32,13 @@ fn part(n: usize, comptime T: type, expected: T, actual: T) void {
         std.debug.panic(format, .{ n, expected, actual });
     }
     const format = "Part {d}: " ++ fmt ++ "\n";
-    write(format, .{ n, actual });
+    write(format, .{ n, actual }) catch {};
 }
 
-fn write(comptime format: []const u8, args: anytype) void {
-    std.io.getStdOut().writer().print(format, args) catch {};
+fn write(comptime format: []const u8, args: anytype) !void {
+    var buffer: [64]u8 = undefined;
+    var writer = std.fs.File.stdout().writer(&buffer);
+    const stdout = &writer.interface;
+    try stdout.print(format, args);
+    try stdout.flush();
 }

@@ -1,22 +1,24 @@
 const std = @import("std");
 const random = std.crypto.random;
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.StringHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
-const Strings = aoc.Set([]const u8);
-
 const Graph = struct {
-    allocator: std.mem.Allocator,
-    nodes: Strings,
-    edges: std.StringHashMap(Strings),
-    cliques: std.ArrayList(Strings),
+    allocator: Allocator,
+    nodes: aoc.Set([]const u8),
+    edges: Map(aoc.Set([]const u8)),
+    cliques: List(aoc.Set([]const u8)),
 
-    fn init(allocator: std.mem.Allocator) Graph {
+    fn init(allocator: Allocator) Graph {
         return .{
             .allocator = allocator,
-            .nodes = Strings.init(allocator),
-            .edges = std.StringHashMap(Strings).init(allocator),
-            .cliques = std.ArrayList(Strings).init(allocator),
+            .nodes = aoc.Set([]const u8).init(allocator),
+            .edges = Map(aoc.Set([]const u8)).init(allocator),
+            .cliques = List(aoc.Set([]const u8)).init(allocator),
         };
     }
 
@@ -32,13 +34,13 @@ const Graph = struct {
         try self.nodes.add(from);
         var entry = try self.edges.getOrPut(from);
         if (!entry.found_existing) {
-            entry.value_ptr.* = Strings.init(self.allocator);
+            entry.value_ptr.* = aoc.Set([]const u8).init(self.allocator);
         }
         try entry.value_ptr.add(to);
     }
 
     // https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
-    fn bronKerbosch(self: *Graph, r: Strings, p: *Strings, x: *Strings) !void {
+    fn bronKerbosch(self: *Graph, r: aoc.Set([]const u8), p: *aoc.Set([]const u8), x: *aoc.Set([]const u8)) !void {
         // if P and X are both empty then
         if (p.size() == 0 and x.size() == 0) {
             // report R as a maximal clique
@@ -83,20 +85,20 @@ fn solution(c: *aoc.Context) !void {
     answer.part2([]const u8, "bm,by,dv,ep,ia,ja,jb,ks,lv,ol,oy,uz,yt", try part2(c.allocator(), cliques));
 }
 
-fn getCliques(allocator: std.mem.Allocator, lines: std.ArrayList([]const u8)) !std.ArrayList(Strings) {
+fn getCliques(allocator: Allocator, lines: List([]const u8)) !List(aoc.Set([]const u8)) {
     var graph = Graph.init(allocator);
     for (lines.items) |line| {
         try graph.add(line);
     }
-    const r = Strings.init(allocator);
+    const r = aoc.Set([]const u8).init(allocator);
     var p = try graph.nodes.clone();
-    var x = Strings.init(allocator);
+    var x = aoc.Set([]const u8).init(allocator);
     try graph.bronKerbosch(r, &p, &x);
     return graph.cliques;
 }
 
-fn part1(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) !usize {
-    var result = Strings.init(allocator);
+fn part1(allocator: Allocator, cliques: List(aoc.Set([]const u8))) !usize {
+    var result = aoc.Set([]const u8).init(allocator);
     for (cliques.items) |clique| {
         if (clique.size() >= 3 and hasChief(clique)) {
             try combinations(allocator, &result, try clique.list());
@@ -105,7 +107,7 @@ fn part1(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) !usize {
     return result.size();
 }
 
-fn hasChief(clique: Strings) bool {
+fn hasChief(clique: aoc.Set([]const u8)) bool {
     var it = clique.iterator();
     while (it.next()) |v| {
         if (v.*[0] == 't') {
@@ -115,7 +117,7 @@ fn hasChief(clique: Strings) bool {
     return false;
 }
 
-fn combinations(allocator: std.mem.Allocator, result: *Strings, clique: std.ArrayList([]const u8)) !void {
+fn combinations(allocator: Allocator, result: *aoc.Set([]const u8), clique: List([]const u8)) !void {
     for (0..clique.items.len - 2) |i| {
         for (i + 1..clique.items.len - 1) |j| {
             for (j + 1..clique.items.len) |k| {
@@ -123,7 +125,7 @@ fn combinations(allocator: std.mem.Allocator, result: *Strings, clique: std.Arra
                 const jv = clique.items[j];
                 const kv = clique.items[k];
                 if (iv[0] == 't' or jv[0] == 't' or kv[0] == 't') {
-                    var option = Strings.init(allocator);
+                    var option = aoc.Set([]const u8).init(allocator);
                     try option.add(iv);
                     try option.add(jv);
                     try option.add(kv);
@@ -134,7 +136,7 @@ fn combinations(allocator: std.mem.Allocator, result: *Strings, clique: std.Arra
     }
 }
 
-fn part2(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) ![]const u8 {
+fn part2(allocator: Allocator, cliques: List(aoc.Set([]const u8))) ![]const u8 {
     var index: usize = 0;
     for (1..cliques.items.len) |i| {
         if (cliques.items[i].size() > cliques.items[index].size()) {
@@ -144,7 +146,7 @@ fn part2(allocator: std.mem.Allocator, cliques: std.ArrayList(Strings)) ![]const
     return try str(allocator, cliques.items[index]);
 }
 
-fn str(allocator: std.mem.Allocator, nodes: Strings) ![]const u8 {
+fn str(allocator: Allocator, nodes: aoc.Set([]const u8)) ![]const u8 {
     const result = try nodes.list();
     std.mem.sort([]const u8, result.items, {}, stringLessThan);
     return std.mem.join(allocator, ",", result.items);

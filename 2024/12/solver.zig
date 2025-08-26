@@ -1,4 +1,7 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -6,7 +9,7 @@ const Region = struct {
     plant: u8,
     points: aoc.Set(aoc.Point),
 
-    fn init(allocator: std.mem.Allocator, plant: u8) Region {
+    fn init(allocator: Allocator, plant: u8) Region {
         return .{
             .plant = plant,
             .points = aoc.Set(aoc.Point).init(allocator),
@@ -91,8 +94,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 859494, total(regions, true));
 }
 
-fn splitRegions(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !std.ArrayList(Region) {
-    var regions = std.ArrayList(Region).init(allocator);
+fn splitRegions(allocator: Allocator, grid: aoc.Grid(u8)) !List(Region) {
+    var regions = List(Region).init(allocator);
     var seen = aoc.Set(aoc.Point).init(allocator);
     var points = grid.points();
     while (points.next()) |p| {
@@ -101,7 +104,7 @@ fn splitRegions(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !std.ArrayList
             continue;
         }
         var region = Region.init(allocator, grid.get(point).?);
-        var queue = std.ArrayList(aoc.Point).init(allocator);
+        var queue = List(aoc.Point).init(allocator);
         try queue.append(point);
         while (queue.items.len > 0) {
             const current = queue.pop().?;
@@ -123,7 +126,7 @@ fn splitRegions(allocator: std.mem.Allocator, grid: aoc.Grid(u8)) !std.ArrayList
     return regions;
 }
 
-fn total(regions: std.ArrayList(Region), bulk: bool) usize {
+fn total(regions: List(Region), bulk: bool) usize {
     var result: usize = 0;
     for (regions.items) |region| {
         result += region.price(bulk);

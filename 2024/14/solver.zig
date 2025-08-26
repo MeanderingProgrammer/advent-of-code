@@ -1,4 +1,7 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -53,18 +56,18 @@ const Robot = struct {
 };
 
 const Grid = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     x: i64,
     y: i64,
-    robots: std.ArrayList(Robot),
+    robots: List(Robot),
     moves: usize,
 
-    fn init(allocator: std.mem.Allocator, x: i64, y: i64) Grid {
+    fn init(allocator: Allocator, x: i64, y: i64) Grid {
         return .{
             .allocator = allocator,
             .x = x,
             .y = y,
-            .robots = std.ArrayList(Robot).init(allocator),
+            .robots = List(Robot).init(allocator),
             .moves = 0,
         };
     }

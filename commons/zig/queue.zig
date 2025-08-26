@@ -1,20 +1,20 @@
 const std = @import("std");
+const List = std.array_list.Managed;
 
 pub fn PriorityQueue(comptime T: type) type {
     const Node = struct {
         value: T,
         cost: usize,
     };
-    const List = std.ArrayList(Node);
 
     return struct {
-        list: List,
+        list: List(Node),
 
         const Self = @This();
 
         pub fn init(allocator: std.mem.Allocator) Self {
             return .{
-                .list = List.init(allocator),
+                .list = List(Node).init(allocator),
             };
         }
 

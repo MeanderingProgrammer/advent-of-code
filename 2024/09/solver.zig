@@ -1,9 +1,9 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
-
-const Disk = std.ArrayList(usize);
-const Files = std.ArrayList(File);
 
 const File = struct {
     id: usize,
@@ -22,8 +22,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 6423258376982, checksum(try part2(c.allocator(), files)));
 }
 
-fn getFiles(allocator: std.mem.Allocator, data: Disk) !Files {
-    var result = Files.init(allocator);
+fn getFiles(allocator: Allocator, data: List(usize)) !List(File) {
+    var result = List(File).init(allocator);
     var i: usize = 0;
     while (i < data.items.len) : (i += 2) {
         const file = File{
@@ -36,10 +36,10 @@ fn getFiles(allocator: std.mem.Allocator, data: Disk) !Files {
     return result;
 }
 
-fn part1(allocator: std.mem.Allocator, input: Files) !Disk {
+fn part1(allocator: Allocator, input: List(File)) !List(usize) {
     var files = try input.clone();
     var i: usize = 0;
-    var result = Disk.init(allocator);
+    var result = List(usize).init(allocator);
     while (i < files.items.len) : (i += 1) {
         const file = files.items[i];
         try result.appendNTimes(file.id, file.size);
@@ -57,7 +57,7 @@ fn part1(allocator: std.mem.Allocator, input: Files) !Disk {
     return result;
 }
 
-fn part2(allocator: std.mem.Allocator, input: Files) !Disk {
+fn part2(allocator: Allocator, input: List(File)) !List(usize) {
     var files = try input.clone();
     for (0..files.items.len) |i| {
         const id = files.items.len - (i + 1);
@@ -72,7 +72,7 @@ fn part2(allocator: std.mem.Allocator, input: Files) !Disk {
             try files.insert(location + 1, file);
         }
     }
-    var result = Disk.init(allocator);
+    var result = List(usize).init(allocator);
     for (files.items) |file| {
         try result.appendNTimes(file.id, file.size);
         try result.appendNTimes(0, file.free);
@@ -80,7 +80,7 @@ fn part2(allocator: std.mem.Allocator, input: Files) !Disk {
     return result;
 }
 
-fn idToIndex(files: Files, id: usize) ?usize {
+fn idToIndex(files: List(File), id: usize) ?usize {
     for (files.items, 0..) |file, i| {
         if (file.id == id) {
             return i;
@@ -89,7 +89,7 @@ fn idToIndex(files: Files, id: usize) ?usize {
     return null;
 }
 
-fn firstFit(files: Files, index: usize) ?usize {
+fn firstFit(files: List(File), index: usize) ?usize {
     for (0..index) |i| {
         if (files.items[i].free >= files.items[index].size) {
             return i;
@@ -98,7 +98,7 @@ fn firstFit(files: Files, index: usize) ?usize {
     return null;
 }
 
-fn checksum(disk: Disk) usize {
+fn checksum(disk: List(usize)) usize {
     var result: usize = 0;
     for (disk.items, 0..) |id, position| {
         result += (id * position);

@@ -1,8 +1,9 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
-
-const Stones = std.AutoHashMap(usize, usize);
 
 pub fn main() !void {
     try answer.timer(solution);
@@ -15,8 +16,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 221632504974231, try evolve(c.allocator(), stones, 75));
 }
 
-fn getStones(allocator: std.mem.Allocator, line: []const u8) !Stones {
-    var stones = Stones.init(allocator);
+fn getStones(allocator: Allocator, line: []const u8) !Map(usize, usize) {
+    var stones = Map(usize, usize).init(allocator);
     var it = std.mem.splitScalar(u8, line, ' ');
     while (it.next()) |item| {
         const stone = try aoc.util.decimal(usize, item);
@@ -25,10 +26,10 @@ fn getStones(allocator: std.mem.Allocator, line: []const u8) !Stones {
     return stones;
 }
 
-fn evolve(allocator: std.mem.Allocator, input: Stones, blinks: usize) !usize {
+fn evolve(allocator: Allocator, input: Map(usize, usize), blinks: usize) !usize {
     var stones = try input.clone();
     for (0..blinks) |_| {
-        var next = Stones.init(allocator);
+        var next = Map(usize, usize).init(allocator);
         var it = stones.iterator();
         while (it.next()) |entry| {
             const stone = entry.key_ptr.*;
@@ -57,7 +58,7 @@ fn evolve(allocator: std.mem.Allocator, input: Stones, blinks: usize) !usize {
     return result;
 }
 
-fn increment(stones: *Stones, stone: usize, amount: usize) !void {
+fn increment(stones: *Map(usize, usize), stone: usize, amount: usize) !void {
     const entry = try stones.getOrPut(stone);
     if (!entry.found_existing) {
         entry.value_ptr.* = 0;

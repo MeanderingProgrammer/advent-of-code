@@ -1,17 +1,17 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
-const Pages = std.ArrayList(usize);
-const Rules = std.AutoHashMap(usize, Pages);
-const Orders = std.ArrayList(Order);
-
 const Order = struct {
-    allocator: std.mem.Allocator,
-    pages: Pages,
+    allocator: Allocator,
+    pages: List(usize),
 
-    fn init(allocator: std.mem.Allocator, line: []const u8) !Order {
-        var pages = Pages.init(allocator);
+    fn init(allocator: Allocator, line: []const u8) !Order {
+        var pages = List(usize).init(allocator);
         var it = std.mem.splitScalar(u8, line, ',');
         while (it.next()) |page| {
             try pages.append(try aoc.util.decimal(usize, page));
@@ -26,7 +26,7 @@ const Order = struct {
         return self.pages.items[self.pages.items.len / 2];
     }
 
-    fn valid(self: Order, rules: Rules) !bool {
+    fn valid(self: Order, rules: Map(usize, List(usize))) !bool {
         var seen = aoc.Set(usize).init(self.allocator);
         for (self.pages.items) |page| {
             try seen.add(page);
@@ -41,8 +41,8 @@ const Order = struct {
         return true;
     }
 
-    fn fix(self: *Order, deps: Rules) !Order {
-        var pages = Pages.init(self.allocator);
+    fn fix(self: *Order, deps: Map(usize, List(usize))) !Order {
+        var pages = List(usize).init(self.allocator);
         while (self.pages.items.len > 0) {
             try pages.append(self.next(deps).?);
         }
@@ -52,7 +52,7 @@ const Order = struct {
         };
     }
 
-    fn next(self: *Order, deps: Rules) ?usize {
+    fn next(self: *Order, deps: Map(usize, List(usize))) ?usize {
         for (self.pages.items, 0..) |page, i| {
             const remove = if (deps.get(page)) |illegal| !self.has(illegal) else true;
             if (remove) {
@@ -62,7 +62,7 @@ const Order = struct {
         return null;
     }
 
-    fn has(self: *Order, pages: Pages) bool {
+    fn has(self: *Order, pages: List(usize)) bool {
         for (pages.items) |page| {
             if (std.mem.containsAtLeast(usize, self.pages.items, 1, &.{page})) {
                 return true;
@@ -85,8 +85,8 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 4507, try sum(rules, deps, orders, true));
 }
 
-fn parseRules(allocator: std.mem.Allocator, group: std.ArrayList([]const u8), forward: bool) !Rules {
-    var rules = Rules.init(allocator);
+fn parseRules(allocator: Allocator, group: List([]const u8), forward: bool) !Map(usize, List(usize)) {
+    var rules = Map(usize, List(usize)).init(allocator);
     for (group.items) |line| {
         var it = std.mem.splitScalar(u8, line, '|');
         const left = try aoc.util.decimal(usize, it.next().?);
@@ -95,22 +95,22 @@ fn parseRules(allocator: std.mem.Allocator, group: std.ArrayList([]const u8), fo
         const to = if (forward) right else left;
         const entry = try rules.getOrPut(from);
         if (!entry.found_existing) {
-            entry.value_ptr.* = Pages.init(allocator);
+            entry.value_ptr.* = List(usize).init(allocator);
         }
         try entry.value_ptr.*.append(to);
     }
     return rules;
 }
 
-fn parseOrders(allocator: std.mem.Allocator, group: std.ArrayList([]const u8)) !Orders {
-    var orders = Orders.init(allocator);
+fn parseOrders(allocator: Allocator, group: List([]const u8)) !List(Order) {
+    var orders = List(Order).init(allocator);
     for (group.items) |line| {
         try orders.append(try Order.init(allocator, line));
     }
     return orders;
 }
 
-fn sum(rules: Rules, deps: Rules, orders: Orders, fix: bool) !usize {
+fn sum(rules: Map(usize, List(usize)), deps: Map(usize, List(usize)), orders: List(Order), fix: bool) !usize {
     var result: usize = 0;
     for (orders.items) |*order| {
         const valid = try order.valid(rules);

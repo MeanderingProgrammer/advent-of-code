@@ -1,8 +1,10 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const List = std.array_list.Managed;
+const Map = std.AutoHashMap;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
-const Counts = std.AutoHashMap(Section, usize);
-const Sections = std.ArrayList(Section);
 
 const Section = struct {
     start: u8,
@@ -10,14 +12,14 @@ const Section = struct {
 };
 
 const Keypad = struct {
-    allocator: std.mem.Allocator,
-    grid: std.AutoHashMap(u8, aoc.Point),
+    allocator: Allocator,
+    grid: Map(u8, aoc.Point),
     home: aoc.Point,
     illegal: aoc.Point,
-    cache: std.AutoHashMap(Section, Sections),
+    cache: Map(Section, List(Section)),
 
-    fn init(allocator: std.mem.Allocator, numeric: bool) !Keypad {
-        var grid = std.AutoHashMap(u8, aoc.Point).init(allocator);
+    fn init(allocator: Allocator, numeric: bool) !Keypad {
+        var grid = Map(u8, aoc.Point).init(allocator);
         if (numeric) {
             // | 7 | 8 | 9 |
             try grid.put('7', aoc.Point.init(0, 0));
@@ -49,12 +51,12 @@ const Keypad = struct {
             .grid = grid,
             .home = home,
             .illegal = aoc.Point.init(0, home.y),
-            .cache = std.AutoHashMap(Section, Sections).init(allocator),
+            .cache = Map(Section, List(Section)).init(allocator),
         };
     }
 
-    fn run(self: *Keypad, sections: Counts) !Counts {
-        var result = Counts.init(self.allocator);
+    fn run(self: *Keypad, sections: Map(Section, usize)) !Map(Section, usize) {
+        var result = Map(Section, usize).init(self.allocator);
         var it = sections.iterator();
         while (it.next()) |entry| {
             const section = entry.key_ptr.*;
@@ -74,7 +76,7 @@ const Keypad = struct {
         return result;
     }
 
-    fn compute(self: *Keypad, section: Section) !Sections {
+    fn compute(self: *Keypad, section: Section) !List(Section) {
         const start = self.grid.get(section.start).?;
         const end = self.grid.get(section.end).?;
 
@@ -86,7 +88,7 @@ const Keypad = struct {
         const dx = end.x - start.x;
         const dy = end.y - start.y;
 
-        var result = Sections.init(self.allocator);
+        var result = List(Section).init(self.allocator);
         var previous: u8 = 'A';
         if ((dx > 0 and !self.illegal.eql(vertical)) or self.illegal.eql(horizontal)) {
             previous = try append(&result, previous, dy, true);
@@ -99,7 +101,7 @@ const Keypad = struct {
         return result;
     }
 
-    fn append(result: *Sections, start: u8, delta: i64, vertical: bool) !u8 {
+    fn append(result: *List(Section), start: u8, delta: i64, vertical: bool) !u8 {
         const x: u8 = if (delta < 0) '<' else '>';
         const y: u8 = if (delta < 0) '^' else 'v';
         const value: u8 = if (vertical) y else x;
@@ -113,12 +115,12 @@ const Keypad = struct {
 };
 
 const Layers = struct {
-    allocator: std.mem.Allocator,
+    allocator: Allocator,
     numeric: Keypad,
     direction: Keypad,
     size: usize,
 
-    fn init(allocator: std.mem.Allocator, size: usize) !Layers {
+    fn init(allocator: Allocator, size: usize) !Layers {
         return .{
             .allocator = allocator,
             .numeric = try Keypad.init(allocator, true),
@@ -141,8 +143,8 @@ const Layers = struct {
         return length * value;
     }
 
-    fn convert(self: *Layers, sequence: []const u8) !Counts {
-        var result = Counts.init(self.allocator);
+    fn convert(self: *Layers, sequence: []const u8) !Map(Section, usize) {
+        var result = Map(Section, usize).init(self.allocator);
         var start: u8 = 'A';
         for (sequence) |end| {
             const section = Section{ .start = start, .end = end };
@@ -152,7 +154,7 @@ const Layers = struct {
         return result;
     }
 
-    fn len(sections: Counts) usize {
+    fn len(sections: Map(Section, usize)) usize {
         var result: usize = 0;
         var it = sections.iterator();
         while (it.next()) |section| {
@@ -172,7 +174,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(usize, 195664513288128, try solve(c.allocator(), sequences, 25));
 }
 
-fn solve(allocator: std.mem.Allocator, sequences: std.ArrayList([]const u8), size: usize) !usize {
+fn solve(allocator: Allocator, sequences: List([]const u8), size: usize) !usize {
     var layers = try Layers.init(allocator, size);
     var result: usize = 0;
     for (sequences.items) |sequence| {

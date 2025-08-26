@@ -1,4 +1,6 @@
 const std = @import("std");
+const List = std.array_list.Managed;
+
 const aoc = @import("aoc");
 const answer = aoc.answer;
 
@@ -7,7 +9,7 @@ pub const Machine = struct {
     b: aoc.Point,
     prize: aoc.Point,
 
-    fn init(lines: std.ArrayList([]const u8)) !Machine {
+    fn init(lines: List([]const u8)) !Machine {
         return .{
             // Button A: X+94, Y+34
             .a = try parsePoint(lines.items[0]),
@@ -78,7 +80,7 @@ pub fn main() !void {
 
 fn solution(c: *aoc.Context) !void {
     const groups = try aoc.Reader.init(c.allocator()).groups();
-    var machines = std.ArrayList(Machine).init(c.allocator());
+    var machines = List(Machine).init(c.allocator());
     for (groups.items) |lines| {
         try machines.append(try Machine.init(lines));
     }
@@ -86,7 +88,7 @@ fn solution(c: *aoc.Context) !void {
     answer.part2(i64, 108394825772874, totalTokens(machines, 10000000000000));
 }
 
-fn totalTokens(machines: std.ArrayList(Machine), offset: i64) i64 {
+fn totalTokens(machines: List(Machine), offset: i64) i64 {
     var result: i64 = 0;
     for (machines.items) |machine| {
         const tokens = machine.tokens(offset);
