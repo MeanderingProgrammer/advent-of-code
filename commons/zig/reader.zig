@@ -90,11 +90,13 @@ pub const Reader = struct {
         var file = try std.fs.cwd().openFile(self.path, .{});
         defer file.close();
 
-        const buffer = try self.allocator.alloc(u8, try file.getEndPos());
-        _ = try file.readAll(buffer);
+        var buffer: [64]u8 = undefined;
+        var reader = file.reader(&buffer);
+        const input = &reader.interface;
+        const text = try input.readAlloc(self.allocator, try file.getEndPos());
 
         var result = List([]const u8).init(self.allocator);
-        var it = std.mem.splitSequence(u8, buffer, delimiter);
+        var it = std.mem.splitSequence(u8, text, delimiter);
         while (it.next()) |item| {
             if (item.len > 0) {
                 try result.append(item);
