@@ -8,7 +8,7 @@ from pojo.day import Day
 class Ocaml:
     name: str = "ocaml"
     file: str = "solver.ml"
-    cmd: str = "dune"
+    cmd: str = "opam"
 
     def test(self) -> list[str]:
         return Ocaml.dune("test")
