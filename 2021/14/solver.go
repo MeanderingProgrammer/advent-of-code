@@ -1,10 +1,10 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
-	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Rules map[string]string
@@ -38,8 +38,8 @@ func (frequencies Frequencies) diff() int {
 		if most == -1 && least == -1 {
 			most, least = frequency, frequency
 		} else {
-			most = util.Max(most, frequency)
-			least = util.Min(least, frequency)
+			most = max(most, frequency)
+			least = min(least, frequency)
 		}
 	}
 	return most - least
@@ -66,7 +66,7 @@ func solution() {
 
 func diffAfter(groups []string, n int) int {
 	template, rules := getData(groups)
-	for i := 0; i < n; i++ {
+	for range n {
 		template = template.apply(rules)
 	}
 	return template.frequencies().diff()

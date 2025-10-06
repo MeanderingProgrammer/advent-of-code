@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Computer struct {
@@ -100,27 +101,28 @@ func run(instructions []Instruction, ignite bool) int {
 func parseInstruction(line string) Instruction {
 	parts := strings.Split(line, " ")
 	op := parts[0]
-	if op == "cpy" {
+	switch op {
+	case "cpy":
 		return &Copy{
 			register: parts[2],
 			value:    parts[1],
 		}
-	} else if op == "inc" {
+	case "inc":
 		return &Add{
 			register: parts[1],
 			value:    1,
 		}
-	} else if op == "dec" {
+	case "dec":
 		return &Add{
 			register: parts[1],
 			value:    -1,
 		}
-	} else if op == "jnz" {
+	case "jnz":
 		return &Jump{
 			register: parts[1],
 			value:    util.ToInt(parts[2]),
 		}
-	} else {
+	default:
 		panic("Unknown operation: " + op)
 	}
 }

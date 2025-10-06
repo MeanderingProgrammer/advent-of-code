@@ -41,7 +41,7 @@ func solution() {
 
 func fishAfter(content string, days int) int {
 	school := getSchool(content)
-	for i := 0; i < days; i++ {
+	for range days {
 		school.runDay()
 	}
 	return school.totalFish()

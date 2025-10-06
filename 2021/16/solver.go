@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Packet struct {
@@ -98,13 +99,13 @@ func parsePackets(packets string, max int) ([]Packet, int) {
 			packet.value = value
 			i = newIndex
 		} else if packets[i] == '0' {
-			length := util.BinaryToDecimal(packets[i+1 : i+16])
+			length := util.ToDecimal(packets[i+1:i+16], 2)
 			i += 16
 			subPackets, _ := parsePackets(packets[i:i+length], -1)
 			packet.subPackets = subPackets
 			i += length
 		} else {
-			length := util.BinaryToDecimal(packets[i+1 : i+12])
+			length := util.ToDecimal(packets[i+1:i+12], 2)
 			i += 12
 			subPackets, bitsParsed := parsePackets(packets[i:], length)
 			packet.subPackets = subPackets
@@ -117,8 +118,8 @@ func parsePackets(packets string, max int) ([]Packet, int) {
 
 func getHeader(packets string, i int) Packet {
 	return Packet{
-		version:    util.BinaryToDecimal(packets[i : i+3]),
-		packetType: util.BinaryToDecimal(packets[i+3 : i+6]),
+		version:    util.ToDecimal(packets[i:i+3], 2),
+		packetType: util.ToDecimal(packets[i+3:i+6], 2),
 	}
 }
 
@@ -129,14 +130,14 @@ func pullType4Number(packets string, i int) (int, int) {
 		i += 5
 	}
 	number.WriteString(packets[i+1 : i+5])
-	return util.BinaryToDecimal(number.String()), i + 5
+	return util.ToDecimal(number.String(), 2), i + 5
 }
 
 func getData() string {
 	var packets strings.Builder
 	for _, hex := range file.Default[string]().Content() {
 		hexadecimal := string(hex)
-		decimal := util.HexToDecimal(hexadecimal)
+		decimal := util.ToDecimal(hexadecimal, 16)
 		binary := util.DecimalToBinary(decimal)
 		for i := 0; i < 4-len(binary); i++ {
 			packets.WriteString("0")

@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Position struct {
@@ -21,8 +22,8 @@ type Direction string
 
 const (
 	Forward Direction = "forward"
-	Down              = "down"
-	Up                = "up"
+	Down    Direction = "down"
+	Up      Direction = "up"
 )
 
 type Instruction struct {

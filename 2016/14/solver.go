@@ -1,13 +1,15 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"slices"
+	"strconv"
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
 	"advent-of-code/commons/go/file"
-	"crypto/md5"
-	"encoding/hex"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -108,10 +110,8 @@ func generate(search hashSearch) int {
 
 func contains(infos map[int]hashInfo, index int, target byte) bool {
 	for i := index; i < index+offset; i++ {
-		for _, value := range infos[i].cinqs {
-			if value == target {
-				return true
-			}
+		if slices.Contains(infos[i].cinqs, target) {
+			return true
 		}
 	}
 	return false

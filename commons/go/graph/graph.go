@@ -1,10 +1,11 @@
 package graph
 
 import (
-	"advent-of-code/commons/go/grid"
-	"advent-of-code/commons/go/point"
 	"fmt"
 	"strings"
+
+	"advent-of-code/commons/go/grid"
+	"advent-of-code/commons/go/point"
 )
 
 type Graph[K comparable, V comparable] struct {
@@ -36,7 +37,7 @@ func (graph Graph[K, V]) separator() string {
 	return strings.Repeat("-", graph.grid.Width+1)
 }
 
-func (graph Graph[K, V]) getValue(positions map[point.Point]V, p point.Point) interface{} {
+func (graph Graph[K, V]) getValue(positions map[point.Point]V, p point.Point) any {
 	if !graph.grid.Contains(p) {
 		return "#"
 	} else {

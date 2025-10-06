@@ -1,6 +1,12 @@
 package main
 
 import (
+	"hash/fnv"
+	"maps"
+	"math"
+	"slices"
+	"sort"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/graph"
@@ -8,10 +14,6 @@ import (
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/search"
 	"advent-of-code/commons/go/util"
-	"hash/fnv"
-	"maps"
-	"math"
-	"sort"
 )
 
 type Value byte
@@ -40,7 +42,7 @@ func (v Value) x() int {
 func (v Value) pathToGoal(start point.Point) []point.Point {
 	result := []point.Point{}
 	x1, x2 := start.X, v.x()
-	for i := util.Min(x1, x2) + 1; i < util.Max(x1, x2); i++ {
+	for i := min(x1, x2) + 1; i < max(x1, x2); i++ {
 		result = append(result, point.Point{X: i, Y: 1})
 	}
 	return result
@@ -227,7 +229,7 @@ func (board Board) valid(state BoardState, move Move) (bool, bool) {
 				continue
 			}
 			characterOnPathGoalPath := characterOnPath.value.pathToGoal(point)
-			if util.Contains(characterOnPathGoalPath, move.end) {
+			if slices.Contains(characterOnPathGoalPath, move.end) {
 				return false, false
 			}
 		}

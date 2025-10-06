@@ -1,11 +1,12 @@
 package main
 
 import (
+	"sort"
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"sort"
-	"strings"
 )
 
 /*

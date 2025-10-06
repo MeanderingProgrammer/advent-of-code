@@ -1,9 +1,10 @@
 package file
 
 import (
-	"advent-of-code/commons/go/util"
 	"os"
 	"testing"
+
+	"advent-of-code/commons/go/util"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -27,13 +28,10 @@ func TestReadGroups(t *testing.T) {
 }
 
 func newFile(lines []string) string {
-	f, err := os.CreateTemp("", "*")
-	util.CheckError(err)
+	f := util.Must1(os.CreateTemp("", "*"))
 	for _, line := range lines {
-		_, err = f.Write([]byte(line + "\n"))
-		util.CheckError(err)
+		util.Must1(f.Write([]byte(line + "\n")))
 	}
-	err = f.Close()
-	util.CheckError(err)
+	util.Must0(f.Close())
 	return f.Name()
 }

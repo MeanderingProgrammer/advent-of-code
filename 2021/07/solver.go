@@ -1,10 +1,11 @@
 package main
 
 import (
+	"sort"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"sort"
 )
 
 type Positions []int
@@ -14,7 +15,7 @@ func (positions Positions) minimize(f func(int) int) int {
 	minimum := positions.cost(f, start)
 	for i := start + 1; i <= end; i++ {
 		value := positions.cost(f, i)
-		minimum = util.Min(minimum, value)
+		minimum = min(minimum, value)
 	}
 	return minimum
 }

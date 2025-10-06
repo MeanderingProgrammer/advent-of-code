@@ -1,10 +1,11 @@
 package main
 
 import (
+	"sync"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"sync"
 )
 
 type Point struct {
@@ -85,7 +86,7 @@ func (points Points) largestDistance() int {
 	result := 0
 	for p1 := range points {
 		for p2 := range points {
-			result = util.Max(result, p1.distance(p2))
+			result = max(result, p1.distance(p2))
 		}
 	}
 	return result

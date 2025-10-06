@@ -15,7 +15,7 @@ type OctopusGrid struct {
 
 func (g OctopusGrid) runFor(steps int) int {
 	flashed := 0
-	for i := 0; i < steps; i++ {
+	for range steps {
 		flashed += g.step()
 	}
 	return flashed

@@ -50,7 +50,7 @@ func (q PriorityQueue[T]) Swap(i, j int) {
 	q[i], q[j] = q[j], q[i]
 }
 
-func (q *PriorityQueue[T]) Pop() interface{} {
+func (q *PriorityQueue[T]) Pop() any {
 	length := len(*q)
 	result := (*q)[length-1]
 	*q = (*q)[:length-1]

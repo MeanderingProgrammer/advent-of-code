@@ -1,10 +1,10 @@
 package grid
 
 import (
-	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/util"
 	"fmt"
 	"strings"
+
+	"advent-of-code/commons/go/point"
 )
 
 type Grid[T comparable] struct {
@@ -39,8 +39,8 @@ func (grid *Grid[T]) Set(p point.Point, value T) {
 		grid.plane = make(map[point.Point]T)
 	}
 	grid.plane[p] = value
-	grid.Width = util.Max(grid.Width, p.X)
-	grid.Height = util.Max(grid.Height, p.Y)
+	grid.Width = max(grid.Width, p.X)
+	grid.Height = max(grid.Height, p.Y)
 }
 
 func (grid Grid[T]) Delete(p point.Point) {

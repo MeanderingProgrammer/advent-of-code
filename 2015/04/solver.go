@@ -1,13 +1,14 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/async"
-	"advent-of-code/commons/go/file"
 	"crypto/md5"
 	"encoding/hex"
 	"strconv"
 	"strings"
+
+	"advent-of-code/commons/go/answer"
+	"advent-of-code/commons/go/async"
+	"advent-of-code/commons/go/file"
 )
 
 type hashSearch struct {

@@ -1,13 +1,14 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 const Boarder = 1
@@ -70,17 +71,17 @@ func (image Image) enhanceValue(p point.Point, enhancer Enhancer, bounds Bounds)
 			}
 		}
 	}
-	index := util.BinaryToDecimal(indexCode.String())
+	index := util.ToDecimal(indexCode.String(), 2)
 	return enhancer[index] == '#'
 }
 
 func (image Image) getBounds() Bounds {
 	minX, minY, maxX, maxY := 0, 0, 0, 0
 	for _, p := range image.Points() {
-		minX = util.Min(minX, p.X)
-		maxX = util.Max(maxX, p.X)
-		minY = util.Min(minY, p.Y)
-		maxY = util.Max(maxY, p.Y)
+		minX = min(minX, p.X)
+		maxX = max(maxX, p.X)
+		minY = min(minY, p.Y)
+		maxY = max(maxY, p.Y)
 	}
 	return Bounds{
 		minX: minX,
@@ -102,7 +103,7 @@ func solution() {
 
 func litAfter(groups []string, times int) int {
 	enhancer, image := getEnhancerImage(groups)
-	for i := 0; i < times; i++ {
+	for range times {
 		image = image.enhance(enhancer)
 	}
 	return image.Len()

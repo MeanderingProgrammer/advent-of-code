@@ -1,12 +1,13 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Direction int

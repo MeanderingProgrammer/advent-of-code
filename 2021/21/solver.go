@@ -28,7 +28,7 @@ type GameState struct {
 }
 
 func (gameState GameState) losingScore() int {
-	return util.Min(gameState.p1.score, gameState.p2.score)
+	return min(gameState.p1.score, gameState.p2.score)
 }
 
 type GameStateFrequency map[GameState]int

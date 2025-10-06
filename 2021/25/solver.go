@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
-	"fmt"
 )
 
 type Cucumber string

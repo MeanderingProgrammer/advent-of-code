@@ -1,11 +1,12 @@
 package parser
 
 import (
+	"fmt"
+	"strings"
+
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
-	"fmt"
-	"strings"
 )
 
 type RowSplitter int

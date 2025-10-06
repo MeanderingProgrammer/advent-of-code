@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"fmt"
-	"strings"
 )
 
 // Refactored Input + Details
@@ -189,7 +190,7 @@ func (alu *ALU) runProgram(program Program, provider *InputProvider) int {
 	for i, instruction := range program {
 		alu.runInstruction(instruction, provider)
 		// For debugging purposes
-		fmt.Println(fmt.Sprintf("Instruction Set: %d, Number %d", (i/18)+1, (i%18)+1))
+		fmt.Printf("Instruction Set: %d, Number %d\n", (i/18)+1, (i%18)+1)
 		fmt.Println(instruction)
 		fmt.Println(*alu)
 	}
@@ -208,58 +209,61 @@ func (alu *ALU) runInstruction(instruction Instruction, provider *InputProvider)
 	r2Value := alu.get(r2)
 
 	var result int
-	if operation == "inp" {
+	switch operation {
+	case "inp":
 		result = r2Value
-	} else if operation == "add" {
+	case "add":
 		r1Value := alu.get(r1)
 		result = r1Value + r2Value
-	} else if operation == "mul" {
+	case "mul":
 		r1Value := alu.get(r1)
 		result = r1Value * r2Value
-	} else if operation == "div" {
+	case "div":
 		r1Value := alu.get(r1)
 		result = r1Value / r2Value
-	} else if operation == "mod" {
+	case "mod":
 		r1Value := alu.get(r1)
 		result = r1Value % r2Value
-	} else if operation == "eql" {
+	case "eql":
 		r1Value := alu.get(r1)
 		if r1Value == r2Value {
 			result = 1
 		} else {
 			result = 0
 		}
-	} else {
+	default:
 		panic(fmt.Sprintf("Unkown operation: %s", operation))
 	}
 	alu.set(r1, result)
 }
 
 func (alu *ALU) set(register string, value int) {
-	if register == "w" {
+	switch register {
+	case "w":
 		alu.w = value
-	} else if register == "x" {
+	case "x":
 		alu.x = value
-	} else if register == "y" {
+	case "y":
 		alu.y = value
-	} else if register == "z" {
+	case "z":
 		alu.z = value
-	} else {
+	default:
 		panic(fmt.Sprintf("Unkown register: %s", register))
 	}
 }
 
 func (alu *ALU) get(register string) int {
 	var value int
-	if register == "w" {
+	switch register {
+	case "w":
 		value = alu.w
-	} else if register == "x" {
+	case "x":
 		value = alu.x
-	} else if register == "y" {
+	case "y":
 		value = alu.y
-	} else if register == "z" {
+	case "z":
 		value = alu.z
-	} else {
+	default:
 		value = util.ToInt(register)
 	}
 	return value

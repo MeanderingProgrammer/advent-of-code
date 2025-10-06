@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type Range [2]int
@@ -27,8 +28,8 @@ func (r Range) length() int {
 
 func (r1 Range) overlap(r2 Range) Range {
 	return [2]int{
-		util.Max(r1.start(), r2.start()),
-		util.Min(r1.end(), r2.end()),
+		max(r1.start(), r2.start()),
+		min(r1.end(), r2.end()),
 	}
 }
 

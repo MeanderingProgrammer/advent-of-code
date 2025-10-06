@@ -1,19 +1,20 @@
 package main
 
 import (
+	"sort"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"sort"
 )
 
-type Stack []string
+type Stack []rune
 
-func (stack *Stack) push(value string) {
+func (stack *Stack) push(value rune) {
 	*stack = append(*stack, value)
 }
 
-func (stack *Stack) pop() string {
+func (stack *Stack) pop() rune {
 	value := (*stack)[len(*stack)-1]
 	*stack = (*stack)[:len(*stack)-1]
 	return value
@@ -23,11 +24,11 @@ func (stack Stack) empty() bool {
 	return len(stack) == 0
 }
 
-var openToClose = map[string]string{
-	"(": ")",
-	"[": "]",
-	"{": "}",
-	"<": ">",
+var closing = map[rune]rune{
+	'(': ')',
+	'[': ']',
+	'{': '}',
+	'<': '>',
 }
 
 type Score struct {
@@ -35,67 +36,58 @@ type Score struct {
 	incomplete int
 }
 
-var scores = map[string]Score{
-	")": {3, 1},
-	"]": {57, 2},
-	"}": {1197, 3},
-	">": {25137, 4},
+var scores = map[rune]Score{
+	')': {3, 1},
+	']': {57, 2},
+	'}': {1197, 3},
+	'>': {25137, 4},
 }
 
 type System string
 
-func (system System) checkSyntax() (string, Stack) {
-	var syntaxStack Stack
-	for _, raw := range system {
-		value := string(raw)
-		_, exists := openToClose[value]
+func (system System) check() (rune, Stack) {
+	var stack Stack
+	for _, brace := range system {
+		_, exists := closing[brace]
 		if exists {
-			syntaxStack.push(value)
+			stack.push(brace)
 		} else {
-			lastOpen := syntaxStack.pop()
-			matchingClose := openToClose[lastOpen]
-			if matchingClose != value {
-				return value, nil
+			open := stack.pop()
+			if brace != closing[open] {
+				return brace, nil
 			}
 		}
 	}
-	return "", syntaxStack
+	return '0', stack
 }
 
 type Systems []string
 
-func (systems Systems) mismatchScore() int {
-	toMimatchScore := func(system string) int {
-		mismatched, _ := System(system).checkSyntax()
-		return scores[mismatched].mismatch
-	}
-	return util.Sum(util.Map(systems, toMimatchScore))
+func (systems Systems) mismatch() int {
+	values := util.Map(systems, func(system string) int {
+		brace, _ := System(system).check()
+		return scores[brace].mismatch
+	})
+	return util.Sum(values)
 }
 
-func (systems Systems) autocompleteScore() int {
-	toAutocompleteScore := func(system string) int {
-		_, unmatched := System(system).checkSyntax()
-		incompleteScore := 0
-		for !unmatched.empty() {
-			unmatchedBrace := unmatched.pop()
-			neededBrace := openToClose[unmatchedBrace]
-			incompleteScore *= 5
-			incompleteScore += scores[neededBrace].incomplete
+func (systems Systems) autocomplete() int {
+	values := util.Map(systems, func(system string) int {
+		_, remainder := System(system).check()
+		score := 0
+		for !remainder.empty() {
+			brace := closing[remainder.pop()]
+			score = score*5 + scores[brace].incomplete
 		}
-		return incompleteScore
-	}
+		return score
+	})
 
-	nonZero := func(value int) bool {
+	results := util.Filter(values, func(value int) bool {
 		return value > 0
-	}
+	})
 
-	scores := util.Filter(
-		util.Map(systems, toAutocompleteScore),
-		nonZero,
-	)
-
-	sort.Ints(scores)
-	return scores[len(scores)/2]
+	sort.Ints(results)
+	return results[len(results)/2]
 }
 
 func main() {
@@ -103,11 +95,7 @@ func main() {
 }
 
 func solution() {
-	systems := getSystem()
-	answer.Part1(321237, systems.mismatchScore())
-	answer.Part2(2360030859, systems.autocompleteScore())
-}
-
-func getSystem() Systems {
-	return file.Default[string]().ReadLines()
+	systems := Systems(file.Default[string]().ReadLines())
+	answer.Part1(321237, systems.mismatch())
+	answer.Part2(2360030859, systems.autocomplete())
 }

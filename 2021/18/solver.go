@@ -4,7 +4,6 @@ import (
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type SnailNumber struct {
@@ -20,20 +19,6 @@ func (number *SnailNumber) isRoot() bool {
 
 func (number *SnailNumber) isLeaf() bool {
 	return number.left == nil && number.right == nil
-}
-
-func (number *SnailNumber) toString() string {
-	if number.isLeaf() {
-		return util.ToString(number.value)
-	} else {
-		var result strings.Builder
-		result.WriteString("[")
-		result.WriteString(number.left.toString())
-		result.WriteString(",")
-		result.WriteString(number.right.toString())
-		result.WriteString("]")
-		return result.String()
-	}
 }
 
 func (v1 *SnailNumber) add(v2 *SnailNumber) *SnailNumber {
@@ -180,7 +165,7 @@ func sumAny(numbers []string) int {
 		for j, v2 := range numbers {
 			if i != j {
 				sum := parse(v1, nil).add(parse(v2, nil))
-				result = util.Max(result, sum.magnitude())
+				result = max(result, sum.magnitude())
 			}
 		}
 	}

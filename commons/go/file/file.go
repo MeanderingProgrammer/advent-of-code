@@ -1,11 +1,12 @@
 package file
 
 import (
-	"advent-of-code/commons/go/util"
 	"flag"
 	"os"
 	"runtime"
 	"strings"
+
+	"advent-of-code/commons/go/util"
 )
 
 type Reader[T any] struct {
@@ -67,7 +68,6 @@ func (r Reader[T]) SplitContent(splitter string) []string {
 }
 
 func (r Reader[T]) Content() string {
-	content, err := os.ReadFile(r.path)
-	util.CheckError(err)
+	content := util.Must1(os.ReadFile(r.path))
 	return strings.ReplaceAll(string(content), "\r\n", "\n")
 }

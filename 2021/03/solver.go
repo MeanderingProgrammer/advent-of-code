@@ -57,7 +57,7 @@ func constructedValue(binaries Binaries, mostCommon bool) int {
 		}
 		rate += value
 	}
-	return util.BinaryToDecimal(rate)
+	return util.ToDecimal(rate, 2)
 }
 
 func calculateLifeSupport(binaries Binaries) int {
@@ -72,7 +72,7 @@ func filteredValue(binaries Binaries, mostCommon bool) int {
 		}
 		binaries = binaries.filter(i, value)
 	}
-	return util.BinaryToDecimal(binaries[0])
+	return util.ToDecimal(binaries[0], 2)
 }
 
 func invertBit(value string) string {

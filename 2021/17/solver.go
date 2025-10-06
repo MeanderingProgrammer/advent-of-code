@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/util"
-	"strings"
 )
 
 type TargetArea struct {
@@ -34,10 +35,6 @@ func (position Position) in(targetArea TargetArea) bool {
 	return afterMin && beforeMax
 }
 
-func (position Position) over(targetArea TargetArea) bool {
-	return position.x > targetArea.xRange[1] && position.y > targetArea.yRange[0]
-}
-
 type Velocity Position
 
 func (velocity Velocity) applyDrag() Velocity {
@@ -56,14 +53,10 @@ func (trajectory Trajectory) in(targetArea TargetArea) bool {
 	return trajectory[len(trajectory)-2].in(targetArea)
 }
 
-func (trajectory Trajectory) overshot(targetArea TargetArea) bool {
-	return trajectory[len(trajectory)-1].over(targetArea)
-}
-
 func (trajectory Trajectory) maxHeight() int {
 	result := 0
 	for _, position := range trajectory {
-		result = util.Max(result, position.y)
+		result = max(result, position.y)
 	}
 	return result
 }
@@ -97,7 +90,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
 			trajectory := targetArea.shoot(Velocity{x, y})
 			if trajectory.in(targetArea) {
 				numValid++
-				maxHeight = util.Max(maxHeight, trajectory.maxHeight())
+				maxHeight = max(maxHeight, trajectory.maxHeight())
 			}
 		}
 	}

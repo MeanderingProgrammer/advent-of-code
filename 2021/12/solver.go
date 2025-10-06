@@ -1,14 +1,15 @@
 package main
 
 import (
+	"hash/fnv"
+	"slices"
+	"strings"
+	"unicode"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/graph"
 	"advent-of-code/commons/go/search"
-	"advent-of-code/commons/go/util"
-	"hash/fnv"
-	"strings"
-	"unicode"
 )
 
 type Cave string
@@ -46,7 +47,7 @@ func (path Path) add(cave Cave) Path {
 }
 
 func (path Path) contains(destination Cave) bool {
-	return util.Contains(path.caves, destination)
+	return slices.Contains(path.caves, destination)
 }
 
 func (path Path) duplicate() bool {

@@ -1,14 +1,5 @@
 package util
 
-func Contains[T comparable](values []T, target T) bool {
-	for _, value := range values {
-		if value == target {
-			return true
-		}
-	}
-	return false
-}
-
 func Filter[T any](values []T, f func(T) bool) []T {
 	var result []T
 	for _, value := range values {

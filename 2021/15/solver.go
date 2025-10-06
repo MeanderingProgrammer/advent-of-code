@@ -76,8 +76,8 @@ func getGrid(lines []string, wrap bool) grid.Grid[int] {
 	}.Construct()
 	if wrap {
 		points, baseSize := grid.Points(), grid.Width+1
-		for i := 0; i < 5; i++ {
-			for j := 0; j < 5; j++ {
+		for i := range 5 {
+			for j := range 5 {
 				distance := i + j
 				if distance == 0 {
 					continue

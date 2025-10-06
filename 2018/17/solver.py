@@ -46,10 +46,10 @@ class GroundReservoir:
             self.settled.add(point)
             while left in self.flowing:
                 self.settled.add(left)
-                left = (left[0] - 1, left[1])
+                left: Point = (left[0] - 1, left[1])
             while right in self.flowing:
                 self.settled.add(right)
-                right = (right[0] + 1, right[1])
+                right: Point = (right[0] + 1, right[1])
 
         left_condition = direction == LEFT and left_filled
         right_condition = direction == RIGHT and right_filled

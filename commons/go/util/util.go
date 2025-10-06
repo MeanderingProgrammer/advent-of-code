@@ -5,60 +5,39 @@ import (
 	"strings"
 )
 
-func CheckError(err error) {
+func Must0(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
+func Must1[T any](value T, err error) T {
+	Must0(err)
+	return value
+}
+
 func Abs(value int) int {
-	result := value
-	if value < 0 {
-		return result * -1
+	if value >= 0 {
+		return value
+	} else {
+		return value * -1
 	}
-	return result
-}
-
-func Max(v1, v2 int) int {
-	result := v1
-	if v2 > v1 {
-		result = v2
-	}
-	return result
-}
-
-func Min(v1, v2 int) int {
-	result := v1
-	if v2 < v1 {
-		result = v2
-	}
-	return result
 }
 
 func ToInt(value string) int {
-	result, err := strconv.Atoi(value)
-	CheckError(err)
-	return result
+	return Must1(strconv.Atoi(value))
 }
 
 func ToString(value int) string {
 	return strconv.Itoa(value)
 }
 
-func BinaryToDecimal(value string) int {
-	result, err := strconv.ParseInt(value, 2, 64)
-	CheckError(err)
-	return int(result)
+func ToDecimal(value string, base int) int {
+	return int(Must1(strconv.ParseInt(value, base, 64)))
 }
 
-func DecimalToBinary(decimal int) string {
-	return strconv.FormatInt(int64(decimal), 2)
-}
-
-func HexToDecimal(hexadecimal string) int {
-	result, err := strconv.ParseInt(hexadecimal, 16, 64)
-	CheckError(err)
-	return int(result)
+func DecimalToBinary(value int) string {
+	return strconv.FormatInt(int64(value), 2)
 }
 
 func SubstringAfter(s, sep string) string {
@@ -70,11 +49,7 @@ func SplitAt(s string, split int) (string, string) {
 }
 
 func IntCsv(s string) []int {
-	var result []int
-	for _, value := range strings.Split(s, ",") {
-		result = append(result, ToInt(value))
-	}
-	return result
+	return Map(strings.Split(s, ","), ToInt)
 }
 
 func Lines(s string) []string {

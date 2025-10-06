@@ -1,19 +1,21 @@
 package main
 
 import (
+	"slices"
+	"sort"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/grid"
 	"advent-of-code/commons/go/parser"
 	"advent-of-code/commons/go/point"
 	"advent-of-code/commons/go/util"
-	"sort"
 )
 
 type Points []point.Point
 
 func (points Points) contains(p point.Point) bool {
-	return util.Contains(points, p)
+	return slices.Contains(points, p)
 }
 
 func (points Points) riskLevel(g Grid) int {

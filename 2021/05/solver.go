@@ -1,10 +1,11 @@
 package main
 
 import (
+	"strings"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/point"
-	"strings"
 )
 
 type Line struct {
@@ -28,7 +29,7 @@ func (line Line) pointsBetween(includeDiagonal bool) []point.Point {
 		}
 	} else if includeDiagonal {
 		// Get diagonal points if allowed
-		for i := 0; i < len(xRange); i++ {
+		for i := range xRange {
 			p := point.Point{X: xRange[i], Y: yRange[i]}
 			points = append(points, p)
 		}
