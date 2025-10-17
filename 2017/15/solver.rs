@@ -16,7 +16,7 @@ impl Gen {
             if !Self::full(&vals) {
                 vals.push(value);
             }
-            if !Self::full(&mods) && value % multiple == 0 {
+            if !Self::full(&mods) && value.is_multiple_of(multiple) {
                 mods.push(value);
             }
         }

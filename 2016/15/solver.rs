@@ -26,7 +26,7 @@ impl FromStr for Disk {
 impl Disk {
     fn passes(&self, time: usize) -> bool {
         let position = time + self.id + self.start;
-        position % self.positions == 0
+        position.is_multiple_of(self.positions)
     }
 }
 

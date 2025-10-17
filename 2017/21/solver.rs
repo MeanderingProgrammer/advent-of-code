@@ -27,7 +27,7 @@ impl Square {
 
     fn components(&self) -> Vec<Vec<Vec<String>>> {
         let n = self.0.len();
-        let size = if n % 2 == 0 { 2 } else { 3 };
+        let size = if n.is_multiple_of(2) { 2 } else { 3 };
         let iter = (0..n).step_by(size);
         iter.clone()
             .map(|r| iter.clone().map(|c| self.lines(r, c, size)).collect())

@@ -27,7 +27,7 @@ impl Scanner {
     }
 
     fn caught(&self, offset: usize) -> bool {
-        (self.layer + offset) % self.roundtrip == 0
+        (self.layer + offset).is_multiple_of(self.roundtrip)
     }
 
     fn severity(&self) -> usize {
