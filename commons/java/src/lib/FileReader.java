@@ -17,7 +17,7 @@ public class FileReader {
     @SneakyThrows
     public FileReader(String[] args) {
         Options options = new Options();
-        options.addOption(Option.builder().longOpt("test").build());
+        options.addOption(Option.builder().longOpt("test").get());
         CommandLine cmd = new DefaultParser().parse(options, args);
         var fileName = cmd.hasOption("test") ? "sample" : "data";
         var project = Paths.get("").toAbsolutePath();

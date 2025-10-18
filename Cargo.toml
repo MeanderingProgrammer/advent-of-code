@@ -5,9 +5,9 @@ edition = "2024"
 
 [dependencies]
 fastrand = "2.3.0"
-rayon = "1.10.0"
+rayon = "1.11.0"
 rustc-hash = "2.1.1"
-wide = "0.7.32"
+wide = "0.8.1"
 
 [lib]
 name = "aoc"

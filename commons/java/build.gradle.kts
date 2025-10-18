@@ -4,5 +4,5 @@ plugins {
 }
 
 dependencies {
-    implementation("commons-cli:commons-cli:1.6.0")
+    implementation("commons-cli:commons-cli:1.10.0")
 }

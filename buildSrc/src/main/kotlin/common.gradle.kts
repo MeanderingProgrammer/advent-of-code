@@ -12,18 +12,22 @@ repositories {
     mavenCentral()
 }
 
+private object Versions {
+    const val lombok = "1.18.42"
+}
+
 dependencies {
-    implementation("com.google.guava:guava:33.4.8-jre")
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
-    testCompileOnly("org.projectlombok:lombok:1.18.38")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+    implementation("com.google.guava:guava:33.5.0-jre")
+    compileOnly("org.projectlombok:lombok:${Versions.lombok}")
+    annotationProcessor("org.projectlombok:lombok:${Versions.lombok}")
+    testCompileOnly("org.projectlombok:lombok:${Versions.lombok}")
+    testAnnotationProcessor("org.projectlombok:lombok:${Versions.lombok}")
 }
 
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
+            useJUnitJupiter("6.0.0")
         }
     }
 }
