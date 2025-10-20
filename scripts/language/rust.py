@@ -13,15 +13,15 @@ class Rust:
     file: str = "solver.rs"
     cmd: str = "cargo"
 
-    def test(self) -> list[str]:
-        return Rust.cargo("test") + ["--test", "aoc"]
-
     def build(self) -> list[list[str]]:
-        return [Rust.cargo("build") + ["--bins"]]
+        return [Rust.cargo("build", "--bins")]
+
+    def test(self) -> list[str]:
+        return Rust.cargo("test", "--test", "aoc")
 
     def run(self, day: Day, args: list[str]) -> list[str]:
         args = [] if len(args) == 0 else ["--"] + args
-        return Rust.cargo("run") + ["--bin", Rust.binary(day)] + args
+        return Rust.cargo("run", "--bin", Rust.binary(day)) + args
 
     def setup(self, day: Day) -> None:
         config = tomlkit.table()
@@ -41,8 +41,8 @@ class Rust:
         path.write_text(cargo.as_string())
 
     @staticmethod
-    def cargo(command: str) -> list[str]:
-        return ["cargo", command, "-rq"]
+    def cargo(command: str, *args: str) -> list[str]:
+        return ["cargo", command, "-rq"] + list(args)
 
     @staticmethod
     def binary(day: Day) -> str:

@@ -9,17 +9,17 @@ class Go:
     file: str = "solver.go"
     cmd: str = "go"
 
+    def build(self) -> list[list[str]]:
+        # go run both compiles and executes
+        return []
+
     def test(self) -> list[str]:
         return ["go", "test", "-v", "./..."]
-
-    def build(self) -> list[list[str]]:
-        # for now use go run, which both compiles and runs code
-        return []
 
     def run(self, day: Day, args: list[str]) -> list[str]:
         solution = day.file(self.file)
         return ["go", "run", str(solution)] + args
 
     def setup(self, day: Day) -> None:
-        # no additional setup needed
+        # no additional setup
         pass

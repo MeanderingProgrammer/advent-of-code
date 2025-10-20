@@ -10,12 +10,12 @@ class Zig:
     file: str = "solver.zig"
     cmd: str = "zig"
 
-    def test(self) -> list[str]:
-        # currently no unit tests
+    def build(self) -> list[list[str]]:
+        # zig build both compiles and executes
         return []
 
-    def build(self) -> list[list[str]]:
-        # for now use zig build, which both compiles and runs code
+    def test(self) -> list[str]:
+        # no unit tests
         return []
 
     def run(self, day: Day, args: list[str]) -> list[str]:

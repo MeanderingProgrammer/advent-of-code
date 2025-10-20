@@ -9,11 +9,11 @@ class Java:
     file: str = "src/Solver.java"
     cmd: str = "gradle"
 
-    def test(self) -> list[str]:
-        return ["./gradlew", "test"]
-
     def build(self) -> list[list[str]]:
         return [["./gradlew", "build", "-q"]]
+
+    def test(self) -> list[str]:
+        return ["./gradlew", "test"]
 
     def run(self, day: Day, args: list[str]) -> list[str]:
         arg = " ".join(args)
