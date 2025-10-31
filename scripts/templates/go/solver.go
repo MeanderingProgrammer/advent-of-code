@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
-	"fmt"
 )
 
 func main() {

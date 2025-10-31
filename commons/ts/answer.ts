@@ -6,15 +6,15 @@ export class Answer {
     console.log(`Runtime (ns): ${end - start}`);
   }
 
-  static part1(expected: number, actual: number): void {
+  static part1<T>(expected: T, actual: T): void {
     Answer.part(1, expected, actual);
   }
 
-  static part2(expected: number, actual: number): void {
+  static part2<T>(expected: T, actual: T): void {
     Answer.part(2, expected, actual);
   }
 
-  private static part(part: number, expected: number, actual: number): void {
+  private static part<T>(part: number, expected: T, actual: T): void {
     if (expected != actual) {
       throw new Error(
         `Part ${part} incorrect, expected ${expected} but got ${actual}`,

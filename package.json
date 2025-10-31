@@ -12,7 +12,8 @@
     "commons/ts/"
   ],
   "devDependencies": {
-    "@types/bun": "1.2.16"
+    "@types/bun": "1.2.16",
+    "prettier": "3.6.2"
   },
   "peerDependencies": {
     "typescript": "5.3.3"
