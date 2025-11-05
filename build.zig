@@ -1,11 +1,11 @@
 const std = @import("std");
 
-const Solution = struct {
+const Day = struct {
     year: []const u8,
     day: []const u8,
 };
 
-const Solutions = [_]Solution{
+const Days = [_]Day{
     .{ .year = "2021", .day = "01" },
     .{ .year = "2024", .day = "01" },
     .{ .year = "2024", .day = "02" },
@@ -44,23 +44,33 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    inline for (Solutions) |solution| {
-        const year = solution.year;
-        const day = solution.day;
+    const check_step = b.step("check", "Check if project compiles");
+
+    inline for (Days) |day| {
+        const name = day.year ++ "_" ++ day.day;
+        const folder = day.year ++ "/" ++ day.day;
+        const module = b.createModule(.{
+            .root_source_file = b.path(folder ++ "/solver.zig"),
+            .imports = &.{.{ .name = "aoc", .module = lib }},
+            .target = target,
+            .optimize = optimize,
+        });
+
         const exe = b.addExecutable(.{
-            .name = year ++ "_" ++ day,
-            .root_module = b.createModule(.{
-                .root_source_file = b.path(year ++ "/" ++ day ++ "/solver.zig"),
-                .imports = &.{.{ .name = "aoc", .module = lib }},
-                .target = target,
-                .optimize = optimize,
-            }),
+            .name = name,
+            .root_module = module,
         });
         b.installArtifact(exe);
         const run = b.addRunArtifact(exe);
         if (b.args) |args| {
             run.addArgs(args);
         }
-        b.step(exe.name, "Run " ++ year ++ " " ++ day).dependOn(&run.step);
+        b.step(name, "Run " ++ folder).dependOn(&run.step);
+
+        const check = b.addExecutable(.{
+            .name = name,
+            .root_module = module,
+        });
+        check_step.dependOn(&check.step);
     }
 }
