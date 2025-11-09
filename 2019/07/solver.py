@@ -1,12 +1,12 @@
 from itertools import permutations
-from typing import Self, override
+from typing import Self
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
-class Amplifier(Bus):
+class Amplifier:
     def __init__(self, memory: list[int], setting: int, pause: bool):
         self.computer: Computer[Self] = Computer(bus=self, memory=memory)
         self.inputs: list[int] = [setting]
@@ -19,15 +19,12 @@ class Amplifier(Bus):
         self.computer.run()
         return not self.active()
 
-    @override
     def active(self) -> bool:
         return not self.pause or not self.load
 
-    @override
     def get_input(self) -> int:
         return self.inputs.pop(0)
 
-    @override
     def add_output(self, value: int) -> None:
         self.load = True
         self.outputs.append(value)

@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
@@ -59,7 +58,7 @@ class Node:
 
 
 @dataclass
-class NodeBus(Bus):
+class NodeBus:
     network: Network
     packets: list[int]
     running: bool = True
@@ -69,11 +68,9 @@ class NodeBus(Bus):
         self.packets.append(packet.x)
         self.packets.append(packet.y)
 
-    @override
     def active(self) -> bool:
         return self.running
 
-    @override
     def get_input(self) -> int:
         if len(self.packets) == 0:
             self.running = False
@@ -81,7 +78,6 @@ class NodeBus(Bus):
         else:
             return self.packets.pop(0)
 
-    @override
     def add_output(self, value: int) -> None:
         self.buffer.append(value)
         if len(self.buffer) == 3:

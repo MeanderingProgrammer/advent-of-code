@@ -1,12 +1,7 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 
-class Command(ABC):
-    @abstractmethod
-    def info(self) -> dict[str, Any]:
-        pass
+class Command(Protocol):
+    def info(self) -> dict[str, Any]: ...
 
-    @abstractmethod
-    def run(self) -> None:
-        pass
+    def run(self) -> None: ...

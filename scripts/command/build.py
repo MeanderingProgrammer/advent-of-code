@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, override
+from typing import Any
 
-from command.command import Command
 from component.command import Executor
 from language.language import Language
 
@@ -31,14 +30,12 @@ class LanguageBuild:
 
 
 @dataclass(frozen=True)
-class Build(Command):
+class Build:
     languages: list[Language]
 
-    @override
     def info(self) -> dict[str, Any]:
         return {build.key(): build.value() for build in self.builds()}
 
-    @override
     def run(self) -> None:
         [build.execute() for build in self.builds()]
 

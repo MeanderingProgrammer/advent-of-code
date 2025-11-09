@@ -1,6 +1,7 @@
 [project]
 name = "aoc"
-version = "0.0.1"
+version = "0.1.0"
 
 [build-system]
 requires = ["setuptools >= 64"]
+build-backend = "setuptools.build_meta"

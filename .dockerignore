@@ -1,8 +1,0 @@
-.git/
-.pytest_cache/
-.ruff_cache/
-.zig-cache/
-_build/
-build/
-node_modules/
-target/

@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
-from typing import override
 
 from aoc import answer
 from aoc.grid import Grid
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -13,18 +12,16 @@ OPPOSITES: dict[int, int] = {1: 2, 2: 1, 3: 4, 4: 3}
 
 
 @dataclass
-class RepairDroid(Bus):
+class RepairDroid:
     completed: bool = False
     position: Point = (0, 0)
     next_position: tuple[int, Point] | None = None
     path: list[tuple[int, Point]] = field(default_factory=lambda: [(0, (0, 0))])
     grid: Grid[int] = field(default_factory=lambda: {(0, 0): EMPTY})
 
-    @override
     def active(self) -> bool:
         return not self.completed
 
-    @override
     def get_input(self) -> int:
         unexplored = self.get_unexplored()
         if unexplored is not None:
@@ -47,7 +44,6 @@ class RepairDroid(Bus):
                 return code, next_position
         return None
 
-    @override
     def add_output(self, value: int) -> None:
         # Make sure we can identify the input
         assert value in [WALL, EMPTY, OXYGEN], f"Unexpected status code: {value}"

@@ -1,27 +1,24 @@
 from datetime import datetime
-from typing import Any, override
+from typing import Any
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 
-from command.command import Command
 from component.figure_saver import FigureKind, FigureProps, FigureSaver
 from component.history import History
 
 
-class Grapher(Command):
+class Grapher:
     def __init__(self, archive: bool) -> None:
         self.saver: FigureSaver = FigureSaver(
             archive=archive,
             now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
         )
 
-    @override
     def info(self) -> dict[str, Any]:
         return self.saver.info()
 
-    @override
     def run(self) -> None:
         plt.style.use("ggplot")
         runtimes = History("all").load(True)

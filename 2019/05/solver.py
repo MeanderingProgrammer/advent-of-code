@@ -1,25 +1,21 @@
 from dataclasses import dataclass
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
 @dataclass
-class BasicProgram(Bus):
+class BasicProgram:
     system_id: int
     diagnostic_code: int | None = None
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         return self.system_id
 
-    @override
     def add_output(self, value: int) -> None:
         self.diagnostic_code = value
 

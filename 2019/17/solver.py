@@ -1,9 +1,8 @@
 from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -134,7 +133,7 @@ class Compression:
 
 
 @dataclass
-class VacuumDroid(Bus):
+class VacuumDroid:
     current: Point
     scafolding: list[Point] = field(default_factory=list)
     instructions: list[int] = field(default_factory=list)
@@ -142,15 +141,12 @@ class VacuumDroid(Bus):
     running: bool = False
     value: int | None = None
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         return self.instructions.pop(0)
 
-    @override
     def add_output(self, value: int) -> None:
         if self.running:
             self.value = value

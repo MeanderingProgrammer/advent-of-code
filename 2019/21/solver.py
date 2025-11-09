@@ -1,11 +1,9 @@
-from typing import override
-
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
-class JumpDroid(Bus):
+class JumpDroid:
     def __init__(self, actions: list[str]):
         program: list[str] = []
         for action in actions:
@@ -14,15 +12,12 @@ class JumpDroid(Bus):
         self.program: list[str] = program
         self.value: int | None = None
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         return ord(self.program.pop(0))
 
-    @override
     def add_output(self, value: int) -> None:
         self.value = value
 

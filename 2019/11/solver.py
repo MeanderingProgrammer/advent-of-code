@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import override
 
 from aoc import answer
 from aoc.grid import Grid, GridHelper
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 
@@ -23,21 +22,18 @@ class Direction:
 
 
 @dataclass
-class PaintBot(Bus):
+class PaintBot:
     direction: Direction
     position: Point
     grid: Grid[int]
     color: bool = True
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         return self.grid[self.position] if self.position in self.grid else 0
 
-    @override
     def add_output(self, value: int) -> None:
         if self.color:
             self.grid[self.position] = value

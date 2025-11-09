@@ -1,9 +1,8 @@
 import re
 import time
 from dataclasses import dataclass
-from typing import Any, override
+from typing import Any
 
-from command.command import Command
 from component.command import Executor
 from component.display_runtimes import Displayer
 from component.history import History
@@ -30,11 +29,7 @@ class LanguageRunner:
         )
 
     def execute(self) -> RuntimeInfo:
-        message = (
-            f"Running {self.day.year}/{self.day.day}"
-            f" {self.times} times with {self.name}"
-        )
-        print(message)
+        print(f"Running {self.day.dir()} with {self.name} ({self.times})")
 
         runtimes: list[float] = []
         executions: list[float] = []
@@ -67,14 +62,13 @@ class LanguageRunner:
 
 
 @dataclass(frozen=True)
-class Runner(Command):
+class Runner:
     days: list[Day]
     language_strategy: LanguageStrategy
     slow: int
     args: list[str]
     save: bool
 
-    @override
     def info(self) -> dict[str, Any]:
         return dict(
             executions=[runner.as_dict() for runner in self.runners()],
@@ -82,7 +76,6 @@ class Runner(Command):
             save=self.save,
         )
 
-    @override
     def run(self) -> None:
         start = time.time()
         runtimes = [runner.execute() for runner in self.runners()]

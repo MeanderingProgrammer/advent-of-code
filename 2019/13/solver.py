@@ -1,31 +1,27 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 TILE_MAPPING = {0: "empty", 1: "wall", 2: "block", 3: "horizontal paddle", 4: "ball"}
 
 
 @dataclass
-class Game(Bus):
+class Game:
     tile_buffer: list[int]
     tile_freq: dict[str, int]
     tile_x: dict[str, int]
     score: int = 0
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         diff = self.tile_x["ball"] - self.tile_x["horizontal paddle"]
         return min(1, max(-1, diff))
 
-    @override
     def add_output(self, value: int) -> None:
         self.tile_buffer.append(value)
         if len(self.tile_buffer) == 3:

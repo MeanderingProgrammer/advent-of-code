@@ -1,29 +1,25 @@
 from dataclasses import dataclass
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 from aoc.point import Point
 
 
 @dataclass
-class Beam(Bus):
+class Beam:
     point: Point
     called: bool = False
     value: int | None = None
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         value = self.point[0] if not self.called else self.point[1]
         self.called = not self.called
         return value
 
-    @override
     def add_output(self, value: int) -> None:
         self.value = value
 

@@ -1,32 +1,25 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import override
+from typing import Protocol
 
 
-class Instruction(ABC):
-    @abstractmethod
-    def run(self, computer: "Computer") -> int:
-        pass
+class Instruction(Protocol):
+    def run(self, computer: Computer) -> int: ...
 
-    @abstractmethod
-    def toggle(self) -> "Instruction":
-        pass
+    def toggle(self) -> Instruction: ...
 
 
 @dataclass(kw_only=True)
-class Setter(Instruction):
+class Setter:
     register: str
     value: str
     absolute: bool
 
-    @override
-    def run(self, computer: "Computer") -> int:
+    def run(self, computer: Computer) -> int:
         value = computer.get(self.value)
         value = value if self.absolute else computer.get(self.register) + value
         computer.set(self.register, value)
         return 1
 
-    @override
     def toggle(self) -> Instruction:
         if self.absolute:
             return Jump(register=self.value, value=self.register)
@@ -36,42 +29,37 @@ class Setter(Instruction):
 
 
 @dataclass(frozen=True, kw_only=True)
-class Jump(Instruction):
+class Jump:
     register: str
     value: str
 
-    @override
-    def run(self, computer: "Computer") -> int:
+    def run(self, computer: Computer) -> int:
         if computer.get(self.register) != 0:
             return computer.get(self.value)
         else:
             return 1
 
-    @override
     def toggle(self) -> Instruction:
         return Setter(register=self.value, value=self.register, absolute=True)
 
 
 @dataclass(frozen=True, kw_only=True)
-class Toggle(Instruction):
+class Toggle:
     register: str
 
-    @override
-    def run(self, computer: "Computer") -> int:
+    def run(self, computer: Computer) -> int:
         computer.toggle(self.register)
         return 1
 
-    @override
     def toggle(self) -> Instruction:
         return Setter(register=self.register, value="1", absolute=False)
 
 
 @dataclass(frozen=True, kw_only=True)
-class Output(Instruction):
+class Output:
     register: str
 
-    @override
-    def run(self, computer: "Computer") -> int:
+    def run(self, computer: Computer) -> int:
         value = computer.get(self.register)
         computer.output(value)
         if not self.outputs_valid(computer.outputs):
@@ -82,7 +70,6 @@ class Output(Instruction):
         last_value = 1 if len(outputs) % 2 == 0 else 0
         return outputs[-1] == last_value
 
-    @override
     def toggle(self) -> Instruction:
         raise Exception("Toggling is not valid for Output")
 

@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Protocol
 
 
 class Mode(Enum):
@@ -14,18 +14,12 @@ class Method(Enum):
     IDX = auto()
 
 
-class Bus(ABC):
-    @abstractmethod
-    def active(self) -> bool:
-        pass
+class Bus(Protocol):
+    def active(self) -> bool: ...
 
-    @abstractmethod
-    def get_input(self) -> int:
-        pass
+    def get_input(self) -> int: ...
 
-    @abstractmethod
-    def add_output(self, value: int) -> None:
-        pass
+    def add_output(self, value: int) -> None: ...
 
 
 @dataclass

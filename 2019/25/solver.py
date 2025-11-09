@@ -2,13 +2,12 @@ import itertools
 from collections.abc import Generator
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import override
 
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
-BAD_ITEMS = [
+BAD_ITEMS: list[str] = [
     "giant electromagnet",
     "molten lava",
     "photons",
@@ -119,7 +118,7 @@ class ItemBag:
                 yield subset
 
 
-class DroidBus(Bus):
+class DroidBus:
     def __init__(self):
         # Storing output of game and move to make
         self.game: Game = Game()
@@ -136,15 +135,12 @@ class DroidBus(Bus):
         self.items: ItemBag = ItemBag(items=[])
         self.item_generator: Generator[tuple[str, ...], None, None] = self.items.next()
 
-    @override
     def active(self) -> bool:
         return True
 
-    @override
     def add_output(self, value: int) -> None:
         self.game.add(chr(value))
 
-    @override
     def get_input(self) -> int:
         if len(self.commands) == 0:
             if self.state == State.EXPLORING:

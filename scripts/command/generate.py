@@ -4,9 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum, auto
 from pathlib import Path
-from typing import Any, override
+from typing import Any
 
-from command.command import Command
 from language.language import Language
 from pojo.day import Day
 
@@ -18,12 +17,11 @@ class DownloadStatus(StrEnum):
 
 
 @dataclass(frozen=True)
-class Generator(Command):
+class Generator:
     day: Day
     language: Language
     puzzle: bool
 
-    @override
     def info(self) -> dict[str, Any]:
         return dict(
             year=self.day.year,
@@ -32,7 +30,6 @@ class Generator(Command):
             puzzle=self.puzzle,
         )
 
-    @override
     def run(self) -> None:
         current = datetime.now(timezone.utc)
         release = self.release_time()

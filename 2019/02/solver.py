@@ -1,20 +1,15 @@
-from typing import override
-
 from aoc import answer
-from aoc.int_code import Bus, Computer
+from aoc.int_code import Computer
 from aoc.parser import Parser
 
 
-class NoopBus(Bus):
-    @override
+class NoopBus:
     def active(self) -> bool:
         return True
 
-    @override
     def get_input(self) -> int:
         return 0
 
-    @override
     def add_output(self, value: int) -> None:
         pass
 
