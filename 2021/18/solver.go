@@ -13,33 +13,33 @@ type SnailNumber struct {
 	right  *SnailNumber
 }
 
-func (number *SnailNumber) isRoot() bool {
-	return number.parent == nil
+func (n *SnailNumber) isRoot() bool {
+	return n.parent == nil
 }
 
-func (number *SnailNumber) isLeaf() bool {
-	return number.left == nil && number.right == nil
+func (n *SnailNumber) isLeaf() bool {
+	return n.left == nil && n.right == nil
 }
 
-func (v1 *SnailNumber) add(v2 *SnailNumber) *SnailNumber {
+func (n *SnailNumber) add(other *SnailNumber) *SnailNumber {
 	result := SnailNumber{
-		left:  v1,
-		right: v2,
+		left:  n,
+		right: other,
 	}
-	v1.parent = &result
-	v2.parent = &result
+	n.parent = &result
+	other.parent = &result
 	result.reduce()
 	return &result
 }
 
-func (number *SnailNumber) reduce() {
+func (n *SnailNumber) reduce() {
 	didReduce := true
 	for didReduce {
-		atDepth := number.getAtDepth(4)
+		atDepth := n.getAtDepth(4)
 		if atDepth != nil {
 			atDepth.explode()
 		} else {
-			minValue := number.getWithMinValue(10)
+			minValue := n.getWithMinValue(10)
 			if minValue != nil {
 				minValue.split()
 			} else {
@@ -49,25 +49,25 @@ func (number *SnailNumber) reduce() {
 	}
 }
 
-func (number *SnailNumber) getAtDepth(goal int) *SnailNumber {
-	if number.isLeaf() {
+func (n *SnailNumber) getAtDepth(goal int) *SnailNumber {
+	if n.isLeaf() {
 		return nil
 	} else if goal == 0 {
-		return number
+		return n
 	} else {
-		result := number.left.getAtDepth(goal - 1)
+		result := n.left.getAtDepth(goal - 1)
 		if result == nil {
-			result = number.right.getAtDepth(goal - 1)
+			result = n.right.getAtDepth(goal - 1)
 		}
 		return result
 	}
 }
 
-func (number *SnailNumber) explode() {
-	number.updateClosestNode(Left, number.left.value)
-	number.updateClosestNode(Right, number.right.value)
-	number.left = nil
-	number.right = nil
+func (n *SnailNumber) explode() {
+	n.updateClosestNode(Left, n.left.value)
+	n.updateClosestNode(Right, n.right.value)
+	n.left = nil
+	n.right = nil
 }
 
 type Direction int64
@@ -77,18 +77,18 @@ const (
 	Right
 )
 
-func (number *SnailNumber) updateClosestNode(direction Direction, value int) {
-	if number.isRoot() {
+func (n *SnailNumber) updateClosestNode(direction Direction, value int) {
+	if n.isRoot() {
 		return
 	}
 
-	closestNode := number.parent.right
+	closestNode := n.parent.right
 	if direction == Left {
-		closestNode = number.parent.left
+		closestNode = n.parent.left
 	}
 
-	if *number == *closestNode {
-		number.parent.updateClosestNode(direction, value)
+	if *n == *closestNode {
+		n.parent.updateClosestNode(direction, value)
 	} else {
 		for !closestNode.isLeaf() {
 			if direction == Left {
@@ -101,42 +101,42 @@ func (number *SnailNumber) updateClosestNode(direction Direction, value int) {
 	}
 }
 
-func (number *SnailNumber) getWithMinValue(goal int) *SnailNumber {
-	if number.isLeaf() {
-		result := number
-		if number.value < goal {
+func (n *SnailNumber) getWithMinValue(goal int) *SnailNumber {
+	if n.isLeaf() {
+		result := n
+		if n.value < goal {
 			result = nil
 		}
 		return result
 	} else {
-		result := number.left.getWithMinValue(goal)
+		result := n.left.getWithMinValue(goal)
 		if result == nil {
-			result = number.right.getWithMinValue(goal)
+			result = n.right.getWithMinValue(goal)
 		}
 		return result
 	}
 }
 
-func (number *SnailNumber) split() {
+func (n *SnailNumber) split() {
 	newNode := SnailNumber{}
-	newNode.parent = number.parent
+	newNode.parent = n.parent
 	newNode.left = &SnailNumber{
-		value:  number.value / 2,
+		value:  n.value / 2,
 		parent: &newNode,
 	}
 	newNode.right = &SnailNumber{
-		value:  (number.value + 1) / 2,
+		value:  (n.value + 1) / 2,
 		parent: &newNode,
 	}
-	*number = newNode
+	*n = newNode
 }
 
-func (number *SnailNumber) magnitude() int {
-	if number.isLeaf() {
-		return number.value
+func (n *SnailNumber) magnitude() int {
+	if n.isLeaf() {
+		return n.value
 	} else {
-		leftValue := number.left.magnitude()
-		rightValue := number.right.magnitude()
+		leftValue := n.left.magnitude()
+		rightValue := n.right.magnitude()
 		return (3 * leftValue) + (2 * rightValue)
 	}
 }

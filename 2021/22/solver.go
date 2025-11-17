@@ -26,10 +26,10 @@ func (r Range) length() int {
 	return (r.end() - r.start()) + 1
 }
 
-func (r1 Range) overlap(r2 Range) Range {
+func (r Range) overlap(other Range) Range {
 	return [2]int{
-		max(r1.start(), r2.start()),
-		min(r1.end(), r2.end()),
+		max(r.start(), other.start()),
+		min(r.end(), other.end()),
 	}
 }
 

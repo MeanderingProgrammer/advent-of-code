@@ -10,49 +10,25 @@ import (
 	"advent-of-code/commons/go/file"
 )
 
-type hashSearch struct {
+type Search struct {
 	prefix string
 }
 
-func (h hashSearch) runBatch(start int, batchSize int) []string {
+func (s Search) runBatch(start int, batchSize int) []string {
 	results := []string{}
 	for i := start; i < start+batchSize; i++ {
-		hash := h.getHash(i)
-		if hash[0:5] == "00000" {
-			results = append(results, hash)
+		digest := s.getDigest(i)
+		if digest[0:5] == "00000" {
+			results = append(results, digest)
 		}
 	}
 	return results
 }
 
-func (h hashSearch) getHash(i int) string {
-	value := h.prefix + strconv.Itoa(i)
+func (s Search) getDigest(i int) string {
+	value := s.prefix + strconv.Itoa(i)
 	result := md5.Sum([]byte(value))
 	return hex.EncodeToString(result[:4])
-}
-
-type Populator interface {
-	populate(passwords map[int]string, hash string)
-}
-
-type Part1 struct{}
-
-func (p *Part1) populate(passwords map[int]string, hash string) {
-	passwords[len(passwords)] = string(hash[5])
-}
-
-type Part2 struct{}
-
-func (p *Part2) populate(passwords map[int]string, hash string) {
-	index, err := strconv.Atoi(string(hash[5]))
-	if err != nil || index > 7 {
-		return
-	}
-	_, ok := passwords[index]
-	if ok {
-		return
-	}
-	passwords[index] = string(hash[6])
 }
 
 func main() {
@@ -60,37 +36,51 @@ func main() {
 }
 
 func solution() {
-	doorId := file.Default[string]().Content()
-	answer.Part1("d4cd2ee1", getPassword(doorId, &Part1{}))
-	answer.Part2("f2c730e5", getPassword(doorId, &Part2{}))
+	prefix := file.Default[string]().Content()
+	answer.Part1("d4cd2ee1", getPassword(prefix, part1))
+	answer.Part2("f2c730e5", getPassword(prefix, part2))
 }
 
-func getPassword(doorId string, populator Populator) string {
-	search := hashSearch{
-		prefix: doorId,
-	}
-	passwords := make(map[int]string)
+func getPassword(prefix string, update func(map[int]string, string)) string {
+	search := Search{prefix}
+	password := make(map[int]string)
 	batch := async.Batch[[]string]{
 		Batches:   8,
 		BatchSize: 16384,
 		Index:     0,
 		Complete: func() bool {
-			return len(passwords) == 8
+			return len(password) == 8
 		},
 		Work: search.runBatch,
 		ProcessResults: func(results [][]string) {
 			for _, result := range results {
-				for _, hash := range result {
-					populator.populate(passwords, hash)
+				for _, digest := range result {
+					update(password, digest)
 				}
 			}
 		},
 	}
 	batch.Run()
 	result := ""
-	for i := 0; i < len(passwords); i++ {
-		value, _ := passwords[i]
+	for i := 0; i < len(password); i++ {
+		value := password[i]
 		result += value
 	}
 	return result
+}
+
+func part1(password map[int]string, digest string) {
+	password[len(password)] = string(digest[5])
+}
+
+func part2(password map[int]string, digest string) {
+	index, err := strconv.Atoi(string(digest[5]))
+	if err != nil || index > 7 {
+		return
+	}
+	_, ok := password[index]
+	if ok {
+		return
+	}
+	password[index] = string(digest[6])
 }

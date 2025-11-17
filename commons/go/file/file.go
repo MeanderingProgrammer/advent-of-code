@@ -28,7 +28,7 @@ func Default[T any]() Reader[T] {
 
 func getYearDay() (string, string) {
 	i := 0
-	for true {
+	for {
 		_, file, _, _ := runtime.Caller(i)
 		if strings.HasSuffix(file, "solver.go") {
 			parts := strings.Split(file, "/")
@@ -36,7 +36,6 @@ func getYearDay() (string, string) {
 		}
 		i++
 	}
-	return "", ""
 }
 
 func fileName(testMode bool) string {

@@ -23,8 +23,8 @@ func (p Point) Subtract(x, y int) Point {
 	}
 }
 
-func (p1 Point) ManhattanDistance(p2 Point) int {
-	difference := p1.Subtract(p2.X, p2.Y)
+func (p Point) ManhattanDistance(other Point) int {
+	difference := p.Subtract(other.X, other.Y)
 	return util.Abs(difference.X) + util.Abs(difference.Y)
 }
 

@@ -68,10 +68,10 @@ var rotations = []Rotation{
 
 type Points map[Point]bool
 
-func (p1s Points) offsetWithOverlap(p2s Points, rotation Rotation, minOverlap int) Transformation {
+func (points Points) offsetWithOverlap(other Points, rotation Rotation, minOverlap int) Transformation {
 	offsets := make(map[Point]int)
-	for p1 := range p1s {
-		for p2 := range p2s {
+	for p1 := range points {
+		for p2 := range other {
 			offset := p1.subtract(rotation(p2))
 			offsets[offset]++
 			if offsets[offset] >= minOverlap {

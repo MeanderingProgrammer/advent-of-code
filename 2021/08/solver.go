@@ -142,7 +142,7 @@ func getSegmentEntries() []SegmentEntry {
 
 func parseDigits(raw string) []Digit {
 	var digits []Digit
-	for _, rawDigit := range strings.Split(raw, " ") {
+	for rawDigit := range strings.SplitSeq(raw, " ") {
 		digits = append(digits, parseDigit(rawDigit))
 	}
 	return digits

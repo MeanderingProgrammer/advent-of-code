@@ -30,7 +30,7 @@ impl Password {
         }
     }
 
-    fn part_1(&self) -> Vec<u8> {
+    fn part1(&self) -> Vec<u8> {
         self.data
             .iter()
             .sorted()
@@ -39,7 +39,7 @@ impl Password {
             .collect()
     }
 
-    fn part_2(&self) -> Vec<u8> {
+    fn part2(&self) -> Vec<u8> {
         self.result.to_vec()
     }
 }
@@ -51,8 +51,8 @@ fn main() {
 fn solution() {
     let prefix = Reader::default().line();
     let password = get_password(prefix);
-    answer::part1("d4cd2ee1", &to_hex(&password.part_1()));
-    answer::part2("f2c730e5", &to_hex(&password.part_2()));
+    answer::part1("d4cd2ee1", &to_hex(&password.part1()));
+    answer::part2("f2c730e5", &to_hex(&password.part2()));
 }
 
 fn get_password(prefix: String) -> Password {
@@ -75,12 +75,12 @@ fn worker(state: &State, mutex: &Mutex<Password>, batch_size: usize) {
     while !state.done.load(Ordering::Relaxed) {
         let start = state.index.fetch_add(batch_size, Ordering::Relaxed);
         for i in (start..start + batch_size).step_by(8) {
-            update_password(state, mutex, i);
+            update(state, mutex, i);
         }
     }
 }
 
-fn update_password(state: &State, mutex: &Mutex<Password>, start: usize) {
+fn update(state: &State, mutex: &Mutex<Password>, start: usize) {
     let inputs = std::array::from_fn(|i| format!("{}{}", state.prefix, start + i));
     let digests = Md5::from(inputs).compute();
     for (i, [digest, _, _, _]) in digests.into_iter().enumerate() {
