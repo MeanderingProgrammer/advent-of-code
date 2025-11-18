@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from enum import StrEnum, auto
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,55 +10,59 @@ from aoc.parser import Parser
 class Computer:
     registers: dict[str, int]
 
+    def run(self, instructions: list[Instruction]) -> None:
+        ip = 0
+        while ip >= 0 and ip < len(instructions):
+            move = 1
+            instruction = instructions[ip]
+            match instruction.operation:
+                case Operation.HLF:
+                    (x,) = instruction.args
+                    self.set(x, self.get(x) // 2)
+                case Operation.TPL:
+                    (x,) = instruction.args
+                    self.set(x, self.get(x) * 3)
+                case Operation.INC:
+                    (x,) = instruction.args
+                    self.set(x, self.get(x) + 1)
+                case Operation.JMP:
+                    (x,) = instruction.args
+                    move = int(x)
+                case Operation.JIE:
+                    (x, y) = instruction.args
+                    if self.get(x) % 2 == 0:
+                        move = int(y)
+                case Operation.JIO:
+                    (x, y) = instruction.args
+                    if self.get(x) == 1:
+                        move = int(y)
+            ip += move
+
     def get(self, register: str) -> int:
         return self.registers[register]
 
     def set(self, register: str, value: int) -> None:
         self.registers[register] = value
 
-    def run(self, instructions: list["Instruction"]) -> None:
-        ip = 0
-        while ip >= 0 and ip < len(instructions):
-            instruction = instructions[ip]
-            move = instruction.run(self)
-            ip += move
-
 
 @dataclass(frozen=True)
 class Instruction:
-    op: str
+    operation: Operation
     args: list[str]
 
-    def run(self, computer: Computer) -> int:
-        if self.op == "hlf":
-            current = computer.get(self.args[0])
-            computer.set(self.args[0], current // 2)
-            return 1
-        elif self.op == "tpl":
-            current = computer.get(self.args[0])
-            computer.set(self.args[0], current * 3)
-            return 1
-        elif self.op == "inc":
-            current = computer.get(self.args[0])
-            computer.set(self.args[0], current + 1)
-            return 1
-        elif self.op == "jmp":
-            return int(self.args[0])
-        elif self.op == "jie":
-            current = computer.get(self.args[0])
-            amount = int(self.args[1])
-            return amount if current % 2 == 0 else 1
-        elif self.op == "jio":
-            current = computer.get(self.args[0])
-            amount = int(self.args[1])
-            return amount if current == 1 else 1
-        else:
-            raise Exception(f"Unknown operation: {self.op}")
+    @classmethod
+    def new(cls, s: str) -> Self:
+        operation, args = s.split(" ", 1)
+        return cls(Operation(operation), args.split(", "))
 
-    @staticmethod
-    def new(line: str) -> "Instruction":
-        op, args = line.split(" ", 1)
-        return Instruction(op, args.split(", "))
+
+class Operation(StrEnum):
+    HLF = auto()
+    TPL = auto()
+    INC = auto()
+    JMP = auto()
+    JIE = auto()
+    JIO = auto()
 
 
 @answer.timer

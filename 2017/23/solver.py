@@ -45,16 +45,17 @@ class Computer:
 
 @answer.timer
 def main() -> None:
-    answer.part1(9409, run_computer())
+    lines = Parser().lines()
+    answer.part1(9409, run_computer(lines))
     answer.part2(913, count_non_primes(109_900, 126_900, 17))
 
 
-def run_computer() -> int:
+def run_computer(lines: list[str]) -> int:
     def parse_instruction(line: str) -> Instruction:
         parts = line.split()
         return parts[0], parts[1:]
 
-    instructions = [parse_instruction(line) for line in Parser().lines()]
+    instructions = [parse_instruction(line) for line in lines]
     computer = Computer(instructions)
     computer.run()
     return computer.multiplies

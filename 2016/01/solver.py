@@ -12,16 +12,17 @@ DIRECTIONS: list[Direction] = [
 
 @answer.timer
 def main() -> None:
-    visited = traverse()
+    instructions = Parser().csv()
+    visited = traverse(instructions)
     answer.part1(252, PointHelper.len(visited[-1]))
     answer.part2(143, PointHelper.len(repeated(visited)))
 
 
-def traverse() -> list[Point]:
+def traverse(instructions: list[str]) -> list[Point]:
     index = 0
     position = (0, 0)
     visited: list[Point] = [position]
-    for instruction in Parser().csv():
+    for instruction in instructions:
         change = -1 if instruction[0] == "L" else 1
         index = (index + change) % len(DIRECTIONS)
         for _ in range(int(instruction[1:])):

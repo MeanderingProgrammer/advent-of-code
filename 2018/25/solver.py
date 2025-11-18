@@ -46,12 +46,13 @@ class UnionFind:
 
 @answer.timer
 def main() -> None:
-    answer.part1(375, UnionFind().run(get_points()))
+    lines = Parser().lines()
+    answer.part1(375, UnionFind().run(get_points(lines)))
 
 
-def get_points() -> list[Point]:
+def get_points(lines: list[str]) -> list[Point]:
     points: list[Point] = []
-    for line in Parser().lines():
+    for line in lines:
         x, y, z, w = line.split(",")
         point = (int(x), int(y), int(z), int(w))
         points.append(point)

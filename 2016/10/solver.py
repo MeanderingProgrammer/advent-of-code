@@ -47,7 +47,8 @@ class Bot:
 
 @answer.timer
 def main() -> None:
-    initial_values, bots = get_data()
+    lines = Parser().lines()
+    initial_values, bots = get_data(lines)
     outputs: Outputs = defaultdict(list)
     for bot, values in initial_values.items():
         for value in values:
@@ -56,10 +57,10 @@ def main() -> None:
     answer.part2(143153, multiply_outputs(outputs, [0, 1, 2]))
 
 
-def get_data() -> tuple[dict[int, list[int]], Bots]:
+def get_data(lines: list[str]) -> tuple[dict[int, list[int]], Bots]:
     initial_values: dict[int, list[int]] = defaultdict(list)
     bots: Bots = dict()
-    for line in Parser().lines():
+    for line in lines:
         parts = line.split()
         if parts[0] == "value":
             initial_values[int(parts[5])].append(int(parts[1]))

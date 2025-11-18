@@ -43,21 +43,22 @@ class Value:
 
 @answer.timer
 def main() -> None:
-    first = evaluate(None)
+    lines = Parser().lines()
+    first = evaluate(lines, None)
     answer.part1(3176, first)
-    answer.part2(14710, evaluate(first))
+    answer.part2(14710, evaluate(lines, first))
 
 
-def evaluate(b: int | None) -> int:
-    diagram: dict[str, Value] = get_diagram()
+def evaluate(lines: list[str], b: int | None) -> int:
+    diagram: dict[str, Value] = get_diagram(lines)
     if b is not None:
         diagram["b"] = Value(str(b).split())
     return diagram["a"].evaluate(diagram)
 
 
-def get_diagram() -> dict[str, Value]:
+def get_diagram(lines: list[str]) -> dict[str, Value]:
     diagram: dict[str, Value] = dict()
-    for line in Parser().lines():
+    for line in lines:
         value, key = line.split(" -> ")
         diagram[key] = Value(value.split())
     return diagram

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,6 +9,17 @@ from aoc.parser import Parser
 class IpAddress:
     sequences: list[str]
     hyper_sequences: list[str]
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts: list[str] = s.split("[")
+        sequences: list[str] = [parts[0]]
+        hyper_sequences: list[str] = []
+        for part in parts[1:]:
+            hyper, regular = part.split("]")
+            hyper_sequences.append(hyper)
+            sequences.append(regular)
+        return cls(sequences, hyper_sequences)
 
     def ssl(self) -> bool:
         in_main, in_hyper = self.subsequences(3)
@@ -42,23 +54,9 @@ class IpAddress:
 
 @answer.timer
 def main() -> None:
-    ips = get_ip_addresses()
+    ips = [IpAddress.new(line) for line in Parser().lines()]
     answer.part1(118, sum([ip.tls() for ip in ips]))
     answer.part2(260, sum([ip.ssl() for ip in ips]))
-
-
-def get_ip_addresses() -> list[IpAddress]:
-    def parse_ip_address(line: str) -> IpAddress:
-        parts: list[str] = line.split("[")
-        sequences: list[str] = [parts[0]]
-        hyper_sequences: list[str] = []
-        for part in parts[1:]:
-            hyper, regular = part.split("]")
-            hyper_sequences.append(hyper)
-            sequences.append(regular)
-        return IpAddress(sequences, hyper_sequences)
-
-    return [parse_ip_address(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

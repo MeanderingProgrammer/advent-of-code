@@ -11,6 +11,23 @@ class Floor:
     microchips: int
     generators: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        # The first floor contains a plutonium generator, and a plutonium-compatible microchip.
+        # -> ["a plutonium generator", "and a plutonium-compatible microchip"]
+        items = s[:-1].split(" contains ")[1].split(", ")
+        microchips, generators = 0, 0
+        for item in items:
+            # "and a plutonium-compatible microchip"
+            # -> "microchip"
+            part_type = item.split()[-1]
+            if part_type == "microchip":
+                microchips += 1
+            else:
+                assert part_type == "generator"
+                generators += 1
+        return cls(microchips, generators)
+
     def total(self) -> int:
         return self.microchips + self.generators
 
@@ -75,18 +92,23 @@ class State:
 
 @answer.timer
 def main() -> None:
-    answer.part1(37, count_steps([]))
-    additional_items = [
-        "elerium generator",
-        "elerium-compatible microchip",
-        "dilithium generator",
-        "dilithium-compatible microchip",
-    ]
-    answer.part2(61, count_steps(additional_items))
+    lines = Parser().lines()
+
+    floors: list[Floor] = []
+    for line in lines[:-1]:
+        floors.append(Floor.new(line))
+    floors.append(Floor(0, 0))
+
+    part1 = count_steps(floors)
+    floors[0] += Floor(2, 2)
+    part2 = count_steps(floors)
+
+    answer.part1(37, part1)
+    answer.part2(61, part2)
 
 
-def count_steps(additional_items: list[str]) -> int | None:
-    start = get_start_state(additional_items)
+def count_steps(floors: list[Floor]) -> int | None:
+    start = State(level=0, floors=tuple(floors))
     end = get_end_state(start)
     search = Search[State](
         start=start,
@@ -94,34 +116,6 @@ def count_steps(additional_items: list[str]) -> int | None:
         neighbors=get_adjacent,
     )
     return search.dfs()
-
-
-def get_start_state(additional_items: list[str]) -> State:
-    def parse_floor(line: str, add_additional: bool) -> Floor:
-        # The first floor contains a plutonium generator, and a plutonium-compatible microchip.
-        # -> ["a plutonium generator", "and a plutonium-compatible microchip"]
-        items = line[:-1].split(" contains ")[1].split(", ")
-        if add_additional:
-            items += additional_items
-        microchips, generators = 0, 0
-        for item in items:
-            # "and a plutonium-compatible microchip"
-            # -> "microchip"
-            part_type = item.split()[-1]
-            if part_type == "microchip":
-                microchips += 1
-            else:
-                assert part_type == "generator"
-                generators += 1
-        return Floor(microchips, generators)
-
-    floors: list[Floor] = []
-    # Remove: The fourth floor contains nothing relevant.
-    for i, line in enumerate(Parser().lines()[:-1]):
-        floor = parse_floor(line, i == 0)
-        floors.append(floor)
-    floors.append(Floor(0, 0))
-    return State(level=0, floors=tuple(floors))
 
 
 def get_end_state(start: State) -> State:

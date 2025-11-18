@@ -2,7 +2,7 @@ from collections.abc import Generator
 from dataclasses import dataclass, field
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.intcode import Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 

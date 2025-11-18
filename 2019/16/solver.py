@@ -39,12 +39,13 @@ class Transmission:
 
 @answer.timer
 def main() -> None:
-    answer.part1(77038830, apply_fft(1, False))
-    answer.part2(28135104, apply_fft(10_000, True))
+    data = Parser().string()
+    answer.part1(77038830, apply_fft(data, 1, False))
+    answer.part2(28135104, apply_fft(data, 10_000, True))
 
 
-def apply_fft(repeats: int, apply_offset: bool) -> int:
-    transmission = Transmission(Parser().string() * repeats, apply_offset)
+def apply_fft(data: str, repeats: int, apply_offset: bool) -> int:
+    transmission = Transmission(data * repeats, apply_offset)
     for _ in range(100):
         if not apply_offset:
             transmission.start()

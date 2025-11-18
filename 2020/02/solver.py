@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,6 +11,17 @@ class PasswordEntry:
     range_end: int
     letter: str
     password: str
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts = s.strip().split()
+        value_range = parts[0].split("-")
+        return cls(
+            range_start=int(value_range[0]),
+            range_end=int(value_range[1]),
+            letter=parts[1][:-1],
+            password=parts[2],
+        )
 
     def valid_v1(self) -> bool:
         letter_count = sum([letter == self.letter for letter in self.password])
@@ -23,23 +35,9 @@ class PasswordEntry:
 
 @answer.timer
 def main() -> None:
-    passwords = get_passwords()
+    passwords = [PasswordEntry.new(line) for line in Parser().lines()]
     answer.part1(536, sum([password.valid_v1() for password in passwords]))
     answer.part2(558, sum([password.valid_v2() for password in passwords]))
-
-
-def get_passwords() -> list[PasswordEntry]:
-    def parse_password(line: str) -> PasswordEntry:
-        parts = line.strip().split()
-        value_range = parts[0].split("-")
-        return PasswordEntry(
-            range_start=int(value_range[0]),
-            range_end=int(value_range[1]),
-            letter=parts[1][:-1],
-            password=parts[2],
-        )
-
-    return [parse_password(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

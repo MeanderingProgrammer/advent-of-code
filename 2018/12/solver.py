@@ -55,11 +55,12 @@ class State:
 
 @answer.timer
 def main() -> None:
-    answer.part1(1816, run_for(20))
+    groups = Parser().line_groups()
+    answer.part1(1816, run_for(groups, 20))
     answer.part2(399999999957, solve_known(50_000_000_000))
 
 
-def run_for(generations: int) -> int:
+def run_for(groups: list[list[str]], generations: int) -> int:
     def parse_state(line: str) -> State:
         state: dict[int, str] = dict()
         values = line.split(": ")[1]
@@ -78,7 +79,6 @@ def run_for(generations: int) -> int:
             output=output,
         )
 
-    groups = Parser().line_groups()
     state = parse_state(groups[0][0])
     rules = [parse_rule(rule) for rule in groups[1]]
     for _ in range(generations):

@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,6 +11,12 @@ class Room:
     name: str
     sector_id: int
     checksum: str
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        name, sector_id_checksum = s.rsplit("-", 1)
+        sector_id, checksum = sector_id_checksum.split("[")
+        return cls(name, int(sector_id), checksum[:-1])
 
     def valid(self) -> bool:
         frequencies: dict[str, int] = defaultdict(int)
@@ -33,21 +40,13 @@ class Room:
 
 @answer.timer
 def main() -> None:
-    rooms = [room for room in get_rooms() if room.valid()]
+    rooms = [Room.new(line) for line in Parser().lines()]
+    rooms = [room for room in rooms if room.valid()]
     answer.part1(278221, sum([room.sector_id for room in rooms]))
     north_pole_room = filter(
         lambda room: room.decrypt() == "northpole object storage", rooms
     )
     answer.part2(267, next(north_pole_room).sector_id)
-
-
-def get_rooms() -> list[Room]:
-    def parse_room(line: str) -> Room:
-        name, sector_id_checksum = line.rsplit("-", 1)
-        sector_id, checksum = sector_id_checksum.split("[")
-        return Room(name=name, sector_id=int(sector_id), checksum=checksum[:-1])
-
-    return [parse_room(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

@@ -14,6 +14,16 @@ class NanoBot:
     pos: Point3d
     r: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        pos, radius = s.split(", ")
+        coords = [int(c) for c in pos.split("=")[1][1:-1].split(",")]
+        assert len(coords) == 3
+        return cls(
+            pos=(coords[0], coords[1], coords[2]),
+            r=int(radius.split("=")[1]),
+        )
+
     def in_range(self, o: Self) -> bool:
         x1, y1, z1 = self.pos
         x2, y2, z2 = o.pos
@@ -26,24 +36,11 @@ class NanoBot:
 
 @answer.timer
 def main() -> None:
-    bots = get_bots()
+    bots = [NanoBot.new(line) for line in Parser().lines()]
     bots.sort(key=lambda bot: bot.r)
     strongest_bot = bots[-1]
     answer.part1(383, sum([strongest_bot.in_range(bot) for bot in bots]))
     answer.part2(100474026, distance_of_most_overlap(bots))
-
-
-def get_bots() -> list[NanoBot]:
-    def parse_bot(line: str) -> NanoBot:
-        pos, radius = line.split(", ")
-        coords = [int(c) for c in pos.split("=")[1][1:-1].split(",")]
-        assert len(coords) == 3
-        return NanoBot(
-            pos=(coords[0], coords[1], coords[2]),
-            r=int(radius.split("=")[1]),
-        )
-
-    return [parse_bot(line) for line in Parser().lines()]
 
 
 def distance_of_most_overlap(bots: list[NanoBot]) -> int:

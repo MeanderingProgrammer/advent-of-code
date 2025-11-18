@@ -42,12 +42,13 @@ class Landscape:
 
 @answer.timer
 def main() -> None:
-    answer.part1(515496, run_for(10))
-    answer.part2(233058, run_for(1_000_000_000))
+    rows = Parser().nested_lines()
+    answer.part1(515496, run_for(rows, 10))
+    answer.part2(233058, run_for(rows, 1_000_000_000))
 
 
-def run_for(n: int) -> int:
-    landscape = Landscape(get_grid())
+def run_for(rows: list[list[str]], n: int) -> int:
+    landscape = Landscape(get_grid(rows))
     scores = [landscape.resource_value()]
     for _ in range(n):
         landscape.step()
@@ -66,9 +67,9 @@ def find_pattern(values: list[int]) -> tuple[int | None, list[int]]:
     return None, []
 
 
-def get_grid() -> Grid[str]:
+def get_grid(rows: list[list[str]]) -> Grid[str]:
     grid: Grid[str] = dict()
-    for y, row in enumerate(Parser().nested_lines()):
+    for y, row in enumerate(rows):
         for x, value in enumerate(row):
             grid[(x, y)] = value
     return grid

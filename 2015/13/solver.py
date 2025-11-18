@@ -23,15 +23,16 @@ class People:
 
 @answer.timer
 def main() -> None:
-    graph = get_graph()
+    lines = Parser().lines()
+    graph = get_graph(lines)
     answer.part1(709, max_score(graph, False))
     answer.part2(668, max_score(graph, True))
 
 
-def get_graph() -> dict[tuple[str, str], int]:
-    multiplier: dict[str, int] = dict(gain=1, lose=-1)
+def get_graph(lines: list[str]) -> dict[tuple[str, str], int]:
     graph: dict[tuple[str, str], int] = defaultdict(int)
-    for line in Parser().lines():
+    multiplier: dict[str, int] = dict(gain=1, lose=-1)
+    for line in lines:
         parts = line[:-1].split()
         graph[(parts[0], parts[-1])] = multiplier[parts[2]] * int(parts[3])
     return graph

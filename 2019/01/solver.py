@@ -18,14 +18,13 @@ class Module:
 
 @answer.timer
 def main() -> None:
-    answer.part1(3393938, get_fuel(False))
-    answer.part2(5088037, get_fuel(True))
-
-
-def get_fuel(recursive: bool) -> int:
     modules = [Module(mass) for mass in Parser().int_lines()]
-    fuel_needed = [module.fuel(recursive) for module in modules]
-    return sum(fuel_needed)
+    answer.part1(3393938, get_fuel(modules, False))
+    answer.part2(5088037, get_fuel(modules, True))
+
+
+def get_fuel(modules: list[Module], recursive: bool) -> int:
+    return sum([module.fuel(recursive) for module in modules])
 
 
 if __name__ == "__main__":

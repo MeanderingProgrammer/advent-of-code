@@ -106,14 +106,15 @@ class Graph:
 
 @answer.timer
 def main() -> None:
-    graph = get_graph()
+    lines = Parser().lines()
+    graph = get_graph(lines)
     answer.part1("LAPFCRGHVZOTKWENBXIMSUDJQY", "".join(graph.topo_sort()))
     answer.part2(936, graph.get_duration(5, 60))
 
 
-def get_graph() -> Graph:
+def get_graph(lines: list[str]) -> Graph:
     graph = Graph(nodes=set(), graph=dict())
-    for line in Parser().lines():
+    for line in lines:
         match = re.match("^Step (.) must be finished before step (.) can begin.$", line)
         assert match is not None
         graph.add_edge(match[2], match[1])

@@ -13,14 +13,10 @@ class BoardingPass:
 
 @answer.timer
 def main() -> None:
-    data = sorted(process())
+    data = sorted([BoardingPass(line).get_id() for line in Parser().lines()])
     answer.part1(919, data[-1])
     binary = bin(find_missing(data))[2:]
     answer.part2(642, BoardingPass(binary).get_id())
-
-
-def process() -> list[int]:
-    return [BoardingPass(line).get_id() for line in Parser().lines()]
 
 
 def find_missing(data: list[int]) -> int:

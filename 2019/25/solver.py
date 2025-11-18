@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import StrEnum, auto
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.intcode import Computer
 from aoc.parser import Parser
 
 BAD_ITEMS: list[str] = [

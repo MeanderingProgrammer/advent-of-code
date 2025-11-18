@@ -62,7 +62,8 @@ class GroundReservoir:
 
 @answer.timer
 def main() -> None:
-    grid = get_grid()
+    lines = Parser().lines()
+    grid = get_grid(lines)
     grid[(500, 0)] = "."
     ys = set([point[1] for point in grid])
     ys.remove(0)
@@ -78,7 +79,7 @@ def main() -> None:
     answer.part2(32288, sum([reservoir.in_range(point) for point in reservoir.settled]))
 
 
-def get_grid() -> Grid[str]:
+def get_grid(lines: list[str]) -> Grid[str]:
     def parse_range(value: str) -> list[int]:
         parts = value.split("..")
         if len(parts) == 1:
@@ -98,7 +99,7 @@ def get_grid() -> Grid[str]:
         return points
 
     grid: Grid[str] = dict()
-    for line in Parser().lines():
+    for line in lines:
         for point in parse_point_range(line):
             grid[point] = CLAY
     return grid

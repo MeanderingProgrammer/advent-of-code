@@ -2,7 +2,7 @@ from itertools import permutations
 from typing import Self
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.intcode import Computer
 from aoc.parser import Parser
 
 

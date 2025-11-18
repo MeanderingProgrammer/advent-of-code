@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -27,6 +28,14 @@ class Particle:
     vel: Vector
     acc: Vector
 
+    @classmethod
+    def new(cls, i: int, s: str) -> Self:
+        components: dict[str, Vector] = dict()
+        for value in s.split(", "):
+            name, vector = parse_vector(value)
+            components[name] = vector
+        return cls(id=i, pos=components["p"], vel=components["v"], acc=components["a"])
+
     def step(self):
         self.vel = add(self.vel, self.acc)
         self.pos = add(self.pos, self.vel)
@@ -34,21 +43,13 @@ class Particle:
 
 @answer.timer
 def main() -> None:
-    answer.part1(161, run_simulation(False)[0].id)
-    answer.part2(438, len(run_simulation(True)))
+    lines = Parser().lines()
+    answer.part1(161, run_simulation(lines, False)[0].id)
+    answer.part2(438, len(run_simulation(lines, True)))
 
 
-def run_simulation(cleanup: bool) -> list[Particle]:
-    def parse_particle(i: int, line: str) -> Particle:
-        components: dict[str, Vector] = dict()
-        for value in line.split(", "):
-            name, vector = parse_vector(value)
-            components[name] = vector
-        return Particle(
-            id=i, pos=components["p"], vel=components["v"], acc=components["a"]
-        )
-
-    particles = [parse_particle(i, line) for i, line in enumerate(Parser().lines())]
+def run_simulation(lines: list[str], cleanup: bool) -> list[Particle]:
+    particles = [Particle.new(i, line) for i, line in enumerate(lines)]
     for _ in range(1_000):
         seen: set[Vector] = set()
         bad_positions: set[Vector] = set()

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,6 +11,16 @@ class Scanner:
     layer_range: int
     roundtrip: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts = s.split(": ")
+        layer_range = int(parts[1])
+        return cls(
+            layer=int(parts[0]),
+            layer_range=layer_range,
+            roundtrip=(layer_range - 1) * 2,
+        )
+
     def caught(self, offset: int) -> bool:
         return (self.layer + offset) % self.roundtrip == 0
 
@@ -19,25 +30,12 @@ class Scanner:
 
 @answer.timer
 def main() -> None:
-    scanners = get_scanners()
+    scanners = [Scanner.new(line) for line in Parser().lines()]
     answer.part1(632, trip_severity(scanners))
     offset = 1
     while is_caught(scanners, offset):
         offset += 1
     answer.part2(3849742, offset)
-
-
-def get_scanners() -> list[Scanner]:
-    def parse_scanner(line: str) -> Scanner:
-        parts = line.split(": ")
-        layer_range = int(parts[1])
-        return Scanner(
-            layer=int(parts[0]),
-            layer_range=layer_range,
-            roundtrip=(layer_range - 1) * 2,
-        )
-
-    return [parse_scanner(line) for line in Parser().lines()]
 
 
 def trip_severity(scanners: list[Scanner]) -> int:

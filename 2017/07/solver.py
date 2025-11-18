@@ -67,20 +67,21 @@ class Graph:
 
 @answer.timer
 def main() -> None:
-    graph = get_graph()
+    lines = Parser().lines()
+    graph = get_graph(lines)
     top_most = graph.top_most()
     answer.part1("xegshds", top_most)
     graph.get_weight(graph.get_node(top_most))
     answer.part2(299, graph.to_change)
 
 
-def get_graph() -> Graph:
+def get_graph(lines: list[str]) -> Graph:
     def parse_node(part: str) -> Node:
         parts = part.split()
         return Node(id=parts[0], weight=int(parts[1][1:-1]))
 
     graph = Graph(graph=dict())
-    for line in Parser().lines():
+    for line in lines:
         parts = line.split(" -> ")
         node = parse_node(parts[0])
         graph.add_node(node)

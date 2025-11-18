@@ -56,18 +56,19 @@ class Reactions:
 
 @answer.timer
 def main() -> None:
-    reactions = get_reactions()
+    lines = Parser().lines()
+    reactions = get_reactions(lines)
     answer.part1(1967319, reactions.ore_for_fuel(1))
     answer.part2(1122036, binary_search(reactions, 1_000_000_000_000, 0, 2_000_000))
 
 
-def get_reactions() -> Reactions:
+def get_reactions(lines: list[str]) -> Reactions:
     def parse_reactant(value: str) -> Reactant:
         amount, product = value.split()
         return Reactant(int(amount), product)
 
     reactions: dict[Reactant, list[Reactant]] = dict()
-    for line in Parser().lines():
+    for line in lines:
         components, outcome = line.split(" => ")
         reactions[parse_reactant(outcome)] = [
             parse_reactant(value) for value in components.split(", ")

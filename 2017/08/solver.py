@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -45,6 +45,14 @@ class Instruction:
     modifier: Callable[[Registers], None]
     condition: Callable[[Registers], bool]
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts = s.split()
+        return cls(
+            modifier=MODIFIERS[parts[1]](parts[0], int(parts[2])),
+            condition=CONDITIONS[parts[5]](parts[4], int(parts[6])),
+        )
+
     def apply(self, registers: dict[str, int]) -> None:
         if self.condition(registers):
             self.modifier(registers)
@@ -52,24 +60,14 @@ class Instruction:
 
 @answer.timer
 def main() -> None:
+    instructions = [Instruction.new(line) for line in Parser().lines()]
     registers: Registers = defaultdict(int)
     maxes: list[int] = []
-    for instruction in get_instructions():
+    for instruction in instructions:
         instruction.apply(registers)
         maxes.append(max(registers.values()))
     answer.part1(7296, max(registers.values()))
     answer.part2(8186, max(maxes))
-
-
-def get_instructions() -> list[Instruction]:
-    def parse_instruction(line: str) -> Instruction:
-        parts = line.split()
-        return Instruction(
-            modifier=MODIFIERS[parts[1]](parts[0], int(parts[2])),
-            condition=CONDITIONS[parts[5]](parts[4], int(parts[6])),
-        )
-
-    return [parse_instruction(line) for line in Parser().lines()]
 
 
 if __name__ == "__main__":

@@ -1,27 +1,21 @@
 from aoc import answer
-from aoc.computer import Computer
+from aoc.assembunny import Computer
 from aoc.parser import Parser
 
 
 @answer.timer
 def main() -> None:
-    answer.part1(198, run_until_success())
+    lines = Parser().lines()
+    answer.part1(198, run(lines))
 
 
-def run_until_success() -> int:
+def run(lines: list[str]) -> int:
     i = 0
-    while True:
-        try:
-            run_computer(i)
-            return i
-        except Exception:
-            pass
+    success = False
+    while not success:
         i += 1
-
-
-def run_computer(initial_value: int) -> None:
-    computer = Computer(registers=dict(a=initial_value, b=0, c=0, d=0), num_outputs=100)
-    computer.run(Parser().lines())
+        success = Computer.new(dict(a=i)).run(lines)
+    return i
 
 
 if __name__ == "__main__":

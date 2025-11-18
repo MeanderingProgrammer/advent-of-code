@@ -1,4 +1,5 @@
-from typing import Callable
+from dataclasses import dataclass
+from typing import Callable, Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -19,12 +20,20 @@ DIMABLE: Actions = dict(
 )
 
 
+@dataclass(frozen=True)
 class Direction:
-    def __init__(self, value: str):
-        values = value.split()
-        self.action: str = values[-4]
-        self.start: Point = Direction.to_point(values[-3])
-        self.end: Point = Direction.to_point(values[-1])
+    action: str
+    start: Point
+    end: Point
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        values = s.split()
+        return cls(
+            action=values[-4],
+            start=Direction.to_point(values[-3]),
+            end=Direction.to_point(values[-1]),
+        )
 
     def apply(self, grid: list[int], actions: Actions) -> None:
         for x in range(self.start[0], self.end[0] + 1):
@@ -40,7 +49,7 @@ class Direction:
 
 @answer.timer
 def main() -> None:
-    directions = [Direction(line) for line in Parser().lines()]
+    directions = [Direction.new(line) for line in Parser().lines()]
     answer.part1(400410, apply_all(directions, SINGLE))
     answer.part2(15343601, apply_all(directions, DIMABLE))
 

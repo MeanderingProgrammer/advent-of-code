@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -12,6 +13,19 @@ class Ingredient:
     flavor: int
     texture: int
     calories: int
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        name, components_string = s.split(": ")
+        components = components_string.split(", ")
+        return cls(
+            name=name,
+            capacity=int(components[0].split()[1]),
+            durability=int(components[1].split()[1]),
+            flavor=int(components[2].split()[1]),
+            texture=int(components[3].split()[1]),
+            calories=int(components[4].split()[1]),
+        )
 
 
 @dataclass(frozen=True)
@@ -47,27 +61,12 @@ class Recipe:
 
 @answer.timer
 def main() -> None:
-    ingredients: list[Ingredient] = [
-        parse_ingredient(line) for line in Parser().lines()
-    ]
+    ingredients = [Ingredient.new(line) for line in Parser().lines()]
     assert len(ingredients) == 4
     recipe = Recipe(ingredients, 100, 500)
     part1, part2 = recipe.best_scores()
     answer.part1(18965440, part1)
     answer.part2(15862900, part2)
-
-
-def parse_ingredient(line: str) -> Ingredient:
-    name, components_string = line.split(": ")
-    components = components_string.split(", ")
-    return Ingredient(
-        name=name,
-        capacity=int(components[0].split()[1]),
-        durability=int(components[1].split()[1]),
-        flavor=int(components[2].split()[1]),
-        texture=int(components[3].split()[1]),
-        calories=int(components[4].split()[1]),
-    )
 
 
 if __name__ == "__main__":

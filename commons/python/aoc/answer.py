@@ -1,8 +1,10 @@
 import time
+from functools import wraps
 from typing import Callable
 
 
 def timer(solution: Callable[[], None]) -> Callable[[], None]:
+    @wraps(solution)
     def wrapper() -> None:
         start = time.time_ns()
         solution()

@@ -23,7 +23,8 @@ class Claim:
 
 @answer.timer
 def main() -> None:
-    grid: dict[Point, list[int]] = get_overlap_grid()
+    lines = Parser().lines()
+    grid = get_overlap_grid(lines)
 
     all_claims: set[int] = set()
     multiple_claims: set[int] = set()
@@ -38,9 +39,9 @@ def main() -> None:
     answer.part2(1276, next(iter(all_claims.difference(multiple_claims))))
 
 
-def get_overlap_grid() -> dict[Point, list[int]]:
+def get_overlap_grid(lines: list[str]) -> dict[Point, list[int]]:
     grid: dict[Point, list[int]] = dict()
-    for claim in get_claims():
+    for claim in get_claims(lines):
         for point in claim.get_points():
             if point not in grid:
                 grid[point] = []
@@ -48,10 +49,10 @@ def get_overlap_grid() -> dict[Point, list[int]]:
     return grid
 
 
-def get_claims() -> list[Claim]:
+def get_claims(lines: list[str]) -> list[Claim]:
     claim_pattern = "^#(.*) @ (.*),(.*): (.*)x(.*)$"
     claims: list[Claim] = []
-    for line in Parser().lines():
+    for line in lines:
         match = re.match(claim_pattern, line)
         assert match is not None
         claim = Claim(

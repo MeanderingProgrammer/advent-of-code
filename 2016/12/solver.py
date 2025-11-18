@@ -1,17 +1,18 @@
 from aoc import answer
-from aoc.computer import Computer
+from aoc.assembunny import Computer
 from aoc.parser import Parser
 
 
 @answer.timer
 def main() -> None:
-    answer.part1(318117, run(0))
-    answer.part2(9227771, run(1))
+    lines = Parser().lines()
+    answer.part1(318117, run(lines, 0))
+    answer.part2(9227771, run(lines, 1))
 
 
-def run(c_value: int) -> int:
-    computer = Computer(registers=dict(a=0, b=0, c=c_value, d=0))
-    computer.run(Parser().lines())
+def run(lines: list[str], c: int) -> int:
+    computer = Computer.new(dict(c=c))
+    assert computer.run(lines)
     return computer.get("a")
 
 

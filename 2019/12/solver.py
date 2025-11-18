@@ -98,7 +98,7 @@ def component_periods() -> tuple[int, int, int]:
     z_goal = system.extract(lambda v: v[2])
 
     x_period, y_period, z_period = None, None, None
-    system, step = get_system(), 0
+    step = 0
     while x_period is None or y_period is None or z_period is None:
         system.step()
         step += 1

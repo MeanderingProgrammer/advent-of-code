@@ -27,14 +27,15 @@ class Art:
 
 @answer.timer
 def main() -> None:
-    patterns = get_patterns()
+    lines = Parser().lines()
+    patterns = get_patterns(lines)
     answer.part1(188, run_iterations(patterns, 5))
     answer.part2(2758764, run_iterations(patterns, 18))
 
 
-def get_patterns() -> dict[str, list[str]]:
+def get_patterns(lines: list[str]) -> dict[str, list[str]]:
     patterns: dict[str, list[str]] = dict()
-    for line in Parser().lines():
+    for line in lines:
         parts: list[str] = line.split(" => ")
         output: list[str] = parts[1].split("/")
         grid: Grid[str] = dict()

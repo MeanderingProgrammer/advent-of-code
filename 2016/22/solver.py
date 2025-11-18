@@ -26,12 +26,13 @@ class Node:
 
 @answer.timer
 def main() -> None:
-    nodes = get_nodes()
+    lines = Parser().lines()
+    nodes = get_nodes(lines)
     answer.part1(910, viable_connections(nodes))
     answer.part2(222, calculate_transfers(nodes))
 
 
-def get_nodes() -> Grid[Node]:
+def get_nodes(lines: list[str]) -> Grid[Node]:
     def parse_point(s: str) -> Point:
         point = s.split("/")[-1].split("-")
         return (int(point[1][1:]), int(point[2][1:]))
@@ -40,7 +41,7 @@ def get_nodes() -> Grid[Node]:
         return int(s[:-1])
 
     nodes: Grid[Node] = dict()
-    for line in Parser().lines()[2:]:
+    for line in lines[2:]:
         point, total, used, available, _ = line.split()
         nodes[parse_point(point)] = Node(
             total=parse_size(total),

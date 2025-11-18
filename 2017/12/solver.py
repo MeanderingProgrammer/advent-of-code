@@ -30,7 +30,8 @@ class Graph:
 
 @answer.timer
 def main() -> None:
-    graph = get_graph()
+    lines = Parser().lines()
+    graph = get_graph(lines)
 
     connected_to_0: set[str] = graph.connected("0")
     answer.part1(306, len(connected_to_0))
@@ -45,9 +46,9 @@ def main() -> None:
     answer.part2(200, len(heads))
 
 
-def get_graph() -> Graph:
+def get_graph(lines: list[str]) -> Graph:
     graph: dict[str, set[str]] = defaultdict(set)
-    for line in Parser().lines():
+    for line in lines:
         start, ends = line.split(" <-> ")
         for end in ends.split(", "):
             graph[start].add(end)

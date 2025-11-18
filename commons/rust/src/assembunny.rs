@@ -38,7 +38,7 @@ impl FromStr for Instruction {
             "dec" => Ok(Self::Add(parts[1].parse()?, "-1".parse()?)),
             "jnz" => Ok(Self::Jump(parts[1].parse()?, parts[2].parse()?)),
             "out" => Ok(Self::Out(parts[1].parse()?)),
-            opcode => Err(format!("Invalid opcode: {opcode}")),
+            opcode => Err(format!("Unknown opcode: {opcode}")),
         }
     }
 }

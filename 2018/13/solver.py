@@ -137,14 +137,15 @@ class CartSystem:
 
 @answer.timer
 def main() -> None:
-    system = run_system()
+    rows = Parser().nested_lines()
+    system = run_system(rows)
     answer.part1((86, 118), system.crash_positions[0])
     answer.part2((2, 81), system.carts[0].position)
 
 
-def run_system() -> CartSystem:
+def run_system(rows: list[list[str]]) -> CartSystem:
     data: Grid[str] = dict()
-    for y, row in enumerate(Parser().nested_lines()):
+    for y, row in enumerate(rows):
         for x, value in enumerate(row):
             data[(x, y)] = value
     system = CartSystem(

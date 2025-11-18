@@ -6,23 +6,24 @@ from aoc.parser import Parser
 
 @answer.timer
 def main() -> None:
-    answer.part1(47623, calculate_checksum(checksum_v1))
-    answer.part2(312, calculate_checksum(checksum_v2))
+    lines = Parser().lines()
+    answer.part1(47623, checksum(lines, part1))
+    answer.part2(312, checksum(lines, part2))
 
 
-def calculate_checksum(f: Callable[[list[int]], int]) -> int:
+def checksum(lines: list[str], f: Callable[[list[int]], int]) -> int:
     result = 0
-    for line in Parser().lines():
+    for line in lines:
         values = [int(value) for value in line.split()]
         result += f(values)
     return result
 
 
-def checksum_v1(values: list[int]) -> int:
+def part1(values: list[int]) -> int:
     return max(values) - min(values)
 
 
-def checksum_v2(values: list[int]) -> int:
+def part2(values: list[int]) -> int:
     for i, v1 in enumerate(values[:-1]):
         for v2 in values[i + 1 :]:
             num, denom = max(v1, v2), min(v1, v2)

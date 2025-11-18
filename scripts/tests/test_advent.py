@@ -3,7 +3,7 @@ from click.testing import CliRunner
 from advent import run
 
 
-def test_run_int_code() -> None:
+def test_run_intcode() -> None:
     days: list[str] = []
     for day in [2] + list(range(5, 26, 2)):
         days.extend(["-d", str(day)])

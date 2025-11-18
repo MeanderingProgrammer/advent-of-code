@@ -67,16 +67,17 @@ class Processor:
 
 @answer.timer
 def main() -> None:
+    processors = [Processor(line) for line in Parser().lines()]
     # I have no idea how this one works, I definitely took it off the Reddits
-    answer.part1(4684, process_deck(10_007).index_of(2019, 1))
+    answer.part1(4684, process_deck(processors, 10_007).index_of(2019, 1))
     answer.part2(
-        452290953297, process_deck(119_315_717_514_047).get(2020, 101_741_582_076_661)
+        452290953297,
+        process_deck(processors, 119_315_717_514_047).get(2020, 101_741_582_076_661),
     )
 
 
-def process_deck(n: int) -> Deck:
+def process_deck(processors: list[Processor], n: int) -> Deck:
     deck = Deck(n)
-    processors = [Processor(line) for line in Parser().lines()]
     for processor in processors:
         processor.apply(deck)
     return deck

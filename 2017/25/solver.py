@@ -52,15 +52,17 @@ class TuringMachine:
 
 @answer.timer
 def main() -> None:
-    state, rules = get_state_rules()
+    groups = Parser().line_groups()
+    state, rules = get_state_rules(groups)
     machine = TuringMachine(state[0], rules, 0, dict())
     for _ in range(state[1]):
         machine.step()
     answer.part1(3099, machine.checksum())
 
 
-def get_state_rules() -> tuple[tuple[str, int], dict[str, Conditional]]:
-    groups = Parser().line_groups()
+def get_state_rules(
+    groups: list[list[str]],
+) -> tuple[tuple[str, int], dict[str, Conditional]]:
     state = get_state(groups[0])
     rules: dict[str, Conditional] = dict()
     for group in groups[1:]:

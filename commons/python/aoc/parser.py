@@ -1,6 +1,7 @@
 import argparse
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 from .grid import Grid
 
@@ -9,12 +10,12 @@ from .grid import Grid
 class AdventData:
     file_name: str | None = None
 
-    def get_file_path(self) -> str:
+    def get_path(self) -> Path:
         year, day = sys.path[0].split("/")[-2:]
-        file_name = self.file_name or self.get_file_name()
-        return f"data/{year}/{day}/{file_name}"
+        file_name = self.file_name or self.get_name()
+        return Path(f"data/{year}/{day}/{file_name}")
 
-    def get_file_name(self) -> str:
+    def get_name(self) -> str:
         parser = argparse.ArgumentParser()
         parser.add_argument("--test", action="store_true")
         args = parser.parse_args()
@@ -26,18 +27,15 @@ class Parser:
     file_name: str | None = None
     data_file: bool = True
 
-    def get_file_path(self) -> str:
+    def get_path(self) -> Path:
         if self.data_file:
-            return AdventData(self.file_name).get_file_path()
+            return AdventData(self.file_name).get_path()
         else:
             assert self.file_name is not None
-            return self.file_name
+            return Path(self.file_name)
 
     def string(self) -> str:
-        f = open(self.get_file_path(), "r")
-        data = f.read().strip("\n")
-        f.close()
-        return data
+        return self.get_path().read_text().strip("\n")
 
     def integer(self) -> int:
         return int(self.string())

@@ -52,14 +52,15 @@ class PointGrid:
 
 @answer.timer
 def main() -> None:
-    point_grid = get_point_grid()
+    lines = Parser().lines()
+    point_grid = get_point_grid(lines)
     answer.part1(3251, point_grid.largest_finite())
     answer.part2(47841, point_grid.within_distance(10_000))
 
 
-def get_point_grid() -> PointGrid:
+def get_point_grid(lines: list[str]) -> PointGrid:
     points: list[Point] = []
-    for line in Parser().lines():
+    for line in lines:
         x, y = line.split(", ")
         points.append((int(x), int(y)))
     return PointGrid(points)

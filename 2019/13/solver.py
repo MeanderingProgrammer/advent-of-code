@@ -2,7 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 from aoc import answer
-from aoc.int_code import Computer
+from aoc.intcode import Computer
 from aoc.parser import Parser
 
 TILE_MAPPING = {0: "empty", 1: "wall", 2: "block", 3: "horizontal paddle", 4: "ball"}

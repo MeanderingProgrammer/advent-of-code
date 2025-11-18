@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from aoc import answer
 from aoc.grid import Grid, GridHelper
-from aoc.int_code import Computer
+from aoc.intcode import Computer
 from aoc.parser import Parser
 from aoc.point import Point, PointHelper
 

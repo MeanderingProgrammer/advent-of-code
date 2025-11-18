@@ -13,6 +13,6 @@ mod str;
 
 pub mod answer;
 pub mod assembunny;
-pub mod int_code;
+pub mod intcode;
 pub mod math;
 pub mod prelude;

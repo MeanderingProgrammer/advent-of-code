@@ -1,4 +1,4 @@
-use aoc::int_code::{Bus, Computer};
+use aoc::intcode::{Bus, Computer};
 use aoc::prelude::*;
 
 #[derive(Debug)]

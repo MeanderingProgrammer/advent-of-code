@@ -35,12 +35,9 @@ class Compressed:
 
 @answer.timer
 def main() -> None:
-    answer.part1(102239, decompress(False))
-    answer.part2(10780403063, decompress(True))
-
-
-def decompress(recursive: bool) -> int:
-    return Compressed(Parser().string()).decompress(recursive)
+    compressed = Compressed(Parser().string())
+    answer.part1(102239, compressed.decompress(False))
+    answer.part2(10780403063, compressed.decompress(True))
 
 
 if __name__ == "__main__":

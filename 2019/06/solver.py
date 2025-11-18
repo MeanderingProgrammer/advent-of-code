@@ -40,14 +40,15 @@ class Orbits:
 
 @answer.timer
 def main() -> None:
-    orbits = get_orbits()
+    lines = Parser().lines()
+    orbits = get_orbits(lines)
     answer.part1(358244, len(orbits))
     answer.part2(517, orbits.get_distance("YOU", "SAN"))
 
 
-def get_orbits() -> Orbits:
+def get_orbits(lines: list[str]) -> Orbits:
     orbits: dict[str, list[str]] = defaultdict(list)
-    for orbit in Parser().lines():
+    for orbit in lines:
         start, end = orbit.split(")")
         orbits[start].append(end)
     return Orbits(orbits=orbits)

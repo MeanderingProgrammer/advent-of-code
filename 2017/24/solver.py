@@ -32,14 +32,15 @@ class BridgeBuilder:
 
 @answer.timer
 def main() -> None:
-    bridges = get_bridge_builder().build()
+    lines = Parser().lines()
+    bridges = get_bridge_builder(lines).build()
     answer.part1(1656, strongest(bridges))
     answer.part2(1642, longest_strongest(bridges))
 
 
-def get_bridge_builder() -> BridgeBuilder:
+def get_bridge_builder(lines: list[str]) -> BridgeBuilder:
     components: dict[int, set[int]] = defaultdict(set)
-    for line in Parser().lines():
+    for line in lines:
         p1, p2 = [int(x) for x in line.split("/")]
         components[p1].add(p2)
         components[p2].add(p1)

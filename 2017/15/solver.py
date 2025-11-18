@@ -23,12 +23,12 @@ class Generator:
 
 @answer.timer
 def main() -> None:
-    answer.part1(592, matches(40_000_000, False))
-    answer.part2(320, matches(5_000_000, True))
-
-
-def matches(n: int, wait_mult: bool) -> int:
     lines = Parser().lines()
+    answer.part1(592, matches(lines, 40_000_000, False))
+    answer.part2(320, matches(lines, 5_000_000, True))
+
+
+def matches(lines: list[str], n: int, wait_mult: bool) -> int:
     gen_a = Generator(value=int(lines[0].split()[-1]), factor=16_807, mult=4)
     gen_b = Generator(value=int(lines[1].split()[-1]), factor=48_271, mult=8)
     count = 0

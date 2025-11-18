@@ -36,7 +36,8 @@ class Particles:
 
 @answer.timer
 def main() -> None:
-    particles = get_particles()
+    lines = Parser().lines()
+    particles = get_particles(lines)
     time = min_area(particles)
     expected = [
         ".####...#####......###..#.......#.......#.......#.......#....#",
@@ -54,20 +55,10 @@ def main() -> None:
     answer.part2(10515, time)
 
 
-def min_area(particles: Particles) -> int:
-    previous_area, time = particles.area_at(0), 0
-    while True:
-        next_area = particles.area_at(time + 1)
-        if next_area > previous_area:
-            return time
-        previous_area = next_area
-        time += 1
-
-
-def get_particles() -> Particles:
+def get_particles(lines: list[str]) -> Particles:
     particles: list[Particle] = []
     pattern = "^position=<(.*), (.*)> velocity=<(.*), (.*)>$"
-    for line in Parser().lines():
+    for line in lines:
         match = re.match(pattern, line)
         if match is None:
             raise Exception(f"Cannot parse: {line}")
@@ -77,6 +68,16 @@ def get_particles() -> Particles:
         )
         particles.append(particle)
     return Particles(particles=particles)
+
+
+def min_area(particles: Particles) -> int:
+    previous_area, time = particles.area_at(0), 0
+    while True:
+        next_area = particles.area_at(time + 1)
+        if next_area > previous_area:
+            return time
+        previous_area = next_area
+        time += 1
 
 
 if __name__ == "__main__":

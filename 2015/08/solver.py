@@ -36,7 +36,7 @@ class String:
 
 @answer.timer
 def main() -> None:
-    strings: list[String] = [String(line) for line in Parser().lines()]
+    strings = [String(line) for line in Parser().lines()]
     total = sum([s.total() for s in strings])
     answer.part1(1350, total - sum([s.decode() for s in strings]))
     answer.part2(2085, sum([s.encode() for s in strings]) - total)

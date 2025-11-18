@@ -60,12 +60,13 @@ class GuardEvents:
 
 @answer.timer
 def main() -> None:
-    guard_events = get_guard_events()
+    lines = Parser().lines()
+    guard_events = get_guard_events(lines)
     answer.part1(48680, solve_strategy_1(guard_events))
     answer.part2(94826, solve_strategy_2(guard_events))
 
 
-def get_guard_events() -> dict[int, GuardEvents]:
+def get_guard_events(lines: list[str]) -> dict[int, GuardEvents]:
     def parse_event(line: str) -> Event:
         match = re.match(r"^\[(.*)-(.*)-(.*) (.*):(.*)\] (.*)$", line)
         assert match is not None
@@ -76,7 +77,7 @@ def get_guard_events() -> dict[int, GuardEvents]:
 
     guard_events: dict[int, GuardEvents] = dict()
     guard_id = None
-    for line in sorted(Parser().lines()):
+    for line in sorted(lines):
         event = parse_event(line)
         if event.guard_id() is not None:
             guard_id = event.guard_id()

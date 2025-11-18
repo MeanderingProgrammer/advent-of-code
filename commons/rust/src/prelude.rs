@@ -5,7 +5,7 @@ pub use crate::char::{Char, FromChar};
 pub use crate::collections::{HashMap, HashSet};
 pub use crate::grid::{Bounds, Grid};
 pub use crate::ids::Ids;
-pub use crate::int_code;
+pub use crate::intcode;
 pub use crate::iter::Iter;
 pub use crate::math;
 pub use crate::md5::Md5;

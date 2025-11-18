@@ -6,12 +6,12 @@ from aoc.parser import Parser
 
 @answer.timer
 def main() -> None:
-    answer.part1("liwvqppc", error_correct_message(-1))
-    answer.part2("caqfbzlh", error_correct_message(0))
+    lines: list[str] = Parser().lines()
+    answer.part1("liwvqppc", error_correct_message(lines, -1))
+    answer.part2("caqfbzlh", error_correct_message(lines, 0))
 
 
-def error_correct_message(n: int) -> str:
-    words: list[str] = Parser().lines()
+def error_correct_message(words: list[str], n: int) -> str:
     frequencies: list[dict[str, int]] = [defaultdict(int) for _ in range(len(words[0]))]
     for word in words:
         for i, letter in enumerate(word):

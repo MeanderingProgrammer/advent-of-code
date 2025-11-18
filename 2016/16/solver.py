@@ -4,12 +4,12 @@ from aoc.parser import Parser
 
 @answer.timer
 def main() -> None:
-    answer.part1("10010101010011101", fill_disk(272))
-    answer.part2("01100111101101111", fill_disk(35_651_584))
+    curve = [value == "1" for value in Parser().string()]
+    answer.part1("10010101010011101", fill_disk(curve, 272))
+    answer.part2("01100111101101111", fill_disk(curve, 35_651_584))
 
 
-def fill_disk(length: int) -> str:
-    curve: list[bool] = [value == "1" for value in Parser().string()]
+def fill_disk(curve: list[bool], length: int) -> str:
     while len(curve) < length:
         flipped = [not value for value in curve[::-1]]
         curve.append(False)

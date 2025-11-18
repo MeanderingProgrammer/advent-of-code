@@ -37,18 +37,19 @@ class RuleGraph:
 
 @answer.timer
 def main() -> None:
-    graph = get_rule_graph()
+    lines = Parser().lines()
+    graph = get_rule_graph(lines)
     answer.part1(172, get_connected_to(graph, "shiny gold"))
     answer.part2(39645, graph.bags_needed("shiny gold"))
 
 
-def get_rule_graph() -> RuleGraph:
+def get_rule_graph(lines: list[str]) -> RuleGraph:
     def parse_edge(raw_edge: str) -> Edge:
         parts = raw_edge.split()
         return Edge(node=" ".join(parts[1:-1]), weight=int(parts[0]))
 
     nodes: dict[str, list[Edge]] = dict()
-    for line in Parser().lines():
+    for line in lines:
         node, raw_edges = line[:-1].split(" bags contain ")
         nodes[node] = (
             []

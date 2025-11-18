@@ -20,13 +20,14 @@ class Lock:
 
 @answer.timer
 def main() -> None:
-    answer.part1(996, run_lock_after(2_017, 2_017))
-    answer.part2(1898341, run_lock_after(50_000_000, 0))
+    steps = Parser().integer()
+    answer.part1(996, run_lock_after(steps, 2_017, 2_017))
+    answer.part2(1898341, run_lock_after(steps, 50_000_000, 0))
 
 
-def run_lock_after(steps: int, after: int) -> int:
-    lock = Lock(Parser().integer())
-    for i in range(steps + 1):
+def run_lock_after(steps: int, rounds: int, after: int) -> int:
+    lock = Lock(steps)
+    for i in range(rounds + 1):
         lock.insert(i)
     return lock.after(after)
 

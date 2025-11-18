@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -10,6 +11,15 @@ class Reindeer:
     time: int
     rest: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts = s.split()
+        return cls(
+            speed=int(parts[3]),
+            time=int(parts[6]),
+            rest=int(parts[13]),
+        )
+
     def distance(self, elapsed_time: int) -> int:
         complete, remainder = divmod(elapsed_time, self.time + self.rest)
         return self.speed * ((complete * self.time) + min(remainder, self.time))
@@ -17,21 +27,9 @@ class Reindeer:
 
 @answer.timer
 def main() -> None:
-    reindeers = get_reindeers()
+    reindeers = [Reindeer.new(line) for line in Parser().lines()]
     answer.part1(2655, max(distances_after(reindeers, 2_503)))
     answer.part2(1059, max_times_in_lead(reindeers, 2_503))
-
-
-def get_reindeers() -> list[Reindeer]:
-    def parse_reindeer(line: str) -> Reindeer:
-        parts = line.split()
-        return Reindeer(
-            speed=int(parts[3]),
-            time=int(parts[6]),
-            rest=int(parts[13]),
-        )
-
-    return [parse_reindeer(line) for line in Parser().lines()]
 
 
 def distances_after(reindeers: list[Reindeer], time: int) -> list[int]:

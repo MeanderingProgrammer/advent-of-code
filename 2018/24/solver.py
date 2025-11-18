@@ -104,27 +104,28 @@ class Battle:
 
 @answer.timer
 def main() -> None:
-    answer.part1(16086, part_1())
-    answer.part2(3957, part_2())
+    groups = Parser().line_groups()
+    answer.part1(16086, part_1(groups))
+    answer.part2(3957, part_2(groups))
 
 
-def part_1() -> int:
-    battle = get_battle(0)
+def part_1(groups: list[list[str]]) -> int:
+    battle = get_battle(groups, 0)
     battle.simulate()
     return battle.winning_units()
 
 
-def part_2() -> int:
+def part_2(groups: list[list[str]]) -> int:
     immune_boost = 0
     while True:
         immune_boost += 1
-        battle = get_battle(immune_boost)
+        battle = get_battle(groups, immune_boost)
         battle.simulate()
         if battle.immune_won():
             return battle.winning_units()
 
 
-def get_battle(immune_boost: int) -> Battle:
+def get_battle(groups: list[list[str]], immune_boost: int) -> Battle:
     def parse_group(id: int, immune: bool, raw: str, boost: int) -> Group:
         traits: dict[str, list[str]] = dict()
         match = re.search(r"\((.*)\)", raw)
@@ -149,13 +150,12 @@ def get_battle(immune_boost: int) -> Battle:
             initiative=int(parts[-1]),
         )
 
-    groups: list[Group] = []
-    immune, infection = Parser().line_groups()
-    for value in immune[1:]:
-        groups.append(parse_group(len(groups), True, value, immune_boost))
-    for value in infection[1:]:
-        groups.append(parse_group(len(groups), False, value, 0))
-    return Battle(groups)
+    result: list[Group] = []
+    for value in groups[0][1:]:
+        result.append(parse_group(len(result), True, value, immune_boost))
+    for value in groups[1][1:]:
+        result.append(parse_group(len(result), False, value, 0))
+    return Battle(result)
 
 
 if __name__ == "__main__":

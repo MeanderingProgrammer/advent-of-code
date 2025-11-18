@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -64,6 +64,15 @@ FIELD_VALIDATORS: dict[str, Callable[[str], bool]] = {
 class Passport:
     data: dict[str, str]
 
+    @classmethod
+    def new(cls, lines: list[str]) -> Self:
+        data: dict[str, str] = dict()
+        for line in lines:
+            for part in line.split():
+                key, value = part.split(":")
+                data[key] = value
+        return cls(data)
+
     def validate(self, run_validation: bool) -> bool:
         for field, validator in FIELD_VALIDATORS.items():
             if field not in self.data:
@@ -75,21 +84,9 @@ class Passport:
 
 @answer.timer
 def main() -> None:
-    passports = get_passports()
+    passports = [Passport.new(group) for group in Parser().line_groups()]
     answer.part1(200, sum([passport.validate(False) for passport in passports]))
     answer.part2(116, sum([passport.validate(True) for passport in passports]))
-
-
-def get_passports() -> list[Passport]:
-    def parse_passport(lines: list[str]) -> Passport:
-        data: dict[str, str] = dict()
-        for line in lines:
-            for part in line.split():
-                key, value = part.split(":")
-                data[key] = value
-        return Passport(data=data)
-
-    return [parse_passport(group) for group in Parser().line_groups()]
 
 
 if __name__ == "__main__":

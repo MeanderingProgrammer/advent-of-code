@@ -10,6 +10,11 @@ class DataRange:
     start: int
     end: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        parts = s.split("-")
+        return cls(int(parts[0]), int(parts[1]))
+
     def can_join(self, o: Self) -> bool:
         if self.start <= o.start:
             return o.start <= self.end
@@ -25,20 +30,12 @@ class DataRange:
 
 @answer.timer
 def main() -> None:
-    data_ranges = get_data_ranges()
+    data_ranges = [DataRange.new(line) for line in Parser().lines()]
     data_ranges = combine_all(data_ranges)
     data_ranges.sort(key=lambda data_range: data_range.start)
 
     answer.part1(17348574, data_ranges[0].end + 1)
     answer.part2(104, get_total_unblocked(data_ranges))
-
-
-def get_data_ranges() -> list[DataRange]:
-    data_ranges: list[DataRange] = []
-    for line in Parser().lines():
-        line = line.split("-")
-        data_ranges.append(DataRange(int(line[0]), int(line[1])))
-    return data_ranges
 
 
 def combine_all(data_ranges: list[DataRange]) -> list[DataRange]:

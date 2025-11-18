@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -9,6 +10,11 @@ class Box:
     length: int
     width: int
     height: int
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        length, width, height = s.split("x")
+        return cls(int(length), int(width), int(height))
 
     def paper(self) -> int:
         sides = [
@@ -30,8 +36,7 @@ class Box:
 def main() -> None:
     paper, ribbon = 0, 0
     for line in Parser().lines():
-        length, width, height = line.split("x")
-        box = Box(int(length), int(width), int(height))
+        box = Box.new(line)
         paper += box.paper()
         ribbon += box.ribbon()
     answer.part1(1606483, paper)
