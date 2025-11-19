@@ -18,11 +18,6 @@ def test_int_string(tmp_path: Path) -> None:
     assert [1, 3, 1, 2, 1, 1, 3] == parser(path).int_string()
 
 
-def test_ord_string(tmp_path: Path) -> None:
-    path = new_file(tmp_path, ["18,1,2"])
-    assert [49, 56, 44, 49, 44, 50] == parser(path).ord_string()
-
-
 def test_entries(tmp_path: Path) -> None:
     path = new_file(tmp_path, ["abcd efg"])
     assert ["abcd", "efg"] == parser(path).entries()

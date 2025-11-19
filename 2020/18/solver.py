@@ -38,15 +38,17 @@ class Expression:
 
 @answer.timer
 def main() -> None:
-    answer.part1(69490582260, sum_expressions(False))
-    answer.part2(362464596624526, sum_expressions(True))
+    lines = Parser().lines()
+    answer.part1(69490582260, sum_expressions(lines, False))
+    answer.part2(362464596624526, sum_expressions(lines, True))
 
 
-def sum_expressions(addition: bool) -> int:
-    return sum([expression.evaluate(addition) for expression in get_expressions()])
+def sum_expressions(lines: list[str], addition: bool) -> int:
+    expressions = get_expressions(lines)
+    return sum([expression.evaluate(addition) for expression in expressions])
 
 
-def get_expressions() -> list[Expression]:
+def get_expressions(lines: list[str]) -> list[Expression]:
     def get_end_index(start: int, line: str) -> int:
         count = 0
         for i in range(start, len(line)):
@@ -77,7 +79,7 @@ def get_expressions() -> list[Expression]:
                 i += 1
         return Expression(expressions, operators)
 
-    return [parse_expression(line.replace(" ", "")) for line in Parser().lines()]
+    return [parse_expression(line.replace(" ", "")) for line in lines]
 
 
 if __name__ == "__main__":

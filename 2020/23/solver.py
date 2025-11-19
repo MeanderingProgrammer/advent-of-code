@@ -32,7 +32,7 @@ class Cups:
             value = self.high
         return value
 
-    def part_1(self) -> str:
+    def part1(self) -> str:
         result = ""
         value = self.cups[1]
         while value != 1:
@@ -40,18 +40,18 @@ class Cups:
             value = self.cups[value]
         return result
 
-    def part_2(self) -> int:
+    def part2(self) -> int:
         return self.cups[1] * self.cups[self.cups[1]]
 
 
 @answer.timer
 def main() -> None:
-    answer.part1("45798623", run(0, 100).part_1())
-    answer.part2(235551949822, run(1_000_000, 10_000_000).part_2())
+    values = Parser().int_string()
+    answer.part1("45798623", run(values, 0, 100).part1())
+    answer.part2(235551949822, run(values, 1_000_000, 10_000_000).part2())
 
 
-def run(num_cups: int, loops: int) -> Cups:
-    values: list[int] = Parser().int_string()
+def run(values: list[int], num_cups: int, loops: int) -> Cups:
     values.extend(range(max(values) + 1, num_cups + 1))
     cups = Cups(values)
     for _ in range(loops):

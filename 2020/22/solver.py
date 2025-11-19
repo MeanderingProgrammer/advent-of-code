@@ -71,15 +71,15 @@ class Game:
 
 @answer.timer
 def main() -> None:
-    answer.part1(32102, run_game(False))
-    answer.part2(34173, run_game(True))
+    groups = Parser().line_groups()
+    answer.part1(32102, run(groups, False))
+    answer.part2(34173, run(groups, True))
 
 
-def run_game(recursive: bool) -> int:
+def run(groups: list[list[str]], recursive: bool) -> int:
     def parse_deck(id: int, lines: list[str]) -> Deck:
         return Deck(id=id, cards=list(map(int, lines[1:])))
 
-    groups = Parser().line_groups()
     game = Game(
         deck1=parse_deck(1, groups[0]),
         deck2=parse_deck(2, groups[1]),

@@ -75,25 +75,22 @@ class SeatingChart:
 
 @answer.timer
 def main() -> None:
-    answer.part1(2386, run_until_stable(False))
-    answer.part2(2091, run_until_stable(True))
+    chart: Grid[Seat] = dict()
+    for y, row in enumerate(Parser().nested_lines()):
+        for x, value in enumerate(row):
+            chart[(x, y)] = Seat(value)
+
+    answer.part1(2386, run(chart, False))
+    answer.part2(2091, run(chart, True))
 
 
-def run_until_stable(look: bool) -> int:
-    previous, current = None, get_chart(look)
+def run(chart: Grid[Seat], look: bool) -> int:
+    previous, current = None, SeatingChart(chart, look)
     while previous != current:
         previous = current
         current = current.next()
     assert previous is not None
     return previous.occupied()
-
-
-def get_chart(look: bool) -> SeatingChart:
-    chart: Grid[Seat] = dict()
-    for y, row in enumerate(Parser().nested_lines()):
-        for x, value in enumerate(row):
-            chart[(x, y)] = Seat(value)
-    return SeatingChart(chart=chart, look=look)
 
 
 if __name__ == "__main__":

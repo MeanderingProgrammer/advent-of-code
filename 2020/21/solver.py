@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,6 +9,14 @@ from aoc.parser import Parser
 class Food:
     ingredients: set[str]
     allergens: set[str]
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        start = s.index(" (")
+        return cls(
+            ingredients=set(s[:start].split()),
+            allergens=set(s[start + 11 : -1].split(", ")),
+        )
 
 
 @dataclass(frozen=True)
@@ -49,20 +58,9 @@ class Foods:
 
 @answer.timer
 def main() -> None:
-    foods = get_foods()
+    foods = Foods(foods=[Food.new(line) for line in Parser().lines()])
     answer.part1(1679, non_allergens(foods))
     answer.part2("lmxt,rggkbpj,mxf,gpxmf,nmtzlj,dlkxsxg,fvqg,dxzq", allergens(foods))
-
-
-def get_foods() -> Foods:
-    def parse_food(line: str) -> Food:
-        allergen_start = line.index(" (")
-        return Food(
-            ingredients=set(line[:allergen_start].split()),
-            allergens=set(line[allergen_start + 11 : -1].split(", ")),
-        )
-
-    return Foods(foods=list(map(parse_food, Parser().lines())))
 
 
 def non_allergens(foods: Foods) -> int:

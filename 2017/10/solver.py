@@ -27,7 +27,7 @@ class Knot:
         self.q.rotate(self.skipped)
         return self.q.popleft() * self.q.popleft()
 
-    def dense_hash(self) -> str:
+    def hash(self) -> str:
         self.q.rotate(self.skipped)
         as_list: list[int] = list(self.q)
         hashed: str = ""
@@ -46,21 +46,21 @@ class Knot:
 
 @answer.timer
 def main() -> None:
-    knot = run_knot(False, [], 1)
+    data = Parser().string()
+    knot = run_knot(list(map(int, data.split(","))), 1)
     answer.part1(38415, knot.score())
-    knot = run_knot(True, [17, 31, 73, 47, 23], 64)
-    answer.part2("9de8846431eef262be78f590e39a4848", knot.dense_hash())
+    knot = run_knot(list(map(ord, data)) + [17, 31, 73, 47, 23], 64)
+    answer.part2("9de8846431eef262be78f590e39a4848", knot.hash())
 
 
-def run_knot(use_ord: bool, additional: list[int], times: int) -> Knot:
-    lengths = Parser().ord_string() if use_ord else Parser().int_csv()
+def run_knot(lengths: list[int], n: int) -> Knot:
     knot = Knot(
         q=deque(range(256)),
-        lengths=lengths + additional,
+        lengths=lengths,
         skip_size=0,
         skipped=0,
     )
-    for _ in range(times):
+    for _ in range(n):
         knot.run()
     return knot
 

@@ -190,24 +190,20 @@ class Search:
 
 @answer.timer
 def main() -> None:
+    groups = Parser().line_groups()
     puzzle = Puzzle(board=dict())
-    solve(puzzle)
-    answer.part1(15003787688423, corner_values(puzzle))
-    answer.part2(1705, get_roughness(puzzle))
-
-
-def solve(puzzle: Puzzle) -> None:
-    image_tiles = [
-        Tile(int(group[0][5:-1]), group[1:]) for group in Parser().line_groups()
-    ]
-    [image_tile.all_permutations() for image_tile in image_tiles]
-    remaining_tiles = image_tiles
-    while len(remaining_tiles) != 0:
+    tiles = [Tile(int(group[0][5:-1]), group[1:]) for group in groups]
+    [tile.all_permutations() for tile in tiles]
+    remaining = tiles
+    while len(remaining) != 0:
         still_remaining: list[Tile] = []
-        for tile in remaining_tiles:
+        for tile in remaining:
             if not puzzle.add(tile):
                 still_remaining.append(tile)
-        remaining_tiles = still_remaining
+        remaining = still_remaining
+
+    answer.part1(15003787688423, corner_values(puzzle))
+    answer.part2(1705, get_roughness(puzzle))
 
 
 def corner_values(puzzle: Puzzle) -> int:

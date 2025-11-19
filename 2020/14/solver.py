@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -8,6 +9,11 @@ from aoc.parser import Parser
 class Instruction:
     name: str
     value: str
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        name, value = s.split(" = ")
+        return cls(name, value)
 
     def is_mask(self) -> bool:
         return self.name == "mask"
@@ -67,23 +73,16 @@ class Computer:
 
 @answer.timer
 def main() -> None:
-    answer.part1(10035335144067, run_computer(1))
-    answer.part2(3817372618036, run_computer(2))
+    instructions = [Instruction.new(line) for line in Parser().lines()]
+    answer.part1(10035335144067, run(instructions, 1))
+    answer.part2(3817372618036, run(instructions, 2))
 
 
-def run_computer(version: int) -> int:
+def run(instructions: list[Instruction], version: int) -> int:
     computer = Computer(version=version, mask="X" * 36, memory=dict())
-    for instruction in get_instructions():
+    for instruction in instructions:
         computer.run(instruction)
     return sum(computer.memory.values())
-
-
-def get_instructions() -> list[Instruction]:
-    def parse_instruction(line: str) -> Instruction:
-        name, value = line.split(" = ")
-        return Instruction(name=name, value=value)
-
-    return list(map(parse_instruction, Parser().lines()))
 
 
 if __name__ == "__main__":

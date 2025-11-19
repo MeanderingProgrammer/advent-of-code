@@ -29,17 +29,14 @@ class Adapters:
 
 @answer.timer
 def main() -> None:
-    adapters = get_adapters()
+    data = sorted(Parser().int_lines())
+    # add starting & ending points
+    data = [0] + data + [data[-1] + 3]
+    adapters = Adapters(data=data)
+
     chains = adapters.chains()
     answer.part1(2343, chains[1] * chains[3])
     answer.part2(31581162962944, adapters.num_combinations())
-
-
-def get_adapters() -> Adapters:
-    data = sorted(Parser().int_lines())
-    # Add starting & ending points
-    data = [0] + data + [data[-1] + 3]
-    return Adapters(data=data)
 
 
 if __name__ == "__main__":

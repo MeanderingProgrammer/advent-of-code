@@ -33,28 +33,13 @@ def energy(v: Vector) -> int:
     return abs(v[0]) + abs(v[1]) + abs(v[2])
 
 
-@dataclass
-class Body:
-    position: Vector
-    velocity: Vector
-
-    def add_gravity(self, other: Self) -> None:
-        difference = substract(self.position, other.position)
-        self.velocity = substract(self.velocity, clamp(difference))
-
-    def apply_velocity(self) -> None:
-        self.position = add(self.position, self.velocity)
-
-    def energy(self) -> int:
-        return energy(self.position) * energy(self.velocity)
-
-    def extract(self, extractor: Callable[[Vector], int]) -> tuple[int, int]:
-        return extractor(self.position), extractor(self.velocity)
-
-
 @dataclass(frozen=True)
 class System:
     bodies: list[Body]
+
+    @classmethod
+    def new(cls, lines: list[str]) -> Self:
+        return cls(bodies=[Body.new(line) for line in lines])
 
     def step(self) -> None:
         for body in self.bodies:
@@ -70,58 +55,70 @@ class System:
         return [body.extract(extractor) for body in self.bodies]
 
 
+@dataclass
+class Body:
+    position: Vector
+    velocity: Vector
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        x, y, z = [int(part.split("=")[1]) for part in s[1:-1].split(", ")]
+        return cls((x, y, z), (0, 0, 0))
+
+    def add_gravity(self, other: Self) -> None:
+        difference = substract(self.position, other.position)
+        self.velocity = substract(self.velocity, clamp(difference))
+
+    def apply_velocity(self) -> None:
+        self.position = add(self.position, self.velocity)
+
+    def energy(self) -> int:
+        return energy(self.position) * energy(self.velocity)
+
+    def extract(self, extractor: Callable[[Vector], int]) -> tuple[int, int]:
+        return extractor(self.position), extractor(self.velocity)
+
+
 @answer.timer
 def main() -> None:
-    answer.part1(5350, run_for(1_000))
-    answer.part2(467034091553512, get_system_period())
+    lines = Parser().lines()
+    answer.part1(5350, run(lines, 1_000))
+    answer.part2(467034091553512, system_period(lines))
 
 
-def run_for(n: int) -> int:
-    system = get_system()
+def run(lines: list[str], n: int) -> int:
+    system = System.new(lines)
     for _ in range(n):
         system.step()
     return system.energy()
 
 
-def get_system_period() -> int:
+def system_period(lines: list[str]) -> int:
     def lcm(a: int, b: int) -> int:
         return abs(a * b) // math.gcd(a, b)
 
-    x_period, y_period, z_period = component_periods()
-    return lcm(lcm(x_period, y_period), z_period)
+    system = System.new(lines)
+    period = component_periods(system)
+    return lcm(lcm(period[0], period[1]), period[2])
 
 
-def component_periods() -> tuple[int, int, int]:
-    system = get_system()
+def component_periods(system: System) -> Vector:
     x_goal = system.extract(lambda v: v[0])
     y_goal = system.extract(lambda v: v[1])
     z_goal = system.extract(lambda v: v[2])
 
-    x_period, y_period, z_period = None, None, None
     step = 0
-    while x_period is None or y_period is None or z_period is None:
+    period: Vector = 0, 0, 0
+    while period[0] == 0 or period[1] == 0 or period[2] == 0:
         system.step()
         step += 1
-        if x_period is None and x_goal == system.extract(lambda v: v[0]):
-            x_period = step
-        if y_period is None and y_goal == system.extract(lambda v: v[1]):
-            y_period = step
-        if z_period is None and z_goal == system.extract(lambda v: v[2]):
-            z_period = step
-    return x_period, y_period, z_period
-
-
-def get_system() -> System:
-    def parse_vector(line: str) -> Vector:
-        x, y, z = [int(part.split("=")[1]) for part in line[1:-1].split(", ")]
-        return x, y, z
-
-    return System(
-        bodies=[
-            Body(position=parse_vector(line), velocity=(0, 0, 0))
-            for line in Parser().lines()
-        ]
-    )
+        if period[0] == 0 and x_goal == system.extract(lambda v: v[0]):
+            period = step, period[1], period[2]
+        if period[1] == 0 and y_goal == system.extract(lambda v: v[1]):
+            period = period[0], step, period[2]
+        if period[2] == 0 and z_goal == system.extract(lambda v: v[2]):
+            period = period[0], period[1], step
+    return period
 
 
 if __name__ == "__main__":

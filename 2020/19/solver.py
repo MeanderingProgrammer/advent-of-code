@@ -52,12 +52,12 @@ class Rules:
 
 @answer.timer
 def main() -> None:
-    answer.part1(198, total_matches(False))
-    answer.part2(372, total_matches(True))
-
-
-def total_matches(part2: bool) -> int:
     groups = Parser().line_groups()
+    answer.part1(198, total_matches(groups, False))
+    answer.part2(372, total_matches(groups, True))
+
+
+def total_matches(groups: list[list[str]], part2: bool) -> int:
     rules = get_rules(groups[0], part2)
     return sum([rules.does_match(message) for message in groups[1]])
 

@@ -43,9 +43,6 @@ class Parser:
     def int_string(self) -> list[int]:
         return list(map(int, self.string()))
 
-    def ord_string(self) -> list[int]:
-        return list(map(ord, self.string()))
-
     def entries(self) -> list[str]:
         return self.string().split()
 

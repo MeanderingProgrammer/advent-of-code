@@ -6,14 +6,14 @@ from aoc.parser import Parser
 
 type Command = Callable[[Position, Position, int], tuple[Position, Position]]
 
-COMMANDS_V1: dict[str, Command] = {
+PART1: dict[str, Command] = {
     "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
     "N": lambda point, pos, amount: (point, pos + Position(0, amount)),
     "E": lambda point, pos, amount: (point, pos + Position(amount, 0)),
     "F": lambda point, pos, amount: (point, pos + point * amount),
 }
 
-COMMANDS_V2: dict[str, Command] = {
+PART2: dict[str, Command] = {
     "L": lambda point, pos, amount: (point.rotate_left(amount), pos),
     "N": lambda point, pos, amount: (point + Position(0, amount), pos),
     "E": lambda point, pos, amount: (point + Position(amount, 0), pos),
@@ -50,6 +50,18 @@ class Instruction:
     command: str
     amount: int
 
+    @classmethod
+    def new(cls, s: str) -> Self:
+        command, amount = s[0], int(s[1:])
+        if command == "R":
+            return cls("L", 360 - amount)
+        elif command == "S":
+            return cls("N", amount * -1)
+        elif command == "W":
+            return cls("E", amount * -1)
+        else:
+            return cls(command, amount)
+
 
 @dataclass
 class Ship:
@@ -66,35 +78,20 @@ class Ship:
 
 @answer.timer
 def main() -> None:
-    answer.part1(362, move_ship(True))
-    answer.part2(29895, move_ship(False))
+    instructions = [Instruction.new(line) for line in Parser().lines()]
+    answer.part1(362, move_ship(instructions, True))
+    answer.part2(29895, move_ship(instructions, False))
 
 
-def move_ship(part1: bool) -> int:
-    commands = COMMANDS_V1 if part1 else COMMANDS_V2
+def move_ship(instructions: list[Instruction], part1: bool) -> int:
     ship = Ship(
-        commands=commands,
+        commands=PART1 if part1 else PART2,
         point=Position(1, 0) if part1 else Position(10, 1),
         position=Position(0, 0),
     )
-    for instruction in get_instructions():
+    for instruction in instructions:
         ship.move(instruction)
     return abs(ship.position.x) + abs(ship.position.y)
-
-
-def get_instructions() -> list[Instruction]:
-    def parse_instruction(line: str) -> Instruction:
-        command, amount = line[0], int(line[1:])
-        if command == "R":
-            return Instruction("L", 360 - amount)
-        elif command == "S":
-            return Instruction("N", amount * -1)
-        elif command == "W":
-            return Instruction("E", amount * -1)
-        else:
-            return Instruction(command, amount)
-
-    return list(map(parse_instruction, Parser().lines()))
 
 
 if __name__ == "__main__":
