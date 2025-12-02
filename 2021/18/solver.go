@@ -146,7 +146,7 @@ func main() {
 }
 
 func solution() {
-	numbers := file.Default[string]().ReadLines()
+	numbers := file.Default().Lines()
 	answer.Part1(3892, sumAll(numbers))
 	answer.Part2(4909, sumAny(numbers))
 }

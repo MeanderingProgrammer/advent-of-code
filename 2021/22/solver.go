@@ -84,13 +84,36 @@ func main() {
 }
 
 func solution() {
-	finalBounds := getFinalBounds()
+	lines := file.Default().Lines()
+	bounds := util.Map(lines, func(line string) Bound {
+		enableWhere := strings.Split(line, " ")
+		count := -1
+		if enableWhere[0] == "on" {
+			count = 1
+		}
+		where := strings.Split(enableWhere[1], ",")
+		return Bound{
+			count: count,
+			xs:    parseRange(where[0]),
+			ys:    parseRange(where[1]),
+			zs:    parseRange(where[2]),
+		}
+	})
+	finalBounds := getFinalBounds(bounds)
 	answer.Part1(561032, limitedBoundsArea(finalBounds))
 	answer.Part2(1322825263376414, finalBounds.area())
 }
 
-func getFinalBounds() Bounds {
-	bounds := getBounds()
+func parseRange(rawRange string) Range {
+	rangePortion := util.SubstringAfter(rawRange, "=")
+	bounds := strings.Split(rangePortion, "..")
+	return [2]int{
+		util.ToInt(bounds[0]),
+		util.ToInt(bounds[1]),
+	}
+}
+
+func getFinalBounds(bounds Bounds) Bounds {
 	finalBounds := Bounds{bounds[0]}
 	for _, bound := range bounds[1:] {
 		finalBounds = append(finalBounds, finalBounds.disabledOverlappingBounds(bound)...)
@@ -111,31 +134,4 @@ func limitedBoundsArea(bounds Bounds) int {
 	// Need the negative to handle the fact that this will track the
 	// area disabled by our limited bound
 	return -boundsDisabled.area()
-}
-
-func getBounds() Bounds {
-	toBound := func(line string) Bound {
-		enableWhere := strings.Split(line, " ")
-		count := -1
-		if enableWhere[0] == "on" {
-			count = 1
-		}
-		where := strings.Split(enableWhere[1], ",")
-		return Bound{
-			count: count,
-			xs:    parseRange(where[0]),
-			ys:    parseRange(where[1]),
-			zs:    parseRange(where[2]),
-		}
-	}
-	return file.Default[Bound]().Read(toBound)
-}
-
-func parseRange(rawRange string) Range {
-	rangePortion := util.SubstringAfter(rawRange, "=")
-	bounds := strings.Split(rangePortion, "..")
-	return [2]int{
-		util.ToInt(bounds[0]),
-		util.ToInt(bounds[1]),
-	}
 }

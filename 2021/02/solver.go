@@ -46,20 +46,16 @@ func main() {
 }
 
 func solution() {
-	instructions := getInstructions()
-	answer.Part1(1459206, instructions.follow(part1))
-	answer.Part2(1320534480, instructions.follow(part2))
-}
-
-func getInstructions() Instructions {
-	toInstruction := func(line string) Instruction {
+	lines := file.Default().Lines()
+	var instructions Instructions = util.Map(lines, func(line string) Instruction {
 		parts := strings.Fields(line)
 		return Instruction{
 			direction: Direction(parts[0]),
 			amount:    util.ToInt(parts[1]),
 		}
-	}
-	return file.Default[Instruction]().Read(toInstruction)
+	})
+	answer.Part1(1459206, instructions.follow(part1))
+	answer.Part2(1320534480, instructions.follow(part2))
 }
 
 func part1(position *Position, amount int, direction Direction) {

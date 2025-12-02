@@ -98,7 +98,7 @@ func getMaxHeight(targetArea TargetArea) (int, int) {
 }
 
 func getData() TargetArea {
-	rawTargetArea := util.SubstringAfter(file.Default[string]().Content(), ": ")
+	rawTargetArea := util.SubstringAfter(file.Default().Content(), ": ")
 	components := strings.Split(rawTargetArea, ", ")
 	return TargetArea{
 		xRange: parseRange(components[0]),

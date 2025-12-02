@@ -24,7 +24,7 @@ def build_grid(goal: int, updater: Callable[[Context], int]) -> tuple[int, int]:
         point = PointHelper.go(point, direction)
         value = updater((value, grid, point))
         grid[point] = value
-        next_direction = Direction.counter_clockwise(direction)
+        next_direction = direction.left()
         direction = (
             direction
             if PointHelper.go(point, next_direction) in grid

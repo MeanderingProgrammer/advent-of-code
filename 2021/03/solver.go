@@ -41,7 +41,7 @@ func solution() {
 }
 
 func getBinaries() Binaries {
-	return file.Default[string]().ReadLines()
+	return file.Default().Lines()
 }
 
 func calculatePowerConsumption(binaries Binaries) int {

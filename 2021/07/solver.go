@@ -48,7 +48,7 @@ func exponential(distance int) int {
 }
 
 func getPositions() Positions {
-	positions := util.IntCsv(file.Default[string]().Content())
+	positions := util.IntCsv(file.Default().Content())
 	sort.Ints(positions)
 	return positions
 }

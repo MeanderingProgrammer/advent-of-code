@@ -6,6 +6,7 @@ import (
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/file"
 	"advent-of-code/commons/go/point"
+	"advent-of-code/commons/go/util"
 )
 
 type Line struct {
@@ -79,7 +80,8 @@ func numPointsWithOverlap(lines []Line, includeDiagonal bool) int {
 }
 
 func getLines() []Line {
-	return file.Default[Line]().Read(func(line string) Line {
+	lines := file.Default().Lines()
+	return util.Map(lines, func(line string) Line {
 		points := strings.Split(line, " -> ")
 		return Line{
 			p1: point.ConstructPoint(points[0]),

@@ -7,30 +7,8 @@ class Direction(Enum):
     LEFT = auto()
     RIGHT = auto()
 
-    @staticmethod
-    def clockwise(direction: "Direction") -> "Direction":
-        if direction == Direction.UP:
-            return Direction.RIGHT
-        elif direction == Direction.RIGHT:
-            return Direction.DOWN
-        elif direction == Direction.DOWN:
-            return Direction.LEFT
-        elif direction == Direction.LEFT:
-            return Direction.UP
-
-    @staticmethod
-    def counter_clockwise(direction: "Direction") -> "Direction":
-        if direction == Direction.UP:
-            return Direction.LEFT
-        elif direction == Direction.LEFT:
-            return Direction.DOWN
-        elif direction == Direction.DOWN:
-            return Direction.RIGHT
-        elif direction == Direction.RIGHT:
-            return Direction.UP
-
-    @staticmethod
-    def from_str(s: str) -> "Direction":
+    @classmethod
+    def new(cls, s: str) -> Direction:
         if s in ["^", "U"]:
             return Direction.UP
         elif s in ["v", "D"]:
@@ -41,6 +19,28 @@ class Direction(Enum):
             return Direction.RIGHT
         else:
             raise Exception(f"Unknown direction: {s}")
+
+    def left(self) -> Direction:
+        match self:
+            case Direction.UP:
+                return Direction.LEFT
+            case Direction.LEFT:
+                return Direction.DOWN
+            case Direction.DOWN:
+                return Direction.RIGHT
+            case Direction.RIGHT:
+                return Direction.UP
+
+    def right(self) -> Direction:
+        match self:
+            case Direction.UP:
+                return Direction.RIGHT
+            case Direction.RIGHT:
+                return Direction.DOWN
+            case Direction.DOWN:
+                return Direction.LEFT
+            case Direction.LEFT:
+                return Direction.UP
 
 
 type Point = tuple[int, int]

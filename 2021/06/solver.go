@@ -34,7 +34,7 @@ func main() {
 }
 
 func solution() {
-	content := file.Default[string]().Content()
+	content := file.Default().Content()
 	answer.Part1(345793, fishAfter(content, 80))
 	answer.Part2(1572643095893, fishAfter(content, 256))
 }

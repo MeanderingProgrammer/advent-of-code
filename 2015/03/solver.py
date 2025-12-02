@@ -18,7 +18,7 @@ def run(data: str, santas: int) -> int:
     visited = [location for location in locations]
 
     for i, direction in enumerate(data):
-        direction = Direction.from_str(direction)
+        direction = Direction.new(direction)
         santa_index = i % len(locations)
         locations[santa_index] = PointHelper.go(locations[santa_index], direction)
         visited.append(locations[santa_index])

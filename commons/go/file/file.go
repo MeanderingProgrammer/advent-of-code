@@ -9,21 +9,21 @@ import (
 	"advent-of-code/commons/go/util"
 )
 
-type Reader[T any] struct {
+type Reader struct {
 	path string
 }
 
-func New[T any](path string) Reader[T] {
-	return Reader[T]{path}
+func New(path string) Reader {
+	return Reader{path}
 }
 
-func Default[T any]() Reader[T] {
+func Default() Reader {
 	var testMode bool
 	flag.BoolVar(&testMode, "test", false, "Test mode")
 	flag.Parse()
 	year, day := getYearDay()
 	filepath := []string{"data", year, day, fileName(testMode)}
-	return New[T](strings.Join(filepath, "/"))
+	return New(strings.Join(filepath, "/"))
 }
 
 func getYearDay() (string, string) {
@@ -46,27 +46,20 @@ func fileName(testMode bool) string {
 	}
 }
 
-func (r Reader[T]) Read(f func(string) T) []T {
-	var result []T
-	for _, line := range r.ReadLines() {
-		result = append(result, f(line))
-	}
-	return result
+func (r Reader) Groups() []string {
+	return r.Split("\n\n")
 }
 
-func (r Reader[T]) ReadGroups() []string {
-	return r.SplitContent("\n\n")
+func (r Reader) Lines() []string {
+	return r.Split("\n")
 }
 
-func (r Reader[T]) ReadLines() []string {
-	return r.SplitContent("\n")
+func (r Reader) Split(sep string) []string {
+	return strings.Split(r.Content(), sep)
 }
 
-func (r Reader[T]) SplitContent(splitter string) []string {
-	return strings.Split(r.Content(), splitter)
-}
-
-func (r Reader[T]) Content() string {
+func (r Reader) Content() string {
 	content := util.Must1(os.ReadFile(r.path))
-	return strings.ReplaceAll(string(content), "\r\n", "\n")
+	result := strings.ReplaceAll(string(content), "\r\n", "\n")
+	return strings.TrimSuffix(result, "\n")
 }

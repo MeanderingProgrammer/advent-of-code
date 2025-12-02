@@ -96,7 +96,7 @@ func main() {
 }
 
 func solution() {
-	groups := file.Default[string]().ReadGroups()
+	groups := file.Default().Groups()
 	answer.Part1(5437, litAfter(groups, 2))
 	answer.Part2(19340, litAfter(groups, 50))
 }

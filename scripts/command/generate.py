@@ -10,7 +10,7 @@ from language.language import Language
 from pojo.day import Day
 
 
-class DownloadStatus(StrEnum):
+class Status(StrEnum):
     SUCCESS = auto()
     FAILED = auto()
     EXISTS = auto()
@@ -80,9 +80,9 @@ class Generator:
 
         # Download data
         status = self.aoc_file("-I -i", data_dir.joinpath("data.txt"))
-        if status != DownloadStatus.EXISTS:
+        if status != Status.EXISTS:
             Generator.empty_file(data_dir.joinpath("sample.txt"))
-        if status == DownloadStatus.SUCCESS:
+        if status == Status.SUCCESS:
             push: list[str] = [
                 "cd data",
                 "git add .",
@@ -95,10 +95,10 @@ class Generator:
         if self.puzzle:
             self.aoc_file("-P -p", data_dir.joinpath("puzzle.md"))
 
-    def aoc_file(self, flags: str, file: Path) -> DownloadStatus:
+    def aoc_file(self, flags: str, file: Path) -> Status:
         if file.exists():
             print(f"{file} already exists, leaving as is")
-            return DownloadStatus.EXISTS
+            return Status.EXISTS
         print(f"Creating file at: {file}")
         cookie = ".adventofcode.session"
         if Path(cookie).exists() and shutil.which("aoc") is not None:
@@ -111,11 +111,11 @@ class Generator:
                 f"{flags} {file}",
             ]
             os.system(" ".join(download))
-            return DownloadStatus.SUCCESS
+            return Status.SUCCESS
         else:
             print("aoc-cli is not setup")
             Generator.empty_file(file)
-            return DownloadStatus.FAILED
+            return Status.FAILED
 
     @staticmethod
     def empty_file(file: Path) -> None:

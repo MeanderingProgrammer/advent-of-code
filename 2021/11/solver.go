@@ -59,7 +59,7 @@ func main() {
 }
 
 func solution() {
-	lines := file.Default[string]().ReadLines()
+	lines := file.Default().Lines()
 	answer.Part1(1732, getGrid(lines).runFor(100))
 	answer.Part2(290, getGrid(lines).runUntilAll())
 }

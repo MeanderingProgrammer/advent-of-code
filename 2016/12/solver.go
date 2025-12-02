@@ -84,7 +84,8 @@ func main() {
 }
 
 func solution() {
-	instructions := file.Default[Instruction]().Read(parseInstruction)
+	lines := file.Default().Lines()
+	instructions := util.Map(lines, parseInstruction)
 	answer.Part1(318117, run(instructions, false))
 	answer.Part2(9227771, run(instructions, true))
 }

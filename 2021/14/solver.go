@@ -59,7 +59,7 @@ func main() {
 }
 
 func solution() {
-	groups := file.Default[string]().ReadGroups()
+	groups := file.Default().Groups()
 	answer.Part1(2899, diffAfter(groups, 10))
 	answer.Part2(3528317079545, diffAfter(groups, 40))
 }

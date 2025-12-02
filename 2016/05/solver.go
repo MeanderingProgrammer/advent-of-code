@@ -36,7 +36,7 @@ func main() {
 }
 
 func solution() {
-	prefix := file.Default[string]().Content()
+	prefix := file.Default().Content()
 	answer.Part1("d4cd2ee1", getPassword(prefix, part1))
 	answer.Part2("f2c730e5", getPassword(prefix, part2))
 }

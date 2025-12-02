@@ -144,7 +144,7 @@ func (program Program) nth(n int) []int {
 
 func getProgram() Program {
 	var program []Instruction
-	for _, rawInstruction := range file.Default[string]().ReadLines() {
+	for _, rawInstruction := range file.Default().Lines() {
 		instruction := strings.Split(rawInstruction, " ")
 		program = append(program, instruction)
 	}

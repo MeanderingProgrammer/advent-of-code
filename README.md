@@ -37,7 +37,7 @@ less than  1 second!
 
 <summary>The input for each puzzle is in a separate private Github repo</summary>
 
-This is done to comply with the policy [here](https://adventofcode.com/about).
+This is done to comply with the [policy](https://adventofcode.com/about).
 
 These inputs end up in the `data` folder in the same structure as the solutions.
 

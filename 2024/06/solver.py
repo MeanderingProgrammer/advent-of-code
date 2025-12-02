@@ -23,7 +23,7 @@ def follow(grid: Grid[str], point: Point) -> set[Point] | None:
         seen.add((point, direction))
         next_point = PointHelper.go(point, direction)
         if grid.get(next_point, ".") == "#":
-            direction = Direction.clockwise(direction)
+            direction = direction.right()
         else:
             point = next_point
     return set([p for p, _ in seen])

@@ -31,7 +31,7 @@ def create_path(line: str) -> Path:
     distance: int = 0
     distances: dict[Point, int] = dict()
     for step in line.split(","):
-        direction = Direction.from_str(step[0])
+        direction = Direction.new(step[0])
         amount = int(step[1:])
         for _ in range(amount):
             point = PointHelper.go(point, direction)

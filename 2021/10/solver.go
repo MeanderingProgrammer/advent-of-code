@@ -95,7 +95,7 @@ func main() {
 }
 
 func solution() {
-	systems := Systems(file.Default[string]().ReadLines())
+	systems := Systems(file.Default().Lines())
 	answer.Part1(321237, systems.mismatch())
 	answer.Part2(2360030859, systems.autocomplete())
 }

@@ -12,19 +12,19 @@ import (
 func TestContent(t *testing.T) {
 	file := newFile([]string{"abcd", "efg"})
 	defer os.Remove(file)
-	assert.Equal(t, "abcd\nefg\n", New[string](file).Content())
+	assert.Equal(t, "abcd\nefg", New(file).Content())
 }
 
-func TestReadLines(t *testing.T) {
+func TestLines(t *testing.T) {
 	file := newFile([]string{"abcd", "efg"})
 	defer os.Remove(file)
-	assert.Equal(t, []string{"abcd", "efg", ""}, New[string](file).ReadLines())
+	assert.Equal(t, []string{"abcd", "efg"}, New(file).Lines())
 }
 
-func TestReadGroups(t *testing.T) {
+func TestGroups(t *testing.T) {
 	file := newFile([]string{"abcd", "efg", "", "hij"})
 	defer os.Remove(file)
-	assert.Equal(t, []string{"abcd\nefg", "hij\n"}, New[string](file).ReadGroups())
+	assert.Equal(t, []string{"abcd\nefg", "hij"}, New(file).Groups())
 }
 
 func newFile(lines []string) string {

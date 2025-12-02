@@ -173,7 +173,7 @@ func main() {
 }
 
 func solution() {
-	lines := file.Default[string]().ReadLines()
+	lines := file.Default().Lines()
 	answer.Part1(571032, part1(lines))
 	answer.Part2(49975322685009, part2(lines))
 }

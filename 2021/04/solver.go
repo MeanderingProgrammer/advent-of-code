@@ -91,7 +91,7 @@ func solution() {
 }
 
 func getData() ([]int, Boards) {
-	orderBoards := file.Default[string]().ReadGroups()
+	orderBoards := file.Default().Groups()
 	return util.IntCsv(orderBoards[0]), parseBoards(orderBoards[1:])
 }
 

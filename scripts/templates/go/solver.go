@@ -12,7 +12,7 @@ func main() {
 }
 
 func solution() {
-	data := file.Default[string]().ReadLines()
+	data := file.Default().Lines()
 	fmt.Println(data)
 	answer.Part1(1, 1)
 	answer.Part2(1, 1)

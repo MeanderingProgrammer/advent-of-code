@@ -107,37 +107,22 @@ func main() {
 }
 
 func solution() {
+	lines := file.Default().Lines()
+	segmentEntries := util.Map(lines, func(line string) SegmentEntry {
+		parts := strings.Split(line, " | ")
+		return SegmentEntry{
+			inputDigits:  parseDigits(parts[0]),
+			outputDigits: parseDigits(parts[1]),
+		}
+	})
 	part1, part2 := 0, 0
-	for _, segmentEntry := range getSegmentEntries() {
+	for _, segmentEntry := range segmentEntries {
 		outputNumber := segmentEntry.solve()
 		part1 += trackPart1(outputNumber)
 		part2 += trackPart2(outputNumber)
 	}
 	answer.Part1(344, part1)
 	answer.Part2(1048410, part2)
-}
-
-func trackPart1(outputNumber string) int {
-	result := 0
-	for _, digit := range []string{"1", "4", "7", "8"} {
-		result += strings.Count(outputNumber, digit)
-	}
-	return result
-}
-
-func trackPart2(outputNumber string) int {
-	return util.ToInt(outputNumber)
-}
-
-func getSegmentEntries() []SegmentEntry {
-	toSegmentEntry := func(line string) SegmentEntry {
-		parts := strings.Split(line, " | ")
-		return SegmentEntry{
-			inputDigits:  parseDigits(parts[0]),
-			outputDigits: parseDigits(parts[1]),
-		}
-	}
-	return file.Default[SegmentEntry]().Read(toSegmentEntry)
 }
 
 func parseDigits(raw string) []Digit {
@@ -152,4 +137,16 @@ func parseDigit(rawDigit string) Digit {
 	segments := strings.Split(rawDigit, "")
 	sort.Strings(segments)
 	return Digit(strings.Join(segments, ""))
+}
+
+func trackPart1(outputNumber string) int {
+	result := 0
+	for _, digit := range []string{"1", "4", "7", "8"} {
+		result += strings.Count(outputNumber, digit)
+	}
+	return result
+}
+
+func trackPart2(outputNumber string) int {
+	return util.ToInt(outputNumber)
 }

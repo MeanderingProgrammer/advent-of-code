@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"slices"
 	"strconv"
-	"strings"
 
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
@@ -72,7 +71,7 @@ func main() {
 }
 
 func solution() {
-	prefix := strings.TrimSpace(file.Default[string]().Content())
+	prefix := file.Default().Content()
 	answer.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
 	answer.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))
 }

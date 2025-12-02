@@ -11,7 +11,8 @@ func main() {
 }
 
 func solution() {
-	values := file.Default[int]().Read(util.ToInt)
+	lines := file.Default().Lines()
+	values := util.Map(lines, util.ToInt)
 	answer.Part1(1292, windowIncreases(values, 1))
 	answer.Part2(1262, windowIncreases(values, 3))
 }

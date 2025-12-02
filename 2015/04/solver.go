@@ -36,7 +36,7 @@ func main() {
 }
 
 func solution() {
-	prefix := strings.TrimSpace(file.Default[string]().Content())
+	prefix := file.Default().Content()
 	fiveLeading := firstIndex(prefix, 5, 1)
 	answer.Part1(346386, fiveLeading)
 	answer.Part2(9958218, firstIndex(prefix, 6, fiveLeading))

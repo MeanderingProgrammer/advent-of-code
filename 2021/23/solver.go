@@ -260,7 +260,7 @@ func main() {
 }
 
 func solution() {
-	lines := file.Default[string]().ReadLines()
+	lines := file.Default().Lines()
 	answer.Part1(18282, solve(lines, false))
 	answer.Part2(50132, solve(lines, true))
 }
