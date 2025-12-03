@@ -97,7 +97,7 @@ def run(
 @click.option("-t", "--template", type=click.Choice(GenerateName, case_sensitive=False))
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
-@click.option("-l", "--language", type=LanguageType(), default="zig")
+@click.option("-l", "--language", type=LanguageType(), default="elixir")
 @click.option("-p", "--puzzle", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
 def generate(

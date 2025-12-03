@@ -1,5 +1,6 @@
 import shutil
 
+from language.elixir import Elixir
 from language.go import Go
 from language.java import Java
 from language.language import Language
@@ -13,6 +14,7 @@ from language.zig import Zig
 class LanguageFactory:
     def __init__(self):
         languages: list[Language] = [
+            Elixir(),
             Go(),
             Java(),
             Ocaml(),
