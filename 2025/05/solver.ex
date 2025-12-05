@@ -1,23 +1,3 @@
-defmodule Interval do
-  @type t :: {integer(), integer()}
-
-  @spec parse(String.t()) :: t()
-  def parse(string) do
-    [s, e] = String.split(string, "-")
-    {String.to_integer(s), String.to_integer(e)}
-  end
-
-  @spec inside?(t(), integer()) :: boolean()
-  def inside?({s, e}, value) do
-    value >= s && value <= e
-  end
-
-  @spec size(t()) :: integer()
-  def size({a, b}) do
-    b - a + 1
-  end
-end
-
 defmodule Solver do
   def main() do
     Answer.timer(&solution/0)
@@ -52,7 +32,7 @@ defmodule Solver do
 
   @spec any?([Interval.t()], integer()) :: boolean()
   def any?(intervals, value) do
-    intervals |> Enum.any?(&Interval.inside?(&1, value))
+    intervals |> Enum.any?(&Interval.in?(&1, value))
   end
 end
 

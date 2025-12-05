@@ -1,0 +1,53 @@
+defmodule Dial do
+  defstruct value: 50, size: 100
+
+  @type t :: %__MODULE__{value: integer(), size: integer()}
+
+  @spec move(t(), boolean(), integer()) :: {t(), integer()}
+  def move(%Dial{} = dial, right, amount) do
+    # simplify full rotations
+    clicks = div(amount, dial.size)
+    amount = rem(amount, dial.size)
+
+    {value, rollover} =
+      if right do
+        rollover = dial.value + amount >= dial.size
+        value = dial.value + amount
+        value = if value >= dial.size, do: value - dial.size, else: value
+        {value, rollover}
+      else
+        rollover = dial.value > 0 and dial.value <= amount
+        value = dial.value - amount
+        value = if value < 0, do: value + dial.size, else: value
+        {value, rollover}
+      end
+
+    clicks = if rollover, do: clicks + 1, else: clicks
+    {%{dial | value: value}, clicks}
+  end
+end
+
+defmodule Solver do
+  def main() do
+    Answer.timer(&solution/0)
+  end
+
+  def solution() do
+    lines = Reader.lines()
+
+    {_, zeros, clicks} =
+      lines
+      |> Enum.reduce({%Dial{}, 0, 0}, fn line, {dial, zeros, clicks} ->
+        right = String.starts_with?(line, "R")
+        amount = line |> String.slice(1..-1//1) |> String.to_integer()
+        {new_dial, new_clicks} = Dial.move(dial, right, amount)
+        new_zeros = if new_dial.value == 0, do: 1, else: 0
+        {new_dial, zeros + new_zeros, clicks + new_clicks}
+      end)
+
+    Answer.part1(1120, zeros)
+    Answer.part2(6554, clicks)
+  end
+end
+
+Solver.main()
