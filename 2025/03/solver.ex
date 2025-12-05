@@ -34,7 +34,7 @@ defmodule Solver do
     String.graphemes(line)
     |> Enum.with_index()
     |> Enum.slice((i + 1)..(String.length(line) - n))
-    |> Enum.max_by(fn {char, _} -> char end)
+    |> Enum.max_by(&elem(&1, 0))
   end
 end
 
