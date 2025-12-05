@@ -2,33 +2,55 @@ package main
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	"strconv"
-	"strings"
+	"sync"
 
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
 	"advent-of-code/commons/go/file"
 )
 
-type hashSearch struct {
+type Hasher struct {
 	prefix string
-	goal   string
+	mask   byte
 }
 
-func (h hashSearch) runBatch(start int, batchSize int) int {
-	for i := start; i < start+batchSize; i++ {
-		if h.getHash(i)[:len(h.goal)] == h.goal {
-			return i
-		}
+func NewHasher(prefix string, zeros int) Hasher {
+	masks := map[int]byte{
+		5: 0xF0,
+		6: 0xFF,
 	}
-	return -1
+	mask, ok := masks[zeros]
+	if !ok {
+		panic("invalid zeros")
+	}
+	return Hasher{prefix: prefix, mask: mask}
 }
 
-func (h hashSearch) getHash(i int) string {
-	value := h.prefix + strconv.Itoa(i)
-	result := md5.Sum([]byte(value))
-	return hex.EncodeToString(result[:])
+func (h Hasher) Next(batch *async.Batch) <-chan int {
+	result := make(chan int)
+	var wg sync.WaitGroup
+	for range batch.Batches {
+		start := batch.Next()
+		wg.Go(func() {
+			for i := start; i < start+batch.Size; i++ {
+				if h.Match(i) {
+					result <- i
+				}
+			}
+		})
+	}
+	go func() {
+		wg.Wait()
+		close(result)
+	}()
+	return result
+}
+
+func (h Hasher) Match(i int) bool {
+	data := h.prefix + strconv.Itoa(i)
+	hash := md5.Sum([]byte(data))
+	return hash[0] == 0 && hash[1] == 0 && hash[2]&h.mask == 0
 }
 
 func main() {
@@ -37,34 +59,22 @@ func main() {
 
 func solution() {
 	prefix := file.Default().Content()
-	fiveLeading := firstIndex(prefix, 5, 1)
-	answer.Part1(346386, fiveLeading)
-	answer.Part2(9958218, firstIndex(prefix, 6, fiveLeading))
+	batch := async.Batch{
+		Batches: 8,
+		Size:    1024,
+		Index:   1,
+	}
+	answer.Part1(346386, firstIndex(NewHasher(prefix, 5), &batch))
+	answer.Part2(9958218, firstIndex(NewHasher(prefix, 6), &batch))
 }
 
-func firstIndex(prefix string, leadingZeros int, index int) int {
-	search := hashSearch{
-		prefix: prefix,
-		goal:   strings.Repeat("0", leadingZeros),
+func firstIndex(hasher Hasher, batch *async.Batch) int {
+	var first *int
+	for first == nil {
+		// assumes there will not be multiple results in single batch set
+		for result := range hasher.Next(batch) {
+			first = &result
+		}
 	}
-	first := -1
-	batch := async.Batch[int]{
-		Batches:   8,
-		BatchSize: 1024,
-		Index:     index,
-		Complete: func() bool {
-			return first != -1
-		},
-		Work: search.runBatch,
-		ProcessResults: func(results []int) {
-			// Assumes there will not be valid results in multiple batches
-			for _, result := range results {
-				if result != -1 {
-					first = result
-				}
-			}
-		},
-	}
-	batch.Run()
-	return first
+	return *first
 }

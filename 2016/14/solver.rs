@@ -14,23 +14,28 @@ struct Hasher {
     prefix: String,
     n: usize,
     batch: usize,
+    i: usize,
 }
 
 impl Hasher {
-    fn new(prefix: String, n: usize, batch: usize) -> Self {
-        Self { prefix, n, batch }
+    fn new(prefix: &str, n: usize, batch: usize) -> Self {
+        assert!(batch.is_multiple_of(8));
+        Self {
+            prefix: prefix.to_string(),
+            n,
+            batch,
+            i: 0,
+        }
     }
 
-    fn compute_range(&self, start: usize, end: usize) -> (usize, VecDeque<HashInfo>) {
-        let end = end.max(start + self.batch);
-        (
-            end,
-            (start..end)
-                .into_par_iter()
-                .step_by(8)
-                .flat_map(|i| self.compute(i))
-                .collect(),
-        )
+    fn next(&mut self) -> VecDeque<HashInfo> {
+        let result = (self.i..self.i + self.batch)
+            .into_par_iter()
+            .step_by(8)
+            .flat_map(|i| self.compute(i))
+            .collect();
+        self.i += self.batch;
+        result
     }
 
     fn compute(&self, start: usize) -> VecDeque<HashInfo> {
@@ -77,24 +82,18 @@ fn solution() {
 }
 
 fn generate(prefix: &str, n: usize) -> usize {
-    let hasher = Hasher::new(prefix.to_string(), n, 1_000);
-
+    let mut hasher = Hasher::new(prefix, n, 1_000);
     let mut hashes = VecDeque::default();
-    let mut i = 0;
-    while hashes.is_empty() {
-        hashes.append(&mut hasher.compute(i));
-        i += 8;
-    }
-
     let mut keys = Vec::default();
+    while hashes.is_empty() {
+        hashes.append(&mut hasher.next());
+    }
     while keys.len() < 64 {
         let hash = hashes.pop_front().unwrap();
         let hash_end = hash.i + 1_000;
 
-        if i <= hash_end {
-            let (next_start, mut more_hashes) = hasher.compute_range(i, hash_end);
-            i = next_start;
-            hashes.append(&mut more_hashes);
+        while hasher.i <= hash_end {
+            hashes.append(&mut hasher.next());
         }
 
         for other in hashes.iter() {

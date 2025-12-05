@@ -24,6 +24,16 @@ func Abs(value int) int {
 	}
 }
 
+func HexDigest(hash [16]byte) []byte {
+	var result [32]byte
+	chars := "0123456789abcdef"
+	for i, b := range hash {
+		result[i*2+0] = chars[b>>4]
+		result[i*2+1] = chars[b&0x0F]
+	}
+	return result[:]
+}
+
 func ToInt(value string) int {
 	return Must1(strconv.Atoi(value))
 }

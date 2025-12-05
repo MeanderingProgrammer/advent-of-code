@@ -2,63 +2,85 @@ package main
 
 import (
 	"crypto/md5"
-	"encoding/hex"
-	"slices"
 	"strconv"
+	"sync"
 
 	"advent-of-code/commons/go/answer"
 	"advent-of-code/commons/go/async"
 	"advent-of-code/commons/go/file"
+	"advent-of-code/commons/go/queue"
+	"advent-of-code/commons/go/util"
 )
 
-const (
-	offset = 1_000
-)
-
-type hashInfo struct {
-	index   int
-	triples []byte
-	cinqs   []byte
+type HashInfo struct {
+	index     int
+	triple    byte
+	quintuple *byte
 }
 
-type hashSearch struct {
+func (h HashInfo) Cost() int {
+	return h.index
+}
+
+type Hasher struct {
 	prefix string
-	hashes int
+	n      int
 }
 
-func (h hashSearch) runBatch(start int, batchSize int) []hashInfo {
-	result := []hashInfo{}
-	for i := start; i < start+batchSize; i++ {
-		result = append(result, h.getHash(i))
+func NewHasher(prefix string, n int) Hasher {
+	return Hasher{prefix, n}
+}
+
+func (h Hasher) Next(batch *async.Batch) <-chan HashInfo {
+	result := make(chan HashInfo)
+	var wg sync.WaitGroup
+	for range batch.Batches {
+		start := batch.Next()
+		wg.Go(func() {
+			for i := start; i < start+batch.Size; i++ {
+				hash := h.Hash(i)
+				if hash != nil {
+					result <- *hash
+				}
+
+			}
+		})
 	}
+	go func() {
+		wg.Wait()
+		close(result)
+	}()
 	return result
 }
 
-func (h hashSearch) getHash(index int) hashInfo {
-	value := h.prefix + strconv.Itoa(index)
-	for i := 0; i < h.hashes; i++ {
-		result := md5.Sum([]byte(value))
-		value = hex.EncodeToString(result[:])
+func (h Hasher) Hash(i int) *HashInfo {
+	data := []byte(h.prefix + strconv.Itoa(i))
+	for i := 0; i < h.n; i++ {
+		data = util.HexDigest(md5.Sum(data))
 	}
-	return hashInfo{index: index, triples: getRepeats(value, 3, true), cinqs: getRepeats(value, 5, false)}
+	triple := repeat(data, 3)
+	if triple == nil {
+		return nil
+	}
+	return &HashInfo{
+		index:     i,
+		triple:    *triple,
+		quintuple: repeat(data, 5),
+	}
 }
 
-func getRepeats(value string, length int, first bool) []byte {
-	repeats := []byte{}
+func repeat(value []byte, length int) *byte {
 	for i := 0; i <= len(value)-length; i++ {
-		if sameChar(value, i, i+length) {
-			repeats = append(repeats, value[i])
-			if first {
-				return repeats
-			}
+		if same(value, i, length) {
+			return &value[i]
 		}
 	}
-	return repeats
+	return nil
 }
 
-func sameChar(value string, start int, end int) bool {
+func same(value []byte, start int, length int) bool {
 	first := value[start]
-	for i := start + 1; i < end; i++ {
+	for i := start + 1; i < start+length; i++ {
 		if value[i] != first {
 			return false
 		}
@@ -72,46 +94,43 @@ func main() {
 
 func solution() {
 	prefix := file.Default().Content()
-	answer.Part1(15168, generate(hashSearch{prefix: prefix, hashes: 1}))
-	answer.Part2(20864, generate(hashSearch{prefix: prefix, hashes: 2_017}))
-}
-
-func generate(search hashSearch) int {
-	infos := make(map[int]hashInfo)
-	index := 0
-	keys := []int{}
-	batch := async.Batch[[]hashInfo]{
-		Batches:   8,
-		BatchSize: 64,
-		Index:     0,
-		Complete: func() bool {
-			return len(keys) >= 64
-		},
-		Work: search.runBatch,
-		ProcessResults: func(results [][]hashInfo) {
-			for _, result := range results {
-				for _, info := range result {
-					infos[info.index] = info
-				}
-			}
-			for index < len(infos)-offset {
-				info := infos[index]
-				if len(info.triples) > 0 && contains(infos, index+1, info.triples[0]) {
-					keys = append(keys, index)
-				}
-				index++
-			}
-		},
+	batch := async.Batch{
+		Batches: 8,
+		Size:    64,
+		Index:   0,
 	}
-	batch.Run()
-	return keys[63]
+	answer.Part1(15168, generate(NewHasher(prefix, 1), batch))
+	answer.Part2(20864, generate(NewHasher(prefix, 2_017), batch))
 }
 
-func contains(infos map[int]hashInfo, index int, target byte) bool {
-	for i := index; i < index+offset; i++ {
-		if slices.Contains(infos[i].cinqs, target) {
-			return true
+func generate(hasher Hasher, batch async.Batch) int {
+	hashes := &queue.PriorityQueue[HashInfo]{}
+	for hashes.Empty() {
+		for next := range hasher.Next(&batch) {
+			hashes.Add(next)
 		}
 	}
-	return false
+
+	keys := []int{}
+	for len(keys) < 64 {
+		hash := hashes.Next()
+		hashEnd := hash.index + 1_000
+
+		for batch.Index <= hashEnd {
+			for other := range hasher.Next(&batch) {
+				hashes.Add(other)
+			}
+		}
+
+		for _, other := range *hashes {
+			if other.index <= hashEnd {
+				value := other.quintuple
+				if value != nil && hash.triple == *value {
+					keys = append(keys, hash.index)
+					break
+				}
+			}
+		}
+	}
+	return keys[63]
 }
