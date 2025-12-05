@@ -1,41 +1,61 @@
 use aoc::prelude::*;
+use std::fmt::Debug;
+use std::fs::File;
+use std::io::Write;
+use tempfile::tempdir;
 
 #[test]
-fn test_groups() {
-    let actual = reader("group-strings.txt").groups::<String>();
-    assert_eq!(vec!["ab\ncd", "efg\nhi\nj"], actual);
-}
-
-#[test]
-fn test_int() {
-    let actual = reader("int-lines.txt").lines();
-    assert_eq!(vec![12, -75, 105], actual);
-}
-
-#[test]
-fn test_lines() {
-    let actual = reader("string-lines.txt").lines::<String>();
-    assert_eq!(vec!["zgsnvdmlfuplrubt", "zztdcqzqddaazdjp"], actual);
-}
-
-#[test]
-fn test_line() {
-    let actual = reader("string-line.txt").line::<String>();
-    assert_eq!("abcd", actual);
+fn test_chars() {
+    validate(&["abcd"], |reader| reader.chars(), vec!['a', 'b', 'c', 'd']);
 }
 
 #[test]
 fn test_csv() {
-    let actual = reader("int-csv.txt").csv();
-    assert_eq!(vec![1, 5, 9, -12], actual);
+    validate(&["1,5,9,-12"], |reader| reader.csv(), vec![1, 5, 9, -12]);
 }
 
 #[test]
-fn test_chars() {
-    let actual = reader("string-line.txt").chars();
-    assert_eq!(vec!['a', 'b', 'c', 'd'], actual);
+fn test_groups() {
+    validate(
+        &["ab", "cd", "", "efg", "hi", "j"],
+        |reader| reader.groups(),
+        vec!["ab\ncd".to_string(), "efg\nhi\nj".to_string()],
+    );
 }
 
-fn reader(file: &str) -> Reader {
-    Reader::new(format!("test-data/{file}"))
+#[test]
+fn test_line() {
+    validate(&["abcd"], |reader| reader.line(), "abcd".to_string());
+}
+
+#[test]
+fn test_lines_string() {
+    validate(
+        &["abcd", "efgh"],
+        |reader| reader.lines(),
+        vec!["abcd".to_string(), "efgh".to_string()],
+    );
+}
+
+#[test]
+fn test_lines_int() {
+    validate(
+        &["12", "-75", "105"],
+        |reader| reader.lines(),
+        vec![12, -75, 105],
+    );
+}
+
+fn validate<T>(lines: &[&str], f: fn(Reader) -> T, expected: T)
+where
+    T: Debug + PartialEq,
+{
+    let dir = tempdir().unwrap();
+    let path = dir.path().join("data.txt");
+    let mut file = File::create(&path).unwrap();
+    for line in lines {
+        writeln!(file, "{}", line).unwrap();
+    }
+    let actual = f(Reader::new(path));
+    assert_eq!(expected, actual);
 }

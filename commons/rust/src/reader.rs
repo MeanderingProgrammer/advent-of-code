@@ -3,21 +3,23 @@ use std::env;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 #[derive(Debug)]
-struct Cli<'a> {
-    file_name: &'a str,
+struct Cli {
+    file_name: String,
 }
 
-impl Cli<'_> {
+impl Cli {
     fn parse() -> Self {
         let test = match env::args().nth(1) {
             None => false,
             Some(value) => value == "--test",
         };
+        let file_name = if test { "sample.txt" } else { "data.txt" };
         Self {
-            file_name: if test { "sample.txt" } else { "data.txt" },
+            file_name: file_name.to_string(),
         }
     }
 
@@ -36,7 +38,7 @@ impl Cli<'_> {
 
 #[derive(Debug)]
 pub struct Reader {
-    path: String,
+    path: PathBuf,
 }
 
 impl Default for Reader {
@@ -46,8 +48,10 @@ impl Default for Reader {
 }
 
 impl Reader {
-    pub fn new(path: String) -> Self {
-        Self { path }
+    pub fn new<P: AsRef<Path>>(path: P) -> Self {
+        Self {
+            path: path.as_ref().into(),
+        }
     }
 
     pub fn grid<T: FromChar>(&self) -> Grid<T> {
@@ -101,7 +105,7 @@ impl Reader {
                 .lines()
                 .map(|s| s.unwrap().parse().unwrap())
                 .collect(),
-            Err(_) => panic!("Could not open: {}", self.path),
+            Err(_) => panic!("Could not open: {}", self.path.display()),
         }
     }
 }
