@@ -24,5 +24,5 @@ def part2[T](expected: T, actual: T) -> None:
 
 def part[T](part: int, expected: T, actual: T) -> None:
     if expected != actual:
-        raise Exception(f"Part {part} incorrect, expected {expected} but got {actual}")
+        raise Exception(f"Part {part}: expected {expected} got {actual}")
     print(f"Part {part}: {actual}")

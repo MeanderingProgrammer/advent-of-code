@@ -22,7 +22,7 @@ public class Answer {
 
     private <T> void part(int part, T expected, T actual) {
         if (!expected.equals(actual)) {
-            var errorFormat = "Part %d incorrect, expected %s but got %s";
+            var errorFormat = "Part %d: expected %s got %s";
             throw new RuntimeException(String.format(errorFormat, part, expected, actual));
         }
         System.out.printf("Part %d: %s\n", part, actual);

@@ -21,7 +21,7 @@ pub fn part2<T: Solution>(expected: T, actual: T) {
 fn part<T: Solution>(part: i64, expected: T, actual: T) {
     if expected != actual {
         panic!(
-            "Part {part} incorrect, expected {0} but got {1}",
+            "Part {part}: expected {0} got {1}",
             expected.to_string(),
             actual.to_string(),
         );

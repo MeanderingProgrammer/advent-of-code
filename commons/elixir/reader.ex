@@ -1,13 +1,16 @@
 defmodule Reader do
+  @spec text() :: String.t()
   def text() do
     get_filepath() |> File.read!() |> String.trim()
   end
 
+  @spec lines() :: [String.t()]
   def lines() do
     text() |> String.split("\n")
   end
 
-  defp get_filepath do
+  @spec get_filepath() :: Path.t()
+  defp get_filepath() do
     {:current_stacktrace, frames} = Process.info(self(), :current_stacktrace)
 
     [year, day, _] =

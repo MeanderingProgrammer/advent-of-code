@@ -1,9 +1,9 @@
 defmodule Solver do
-  def main do
+  def main() do
     Answer.timer(&solution/0)
   end
 
-  def solution do
+  def solution() do
     data = Reader.text()
     IO.inspect(data)
     Answer.part1(1, 1)

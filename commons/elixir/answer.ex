@@ -1,4 +1,5 @@
 defmodule Answer do
+  @spec timer((-> :ok)) :: :ok
   def timer(f) do
     start_time = System.monotonic_time(:nanosecond)
     f.()
@@ -6,19 +7,22 @@ defmodule Answer do
     IO.puts("Runtime (ns): #{end_time - start_time}")
   end
 
+  @spec part1(t, t) :: :ok when t: any()
   def part1(expected, actual) do
     part(1, expected, actual)
   end
 
+  @spec part2(t, t) :: :ok when t: any()
   def part2(expected, actual) do
     part(2, expected, actual)
   end
 
+  @spec part(1 | 2, t, t) :: :ok when t: any()
   defp part(n, expected, actual) do
     if expected == actual do
       IO.puts("Part #{n}: #{actual}")
     else
-      raise RuntimeError, "Part #{n}: expected #{expected} found #{actual}"
+      raise RuntimeError, "Part #{n}: expected #{expected} got #{actual}"
     end
   end
 end

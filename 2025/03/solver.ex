@@ -1,14 +1,15 @@
 defmodule Solver do
-  def main do
+  def main() do
     Answer.timer(&solution/0)
   end
 
-  def solution do
+  def solution() do
     lines = Reader.lines()
     Answer.part1(17324, total(lines, 2))
     Answer.part2(171_846_613_143_331, total(lines, 12))
   end
 
+  @spec total([String.t()], pos_integer()) :: integer()
   def total(lines, n) do
     lines
     |> Enum.map(&joltage(&1, n, -1))
@@ -16,6 +17,7 @@ defmodule Solver do
     |> Enum.sum()
   end
 
+  @spec joltage(String.t(), integer(), integer()) :: String.t()
   def joltage(line, n, i) do
     case n do
       0 ->
@@ -27,6 +29,7 @@ defmodule Solver do
     end
   end
 
+  @spec next(String.t(), integer(), integer()) :: {String.t(), integer()}
   def next(line, n, i) do
     String.graphemes(line)
     |> Enum.with_index()

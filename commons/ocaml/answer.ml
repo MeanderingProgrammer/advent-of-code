@@ -12,7 +12,7 @@ let part (n : int) (expected : string) (actual : string) =
   | true -> Printf.printf "Part %d: %s\n" n actual
   | false ->
       let error_message =
-        Printf.sprintf "Part %d: expected %s found %s" n expected actual
+        Printf.sprintf "Part %d: expected %s got %s" n expected actual
       in
       raise (Invalid_argument error_message)
 

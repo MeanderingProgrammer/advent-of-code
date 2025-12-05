@@ -16,9 +16,7 @@ export class Answer {
 
   private static part<T>(part: number, expected: T, actual: T): void {
     if (expected != actual) {
-      throw new Error(
-        `Part ${part} incorrect, expected ${expected} but got ${actual}`,
-      );
+      throw new Error(`Part ${part}: expected ${expected} got ${actual}`);
     } else {
       console.log(`Part ${part}: ${actual}`);
     }

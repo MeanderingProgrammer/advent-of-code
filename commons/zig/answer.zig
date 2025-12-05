@@ -28,7 +28,7 @@ fn part(n: usize, comptime T: type, expected: T, actual: T) void {
         else => expected == actual,
     };
     if (!equal) {
-        const format = "Part {d} incorrect, expected " ++ fmt ++ " but got " ++ fmt;
+        const format = "Part {d}: expected " ++ fmt ++ " got " ++ fmt;
         std.debug.panic(format, .{ n, expected, actual });
     }
     const format = "Part {d}: " ++ fmt ++ "\n";

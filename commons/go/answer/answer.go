@@ -22,7 +22,7 @@ func Part2[T comparable](expected, actual T) {
 
 func part[T comparable](part int, expected T, actual T) {
 	if expected != actual {
-		panic(fmt.Sprintf("Part %d incorrect, expected %v but got %v", part, expected, actual))
+		panic(fmt.Sprintf("Part %d: expected %v got %v", part, expected, actual))
 	}
 	fmt.Printf("Part %d: %v\n", part, actual)
 }
