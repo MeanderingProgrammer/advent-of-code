@@ -65,7 +65,7 @@ fn test_neighbors() {
             Point::new(0, 2),
             Point::new(0, 4),
         ]),
-        p.diagonal_neighbors().into_iter().collect(),
+        p.all_neighbors().into_iter().collect(),
     );
 }
 

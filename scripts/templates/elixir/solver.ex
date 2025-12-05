@@ -1,6 +1,6 @@
 defmodule Solver do
   def main do
-    Answer.timer(fn -> solution() end)
+    Answer.timer(&solution/0)
   end
 
   def solution do

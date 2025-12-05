@@ -29,7 +29,7 @@ impl Context {
             self.value + 1
         } else {
             self.point
-                .diagonal_neighbors()
+                .all_neighbors()
                 .into_iter()
                 .map(|point| self.grid.get_or(&point, 0))
                 .sum()

@@ -30,7 +30,7 @@ class Landscape:
             self.grid[point] = new_grid[point]
 
     def count(self, point: Point, value: str) -> int:
-        neighbors = PointHelper.neighbors_diagonal(point)
+        neighbors = PointHelper.all_neighbors(point)
         return sum([self.grid.get(neighbor) == value for neighbor in neighbors])
 
     def resource_value(self) -> int:

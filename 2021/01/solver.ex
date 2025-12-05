@@ -1,18 +1,19 @@
 defmodule Solver do
   def main do
-    Answer.timer(fn -> solution() end)
+    Answer.timer(&solution/0)
   end
 
   def solution do
     lines = Reader.lines()
-    values = lines |> Enum.map(fn s -> String.to_integer(s) end)
-    Answer.part1(1292, window_increases(values, 1))
-    Answer.part2(1262, window_increases(values, 3))
+    values = lines |> Enum.map(&String.to_integer/1)
+    Answer.part1(1292, increases(values, 1))
+    Answer.part2(1262, increases(values, 3))
   end
 
-  def window_increases(values, window_size) do
-    Enum.chunk_every(values, window_size, 1, :discard)
-    |> Enum.map(fn chunk -> Enum.sum(chunk) end)
+  def increases(values, n) do
+    values
+    |> Enum.chunk_every(n, 1, :discard)
+    |> Enum.map(&Enum.sum(&1))
     |> Enum.chunk_every(2, 1, :discard)
     |> Enum.count(fn [a, b] -> b > a end)
   end

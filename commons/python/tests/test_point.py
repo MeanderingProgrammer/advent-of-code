@@ -16,7 +16,7 @@ def test_neighbors() -> None:
     assert set(expected) == set(PointHelper.neighbors(p))
 
 
-def test_neighbors_diagonal() -> None:
+def test_all_neighbors() -> None:
     p: Point = (-1, 3)
     expected: list[Point] = [
         (-1, 2),
@@ -28,7 +28,7 @@ def test_neighbors_diagonal() -> None:
         (0, 2),
         (0, 4),
     ]
-    assert set(expected) == set(PointHelper.neighbors_diagonal(p))
+    assert set(expected) == set(PointHelper.all_neighbors(p))
 
 
 def test_distance() -> None:

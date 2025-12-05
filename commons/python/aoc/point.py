@@ -88,7 +88,7 @@ class PointHelper:
         ]
 
     @staticmethod
-    def neighbors_diagonal(p: Point) -> list[Point]:
+    def all_neighbors(p: Point) -> list[Point]:
         return [
             (p[0], p[1] + 1),
             (p[0], p[1] - 1),

@@ -6,21 +6,20 @@ fn main() {
 
 fn solution() {
     let values = Reader::default().lines();
-    answer::part1(1292, window_increases(&values, 1));
-    answer::part2(1262, window_increases(&values, 3));
+    answer::part1(1292, increases(&values, 1));
+    answer::part2(1262, increases(&values, 3));
 }
 
-fn window_increases(values: &[i64], window_size: usize) -> i64 {
+fn increases(values: &[i64], n: usize) -> i64 {
     let mut result = 0;
-    for i in 0..values.len() - window_size {
-        if window_sum(values, window_size, i + 1) > window_sum(values, window_size, i) {
+    for i in 0..values.len() - n {
+        if sum(values, n, i + 1) > sum(values, n, i) {
             result += 1;
         }
     }
     result
 }
 
-fn window_sum(values: &[i64], window_size: usize, start_index: usize) -> i64 {
-    let window = &values[start_index..start_index + window_size];
-    window.iter().sum()
+fn sum(values: &[i64], n: usize, start: usize) -> i64 {
+    values[start..start + n].iter().sum()
 }

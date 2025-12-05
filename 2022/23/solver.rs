@@ -46,7 +46,7 @@ impl Elves {
 
     fn get_proposal(&self, location: &Point) -> Option<Point> {
         let isolated = location
-            .diagonal_neighbors()
+            .all_neighbors()
             .iter()
             .all(|location| !self.locations.contains(location));
         match isolated {

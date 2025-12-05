@@ -1,6 +1,6 @@
 defmodule Solver do
   def main do
-    Answer.timer(fn -> solution() end)
+    Answer.timer(&solution/0)
   end
 
   def solution do
@@ -11,25 +11,26 @@ defmodule Solver do
 
   def total(lines, n) do
     lines
-    |> Enum.map(fn line -> joltage(line, n, -1) end)
-    |> Enum.map(fn value -> String.to_integer(value) end)
+    |> Enum.map(&joltage(&1, n, -1))
+    |> Enum.map(&String.to_integer/1)
     |> Enum.sum()
   end
 
   def joltage(line, n, i) do
-    if n <= 0 do
-      ""
-    else
-      {ch, index} = next(line, n, i)
-      ch <> joltage(line, n - 1, index)
+    case n do
+      0 ->
+        ""
+
+      _ ->
+        {ch, index} = next(line, n, i)
+        ch <> joltage(line, n - 1, index)
     end
   end
 
   def next(line, n, i) do
     String.graphemes(line)
     |> Enum.with_index()
-    |> Enum.take(String.length(line) - n + 1)
-    |> Enum.drop(i + 1)
+    |> Enum.slice((i + 1)..(String.length(line) - n))
     |> Enum.max_by(fn {char, _} -> char end)
   end
 end

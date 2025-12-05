@@ -37,7 +37,7 @@ func (p Point) Adjacent() []Point {
 	}
 }
 
-func (p Point) DiagonalAdjacent() []Point {
+func (p Point) AllAdjacent() []Point {
 	return []Point{
 		p.Add(-1, 0),
 		p.Add(1, 0),

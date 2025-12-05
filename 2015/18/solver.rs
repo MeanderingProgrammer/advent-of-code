@@ -40,7 +40,7 @@ impl Animator {
 
     fn neighbors_on(&self, point: &Point) -> usize {
         point
-            .diagonal_neighbors()
+            .all_neighbors()
             .iter()
             .filter(|point| self.on.contains(point))
             .count()

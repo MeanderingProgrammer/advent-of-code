@@ -178,7 +178,7 @@ impl Point {
             .collect()
     }
 
-    pub fn diagonal_neighbors(&self) -> Vec<Self> {
+    pub fn all_neighbors(&self) -> Vec<Self> {
         Heading::values()
             .iter()
             .map(|head| self.add(head))

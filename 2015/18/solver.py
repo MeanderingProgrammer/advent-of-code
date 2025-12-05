@@ -36,7 +36,7 @@ class Animator:
 
     def neighbors_on(self, point: Point) -> int:
         return sum(
-            [adjacent in self.on for adjacent in PointHelper.neighbors_diagonal(point)]
+            [adjacent in self.on for adjacent in PointHelper.all_neighbors(point)]
         )
 
     def lights_on(self) -> int:

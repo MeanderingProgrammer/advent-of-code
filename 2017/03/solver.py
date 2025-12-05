@@ -41,7 +41,7 @@ def part2(context: Context) -> int:
     return sum(
         [
             context[1].get(neighbor, 0)
-            for neighbor in PointHelper.neighbors_diagonal(context[2])
+            for neighbor in PointHelper.all_neighbors(context[2])
         ]
     )
 

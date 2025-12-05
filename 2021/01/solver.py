@@ -5,16 +5,16 @@ from aoc.parser import Parser
 @answer.timer
 def main() -> None:
     values = Parser().int_lines()
-    answer.part1(1292, window_increases(values, 1))
-    answer.part2(1262, window_increases(values, 3))
+    answer.part1(1292, increases(values, 1))
+    answer.part2(1262, increases(values, 3))
 
 
-def window_increases(values: list[int], window_size: int) -> int:
-    increases = 0
-    for i in range(len(values) - window_size):
-        if sum(values[i + 1 : i + 1 + window_size]) > sum(values[i : i + window_size]):
-            increases += 1
-    return increases
+def increases(values: list[int], n: int) -> int:
+    result = 0
+    for i in range(len(values) - n):
+        if sum(values[i + 1 : i + 1 + n]) > sum(values[i : i + n]):
+            result += 1
+    return result
 
 
 if __name__ == "__main__":

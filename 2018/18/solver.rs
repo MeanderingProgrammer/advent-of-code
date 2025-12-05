@@ -52,7 +52,7 @@ impl Landscape {
 
     fn count(&self, point: &Point, state: State) -> usize {
         point
-            .diagonal_neighbors()
+            .all_neighbors()
             .iter()
             .filter(|neighbor| self.grid.has(neighbor) && self.grid[neighbor] == state)
             .count()

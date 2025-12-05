@@ -10,23 +10,23 @@ pub fn main() !void {
 
 fn solution(c: *aoc.Context) !void {
     const values = try aoc.Reader.init(c.allocator()).intLines();
-    answer.part1(usize, 1292, windowIncreases(values, 1));
-    answer.part2(usize, 1262, windowIncreases(values, 3));
+    answer.part1(usize, 1292, increases(values, 1));
+    answer.part2(usize, 1262, increases(values, 3));
 }
 
-fn windowIncreases(values: List(usize), window_size: usize) usize {
+fn increases(values: List(usize), n: usize) usize {
     var result: usize = 0;
-    for (0..values.items.len - window_size) |i| {
-        if (windowSum(values, window_size, i + 1) > windowSum(values, window_size, i)) {
+    for (0..values.items.len - n) |i| {
+        if (sum(values, n, i + 1) > sum(values, n, i)) {
             result += 1;
         }
     }
     return result;
 }
 
-fn windowSum(values: List(usize), window_size: usize, start_index: usize) usize {
+fn sum(values: List(usize), n: usize, start: usize) usize {
     var result: usize = 0;
-    for (start_index..start_index + window_size) |i| {
+    for (start..start + n) |i| {
         result += values.items[i];
     }
     return result;
