@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/util"
 
 	"github.com/stretchr/testify/assert"
 )

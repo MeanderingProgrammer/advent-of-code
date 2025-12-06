@@ -39,7 +39,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const lib = b.addModule("aoc", .{
-        .root_source_file = b.path("commons/zig/mod.zig"),
+        .root_source_file = b.path("lib/zig/mod.zig"),
         .target = target,
         .optimize = optimize,
     });

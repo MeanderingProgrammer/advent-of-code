@@ -1,7 +1,7 @@
 package point
 
 import (
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/util"
 )
 
 type Point struct {

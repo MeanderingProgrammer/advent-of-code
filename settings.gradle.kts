@@ -5,7 +5,7 @@ plugins {
 rootProject.name = "advent-of-code"
 
 include("lib")
-project(":lib").projectDir = file("commons/java")
+project(":lib").projectDir = file("lib/java")
 
 include("2019-18")
 project(":2019-18").projectDir = file("2019/18")

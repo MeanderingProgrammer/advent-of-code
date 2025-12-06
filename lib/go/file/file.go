@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/util"
 )
 
 type Reader struct {

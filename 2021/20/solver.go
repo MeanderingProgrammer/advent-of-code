@@ -3,12 +3,12 @@ package main
 import (
 	"strings"
 
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
-	"advent-of-code/commons/go/grid"
-	"advent-of-code/commons/go/parser"
-	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
+	"advent-of-code/lib/go/grid"
+	"advent-of-code/lib/go/parser"
+	"advent-of-code/lib/go/point"
+	"advent-of-code/lib/go/util"
 )
 
 const Boarder = 1

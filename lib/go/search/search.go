@@ -1,7 +1,7 @@
 package search
 
 import (
-	"advent-of-code/commons/go/queue"
+	"advent-of-code/lib/go/queue"
 )
 
 type Hashable interface {

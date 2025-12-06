@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"advent-of-code/commons/go/grid"
-	"advent-of-code/commons/go/point"
+	"advent-of-code/lib/go/grid"
+	"advent-of-code/lib/go/point"
 )
 
 type Graph[K comparable, V comparable] struct {

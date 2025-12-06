@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"advent-of-code/commons/go/grid"
-	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/grid"
+	"advent-of-code/lib/go/point"
+	"advent-of-code/lib/go/util"
 )
 
 type RowSplitter int

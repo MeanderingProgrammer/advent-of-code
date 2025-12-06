@@ -13,7 +13,7 @@ defmodule AdventOfCode.MixProject do
   end
 
   defp elixirc_paths do
-    ["commons/elixir"]
+    ["lib/elixir"]
   end
 
   def application do

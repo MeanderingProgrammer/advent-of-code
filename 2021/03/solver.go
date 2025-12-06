@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
-	"advent-of-code/commons/go/util"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
+	"advent-of-code/lib/go/util"
 )
 
 type Binaries []string

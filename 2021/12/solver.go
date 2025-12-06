@@ -6,10 +6,10 @@ import (
 	"strings"
 	"unicode"
 
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
-	"advent-of-code/commons/go/graph"
-	"advent-of-code/commons/go/search"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
+	"advent-of-code/lib/go/graph"
+	"advent-of-code/lib/go/search"
 )
 
 type Cave string

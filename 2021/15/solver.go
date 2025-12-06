@@ -1,13 +1,13 @@
 package main
 
 import (
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
-	"advent-of-code/commons/go/graph"
-	"advent-of-code/commons/go/grid"
-	"advent-of-code/commons/go/parser"
-	"advent-of-code/commons/go/point"
-	"advent-of-code/commons/go/search"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
+	"advent-of-code/lib/go/graph"
+	"advent-of-code/lib/go/grid"
+	"advent-of-code/lib/go/parser"
+	"advent-of-code/lib/go/point"
+	"advent-of-code/lib/go/search"
 )
 
 type Path struct {

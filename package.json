@@ -9,7 +9,7 @@
   "description": "Advent of Code - All Years - Blazingly Fast",
   "license": "MIT",
   "workspaces": [
-    "commons/ts/"
+    "lib/ts/"
   ],
   "devDependencies": {
     "@types/bun": "1.2.16",

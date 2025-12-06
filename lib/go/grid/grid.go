@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"advent-of-code/commons/go/point"
+	"advent-of-code/lib/go/point"
 )
 
 type Grid[T comparable] struct {

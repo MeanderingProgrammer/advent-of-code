@@ -13,11 +13,11 @@ tempfile = "3.23.0"
 
 [lib]
 name = "aoc"
-path = "commons/rust/src/lib.rs"
+path = "lib/rust/src/lib.rs"
 
 [[test]]
 name = "aoc"
-path = "commons/rust/tests/lib.rs"
+path = "lib/rust/tests/lib.rs"
 
 [[bin]]
 name = "aoc_2015_04"

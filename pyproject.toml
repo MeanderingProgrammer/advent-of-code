@@ -1,5 +1,5 @@
 [tool.basedpyright]
-extraPaths = ["commons/python"]
+extraPaths = ["lib/python"]
 executionEnvironments = [{ root = "scripts" }]
 reportAny = false
 reportExplicitAny = false

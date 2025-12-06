@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
 )
 
 func main() {

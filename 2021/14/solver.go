@@ -3,8 +3,8 @@ package main
 import (
 	"strings"
 
-	"advent-of-code/commons/go/answer"
-	"advent-of-code/commons/go/file"
+	"advent-of-code/lib/go/answer"
+	"advent-of-code/lib/go/file"
 )
 
 type Rules map[string]string
