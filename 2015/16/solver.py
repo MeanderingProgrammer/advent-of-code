@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Self
 
 from aoc import answer
 from aoc.parser import Parser
@@ -12,11 +13,11 @@ class Check(Enum):
 
     def valid(self, v1: int, v2: int) -> bool:
         match self:
-            case Check.EQUAL:
+            case self.EQUAL:
                 return v1 == v2
-            case Check.GREATER:
+            case self.GREATER:
                 return v1 > v2
-            case Check.LESS:
+            case self.LESS:
                 return v1 < v2
 
 
@@ -24,6 +25,18 @@ class Check(Enum):
 class Aunt:
     id: int
     properties: dict[str, int]
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        id, raw_properties = s.split(": ", 1)
+        properties: dict[str, int] = dict()
+        for property in raw_properties.split(", "):
+            key, amount = property.split(": ")
+            properties[key] = int(amount)
+        return cls(
+            id=int(id.split()[1]),
+            properties=properties,
+        )
 
 
 @dataclass(frozen=True)
@@ -50,7 +63,7 @@ class Match:
 def main() -> None:
     groups = Parser().line_groups()
     match = get_match(groups[0])
-    aunts = [get_aunt(line) for line in groups[1]]
+    aunts = [Aunt.new(line) for line in groups[1]]
     answer.part1(213, find(match, aunts, False))
     answer.part2(323, find(match, aunts, True))
 
@@ -61,18 +74,6 @@ def get_match(lines: list[str]) -> Match:
         key, amount = line.split(": ")
         properties[key] = int(amount)
     return Match(properties)
-
-
-def get_aunt(line: str) -> Aunt:
-    id, raw_properties = line.split(": ", 1)
-    properties: dict[str, int] = dict()
-    for property in raw_properties.split(", "):
-        key, amount = property.split(": ")
-        properties[key] = int(amount)
-    return Aunt(
-        id=int(id.split()[1]),
-        properties=properties,
-    )
 
 
 def find(match: Match, aunts: list[Aunt], calibrate: bool) -> int:

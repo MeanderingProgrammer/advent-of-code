@@ -145,7 +145,7 @@ impl DroidBus {
 
         let directions = if location == "Security Checkpoint" {
             self.path = self.history.clone();
-            // Remove direction which takes us to analyzer, for initial traversal
+            // remove direction which takes us to analyzer for initial traversal
             view.directions.into_iter().skip(1).collect()
         } else {
             view.directions
@@ -180,8 +180,8 @@ impl DroidBus {
         let command = match direction {
             Direction::Up => "north",
             Direction::Down => "south",
-            Direction::Right => "east",
             Direction::Left => "west",
+            Direction::Right => "east",
         };
         self.add_command(command);
     }

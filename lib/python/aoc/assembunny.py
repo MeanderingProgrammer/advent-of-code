@@ -82,15 +82,15 @@ class Operation(StrEnum):
 
     def toggle(self) -> Operation:
         match self:
-            case Operation.CPY:
-                return Operation.JNZ
-            case Operation.INC:
-                return Operation.DEC
-            case Operation.DEC:
-                return Operation.INC
-            case Operation.JNZ:
-                return Operation.CPY
-            case Operation.TGL:
-                return Operation.INC
-            case Operation.OUT:
+            case self.CPY:
+                return self.JNZ
+            case self.INC:
+                return self.DEC
+            case self.DEC:
+                return self.INC
+            case self.JNZ:
+                return self.CPY
+            case self.TGL:
+                return self.INC
+            case self.OUT:
                 raise Exception("toggle invalid for output")

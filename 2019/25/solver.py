@@ -1,11 +1,13 @@
 import itertools
-from collections.abc import Generator
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import StrEnum, auto
+from typing import Self
 
 from aoc import answer
 from aoc.intcode import Computer
 from aoc.parser import Parser
+from aoc.point import Direction
 
 BAD_ITEMS: list[str] = [
     "giant electromagnet",
@@ -16,88 +18,27 @@ BAD_ITEMS: list[str] = [
 ]
 
 
-class Direction(StrEnum):
-    NORTH = auto()
-    SOUTH = auto()
-    EAST = auto()
-    WEST = auto()
-
-
-OPPOSITES: dict[Direction, Direction] = {
-    Direction.NORTH: Direction.SOUTH,
-    Direction.SOUTH: Direction.NORTH,
-    Direction.EAST: Direction.WEST,
-    Direction.WEST: Direction.EAST,
-}
-
-
-@dataclass(frozen=True)
+@dataclass
 class View:
     name: str
     directions: list[Direction]
     items: list[str]
 
-
-@dataclass
-class Game:
-    instruction: str = ""
-    view: View | None = None
-
-    def add(self, ch: str) -> None:
-        self.instruction += ch
-
-    def location(self):
-        return self.get_view().name
-
-    def is_checkpoint(self) -> bool:
-        return self.location() == "Security Checkpoint"
-
-    def directions(self) -> list[Direction]:
-        directions = self.get_view().directions
-        # Remove direction which takes us to analyzer, for initial traversal
-        return directions[1:] if self.is_checkpoint() else directions
-
-    def items(self) -> list[str]:
-        return [item for item in self.get_view().items if item not in BAD_ITEMS]
-
-    def get_view(self) -> View:
-        if self.view is not None:
-            return self.view
-        name, directions, items = "", [], []
-        for group in self.instruction.split("\n\n"):
-            values = [value for value in group.split("\n") if value != ""]
-            if len(values) == 0:
+    @classmethod
+    def new(cls, s: str) -> Self:
+        result = cls(name="", directions=[], items=[])
+        for group in s.split("\n\n"):
+            lines = [value for value in group.split("\n") if value != ""]
+            if len(lines) == 0:
                 continue
-            if values[0].startswith("=="):
-                name = values[0][3:-3]
-            elif values[0] == "Doors here lead:":
-                directions = [Direction(value[2:]) for value in values[1:]]
-            elif values[0] == "Items here:":
-                items = [value[2:] for value in values[1:]]
-        view = View(name=name, directions=directions, items=items)
-        self.view = view
-        return view
-
-    def get_key(self) -> int:
-        lines = [line for line in self.instruction.split("\n") if len(line) > 0]
-        return int(lines[-1].split()[-8])
-
-
-@dataclass(frozen=True)
-class Graph:
-    graph: dict[str, set[tuple[Direction, str]]]
-
-    def add_node(self, name: str) -> None:
-        if name not in self.graph:
-            self.graph[name] = set()
-
-    def add_edge(self, start: str, direction: Direction, end: str) -> None:
-        self.graph[start].add((direction, end))
-        self.graph[end].add((OPPOSITES[direction], start))
-
-    def get_unexplored(self, name: str, directions: list[Direction]) -> list[Direction]:
-        explored: list[Direction] = [edge[0] for edge in self.graph[name]]
-        return [direction for direction in directions if direction not in explored]
+            label = lines.pop(0)
+            if label.startswith("=="):
+                result.name = label[3:-3]
+            elif label == "Doors here lead:":
+                result.directions = [Direction.new(line[2:]) for line in lines]
+            elif label == "Items here:":
+                result.items = [line[2:] for line in lines]
+        return result
 
 
 class State(StrEnum):
@@ -105,94 +46,146 @@ class State(StrEnum):
     SOLVING = auto()
 
 
-@dataclass(frozen=True)
-class ItemBag:
+@dataclass
+class Bag:
     items: list[str]
+    index: int = 0
+    combinations: list[tuple[int, ...]] | None = None
 
     def add(self, item: str) -> None:
         self.items.append(item)
 
-    def next(self):
-        for length in range(1, len(self.items) + 1):
-            for subset in itertools.combinations(self.items, length):
-                yield subset
+    def inventory(self) -> list[int]:
+        if self.index == 0:
+            return list(range(len(self.items)))
+        else:
+            return self.nth(self.index - 1)
+
+    def next(self) -> list[int]:
+        self.index += 1
+        return self.nth(self.index - 1)
+
+    def nth(self, i: int) -> list[int]:
+        if self.combinations is not None:
+            return list(self.combinations[i])
+
+        self.combinations = []
+        indices = list(range(len(self.items)))
+        for size in range(1, len(indices) + 1):
+            for subset in itertools.combinations(indices, size):
+                self.combinations.append(subset)
+        return self.nth(i)
 
 
+@dataclass
 class DroidBus:
-    def __init__(self):
-        # Storing output of game and move to make
-        self.game: Game = Game()
-        self.commands: list[str] = []
-        self.state: State = State.EXPLORING
+    instruction: str
+    commands: list[str]
+    state: State
+    grid: dict[str, set[Direction]]
+    previous: tuple[str, Direction] | None
+    history: list[Direction]
+    path: list[Direction]
+    bag: Bag
 
-        # State information to be able to traverse ship
-        self.grid: Graph = Graph(graph=dict())
-        self.previous: tuple[str, Direction] | None = None
-        self.history: list[Direction] = []
-        self.path_to_checkpoint: list[Direction] = []
-
-        # For solving final puzzle where all items are needed
-        self.items: ItemBag = ItemBag(items=[])
-        self.item_generator: Generator[tuple[str, ...], None, None] = self.items.next()
+    @classmethod
+    def new(cls) -> Self:
+        bag = Bag(items=[])
+        return cls(
+            # output of game and move to make
+            instruction="",
+            commands=[],
+            state=State.EXPLORING,
+            # state information to be able to traverse ship
+            grid=defaultdict(set),
+            previous=None,
+            history=[],
+            path=[],
+            # for solving final puzzle where all items are needed
+            bag=bag,
+        )
 
     def active(self) -> bool:
         return True
 
     def add_output(self, value: int) -> None:
-        self.game.add(chr(value))
+        self.instruction += chr(value)
 
     def get_input(self) -> int:
-        if len(self.commands) == 0:
-            if self.state == State.EXPLORING:
-                if not self.continue_exploring():
-                    [self.add_command(command) for command in self.path_to_checkpoint]
-                    self.add_command(Direction.SOUTH)
+        if len(self.commands) > 0:
+            return ord(self.commands.pop(0))
+        match self.state:
+            case State.EXPLORING:
+                if self.explored():
+                    for direction in self.path:
+                        self.add_direction(direction)
+                    self.add_direction(Direction.DOWN)
                     self.state = State.SOLVING
-            elif self.state == State.SOLVING:
-                self.attempt_solve(True)
-            else:
-                raise Exception(f"Unknown state {self.state}")
-        return ord(self.commands.pop(0))
+            case State.SOLVING:
+                self.next_solution()
+        return self.get_input()
 
-    def continue_exploring(self) -> bool:
-        for item in self.game.items():
-            self.items.add(item)
-            self.add_command(f"take {item}")
+    def explored(self) -> bool:
+        view = View.new(self.instruction)
+        self.instruction = ""
 
-        if self.game.is_checkpoint():
-            self.path_to_checkpoint = list(self.history)
-
-        location = self.game.location()
-        self.grid.add_node(location)
+        location = view.name
+        explored = self.grid[location]
         if self.previous is not None:
-            self.grid.add_edge(self.previous[0], self.previous[1], location)
+            self.grid[self.previous[0]].add(self.previous[1])
+            explored.add(self.previous[1].opposite())
 
-        unexplored = self.grid.get_unexplored(location, self.game.directions())
+        for item in view.items:
+            if item not in BAD_ITEMS:
+                self.bag.add(item)
+                self.add_command(f"take {item}")
 
-        self.game = Game()
-        command = None
+        directions = view.directions
+        if view.name == "Security Checkpoint":
+            self.path = self.history.copy()
+            # remove direction which takes us to analyzer for initial traversal
+            directions.pop()
+
+        direction = None
+        unexplored = set(directions).difference(explored)
         if len(unexplored) > 0:
-            command = unexplored[0]
-            self.history.append(command)
-        elif len(self.history) > 0:
-            command = OPPOSITES[self.history[-1]]
-            self.history = self.history[:-1]
-        else:
+            direction = unexplored.pop()
+            self.history.append(direction)
+            self.add_direction(direction)
+            self.previous = (location, direction)
             return False
-        self.previous = (location, command)
-        self.add_command(command)
-        return True
+        elif len(self.history) > 0:
+            direction = self.history.pop().opposite()
+            self.add_direction(direction)
+            self.previous = (location, direction)
+            return False
+        else:
+            return True
 
-    def attempt_solve(self, use_known: bool) -> None:
-        self.game = Game()
-        for to_drop in self.items.items:
-            self.add_command(f"drop {to_drop}")
-        # Rather than using the item generate pass the known list of items
-        known_solution = ["fixed point", "whirled peas", "antenna", "prime number"]
-        items = known_solution if use_known else next(self.item_generator)
-        for to_pickup in items:
-            self.add_command(f"take {to_pickup}")
-        self.add_command(Direction.SOUTH)
+    def next_solution(self) -> None:
+        # clear instruction string after each attempt
+        self.instruction = ""
+        for i in self.bag.inventory():
+            self.add_command(f"drop {self.bag.items[i]}")
+        for i in self.bag.next():
+            self.add_command(f"take {self.bag.items[i]}")
+        self.add_direction(Direction.DOWN)
+
+    def get_key(self) -> int:
+        lines = self.instruction.split("\n")
+        last = [line for line in lines if line != ""][-1]
+        return int(last.split()[-8])
+
+    def add_direction(self, direction: Direction) -> None:
+        match direction:
+            case Direction.UP:
+                self.add_command("north")
+            case Direction.DOWN:
+                self.add_command("south")
+            case Direction.LEFT:
+                self.add_command("west")
+            case Direction.RIGHT:
+                self.add_command("east")
 
     def add_command(self, command: str) -> None:
         program = [ch for ch in command]
@@ -203,10 +196,10 @@ class DroidBus:
 @answer.timer
 def main() -> None:
     memory = Parser().int_csv()
-    droid = DroidBus()
+    droid = DroidBus.new()
     computer = Computer(bus=droid, memory=memory)
     computer.run()
-    answer.part1(2622472, droid.game.get_key())
+    answer.part1(2622472, droid.get_key())
 
 
 if __name__ == "__main__":

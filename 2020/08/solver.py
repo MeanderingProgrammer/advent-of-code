@@ -62,12 +62,12 @@ class Operation(StrEnum):
 
     def transform(self) -> Operation:
         match self:
-            case Operation.ACC:
-                return Operation.ACC
-            case Operation.JMP:
-                return Operation.NOP
-            case Operation.NOP:
-                return Operation.JMP
+            case self.ACC:
+                return self.ACC
+            case self.JMP:
+                return self.NOP
+            case self.NOP:
+                return self.JMP
 
 
 @answer.timer

@@ -9,38 +9,49 @@ class Direction(Enum):
 
     @classmethod
     def new(cls, s: str) -> Direction:
-        if s in ["^", "U"]:
-            return Direction.UP
-        elif s in ["v", "D"]:
-            return Direction.DOWN
-        elif s in ["<", "L"]:
-            return Direction.LEFT
-        elif s in [">", "R"]:
-            return Direction.RIGHT
+        if s in ["^", "U", "north"]:
+            return cls.UP
+        elif s in ["v", "D", "south"]:
+            return cls.DOWN
+        elif s in ["<", "L", "west"]:
+            return cls.LEFT
+        elif s in [">", "R", "east"]:
+            return cls.RIGHT
         else:
             raise Exception(f"Unknown direction: {s}")
 
     def left(self) -> Direction:
         match self:
-            case Direction.UP:
-                return Direction.LEFT
-            case Direction.LEFT:
-                return Direction.DOWN
-            case Direction.DOWN:
-                return Direction.RIGHT
-            case Direction.RIGHT:
-                return Direction.UP
+            case self.UP:
+                return self.LEFT
+            case self.LEFT:
+                return self.DOWN
+            case self.DOWN:
+                return self.RIGHT
+            case self.RIGHT:
+                return self.UP
 
     def right(self) -> Direction:
         match self:
-            case Direction.UP:
-                return Direction.RIGHT
-            case Direction.RIGHT:
-                return Direction.DOWN
-            case Direction.DOWN:
-                return Direction.LEFT
-            case Direction.LEFT:
-                return Direction.UP
+            case self.UP:
+                return self.RIGHT
+            case self.RIGHT:
+                return self.DOWN
+            case self.DOWN:
+                return self.LEFT
+            case self.LEFT:
+                return self.UP
+
+    def opposite(self) -> Direction:
+        match self:
+            case self.UP:
+                return self.DOWN
+            case self.DOWN:
+                return self.UP
+            case self.LEFT:
+                return self.RIGHT
+            case self.RIGHT:
+                return self.LEFT
 
 
 type Point = tuple[int, int]
