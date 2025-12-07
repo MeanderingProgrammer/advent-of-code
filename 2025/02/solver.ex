@@ -17,8 +17,7 @@ defmodule Solver do
 
   @spec longest_prefixes(Interval.t()) :: {integer(), integer()}
   def longest_prefixes({s, e}) do
-    s..e
-    |> Enum.reduce({0, 0}, fn i, {a1, a2} ->
+    Enum.reduce(s..e, {0, 0}, fn i, {a1, a2} ->
       digits = Integer.digits(i)
       half = div(length(digits) + 1, 2)
 

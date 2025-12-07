@@ -5,10 +5,10 @@ defmodule Solver do
 
   def solution() do
     [intervals, ingredients] = Reader.groups()
-    intervals = intervals |> Enum.map(&Interval.parse/1) |> combine()
-    ingredients = ingredients |> Enum.map(&String.to_integer/1)
-    Answer.part1(690, ingredients |> Enum.count(&any?(intervals, &1)))
-    Answer.part2(344_323_629_240_733, intervals |> Enum.map(&Interval.size(&1)) |> Enum.sum())
+    intervals = Enum.map(intervals, &Interval.parse/1) |> combine()
+    ingredients = Enum.map(ingredients, &String.to_integer/1)
+    Answer.part1(690, Enum.count(ingredients, &any?(intervals, &1)))
+    Answer.part2(344_323_629_240_733, Enum.sum_by(intervals, &Interval.size/1))
   end
 
   @spec combine([Interval.t()]) :: [Interval.t()]
@@ -32,7 +32,7 @@ defmodule Solver do
 
   @spec any?([Interval.t()], integer()) :: boolean()
   def any?(intervals, value) do
-    intervals |> Enum.any?(&Interval.in?(&1, value))
+    Enum.any?(intervals, &Interval.in?(&1, value))
   end
 end
 

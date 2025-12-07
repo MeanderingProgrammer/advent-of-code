@@ -24,8 +24,8 @@ defmodule Reader do
       |> Enum.find(&(Path.basename(&1) == "solver.ex"))
       |> Path.split()
 
-    test? = Enum.member?(System.argv(), "--test")
-    file = if test?, do: "sample.txt", else: "data.txt"
+    test = Enum.member?(System.argv(), "--test")
+    file = if test, do: "sample.txt", else: "data.txt"
 
     Path.join(["data", year, day, file])
   end

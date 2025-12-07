@@ -36,8 +36,7 @@ defmodule Solver do
     lines = Reader.lines()
 
     {_, zeros, clicks} =
-      lines
-      |> Enum.reduce({%Dial{}, 0, 0}, fn line, {dial, zeros, clicks} ->
+      Enum.reduce(lines, {%Dial{}, 0, 0}, fn line, {dial, zeros, clicks} ->
         right = String.starts_with?(line, "R")
         amount = line |> String.slice(1..-1//1) |> String.to_integer()
         {new_dial, new_clicks} = Dial.move(dial, right, amount)

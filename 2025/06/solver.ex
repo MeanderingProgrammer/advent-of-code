@@ -37,9 +37,9 @@ defmodule Problems do
 
   @spec solve(t(), parser()) :: integer()
   def solve(problems, parser) do
-    problems
-    |> Enum.map(fn {values, op} -> values |> parser.() |> op.() end)
-    |> Enum.sum()
+    Enum.sum_by(problems, fn {values, op} ->
+      values |> parser.() |> op.()
+    end)
   end
 end
 

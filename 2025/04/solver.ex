@@ -20,15 +20,12 @@ defmodule Solver do
 
   @spec step(Grid.t()) :: [Point.t()]
   def step(grid) do
-    grid
-    |> Map.keys()
-    |> Enum.filter(&accessible?(grid, &1))
+    Enum.filter(Map.keys(grid), &accessible?(grid, &1))
   end
 
   @spec accessible?(Grid.t(), Point.t()) :: boolean()
   def accessible?(grid, point) do
-    point
-    |> Point.all_neighbors()
+    Point.all_neighbors(point)
     |> Enum.count(&Map.has_key?(grid, &1)) < 4
   end
 end
