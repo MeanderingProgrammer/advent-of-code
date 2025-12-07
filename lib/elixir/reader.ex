@@ -1,7 +1,7 @@
 defmodule Reader do
   @spec text() :: String.t()
   def text() do
-    get_filepath() |> File.read!() |> String.trim()
+    get_filepath() |> File.read!() |> String.trim("\n")
   end
 
   @spec lines() :: [String.t()]
