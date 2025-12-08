@@ -6,40 +6,41 @@ from typing import Self
 from aoc import answer
 from aoc.parser import Parser
 
-type Point3d = tuple[int, int, int]
-
 
 @dataclass(frozen=True)
 class NanoBot:
-    pos: Point3d
+    x: int
+    y: int
+    z: int
     r: int
 
     @classmethod
     def new(cls, s: str) -> Self:
-        pos, radius = s.split(", ")
-        coords = [int(c) for c in pos.split("=")[1][1:-1].split(",")]
-        assert len(coords) == 3
+        # pos=<1,-2,3>, r=4
+        pos, r = s.split(", ")
+        x, y, z = pos.split("=")[1][1:-1].split(",")
+        _, r = r.split("=")
         return cls(
-            pos=(coords[0], coords[1], coords[2]),
-            r=int(radius.split("=")[1]),
+            x=int(x),
+            y=int(y),
+            z=int(z),
+            r=int(r),
         )
 
-    def in_range(self, o: Self) -> bool:
-        x1, y1, z1 = self.pos
-        x2, y2, z2 = o.pos
-        return abs(x1 - x2) + abs(y1 - y2) + abs(z1 - z2) <= self.r
+    def __contains__(self, o: Self) -> bool:
+        dx, dy, dz = self.x - o.x, self.y - o.y, self.z - o.z
+        return abs(dx) + abs(dy) + abs(dz) <= self.r
 
     def __len__(self) -> int:
-        x, y, z = self.pos
-        return abs(x) + abs(y) + abs(z)
+        return abs(self.x) + abs(self.y) + abs(self.z)
 
 
 @answer.timer
 def main() -> None:
     bots = [NanoBot.new(line) for line in Parser().lines()]
     bots.sort(key=lambda bot: bot.r)
-    strongest_bot = bots[-1]
-    answer.part1(383, sum([strongest_bot.in_range(bot) for bot in bots]))
+    strongest = bots[-1]
+    answer.part1(383, sum([bot in strongest for bot in bots]))
     answer.part2(100474026, distance_of_most_overlap(bots))
 
 
@@ -57,16 +58,14 @@ def distance_of_most_overlap(bots: list[NanoBot]) -> int:
         # distance plus its radius are no longer in the range of this bot
         heapq.heappush(queue, (len(bot) + bot.r + 1, False))
 
+    distances: dict[int, set[int]] = defaultdict(set)
     bots_in_range = 0
-    in_range_distances: dict[int, set[int]] = defaultdict(set)
     while len(queue) > 0:
         distance, add = heapq.heappop(queue)
         bots_in_range += 1 if add else -1
-        in_range_distances[bots_in_range].add(distance)
+        distances[bots_in_range].add(distance)
 
-    max_in_range = max(in_range_distances.keys())
-    distances = in_range_distances[max_in_range]
-    return min(distances)
+    return min(distances[max(distances)])
 
 
 if __name__ == "__main__":

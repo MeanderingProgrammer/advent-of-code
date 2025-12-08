@@ -28,7 +28,7 @@ let neighbors (grid : Grid.t) (trace : trace) :
     (Point.t * Direction.t * bool) list =
   let current = List.hd_exn trace.path in
   (* Continue path in all directions from last point on our path *)
-  let result = Point.adjacent current in
+  let result = Point.neighbors current in
   (* Remove anything that's off the grid or goes into a forest *)
   let result =
     List.filter ~f:(fun (_, point) -> valid_space grid point) result

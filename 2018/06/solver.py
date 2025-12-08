@@ -18,7 +18,7 @@ class PointGrid:
             for y in range(self.y_bounds[0], self.y_bounds[1] + 1):
                 start = (x, y)
                 self.distances[start] = {
-                    end: PointHelper.distance(start, end) for end in points
+                    end: PointHelper.manhattan(start, end) for end in points
                 }
 
     def largest_finite(self) -> int:

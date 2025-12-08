@@ -37,9 +37,9 @@ func (points Points) basinSizes(g Grid) []int {
 func basinSize(g Grid, p point.Point) int {
 	basin := Points{p}
 	for i := 0; i < len(basin); i++ {
-		for _, adjacent := range basin[i].Adjacent() {
-			if g.Contains(adjacent) && g.Get(adjacent) < 9 && !basin.contains(adjacent) {
-				basin = append(basin, adjacent)
+		for _, neighbor := range basin[i].Neighbors() {
+			if g.Contains(neighbor) && g.Get(neighbor) < 9 && !basin.contains(neighbor) {
+				basin = append(basin, neighbor)
 			}
 		}
 	}
@@ -53,8 +53,8 @@ type Grid struct {
 func (g Grid) minimums() Points {
 	isMinimum := func(p point.Point) bool {
 		value := g.Get(p)
-		for _, adjacent := range p.Adjacent() {
-			if g.Contains(adjacent) && g.Get(adjacent) <= value {
+		for _, neighbor := range p.Neighbors() {
+			if g.Contains(neighbor) && g.Get(neighbor) <= value {
 				return false
 			}
 		}

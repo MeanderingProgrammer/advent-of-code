@@ -44,10 +44,7 @@ impl Coordinates {
                 .flat_map(|x| (bounds.lower.y..=bounds.upper.y).map(move |y| Point::new(x, y)))
                 .map(|start| Distance {
                     infinite: bounds.edge(&start),
-                    to: points
-                        .iter()
-                        .map(|end| start.manhattan_distance(end))
-                        .collect(),
+                    to: points.iter().map(|end| start.manhattan(end)).collect(),
                 })
                 .collect(),
         }

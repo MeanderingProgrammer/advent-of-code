@@ -7,7 +7,7 @@ let%expect_test "neighbors" =
     let as_sexp = [%sexp_of: Direction.t * Point.t] neighbor in
     print_endline (Sexp.to_string as_sexp)
   in
-  List.iter ~f:print_neighbor (Point.adjacent p);
+  List.iter ~f:print_neighbor (Point.neighbors p);
   [%expect
     {| 
     (UP((x -1)(y 2)))

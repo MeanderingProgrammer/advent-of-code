@@ -2,20 +2,20 @@ package maze;
 
 import java.util.*;
 
-import lib.Position;
+import lib.Point;
 
 public class Maze {
 
     private final Grid grid;
-    private final List<Position> starts;
+    private final List<Point> starts;
 
     public Maze(List<String> maze, boolean splitMaze) {
         this.grid = new Grid(maze);
 
-        Position start = this.grid.getStart();
+        Point start = this.grid.getStart();
         if (splitMaze) {
             this.grid.remove(start);
-            start.adjacent().forEach(this.grid::remove);
+            start.neighbors().forEach(this.grid::remove);
 
             this.starts = List.of(
                     start.dx(-1).dy(-1),
@@ -32,17 +32,17 @@ public class Maze {
         }
     }
 
-    private void expandPath(Position position, Path path) {
-        Node node = grid.get(position);
+    private void expandPath(Point point, Path path) {
+        Node node = grid.get(point);
         if (node.isDoor()) {
             path = path.addKey(node.asKey());
         }
         if (!node.addPath(path)) {
             return;
         }
-        for (Position adjacent : position.adjacent()) {
-            if (grid.contains(adjacent)) {
-                this.expandPath(adjacent, path.next());
+        for (Point neighbor : point.neighbors()) {
+            if (grid.contains(neighbor)) {
+                this.expandPath(neighbor, path.next());
             }
         }
     }
@@ -52,7 +52,7 @@ public class Maze {
         return this.solve(start, new HashMap<>());
     }
 
-    private int solve(State state, Map<List<Position>, Map<Set<Character>, Integer>> cache) {
+    private int solve(State state, Map<List<Point>, Map<Set<Character>, Integer>> cache) {
         if (state.values().size() == this.grid.getKeys().size()) {
             return 0;
         }
@@ -84,10 +84,10 @@ public class Maze {
         return moves;
     }
 
-    private static record State(List<Position> keys, Set<Character> values) {
+    private static record State(List<Point> keys, Set<Character> values) {
 
         public State move(Move move) {
-            List<Position> nextKeys = new ArrayList<>(this.keys);
+            List<Point> nextKeys = new ArrayList<>(this.keys);
             nextKeys.set(move.i(), move.path().key());
             Set<Character> nextValues = new HashSet<>(this.values);
             nextValues.add(move.path().value());

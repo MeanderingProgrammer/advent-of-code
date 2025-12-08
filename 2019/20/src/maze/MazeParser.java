@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lib.Position;
+import lib.Point;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -25,33 +25,33 @@ public class MazeParser {
     }
 
     public Map<Node, Set<Edge>> asGraph() {
-        Map<Position, Node> nodes = getNodes();
+        Map<Point, Node> nodes = getNodes();
         return nodes.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getValue,
                         entry -> getEdges(entry.getKey(), nodes)));
     }
 
-    private Map<Position, Node> getNodes() {
-        Map<Position, Node> nodes = new HashMap<>();
+    private Map<Point, Node> getNodes() {
+        Map<Point, Node> nodes = new HashMap<>();
         for (int r = 0; r < maze.size(); r++) {
             int row = r;
-            nodes.putAll(getNodes(maze.get(r), c -> new Position(c, row)));
+            nodes.putAll(getNodes(maze.get(r), c -> new Point(c, row)));
         }
         for (int c = 0; c < maze.get(0).length(); c++) {
             int column = c;
-            nodes.putAll(getNodes(getColumn(c), r -> new Position(column, r)));
+            nodes.putAll(getNodes(getColumn(c), r -> new Point(column, r)));
         }
         return nodes;
     }
 
-    private Map<Position, Node> getNodes(String rowColumn, Function<Integer, Position> creator) {
-        Map<Position, Node> nodes = new HashMap<>();
+    private Map<Point, Node> getNodes(String rowColumn, Function<Integer, Point> creator) {
+        Map<Point, Node> nodes = new HashMap<>();
         for (var startIndex : getStartIndices(rowColumn)) {
             var label = startIndex.getLabel(rowColumn);
             if (label.isPresent()) {
-                var position = creator.apply(startIndex.getPositionIndex());
-                nodes.put(position, new Node(label.get(), startIndex.inner()));
+                var point = creator.apply(startIndex.getPositionIndex());
+                nodes.put(point, new Node(label.get(), startIndex.inner()));
             }
         }
         return nodes;
@@ -73,32 +73,32 @@ public class MazeParser {
         return result.toString();
     }
 
-    private Set<Edge> getEdges(Position position, Map<Position, Node> nodes) {
-        Position mazePosition = position.adjacent().stream()
+    private Set<Edge> getEdges(Point point, Map<Point, Node> nodes) {
+        Point mazePoint = point.neighbors().stream()
                 .filter(this::inMaze)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Couldn't find maze entrance"));
-        return getEdges(mazePosition, nodes, new HashSet<>(List.of(position, mazePosition)), 1);
+        return getEdges(mazePoint, nodes, new HashSet<>(List.of(point, mazePoint)), 1);
     }
 
-    private Set<Edge> getEdges(Position current, Map<Position, Node> nodes, Set<Position> seen, int length) {
+    private Set<Edge> getEdges(Point current, Map<Point, Node> nodes, Set<Point> seen, int length) {
         if (nodes.containsKey(current)) {
             return Set.of(new Edge(nodes.get(current), length));
         } else {
-            return current.adjacent().stream()
+            return current.neighbors().stream()
                     .filter(this::inMaze)
-                    .filter(adjacent -> {
-                        boolean unseen = !seen.contains(adjacent);
-                        seen.add(adjacent);
+                    .filter(neighbor -> {
+                        boolean unseen = !seen.contains(neighbor);
+                        seen.add(neighbor);
                         return unseen;
                     })
-                    .flatMap(adjacent -> getEdges(adjacent, nodes, seen, length + 1).stream())
+                    .flatMap(neighbor -> getEdges(neighbor, nodes, seen, length + 1).stream())
                     .collect(Collectors.toSet());
         }
     }
 
-    private boolean inMaze(Position position) {
-        return maze.get(position.y()).charAt(position.x()) == '.';
+    private boolean inMaze(Point point) {
+        return maze.get(point.y()).charAt(point.x()) == '.';
     }
 
     private static record NodeStart(int index, boolean startAfter, boolean inner) {

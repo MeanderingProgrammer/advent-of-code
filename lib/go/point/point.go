@@ -23,12 +23,12 @@ func (p Point) Subtract(x, y int) Point {
 	}
 }
 
-func (p Point) ManhattanDistance(other Point) int {
+func (p Point) Manhattan(other Point) int {
 	difference := p.Subtract(other.X, other.Y)
 	return util.Abs(difference.X) + util.Abs(difference.Y)
 }
 
-func (p Point) Adjacent() []Point {
+func (p Point) Neighbors() []Point {
 	return []Point{
 		p.Add(-1, 0),
 		p.Add(1, 0),
@@ -37,7 +37,7 @@ func (p Point) Adjacent() []Point {
 	}
 }
 
-func (p Point) AllAdjacent() []Point {
+func (p Point) AllNeighbors() []Point {
 	return []Point{
 		p.Add(-1, 0),
 		p.Add(1, 0),

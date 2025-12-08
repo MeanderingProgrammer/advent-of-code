@@ -11,7 +11,7 @@ let valid_neighbor (grid : Grid.t) (len : int) (p : Point.t) : bool =
   not (Char.equal '#' ch)
 
 let get_neighbors (grid : Grid.t) (len : int) (p : Point.t) =
-  let _, neighbors = List.unzip (Point.adjacent p) in
+  let _, neighbors = List.unzip (Point.neighbors p) in
   let neighbors = List.filter ~f:(valid_neighbor grid len) neighbors in
   Types.PointSet.of_list neighbors
 

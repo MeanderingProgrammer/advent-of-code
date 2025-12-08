@@ -47,7 +47,7 @@ fn follow_trail(motions: &[Motion], length: usize) -> usize {
 }
 
 fn adjust_trail(front: &Point, back: &Point) -> Point {
-    if front.distance(back) < 2.0 {
+    if front.euclidean(back) < 2.0 {
         back.clone()
     } else {
         back.add(Point::new(

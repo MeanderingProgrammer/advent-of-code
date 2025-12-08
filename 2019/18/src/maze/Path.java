@@ -2,9 +2,9 @@ package maze;
 
 import java.util.*;
 
-import lib.Position;
+import lib.Point;
 
-public record Path(Position key, char value, Set<Character> needed, int distance) {
+public record Path(Point key, char value, Set<Character> needed, int distance) {
     public Path addKey(char ch) {
         var updated = new HashSet<>(this.needed);
         updated.add(ch);

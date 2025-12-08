@@ -48,8 +48,8 @@ func (g OctopusGrid) flash(p point.Point) {
 	g.Set(p, g.Get(p)+1)
 	if g.Get(p) > 9 && !g.flashed[p] {
 		g.flashed[p] = true
-		for _, adjacent := range p.AllAdjacent() {
-			g.flash(adjacent)
+		for _, neighbor := range p.AllNeighbors() {
+			g.flash(neighbor)
 		}
 	}
 }

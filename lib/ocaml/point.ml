@@ -13,7 +13,7 @@ let move (p : t) (d : Direction.t) (amount : int) : t =
   | LEFT -> { p with x = p.x - amount }
   | RIGHT -> { p with x = p.x + amount }
 
-let adjacent (p : t) : (Direction.t * t) list =
+let neighbors (p : t) : (Direction.t * t) list =
   [
     (UP, move p UP 1);
     (DOWN, move p DOWN 1);
@@ -21,7 +21,7 @@ let adjacent (p : t) : (Direction.t * t) list =
     (RIGHT, move p RIGHT 1);
   ]
 
-let distance (p1 : t) (p2 : t) : int =
+let manhattan (p1 : t) (p2 : t) : int =
   Int.abs (p1.x - p2.x) + Int.abs (p1.y - p2.y)
 
 let min (points : t list) : t =

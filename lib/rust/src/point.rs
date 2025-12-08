@@ -185,12 +185,12 @@ impl Point {
             .collect()
     }
 
-    pub fn distance(&self, other: &Self) -> f64 {
+    pub fn euclidean(&self, other: &Self) -> f64 {
         let sum_squares = (self.x - other.x).pow(2) + (self.y - other.y).pow(2);
         (sum_squares as f64).sqrt()
     }
 
-    pub fn manhattan_distance(&self, other: &Self) -> i32 {
+    pub fn manhattan(&self, other: &Self) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 

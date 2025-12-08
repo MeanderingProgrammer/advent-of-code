@@ -20,7 +20,7 @@ let rec points_between (expansions : int list) (v1 : int) (v2 : int) : int =
       result + points_between xs v1 v2
 
 let get_distance universe x y multiplier =
-  let initial_distance = Point.distance x y in
+  let initial_distance = Point.manhattan x y in
   let x_between = points_between universe.x_expansions x.x y.x in
   let y_between = points_between universe.y_expansions x.y y.y in
   initial_distance + ((x_between + y_between) * (multiplier - 1))

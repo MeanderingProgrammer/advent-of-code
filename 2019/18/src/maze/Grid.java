@@ -2,16 +2,16 @@ package maze;
 
 import java.util.*;
 
-import lib.Position;
+import lib.Point;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Grid {
 
-    Map<Position, Node> grid;
+    Map<Point, Node> grid;
     @Getter
-    List<Position> keys;
+    List<Point> keys;
 
     public Grid(List<String> maze) {
         this.grid = new HashMap<>();
@@ -21,11 +21,11 @@ public class Grid {
             for (int x = 0; x < row.length(); x++) {
                 char ch = row.charAt(x);
                 if (ch != '#') {
-                    var position = new Position(x, y);
+                    var point = new Point(x, y);
                     var node = new Node(ch);
-                    grid.put(position, node);
+                    grid.put(point, node);
                     if (node.isKey()) {
-                        this.keys.add(position);
+                        this.keys.add(point);
                     }
                 }
             }
@@ -33,7 +33,7 @@ public class Grid {
 
     }
 
-    public Position getStart() {
+    public Point getStart() {
         return grid.entrySet().stream()
                 .filter(entry -> entry.getValue().isStart())
                 .map(Map.Entry::getKey)
@@ -41,15 +41,15 @@ public class Grid {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void remove(Position position) {
-        this.grid.remove(position);
+    public void remove(Point point) {
+        this.grid.remove(point);
     }
 
-    public Node get(Position position) {
-        return grid.get(position);
+    public Node get(Point point) {
+        return grid.get(point);
     }
 
-    public boolean contains(Position position) {
-        return grid.containsKey(position);
+    public boolean contains(Point point) {
+        return grid.containsKey(point);
     }
 }

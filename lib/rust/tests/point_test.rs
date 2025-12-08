@@ -87,8 +87,8 @@ fn test_neighbors_3d() {
 
 #[test]
 fn test_distance() {
-    assert_eq!(5.0, Point::new(0, 0).distance(&Point::new(3, 4)));
-    assert_eq!(7, Point::new(0, 0).manhattan_distance(&Point::new(3, 4)));
+    assert_eq!(5.0, Point::new(0, 0).euclidean(&Point::new(3, 4)));
+    assert_eq!(7, Point::new(0, 0).manhattan(&Point::new(3, 4)));
     assert_eq!(9, Point::new(-2, 7).length());
 }
 

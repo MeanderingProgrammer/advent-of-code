@@ -32,5 +32,5 @@ def test_all_neighbors() -> None:
 
 
 def test_distance() -> None:
-    assert 7 == PointHelper.distance((0, 0), (3, 4))
+    assert 7 == PointHelper.manhattan((0, 0), (3, 4))
     assert 9 == PointHelper.len((-2, 7))

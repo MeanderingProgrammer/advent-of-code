@@ -58,7 +58,7 @@ impl FromStr for CoverageZone {
         let center: Point = center.parse().unwrap();
         let beacon: Point = beacon.parse().unwrap();
         let (x, y) = (center.x, center.y);
-        let radius = center.manhattan_distance(&beacon);
+        let radius = center.manhattan(&beacon);
 
         Ok(Self {
             lines: [
