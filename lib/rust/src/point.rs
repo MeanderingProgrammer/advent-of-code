@@ -186,12 +186,15 @@ impl Point {
     }
 
     pub fn euclidean(&self, other: &Self) -> f64 {
-        let sum_squares = (self.x - other.x).pow(2) + (self.y - other.y).pow(2);
-        (sum_squares as f64).sqrt()
+        let dx = (self.x - other.x) as f64;
+        let dy = (self.y - other.y) as f64;
+        (dx.powi(2) + dy.powi(2)).sqrt()
     }
 
     pub fn manhattan(&self, other: &Self) -> i32 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        dx.abs() + dy.abs()
     }
 
     pub fn length(&self) -> i32 {
@@ -290,6 +293,13 @@ impl Point3d {
             .iter()
             .map(|dir| self.add(dir))
             .collect()
+    }
+
+    pub fn euclidean(&self, other: &Self) -> f64 {
+        let dx = (self.x - other.x) as f64;
+        let dy = (self.y - other.y) as f64;
+        let dz = (self.z - other.z) as f64;
+        (dx.powi(2) + dy.powi(2) + dz.powi(2)).sqrt()
     }
 
     pub fn length(&self) -> i32 {
