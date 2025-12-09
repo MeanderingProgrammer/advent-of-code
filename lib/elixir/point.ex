@@ -4,6 +4,12 @@ defmodule Point do
 
   @type t :: %__MODULE__{x: integer(), y: integer()}
 
+  @spec parse(String.t()) :: t()
+  def parse(string) do
+    [x, y] = String.split(string, ",") |> Enum.map(&String.to_integer/1)
+    %Point{x: x, y: y}
+  end
+
   @spec neighbors(t()) :: [t()]
   def neighbors(%Point{x: x, y: y}) do
     [

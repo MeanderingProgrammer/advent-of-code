@@ -23,6 +23,7 @@ So far this has been:
 - 2022: [Rust](https://www.rust-lang.org/)
 - 2023: [OCaml](https://ocaml.org/)
 - 2024: [Zig](https://ziglang.org/)
+- 2025: [Elixir](https://elixir-lang.org/)
 
 Sometime after 2022 I decided to go back and optimize every solution with the goal
 of having no single solution take more than 1 second to run. Sometimes this involves
