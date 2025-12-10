@@ -10,7 +10,9 @@ class TypeScript:
     cmd: str = "bun"
 
     def build(self) -> list[list[str]]:
-        return [["bun", "install", "--save-text-lockfile"]]
+        return [
+            ["bun", "install", "--save-text-lockfile"],
+        ]
 
     def test(self) -> list[str]:
         # no unit tests

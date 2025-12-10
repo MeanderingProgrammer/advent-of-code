@@ -13,22 +13,19 @@ class Ocaml:
     def build(self) -> list[list[str]]:
         return [
             ["opam", "install", "--yes", "--deps-only", "."],
-            Ocaml.dune("build"),
+            ["dune", "build", "--profile", "release"],
         ]
 
     def test(self) -> list[str]:
-        return Ocaml.dune("test")
+        return ["dune", "test", "--profile", "release"]
 
     def run(self, day: Day, args: list[str]) -> list[str]:
-        return Ocaml.dune("exec", "--", Ocaml.binary(day)) + args
+        binary = Ocaml.binary(day)
+        return ["dune", "exec", "--profile", "release", "--", binary] + args
 
     def setup(self, day: Day) -> None:
         dune = day.file("dune")
         os.system(f"sed -i '' -e 's/EXEC/{Ocaml.binary(day)}/g' {dune}")
-
-    @staticmethod
-    def dune(command: str, *args: str) -> list[str]:
-        return ["dune", command, "--profile", "release"] + list(args)
 
     @staticmethod
     def binary(day: Day) -> str:

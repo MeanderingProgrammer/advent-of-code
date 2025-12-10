@@ -14,14 +14,17 @@ class Rust:
     cmd: str = "cargo"
 
     def build(self) -> list[list[str]]:
-        return [Rust.cargo("build", "--bins")]
+        return [
+            ["cargo", "build", "-rq", "--bins"],
+        ]
 
     def test(self) -> list[str]:
-        return Rust.cargo("test", "--test", "aoc")
+        return ["cargo", "test", "-rq", "--all-targets", "--", "--nocapture"]
 
     def run(self, day: Day, args: list[str]) -> list[str]:
+        binary = Rust.binary(day)
         args = [] if len(args) == 0 else ["--"] + args
-        return Rust.cargo("run", "--bin", Rust.binary(day)) + args
+        return ["cargo", "run", "-rq", "--bin", binary] + args
 
     def setup(self, day: Day) -> None:
         config = tomlkit.table()
@@ -39,10 +42,6 @@ class Rust:
         bins.append(config)
         cargo["bin"] = sorted(bins, key=lambda bin: bin["name"])
         path.write_text(cargo.as_string())
-
-    @staticmethod
-    def cargo(command: str, *args: str) -> list[str]:
-        return ["cargo", command, "-rq"] + list(args)
 
     @staticmethod
     def binary(day: Day) -> str:

@@ -13,7 +13,9 @@ class Python:
     cmd: str = "python"
 
     def build(self) -> list[list[str]]:
-        return [["pip", "install", "-q", "-e", Python.LIB]]
+        return [
+            ["pip", "install", "-q", "-e", Python.LIB],
+        ]
 
     def test(self) -> list[str]:
         return ["pytest", "-s", Python.LIB]
