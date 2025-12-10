@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from typing import Final
+from typing import ClassVar, Final
 
 from pojo.day import Day
 
 
 @dataclass(frozen=True)
 class Python:
-    LIB: Final[str] = "lib/python"
+    LIB: ClassVar[Final[str]] = "lib/python"
 
     name: str = "python"
     file: str = "solver.py"
