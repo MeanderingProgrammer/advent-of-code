@@ -98,14 +98,12 @@ def run(
 @click.option("-y", "--year", type=int)
 @click.option("-d", "--day", type=int)
 @click.option("-l", "--language", type=LanguageType(), default="elixir")
-@click.option("-p", "--puzzle", is_flag=True)
 @click.option("-i", "--info", is_flag=True)
 def generate(
     template: GenerateName | None,
     year: int | None,
     day: int | None,
     language: Language,
-    puzzle: bool,
     info: bool,
 ) -> None:
     """
@@ -124,7 +122,7 @@ def generate(
         days = DayFactory(years=[year], days=[day]).get_days()
 
     assert len(days) == 1, f"Can only generate one day at a time found: {len(days)}"
-    generator = Generator(day=days[0], language=language, puzzle=puzzle)
+    generator = Generator(day=days[0], language=language)
     run_command(generator, info)
 
 

@@ -185,7 +185,13 @@ language.
 
 Will do any other required setup, such as updating `Cargo.toml` for `rust`.
 
-Will pull down your puzzle input if [instructions](#install-aoc-cli) are followed.
+Will download puzzle input if session cookie is available in `.adventofcode.session`
+file. To get cookie using Google Chrome:
+
+- Right-click -> Inspect
+- Applications tab
+- Expand Cookies under the Storage section
+- Should be named `session`
 
 None of the parameters are required, the default behavior in this case is to generate
 the next day using the rust template.
@@ -203,7 +209,6 @@ a-gen \
   --year <year>? \
   --day <day>? \
   --language <language>? \
-  --puzzle? \
   --info?
 ```
 
@@ -213,27 +218,12 @@ a-gen \
 | year          | `-y` | Year to generate starting files for     | None    | `-y 2022`   |
 | day           | `-d` | Day to generate starting files for      | None    | `-d 5`      |
 | language      | `-l` | Language to generate starting files for | `rust`  | `-l python` |
-| puzzle        | `-p` | Download puzzle description as well     | `False` | `-p`        |
 | info          | `-i` | Outputs which day would get generated   | `False` | `-i`        |
 
 - If `template` is provided then `year` & `day` must not be provided
 - If `year` or `day` are provided then `template` must not be provided
 
 </details>
-
-## Install aoc-cli
-
-Template generation script can use `aoc-cli` to download input: [docs](https://github.com/scarvalhojr/aoc-cli).
-
-Follow the instructions in the `README` of `aoc-cli` to get your session cookie setup.
-
-This library relies on openssl which you will also need to install if you don't already
-have it.
-
-```bash
-cargo install aoc-cli
-touch .adventofcode.session
-```
 
 # Graph
 
