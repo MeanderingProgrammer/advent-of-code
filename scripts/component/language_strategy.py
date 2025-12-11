@@ -30,8 +30,8 @@ class LanguageStrategy:
                 go=2,
                 zig=3,
                 ocaml=4,
-                elixir=5,
-                python=6,
+                python=5,
+                elixir=6,
                 ts=7,
                 java=8,
             )
