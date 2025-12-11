@@ -1,12 +1,4 @@
 defmodule Answer do
-  @spec timer((-> :ok)) :: :ok
-  def timer(f) do
-    start_time = System.monotonic_time(:nanosecond)
-    f.()
-    end_time = System.monotonic_time(:nanosecond)
-    IO.puts("Runtime (ns): #{end_time - start_time}")
-  end
-
   @spec part1(t, t) :: :ok when t: any()
   def part1(expected, actual), do: part(1, expected, actual)
 

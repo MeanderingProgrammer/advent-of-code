@@ -37,12 +37,8 @@ defmodule UnionFind do
   end
 end
 
-defmodule Solver do
+defmodule Solver.Y2025.D08 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     points = Reader.lines() |> Enum.map(&Point3d.parse/1)
 
     n = length(points)
@@ -80,5 +76,3 @@ defmodule Solver do
     Answer.part2(8_465_902_405, Enum.product(xs))
   end
 end
-
-Solver.main()

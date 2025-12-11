@@ -43,12 +43,8 @@ defmodule Problems do
   end
 end
 
-defmodule Solver do
+defmodule Solver.Y2025.D06 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     problems = Reader.lines() |> Problems.parse()
 
     Answer.part1(
@@ -71,5 +67,3 @@ defmodule Solver do
     )
   end
 end
-
-Solver.main()

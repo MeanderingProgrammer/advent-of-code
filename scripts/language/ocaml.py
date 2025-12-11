@@ -24,8 +24,9 @@ class Ocaml:
         return ["dune", "exec", "--profile", "release", "--", binary] + args
 
     def setup(self, day: Day) -> None:
+        binary = Ocaml.binary(day)
         dune = day.file("dune")
-        os.system(f"sed -i '' -e 's/EXEC/{Ocaml.binary(day)}/g' {dune}")
+        os.system(f"sed -i '' -e 's/EXEC/{binary}/g' {dune}")
 
     @staticmethod
     def binary(day: Day) -> str:

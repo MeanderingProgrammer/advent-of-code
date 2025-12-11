@@ -62,12 +62,8 @@ defmodule Machine do
   end
 end
 
-defmodule Solver do
+defmodule Solver.Y2025.D10 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     machines = Reader.lines() |> Enum.map(&Machine.parse/1)
     Answer.part1(522, Enum.sum_by(machines, &Machine.start/1))
     # part 2 too slow with search, need some linear solver
@@ -75,5 +71,3 @@ defmodule Solver do
     Answer.part2("DNF", "DNF")
   end
 end
-
-Solver.main()

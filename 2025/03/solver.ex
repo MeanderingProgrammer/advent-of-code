@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2025.D03 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     lines = Reader.lines()
     Answer.part1(17324, total(lines, 2))
     Answer.part2(171_846_613_143_331, total(lines, 12))
@@ -37,5 +33,3 @@ defmodule Solver do
     |> Enum.max_by(&elem(&1, 0))
   end
 end
-
-Solver.main()

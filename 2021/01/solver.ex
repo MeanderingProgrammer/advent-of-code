@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2021.D01 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     values = Reader.lines() |> Enum.map(&String.to_integer/1)
     Answer.part1(1292, increases(values, 1))
     Answer.part2(1262, increases(values, 3))
@@ -18,5 +14,3 @@ defmodule Solver do
     |> Enum.count(fn [a, b] -> b > a end)
   end
 end
-
-Solver.main()

@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2025.D07 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     grid = Reader.lines() |> Grid.parse(["."])
 
     [%Point{x: x, y: y0}] = Grid.values(grid, "S")
@@ -34,5 +30,3 @@ defmodule Solver do
     Answer.part2(16_937_871_060_075, Enum.sum(Map.values(timelines)))
   end
 end
-
-Solver.main()

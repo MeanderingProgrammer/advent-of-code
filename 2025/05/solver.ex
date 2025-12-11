@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2025.D05 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     [intervals, ingredients] = Reader.groups()
     intervals = Enum.map(intervals, &Interval.parse/1) |> Interval.join()
     ingredients = Enum.map(ingredients, &String.to_integer/1)
@@ -16,5 +12,3 @@ defmodule Solver do
     Enum.any?(intervals, &Interval.in?(&1, value))
   end
 end
-
-Solver.main()

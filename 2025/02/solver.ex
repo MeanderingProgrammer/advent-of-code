@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2025.D02 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     values = Reader.text() |> String.split(",") |> Enum.map(&Interval.parse/1)
     tasks = Task.async_stream(values, &longest_prefixes/1, ordered: false)
 
@@ -49,5 +45,3 @@ defmodule Solver do
     end
   end
 end
-
-Solver.main()

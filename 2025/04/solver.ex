@@ -1,9 +1,5 @@
-defmodule Solver do
+defmodule Solver.Y2025.D04 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     grid = Reader.lines() |> Grid.parse(["."])
     removed = cleanup(grid)
     Answer.part1(1464, Enum.at(removed, 0))
@@ -29,5 +25,3 @@ defmodule Solver do
     Enum.count(neighbors, &Map.has_key?(grid, &1)) < 4
   end
 end
-
-Solver.main()

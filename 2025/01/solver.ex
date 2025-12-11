@@ -27,12 +27,8 @@ defmodule Dial do
   end
 end
 
-defmodule Solver do
+defmodule Solver.Y2025.D01 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     lines = Reader.lines()
 
     {_, zeros, clicks} =
@@ -48,5 +44,3 @@ defmodule Solver do
     Answer.part2(6554, clicks)
   end
 end
-
-Solver.main()

@@ -13,7 +13,7 @@ defmodule AdventOfCode.MixProject do
   end
 
   defp elixirc_paths do
-    ["lib/elixir"]
+    ["lib/elixir"] ++ Path.wildcard("20??/??")
   end
 
   def application do

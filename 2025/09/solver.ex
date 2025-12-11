@@ -53,12 +53,8 @@ defmodule Polygon do
   end
 end
 
-defmodule Solver do
+defmodule Solver.Y2025.D09 do
   def main() do
-    Answer.timer(&solution/0)
-  end
-
-  def solution() do
     points = Reader.lines() |> Enum.map(&Point.parse/1)
     polygon = Polygon.new(points)
     Answer.part1(4_759_420_470, max_area(points, polygon, false))
@@ -78,5 +74,3 @@ defmodule Solver do
     |> Enum.max()
   end
 end
-
-Solver.main()
