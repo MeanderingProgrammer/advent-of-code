@@ -8,31 +8,32 @@ from pojo.day import Day
 
 
 class RunName(StrEnum):
-    LATEST = auto()
-    PREVIOUS = auto()
     ALL = auto()
+    CHANGED = auto()
     DAYS = auto()
     LANGUAGES = auto()
+    LATEST = auto()
+    PREVIOUS = auto()
     SLOW = auto()
-    CHANGED = auto()
 
 
 class RunTemplate:
     def get(self, name: RunName) -> list[Day]:
-        if name == RunName.LATEST:
-            return [DayFactory().get_latest()]
-        elif name == RunName.PREVIOUS:
-            latest_day = DayFactory().get_latest()
-            return [latest_day.add(-1)]
-        elif name == RunName.ALL or name == RunName.DAYS:
-            return DayFactory().get_days()
-        elif name == RunName.LANGUAGES:
-            # Single day implemented in all languages
-            return [Day("2021", "01")]
-        elif name == RunName.SLOW:
-            return RunTemplate.slow()
-        elif name == RunName.CHANGED:
-            return RunTemplate.changed()
+        match name:
+            case RunName.ALL | RunName.DAYS:
+                return DayFactory().get_days()
+            case RunName.LANGUAGES:
+                # single day implemented in all languages
+                return [Day("2021", "01")]
+            case RunName.LATEST:
+                return [DayFactory().get_latest()]
+            case RunName.PREVIOUS:
+                latest = DayFactory().get_latest()
+                return [latest.add(-1)]
+            case RunName.SLOW:
+                return RunTemplate.slow()
+            case RunName.CHANGED:
+                return RunTemplate.changed()
 
     @staticmethod
     def slow() -> list[Day]:

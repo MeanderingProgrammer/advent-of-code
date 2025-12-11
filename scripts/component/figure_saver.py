@@ -33,9 +33,9 @@ class FigureSaver:
     def save(self, props: FigureProps) -> None:
         """
         archive: existing figure -> archive directory
-                 new figure -> root directory
+                 new figure      -> root directory
         else   : existing figure -> stay in root directory
-                 new figure -> archive directory
+                 new figure      -> archive directory
         """
 
         root_dir = Path("images")
@@ -58,12 +58,11 @@ class FigureSaver:
         print(f"Saving {props.name} to {path}")
         assert not path.exists()
 
-        if props.kind == FigureKind.MATPLOTLIB:
-            self.save_matplotlib(props.figure, props.legend, path)
-        elif props.kind == FigureKind.PLOTLY:
-            self.save_plotly(props.figure, path)
-        else:
-            raise Exception(f"Unhandled figure kind: {props.kind}")
+        match props.kind:
+            case FigureKind.MATPLOTLIB:
+                self.save_matplotlib(props.figure, props.legend, path)
+            case FigureKind.PLOTLY:
+                self.save_plotly(props.figure, path)
 
     def save_matplotlib(
         self, fig: Any, legend: dict[str, Any] | None, path: Path

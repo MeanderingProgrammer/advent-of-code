@@ -11,8 +11,9 @@ class GenerateName(StrEnum):
 
 class GenerateTemplate:
     def get(self, name: GenerateName) -> Day:
-        if name == GenerateName.NEXT:
-            latest_day = DayFactory().get_latest()
-            return latest_day.add(1)
-        elif name == GenerateName.CURRENT:
-            return DayFactory().get_latest()
+        match name:
+            case GenerateName.NEXT:
+                latest = DayFactory().get_latest()
+                return latest.add(1)
+            case GenerateName.CURRENT:
+                return DayFactory().get_latest()

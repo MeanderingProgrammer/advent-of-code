@@ -20,9 +20,9 @@ DIRECTIONS: list[Point] = [
 
 
 class Seat(StrEnum):
-    OCCUPIED = "#"
     EMPTY = "L"
     FLOOR = "."
+    OCCUPIED = "#"
 
 
 @dataclass(frozen=True)
@@ -37,19 +37,20 @@ class SeatingChart:
         return type(self)(chart=next_chart, look=self.look)
 
     def next_seat(self, p: Point, seat: Seat) -> Seat:
-        if seat == Seat.FLOOR:
-            return seat
-        elif seat == Seat.EMPTY:
-            if self.adjacent_occupied(p) == 0:
-                return Seat.OCCUPIED
-            else:
+        match seat:
+            case Seat.FLOOR:
                 return seat
-        elif seat == Seat.OCCUPIED:
-            to_empty = 5 if self.look else 4
-            if self.adjacent_occupied(p) >= to_empty:
-                return Seat.EMPTY
-            else:
-                return seat
+            case Seat.EMPTY:
+                if self.adjacent_occupied(p) == 0:
+                    return Seat.OCCUPIED
+                else:
+                    return seat
+            case Seat.OCCUPIED:
+                to_empty = 5 if self.look else 4
+                if self.adjacent_occupied(p) >= to_empty:
+                    return Seat.EMPTY
+                else:
+                    return seat
 
     def adjacent_occupied(self, p: Point) -> int:
         result = 0
