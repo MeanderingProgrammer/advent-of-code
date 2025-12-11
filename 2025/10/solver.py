@@ -44,25 +44,25 @@ class Machine:
         return result
 
     def configure(self) -> int:
-        import z3
+        from scipy.optimize import LinearConstraint, milp
 
-        opt = z3.Optimize()
-        xs = [z3.Int(f"x{i}") for i in range(len(self.buttons))]
+        a: list[list[int]] = []
+        for i in range(len(self.joltage)):
+            row: list[int] = []
+            for button in self.buttons:
+                row.append(1 if i in button else 0)
+            a.append(row)
+        b = self.joltage
+        c = [1] * len(self.buttons)
 
-        for x in xs:
-            opt.add(x >= 0)
+        result = milp(
+            c=c,
+            constraints=LinearConstraint(a, b, b),
+            integrality=[1] * len(self.buttons),
+        )
 
-        for i, target in enumerate(self.joltage):
-            buttons: list[int] = []
-            for j, button in enumerate(self.buttons):
-                if i in button:
-                    buttons.append(j)
-            opt.add(z3.Sum([xs[j] for j in buttons]) == target)
-
-        opt.minimize(z3.Sum(xs))
-        assert opt.check() == z3.sat
-        model = opt.model()
-        presses = [model[x].as_long() for x in xs]
+        assert result.success
+        presses = [int(round(x)) for x in result.x]
         return sum(presses)
 
     @staticmethod

@@ -70,8 +70,8 @@ defmodule Solver do
   def solution() do
     machines = Reader.lines() |> Enum.map(&Machine.parse/1)
     Answer.part1(522, Enum.sum_by(machines, &Machine.start/1))
-    # Enum.sum_by(machines, &Machine.configure/1)
     # part 2 too slow with search, need some linear solver
+    # Answer.part2(18105, Enum.sum_by(machines, &Machine.configure/1))
     Answer.part2("DNF", "DNF")
   end
 end

@@ -22,9 +22,6 @@ defmodule Search do
           state === search.target ->
             n
 
-          MapSet.member?(search.seen, state) ->
-            run(search, queue)
-
           true ->
             seen = MapSet.put(search.seen, state)
 
@@ -32,6 +29,11 @@ defmodule Search do
               search.neighbors.(state)
               |> Enum.filter(fn state -> not MapSet.member?(seen, state) end)
               |> Enum.map(&{&1, n + 1})
+
+            seen =
+              Enum.reduce(next, seen, fn {state, _}, acc ->
+                MapSet.put(acc, state)
+              end)
 
             run(%{search | seen: seen}, queue ++ next)
         end
