@@ -26,7 +26,7 @@ impl Distance {
         self.distances().sum()
     }
 
-    fn distances(&self) -> impl Iterator<Item = i32> + '_ {
+    fn distances(&self) -> impl Iterator<Item = i32> {
         self.to.iter().copied()
     }
 }

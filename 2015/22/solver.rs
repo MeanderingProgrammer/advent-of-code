@@ -173,7 +173,7 @@ struct Game {
 }
 
 impl Game {
-    fn neighbors(&self) -> impl Iterator<Item = (Self, u16)> + '_ {
+    fn neighbors(&self) -> impl Iterator<Item = (Self, u16)> {
         Spell::values()
             .iter()
             .filter(|spell| self.can_perform(spell))

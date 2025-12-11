@@ -24,7 +24,7 @@ impl BitSet {
         (self.values >> value) & 1 == 1
     }
 
-    pub fn values(&self) -> impl Iterator<Item = u8> + '_ {
+    pub fn values(&self) -> impl Iterator<Item = u8> {
         (0..64).filter(|&i| self.contains(i))
     }
 }

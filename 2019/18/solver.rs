@@ -158,38 +158,35 @@ fn solve(grid: Grid<Element>) -> u16 {
 }
 
 fn get_paths(grid: &Grid<Element>, start: &Point, ids: &mut Ids<Point>) -> Vec<Path> {
-    let mut queue = VecDeque::default();
-    queue.push_back(((start.clone(), BitSet::default()), 0));
-    let mut seen = HashSet::default();
     let mut result = Vec::default();
-    while !queue.is_empty() {
-        let ((point, need), distance) = queue.pop_front().unwrap();
-
+    let mut queue = VecDeque::from([((start.clone(), BitSet::default()), 0)]);
+    let mut seen = HashSet::default();
+    while let Some(((point, need), distance)) = queue.pop_front() {
         if seen.contains(&point) {
             continue;
         }
         seen.insert(point.clone());
 
-        if &point != start {
-            if let Element::Key(key) = grid[&point] {
-                result.push(Path {
-                    point: ids.set(&point) as u8,
-                    key,
-                    need: need.clone(),
-                    distance,
-                });
-            }
+        if let Element::Key(key) = grid[&point]
+            && &point != start
+        {
+            result.push(Path {
+                point: ids.set(&point) as u8,
+                key,
+                need: need.clone(),
+                distance,
+            });
         }
 
-        for adjacent in point.neighbors() {
-            if !seen.contains(&adjacent) {
-                let next = match grid.get(&adjacent) {
+        for neighbor in point.neighbors() {
+            if !seen.contains(&neighbor) {
+                let next = match grid.get(&neighbor) {
                     Some(Element::Door(key)) => Some(need.extend([*key])),
                     Some(_) => Some(need.clone()),
                     None => None,
                 };
                 if let Some(next) = next {
-                    queue.push_back(((adjacent, next), distance + 1));
+                    queue.push_back(((neighbor, next), distance + 1));
                 }
             }
         }

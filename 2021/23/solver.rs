@@ -114,7 +114,7 @@ impl Burrow {
         self.pods.iter().all(|(id, pod)| pod.correct(*id))
     }
 
-    fn neighbors(&self) -> impl Iterator<Item = (Self, u32)> + '_ {
+    fn neighbors(&self) -> impl Iterator<Item = (Self, u32)> {
         let mut room: Vec<(u8, u8)> = Vec::default();
         let mut hall: Vec<(u8, u8)> = Vec::default();
         self.pods

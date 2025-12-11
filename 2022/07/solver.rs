@@ -59,7 +59,7 @@ impl FileSystem {
         id
     }
 
-    fn directories(&self) -> impl Iterator<Item = usize> + '_ {
+    fn directories(&self) -> impl Iterator<Item = usize> {
         self.tree
             .values()
             .filter(|node| node.directory())
