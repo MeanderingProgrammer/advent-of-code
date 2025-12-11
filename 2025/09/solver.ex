@@ -4,8 +4,8 @@ defmodule Rectangle do
 
   @type t :: %__MODULE__{x: Interval.t(), y: Interval.t()}
 
-  @spec new(Point.t(), Point.t()) :: t()
-  def new(a, b) do
+  @spec new({Point.t(), Point.t()}) :: t()
+  def new({a, b}) do
     %Rectangle{
       x: {min(a.x, b.x), max(a.x, b.x)},
       y: {min(a.y, b.y), max(a.y, b.y)}
@@ -21,12 +21,8 @@ defmodule Rectangle do
   def inner(%Rectangle{x: {xs, xe}, y: {ys, ye}}) do
     x = {xs + 1, xe - 1}
     y = {ys + 1, ye - 1}
-
-    if elem(x, 0) <= elem(x, 1) && elem(y, 0) <= elem(y, 1) do
-      %Rectangle{x: x, y: y}
-    else
-      nil
-    end
+    valid = Interval.valid?(x) && Interval.valid?(y)
+    if valid, do: %Rectangle{x: x, y: y}, else: nil
   end
 
   @spec overlaps?(t(), t()) :: boolean()
@@ -44,7 +40,7 @@ defmodule Polygon do
     |> Enum.with_index()
     |> Enum.map(fn {a, i} ->
       j = if i == 0, do: length(points) - 1, else: i - 1
-      Rectangle.new(a, Enum.at(points, j))
+      Rectangle.new({a, Enum.at(points, j)})
     end)
   end
 
@@ -71,19 +67,13 @@ defmodule Solver do
 
   @spec max_area([Point.t()], Polygon.t(), boolean()) :: integer()
   def max_area(points, polygon, check) do
-    len = length(points)
+    n = length(points)
 
-    0..(len - 2)
-    |> Enum.flat_map(fn i ->
-      Enum.map((i + 1)..(len - 1), &{i, &1})
-    end)
-    |> Enum.map(fn {a, b} ->
-      {a, b} = {Enum.at(points, a), Enum.at(points, b)}
-      Rectangle.new(a, b)
-    end)
-    |> Enum.filter(fn rectangle ->
-      !check || Polygon.contains?(polygon, rectangle)
-    end)
+    0..(n - 2)
+    |> Enum.flat_map(fn i -> Enum.map((i + 1)..(n - 1), &{i, &1}) end)
+    |> Enum.map(fn {a, b} -> {Enum.at(points, a), Enum.at(points, b)} end)
+    |> Enum.map(&Rectangle.new/1)
+    |> Enum.filter(&(!check || Polygon.contains?(polygon, &1)))
     |> Enum.map(&Rectangle.area/1)
     |> Enum.max()
   end

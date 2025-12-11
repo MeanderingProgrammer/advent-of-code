@@ -38,10 +38,10 @@ defmodule Solver do
     {_, zeros, clicks} =
       Enum.reduce(lines, {%Dial{}, 0, 0}, fn line, {dial, zeros, clicks} ->
         right = String.starts_with?(line, "R")
-        amount = line |> String.slice(1..-1//1) |> String.to_integer()
-        {new_dial, new_clicks} = Dial.move(dial, right, amount)
-        new_zeros = if new_dial.value == 0, do: 1, else: 0
-        {new_dial, zeros + new_zeros, clicks + new_clicks}
+        amount = String.to_integer(String.slice(line, 1..-1//1))
+        {dial, more_clicks} = Dial.move(dial, right, amount)
+        more_zeros = if dial.value == 0, do: 1, else: 0
+        {dial, zeros + more_zeros, clicks + more_clicks}
       end)
 
     Answer.part1(1120, zeros)

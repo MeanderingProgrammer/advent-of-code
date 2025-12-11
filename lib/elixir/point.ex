@@ -4,30 +4,29 @@ defmodule Point do
 
   @type t :: %__MODULE__{x: integer(), y: integer()}
 
+  @cardinals [{1, 0}, {-1, 0}, {0, 1}, {0, -1}]
+  @diagonals [{1, 1}, {1, -1}, {-1, 1}, {-1, -1}]
+
   @spec parse(String.t()) :: t()
-  def parse(string) do
-    [x, y] = String.split(string, ",") |> Enum.map(&String.to_integer/1)
-    %Point{x: x, y: y}
+  def parse(s) do
+    String.split(s, ",")
+    |> Enum.map(&String.to_integer/1)
+    |> then(fn [x, y] -> %Point{x: x, y: y} end)
+  end
+
+  @spec add(t(), {integer(), integer()}) :: t()
+  def add(%Point{x: x, y: y}, {dx, dy}) do
+    %Point{x: x + dx, y: y + dy}
   end
 
   @spec neighbors(t()) :: [t()]
-  def neighbors(%Point{x: x, y: y}) do
-    [
-      %Point{x: x + 1, y: y},
-      %Point{x: x - 1, y: y},
-      %Point{x: x, y: y + 1},
-      %Point{x: x, y: y - 1}
-    ]
+  def neighbors(p) do
+    Enum.map(@cardinals, &add(p, &1))
   end
 
   @spec all_neighbors(t()) :: [t()]
-  def all_neighbors(%Point{x: x, y: y}) do
-    [
-      %Point{x: x + 1, y: y + 1},
-      %Point{x: x + 1, y: y - 1},
-      %Point{x: x - 1, y: y + 1},
-      %Point{x: x - 1, y: y - 1}
-    ] ++ neighbors(%Point{x: x, y: y})
+  def all_neighbors(p) do
+    Enum.map(@diagonals, &add(p, &1)) ++ neighbors(p)
   end
 end
 
@@ -38,9 +37,10 @@ defmodule Point3d do
   @type t :: %__MODULE__{x: integer(), y: integer(), z: integer()}
 
   @spec parse(String.t()) :: t()
-  def parse(string) do
-    [x, y, z] = String.split(string, ",") |> Enum.map(&String.to_integer/1)
-    %Point3d{x: x, y: y, z: z}
+  def parse(s) do
+    String.split(s, ",")
+    |> Enum.map(&String.to_integer/1)
+    |> then(fn [x, y, z] -> %Point3d{x: x, y: y, z: z} end)
   end
 
   @spec euclidean(t(), t()) :: float()

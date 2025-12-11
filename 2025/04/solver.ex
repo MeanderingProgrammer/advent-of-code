@@ -25,8 +25,8 @@ defmodule Solver do
 
   @spec accessible?(Grid.t(), Point.t()) :: boolean()
   def accessible?(grid, point) do
-    Point.all_neighbors(point)
-    |> Enum.count(&Map.has_key?(grid, &1)) < 4
+    neighbors = Point.all_neighbors(point)
+    Enum.count(neighbors, &Map.has_key?(grid, &1)) < 4
   end
 end
 

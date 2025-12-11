@@ -6,18 +6,25 @@ defmodule Search do
 
   @spec new(v, (v -> [v])) :: t(v) when v: any()
   def new(target, neighbors) do
-    %Search{target: target, neighbors: neighbors, seen: MapSet.new()}
+    %Search{
+      target: target,
+      neighbors: neighbors,
+      seen: MapSet.new()
+    }
   end
 
-  @spec bfs(t(v), v) :: integer() when v: any()
+  @spec bfs(t(v), v) :: integer() | nil when v: any()
   def bfs(search, start) do
-    run(search, [{start, 0}])
+    run(search, [{0, start}])
   end
 
-  @spec run(t(v), [{v, integer()}]) :: integer() when v: any()
+  @spec run(t(v), [{integer(), v}]) :: integer() | nil when v: any()
   defp run(search, queue) do
     case queue do
-      [{state, n} | queue] ->
+      [] ->
+        nil
+
+      [{n, state} | queue] ->
         cond do
           state === search.target ->
             n
@@ -28,18 +35,15 @@ defmodule Search do
             next =
               search.neighbors.(state)
               |> Enum.filter(fn state -> not MapSet.member?(seen, state) end)
-              |> Enum.map(&{&1, n + 1})
+              |> Enum.map(&{n + 1, &1})
 
             seen =
-              Enum.reduce(next, seen, fn {state, _}, acc ->
+              Enum.reduce(next, seen, fn {_, state}, acc ->
                 MapSet.put(acc, state)
               end)
 
             run(%{search | seen: seen}, queue ++ next)
         end
-
-      _ ->
-        -1
     end
   end
 end

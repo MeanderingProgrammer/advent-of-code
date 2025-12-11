@@ -4,9 +4,9 @@ defmodule Machine do
   @type csv :: [integer()]
 
   @spec parse(String.t()) :: t()
-  def parse(string) do
+  def parse(s) do
     # "[.#] (1) (1,2) (2) {1,2}"
-    parts = String.split(string, " ")
+    parts = String.split(s, " ")
     {diagram, parts} = List.pop_at(parts, 0)
     {joltage, buttons} = List.pop_at(parts, length(parts) - 1)
 
@@ -26,15 +26,15 @@ defmodule Machine do
   end
 
   @spec csv(String.t()) :: csv()
-  defp csv(string) do
+  defp csv(s) do
     # "(1,2)" | [1, 2]
     # "{1,2}" | [1, 2]
-    String.slice(string, 1..-2//1)
+    String.slice(s, 1..-2//1)
     |> String.split(",")
     |> Enum.map(&String.to_integer/1)
   end
 
-  @spec start(t()) :: integer()
+  @spec start(t()) :: integer() | nil
   def start({diagram, _, buttons}) do
     Search.new(diagram, fn state ->
       Enum.map(buttons, fn button ->
@@ -46,7 +46,7 @@ defmodule Machine do
     |> Search.bfs(List.duplicate(false, length(diagram)))
   end
 
-  @spec configure(t()) :: integer()
+  @spec configure(t()) :: integer() | nil
   def configure({_, joltage, buttons}) do
     Search.new(joltage, fn state ->
       Enum.map(buttons, fn button ->

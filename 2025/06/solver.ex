@@ -65,7 +65,7 @@ defmodule Solver do
         |> Enum.map(&String.graphemes/1)
         |> Enum.zip()
         |> Enum.map(&(&1 |> Tuple.to_list() |> Enum.join() |> String.trim()))
-        |> Enum.filter(&(String.length(&1) > 0))
+        |> Enum.filter(&(&1 != ""))
         |> Enum.map(&String.to_integer/1)
       end)
     )

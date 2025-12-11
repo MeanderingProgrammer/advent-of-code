@@ -6,17 +6,17 @@ defmodule Solver do
   def solution() do
     grid = Reader.lines() |> Grid.parse(["."])
 
-    %Point{x: x, y: y0} = Grid.values(grid, "S") |> List.first()
+    [%Point{x: x, y: y0}] = Grid.values(grid, "S")
     {_, {_, y1}} = Grid.bounds(grid)
 
     {splits, timelines} =
       Enum.map_reduce((y0 + 1)..y1, %{x => 1}, fn y, acc ->
         branches =
-          Enum.flat_map(acc, fn {x, n} ->
+          Enum.flat_map(acc, fn {x, n} = timeline ->
             if Map.has_key?(grid, %Point{x: x, y: y}) do
               [{x - 1, n}, {x + 1, n}]
             else
-              [{x, n}]
+              [timeline]
             end
           end)
 
