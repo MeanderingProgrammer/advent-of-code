@@ -55,10 +55,10 @@ end
 
 defmodule Solver.Y2025.D09 do
   def main() do
-    points = Reader.lines() |> Enum.map(&Point.parse/1)
+    points = Reader.lines!() |> Enum.map(&Point.parse/1)
     polygon = Polygon.new(points)
-    Answer.part1(4_759_420_470, max_area(points, polygon, false))
-    Answer.part2(1_603_439_684, max_area(points, polygon, true))
+    Answer.part1!(4_759_420_470, max_area(points, polygon, false))
+    Answer.part2!(1_603_439_684, max_area(points, polygon, true))
   end
 
   @spec max_area([Point.t()], Polygon.t(), boolean()) :: integer()

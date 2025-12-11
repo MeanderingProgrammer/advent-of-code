@@ -1,6 +1,7 @@
 defmodule Mix.Tasks.Solve do
   use Mix.Task
 
+  @impl Mix.Task
   def run([year, day | args]) do
     # additional args are passed through
     System.argv(args)

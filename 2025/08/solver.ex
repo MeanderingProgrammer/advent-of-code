@@ -39,7 +39,7 @@ end
 
 defmodule Solver.Y2025.D08 do
   def main() do
-    points = Reader.lines() |> Enum.map(&Point3d.parse/1)
+    points = Reader.lines!() |> Enum.map(&Point3d.parse/1)
 
     n = length(points)
     circuit = UnionFind.new(n)
@@ -72,7 +72,7 @@ defmodule Solver.Y2025.D08 do
     ranks = nth |> Enum.sort() |> Enum.reverse()
     xs = last |> Tuple.to_list() |> Enum.map(&Enum.at(points, &1).x)
 
-    Answer.part1(181_584, Enum.product(Enum.take(ranks, 3)))
-    Answer.part2(8_465_902_405, Enum.product(xs))
+    Answer.part1!(181_584, Enum.product(Enum.take(ranks, 3)))
+    Answer.part2!(8_465_902_405, Enum.product(xs))
   end
 end

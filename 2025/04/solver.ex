@@ -1,9 +1,9 @@
 defmodule Solver.Y2025.D04 do
   def main() do
-    grid = Reader.lines() |> Grid.parse(["."])
+    grid = Reader.lines!() |> Grid.parse(["."])
     removed = cleanup(grid)
-    Answer.part1(1464, Enum.at(removed, 0))
-    Answer.part2(8409, Enum.sum(removed))
+    Answer.part1!(1464, Enum.at(removed, 0))
+    Answer.part2!(8409, Enum.sum(removed))
   end
 
   @spec cleanup(Grid.t()) :: [integer()]

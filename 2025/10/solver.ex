@@ -64,10 +64,10 @@ end
 
 defmodule Solver.Y2025.D10 do
   def main() do
-    machines = Reader.lines() |> Enum.map(&Machine.parse/1)
-    Answer.part1(522, Enum.sum_by(machines, &Machine.start/1))
+    machines = Reader.lines!() |> Enum.map(&Machine.parse/1)
+    Answer.part1!(522, Enum.sum_by(machines, &Machine.start/1))
     # part 2 too slow with search, need some linear solver
-    # Answer.part2(18105, Enum.sum_by(machines, &Machine.configure/1))
-    Answer.part2("DNF", "DNF")
+    # Answer.part2!(18105, Enum.sum_by(machines, &Machine.configure/1))
+    Answer.part2!("DNF", "DNF")
   end
 end

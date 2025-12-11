@@ -29,7 +29,7 @@ end
 
 defmodule Solver.Y2025.D01 do
   def main() do
-    lines = Reader.lines()
+    lines = Reader.lines!()
 
     {_, zeros, clicks} =
       Enum.reduce(lines, {%Dial{}, 0, 0}, fn line, {dial, zeros, clicks} ->
@@ -40,7 +40,7 @@ defmodule Solver.Y2025.D01 do
         {dial, zeros + more_zeros, clicks + more_clicks}
       end)
 
-    Answer.part1(1120, zeros)
-    Answer.part2(6554, clicks)
+    Answer.part1!(1120, zeros)
+    Answer.part2!(6554, clicks)
   end
 end

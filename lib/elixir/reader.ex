@@ -1,18 +1,17 @@
 defmodule Reader do
-  @spec text() :: String.t()
-  def text() do
+  @spec text!() :: String.t()
+  def text!() do
     get_filepath() |> File.read!() |> String.trim("\n")
   end
 
-  @spec lines() :: [String.t()]
-  def lines() do
-    text() |> String.split("\n")
-  end
+  @spec split!(String.t()) :: [String.t()]
+  def split!(s), do: String.split(text!(), s)
 
-  @spec groups() :: [[String.t()]]
-  def groups() do
-    text() |> String.split("\n\n") |> Enum.map(&String.split(&1, "\n"))
-  end
+  @spec lines!() :: [String.t()]
+  def lines!(), do: split!("\n")
+
+  @spec groups!() :: [[String.t()]]
+  def groups!(), do: Enum.map(split!("\n\n"), &String.split(&1, "\n"))
 
   @spec get_filepath() :: Path.t()
   defp get_filepath() do

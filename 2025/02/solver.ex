@@ -1,6 +1,6 @@
 defmodule Solver.Y2025.D02 do
   def main() do
-    values = Reader.text() |> String.split(",") |> Enum.map(&Interval.parse/1)
+    values = Reader.split!(",") |> Enum.map(&Interval.parse/1)
     tasks = Task.async_stream(values, &longest_prefixes/1, ordered: false)
 
     {part1, part2} =
@@ -8,8 +8,8 @@ defmodule Solver.Y2025.D02 do
         {a1 + p1, a2 + p2}
       end)
 
-    Answer.part1(23_701_357_374, part1)
-    Answer.part2(34_284_458_938, part2)
+    Answer.part1!(23_701_357_374, part1)
+    Answer.part2!(34_284_458_938, part2)
   end
 
   @spec longest_prefixes(Interval.t()) :: {integer(), integer()}

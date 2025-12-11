@@ -1,8 +1,8 @@
 defmodule Solver.Y2025.D03 do
   def main() do
-    lines = Reader.lines()
-    Answer.part1(17324, total(lines, 2))
-    Answer.part2(171_846_613_143_331, total(lines, 12))
+    lines = Reader.lines!()
+    Answer.part1!(17324, total(lines, 2))
+    Answer.part2!(171_846_613_143_331, total(lines, 12))
   end
 
   @spec total([String.t()], pos_integer()) :: integer()

@@ -1,6 +1,6 @@
 defmodule Solver.Y2025.D07 do
   def main() do
-    grid = Reader.lines() |> Grid.parse(["."])
+    grid = Reader.lines!() |> Grid.parse(["."])
 
     [%Point{x: x, y: y0}] = Grid.values(grid, "S")
     {_, {_, y1}} = Grid.bounds(grid)
@@ -26,7 +26,7 @@ defmodule Solver.Y2025.D07 do
         {splits, timelines}
       end)
 
-    Answer.part1(1649, Enum.sum(splits))
-    Answer.part2(16_937_871_060_075, Enum.sum(Map.values(timelines)))
+    Answer.part1!(1649, Enum.sum(splits))
+    Answer.part2!(16_937_871_060_075, Enum.sum(Map.values(timelines)))
   end
 end

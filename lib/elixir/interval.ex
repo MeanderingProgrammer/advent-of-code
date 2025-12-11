@@ -18,9 +18,7 @@ defmodule Interval do
   def in?({s, e}, v), do: v >= s && v <= e
 
   @spec overlaps?(t(), t()) :: boolean()
-  def overlaps?({s1, e1}, {s2, e2}) do
-    max(s1, s2) <= min(e1, e2)
-  end
+  def overlaps?({s1, e1}, {s2, e2}), do: max(s1, s2) <= min(e1, e2)
 
   @spec merge(t(), t()) :: t() | nil
   def merge({s1, e1} = a, {s2, e2} = b) do

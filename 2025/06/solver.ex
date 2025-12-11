@@ -45,16 +45,16 @@ end
 
 defmodule Solver.Y2025.D06 do
   def main() do
-    problems = Reader.lines() |> Problems.parse()
+    problems = Reader.lines!() |> Problems.parse()
 
-    Answer.part1(
+    Answer.part1!(
       7_229_350_537_438,
       Problems.solve(problems, fn values ->
         Enum.map(values, &(&1 |> String.trim() |> String.to_integer()))
       end)
     )
 
-    Answer.part2(
+    Answer.part2!(
       11_479_269_003_550,
       Problems.solve(problems, fn values ->
         values
