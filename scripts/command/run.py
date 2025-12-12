@@ -1,18 +1,21 @@
 import re
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar, Final
 
 from component.command import Executor
 from component.display_runtimes import Displayer
 from component.history import History
 from component.language_strategy import LanguageStrategy
 from pojo.day import Day
+from pojo.problems import Problems
 from pojo.runtime_info import RuntimeInfo
 
 
 @dataclass(frozen=True)
 class LanguageRunner:
+    PROBLEMS: ClassVar[Final[Problems]] = Problems.default()
+
     day: Day
     name: str
     times: int
@@ -50,8 +53,9 @@ class LanguageRunner:
         result = self.executor.run(command)
         execution_ns = float(time.time_ns() - start)
 
+        problems = LanguageRunner.PROBLEMS.get(int(self.day.year))
         assert "Part 1:" in result, "Must have answer to part 1"
-        if int(self.day.day) < 25:
+        if int(self.day.day) < problems:
             assert "Part 2:" in result, "Must have answer to part 2"
 
         matches: list[str] = re.findall(r".*Runtime \(ns\): (\d*)", result)
