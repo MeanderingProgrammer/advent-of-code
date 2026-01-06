@@ -59,7 +59,7 @@ def test_line_groups(tmp_path: Path) -> None:
 
 
 def new_file(path: Path, lines: list[str]) -> Path:
-    data = path.joinpath("data.txt")
+    data = path / "data.txt"
     with data.open("w") as f:
         f.write("\n".join(lines))
     return data

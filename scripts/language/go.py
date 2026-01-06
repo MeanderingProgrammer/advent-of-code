@@ -17,7 +17,7 @@ class Go:
         return ["go", "test", "-v", "./..."]
 
     def run(self, day: Day, args: list[str]) -> list[str]:
-        solution = day.file(self.file)
+        solution = day.dir() / self.file
         return ["go", "run", str(solution)] + args
 
     def setup(self, day: Day) -> None:

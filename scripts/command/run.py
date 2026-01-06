@@ -14,7 +14,7 @@ from pojo.runtime_info import RuntimeInfo
 
 @dataclass(frozen=True)
 class LanguageRunner:
-    PROBLEMS: ClassVar[Final[Problems]] = Problems.default()
+    PROBLEMS: ClassVar[Final] = Problems.default()
 
     day: Day
     name: str

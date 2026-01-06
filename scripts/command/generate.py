@@ -1,5 +1,4 @@
 import os
-import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum, auto
@@ -32,16 +31,14 @@ class Generator:
 
     def run(self) -> None:
         current = datetime.now(timezone.utc)
-        release = self.release_time()
+        release = self.get_release_time()
         if current < release:
-            minutes = (release - current).seconds // 60
-            print("problem not released yet")
-            print(f"check back in {minutes // 60} hours {minutes % 60} minutes")
-        else:
-            self.setup_solution()
-            self.setup_data()
+            print(f"problem will release in: {release - current}")
+            return
+        self.setup_solution()
+        self.setup_data()
 
-    def release_time(self) -> datetime:
+    def get_release_time(self) -> datetime:
         # problems release at 12:00AM EST / 5:00AM UTC
         year, day = int(self.day.year), int(self.day.day)
         return datetime(year, 12, day, 5, tzinfo=timezone.utc)
@@ -50,44 +47,42 @@ class Generator:
         # create day directory, okay if it already exists
         self.day.dir().mkdir(parents=True, exist_ok=True)
         # copy over language template if not already present
-        solution = self.day.file(self.language.file)
+        solution = self.day.dir() / self.language.file
         if solution.exists():
-            print(f"solution already exists under: {solution}")
+            print(f"solution already exists: {solution}")
             return
-        self.copy_template()
+        self.setup_template()
         self.language.setup(self.day)
 
-    def copy_template(self) -> None:
-        directory = Path(f"scripts/templates/{self.language.name}")
-        if not directory.is_dir():
-            raise Exception(f"no template defined in: {directory}")
-        for file in directory.glob("**/*"):
+    def setup_template(self) -> None:
+        root = Path(f"scripts/templates/{self.language.name}")
+        assert root.is_dir(), f"no template defined: {root}"
+        for file in root.rglob("*"):
             if not file.is_file():
                 continue
-            path = file.relative_to(directory)
-            destination = self.day.file(path)
+            target = self.day.dir() / file.relative_to(root)
             # create parent directory if needed for nested solution files
-            if not destination.parent.exists():
-                destination.parent.mkdir(parents=True)
-            if not destination.exists():
-                print(f"copying {file} to {destination}")
-                shutil.copy(file, destination)
+            if not target.parent.exists():
+                target.parent.mkdir(parents=True)
+            if not target.exists():
+                print(f"copying: {file} -> {target}")
+                file.copy(target)
 
     def setup_data(self) -> None:
-        # create data directory, okay if it already exists
-        directory = Path("data").joinpath(self.day.dir())
-        directory.mkdir(parents=True, exist_ok=True)
+        # create data directory if it is missing
+        root = Path("data") / self.day.dir()
+        root.mkdir(parents=True, exist_ok=True)
 
-        data = directory.joinpath("data.txt")
-        sample = directory.joinpath("sample.txt")
-        match self.download(data):
+        data = root / "data.txt"
+        sample = root / "sample.txt"
+        match self.download_input(data):
             case Status.EXISTS:
                 print(f"already exists: {data}")
             case Status.FAILED:
-                Generator.empty_file(data)
-                Generator.empty_file(sample)
+                Generator.create_empty(data)
+                Generator.create_empty(sample)
             case Status.SUCCESS:
-                Generator.empty_file(sample)
+                Generator.create_empty(sample)
                 push: list[str] = [
                     "cd data",
                     "git add .",
@@ -96,32 +91,33 @@ class Generator:
                 ]
                 os.system(" && ".join(push))
 
-    def download(self, file: Path) -> Status:
-        if file.exists():
+    def download_input(self, path: Path) -> Status:
+        if path.exists():
             return Status.EXISTS
+
+        year, day = int(self.day.year), int(self.day.day)
+        url = f"https://adventofcode.com/{year}/day/{day}/input"
 
         cookie = Path(".adventofcode.session")
         if not cookie.exists():
             print(f"missing session cookie: {cookie}")
             return Status.FAILED
+        headers = dict(Cookie=f"session={cookie.read_text().strip()}")
 
-        url = f"https://adventofcode.com/{self.day.year}/day/{int(self.day.day)}/input"
-        headers = dict(
-            Cookie=f"session={cookie.read_text().strip()}",
-        )
         print(f"downloading input: {url}")
         response = requests.get(url, headers=headers)
+
         code = response.status_code
         if code != 200:
             print(f"request failed: {code}")
             return Status.FAILED
 
-        print(f"writing data: {file}")
-        file.write_text(response.text)
+        print(f"writing data: {path}")
+        path.write_text(response.text)
         return Status.SUCCESS
 
     @staticmethod
-    def empty_file(file: Path) -> None:
-        if not file.exists():
-            print(f"creating empty: {file}")
-            file.touch()
+    def create_empty(path: Path) -> None:
+        if not path.exists():
+            print(f"creating empty: {path}")
+            path.touch()

@@ -29,7 +29,7 @@ class Rust:
     def setup(self, day: Day) -> None:
         config = tomlkit.table()
         config["name"] = Rust.binary(day)
-        config["path"] = str(day.file(self.file))
+        config["path"] = str(day.dir() / self.file)
 
         path = Path("Cargo.toml")
         cargo = tomlkit.parse(path.read_text())

@@ -22,5 +22,5 @@ class Elixir:
 
     def setup(self, day: Day) -> None:
         module = f"Y{day.year}.D{day.day}"
-        solution = day.file(self.file)
+        solution = day.dir() / self.file
         os.system(f"sed -i '' -e 's/MODULE/{module}/g' {solution}")

@@ -7,7 +7,7 @@ from pojo.problems import Problems
 
 @dataclass(frozen=True, order=True)
 class Day:
-    PROBLEMS: ClassVar[Final[Problems]] = Problems.default()
+    PROBLEMS: ClassVar[Final] = Problems.default()
 
     year: str
     day: str
@@ -38,7 +38,4 @@ class Day:
         return result + int(self.day)
 
     def dir(self) -> Path:
-        return Path(self.year).joinpath(self.day)
-
-    def file(self, name: Path | str) -> Path:
-        return self.dir().joinpath(name)
+        return Path(self.year) / self.day

@@ -19,7 +19,7 @@ class TypeScript:
         return []
 
     def run(self, day: Day, args: list[str]) -> list[str]:
-        solution = day.file(self.file)
+        solution = day.dir() / self.file
         return ["bun", "run", str(solution)] + args
 
     def setup(self, day: Day) -> None:

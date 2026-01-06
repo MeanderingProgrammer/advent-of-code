@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import StrEnum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar, Final
 
 import matplotlib.pyplot as plt
 
@@ -21,6 +21,8 @@ class FigureProps:
 
 @dataclass(frozen=True)
 class FigureSaver:
+    ROOT: ClassVar[Final] = Path("images")
+
     archive: bool
     now: str
 
@@ -32,46 +34,39 @@ class FigureSaver:
 
     def save(self, props: FigureProps) -> None:
         """
-        archive: existing figure -> archive directory
-                 new figure      -> root directory
-        else   : existing figure -> stay in root directory
-                 new figure      -> archive directory
+        | archive | figure   | action          |
+        | ------- | -------- | --------------- |
+        | true    | existing | move to archive |
+        | true    | new      | save in root    |
+        | false   | existing | leave in root   |
+        | false   | new      | save in archive |
         """
 
-        root_dir = Path("images")
-        archive_dir = root_dir.joinpath("archive").joinpath(self.now)
-        archive_dir.mkdir(parents=True, exist_ok=True)
+        file = f"{props.name}.png"
+        root = FigureSaver.ROOT / file
+        archive = FigureSaver.ROOT / "archive" / self.now / file
+        assert not archive.exists()
 
-        name = f"{props.name}.png"
-        root_path = root_dir.joinpath(name)
-        archive_path = archive_dir.joinpath(name)
+        archive.parent.mkdir(parents=True, exist_ok=True)
 
         if self.archive:
-            if root_path.exists():
-                print(f"Moving {props.name} from {root_path} to {archive_path}")
-                assert not archive_path.exists()
-                root_path.rename(archive_path)
+            if root.exists():
+                print(f"archiving {props.name}: {archive}")
+                root.rename(archive)
             else:
-                print(f"Skip archiving {props.name}, {root_path} already empty")
+                print(f"skip archiving {props.name}: missing")
 
-        path = root_path if self.archive else archive_path
-        print(f"Saving {props.name} to {path}")
-        assert not path.exists()
+        output = root if self.archive else archive
+        print(f"saving {props.name}: {output}")
+        assert not output.exists()
 
+        fig, legend = props.figure, props.legend
         match props.kind:
             case FigureKind.MATPLOTLIB:
-                self.save_matplotlib(props.figure, props.legend, path)
+                if legend is not None:
+                    fig.get_figure().legend(**legend)
+                plt.tight_layout()
+                fig.get_figure().savefig(str(output))
+                fig.get_figure().clear()
             case FigureKind.PLOTLY:
-                self.save_plotly(props.figure, path)
-
-    def save_matplotlib(
-        self, fig: Any, legend: dict[str, Any] | None, path: Path
-    ) -> None:
-        if legend is not None:
-            fig.get_figure().legend(**legend)
-        plt.tight_layout()
-        fig.get_figure().savefig(str(path))
-        fig.get_figure().clear()
-
-    def save_plotly(self, fig: Any, path: Path) -> None:
-        fig.write_image(file=str(path), format="png")
+                fig.write_image(file=str(output), format="png")

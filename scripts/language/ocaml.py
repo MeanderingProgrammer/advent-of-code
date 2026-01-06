@@ -25,7 +25,7 @@ class Ocaml:
 
     def setup(self, day: Day) -> None:
         binary = Ocaml.binary(day)
-        dune = day.file("dune")
+        dune = day.dir() / "dune"
         os.system(f"sed -i '' -e 's/EXEC/{binary}/g' {dune}")
 
     @staticmethod

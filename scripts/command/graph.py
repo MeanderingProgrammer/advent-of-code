@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Self
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -9,12 +10,14 @@ from component.figure_saver import FigureKind, FigureProps, FigureSaver
 from component.history import History
 
 
+@dataclass(frozen=True)
 class Grapher:
-    def __init__(self, archive: bool) -> None:
-        self.saver: FigureSaver = FigureSaver(
-            archive=archive,
-            now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-        )
+    saver: FigureSaver
+
+    @classmethod
+    def new(cls, archive: bool) -> Self:
+        now = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        return cls(FigureSaver(archive, now))
 
     def info(self) -> dict[str, Any]:
         return self.saver.info()

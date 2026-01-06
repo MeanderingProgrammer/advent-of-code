@@ -135,7 +135,7 @@ def graph(archive: bool, info: bool) -> None:
     """
     from command.graph import Grapher
 
-    grapher = Grapher(archive=archive)
+    grapher = Grapher.new(archive=archive)
     run_command(grapher, info)
 
 

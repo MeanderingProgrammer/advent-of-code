@@ -6,7 +6,7 @@ from pojo.day import Day
 
 @dataclass(frozen=True)
 class Python:
-    LIB: ClassVar[Final[str]] = "lib/python"
+    LIB: ClassVar[Final] = "lib/python"
 
     name: str = "python"
     file: str = "solver.py"
@@ -21,7 +21,7 @@ class Python:
         return ["pytest", "-s", Python.LIB]
 
     def run(self, day: Day, args: list[str]) -> list[str]:
-        solution = day.file(self.file)
+        solution = day.dir() / self.file
         return ["python", str(solution)] + args
 
     def setup(self, day: Day) -> None:
