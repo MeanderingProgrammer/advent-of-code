@@ -31,7 +31,7 @@ def main() -> None:
 
 
 def get_code(instructions: list[str], keypad: list[list[str]]) -> str:
-    phone: Grid[str] = create_phone(keypad)
+    phone = create_phone(keypad)
     position: Point = {digit: location for location, digit in phone.items()}["5"]
 
     code: list[str] = []
@@ -49,9 +49,8 @@ def create_phone(pattern: list[list[str]]) -> Grid[str]:
     phone: Grid[str] = dict()
     for y, row in enumerate(pattern):
         for x, value in enumerate(row):
-            point: Point = (x, y)
             if value != "*":
-                phone[point] = value
+                phone[(x, y)] = value
     return phone
 
 

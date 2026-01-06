@@ -3,9 +3,9 @@ from typing import Callable, Self
 
 from aoc import answer
 from aoc.parser import Parser
-from aoc.point import Point
+from aoc.point import Point, PointHelper
 
-Actions = dict[str, Callable[[int], int]]
+type Actions = dict[str, Callable[[int], int]]
 
 SINGLE: Actions = dict(
     on=lambda _: 1,
@@ -31,8 +31,8 @@ class Direction:
         values = s.split()
         return cls(
             action=values[-4],
-            start=Direction.to_point(values[-3]),
-            end=Direction.to_point(values[-1]),
+            start=PointHelper.parse(values[-3]),
+            end=PointHelper.parse(values[-1]),
         )
 
     def apply(self, grid: list[int], actions: Actions) -> None:
@@ -40,11 +40,6 @@ class Direction:
             for y in range(self.start[1], self.end[1] + 1):
                 index = (x * 1_000) + y
                 grid[index] = actions[self.action](grid[index])
-
-    @staticmethod
-    def to_point(coords: str) -> Point:
-        values = coords.split(",")
-        return int(values[0]), int(values[1])
 
 
 @answer.timer

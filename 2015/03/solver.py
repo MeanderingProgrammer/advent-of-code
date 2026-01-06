@@ -15,15 +15,13 @@ def run(data: str, santas: int) -> int:
     for i in range(santas):
         locations.append((0, 0))
 
-    visited = [location for location in locations]
-
+    visited = set(locations)
     for i, direction in enumerate(data):
+        santa = i % santas
         direction = Direction.new(direction)
-        santa_index = i % len(locations)
-        locations[santa_index] = PointHelper.go(locations[santa_index], direction)
-        visited.append(locations[santa_index])
-
-    return len(set(visited))
+        locations[santa] = PointHelper.go(locations[santa], direction)
+        visited.add(locations[santa])
+    return len(visited)
 
 
 if __name__ == "__main__":

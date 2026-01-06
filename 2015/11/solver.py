@@ -1,20 +1,25 @@
+from dataclasses import dataclass
+from typing import Self
+
 from aoc import answer
 from aoc.parser import Parser
 
 
-class PasswordGenerator:
-    def __init__(self, starting_value: str):
-        self.value: list[int] = [
-            PasswordGenerator.to_index(ch) for ch in starting_value
-        ]
+@dataclass()
+class Generator:
+    value: list[int]
+
+    @classmethod
+    def new(cls, s: str) -> Self:
+        return cls([Generator.to_index(ch) for ch in s])
 
     def next(self) -> None:
         index = self.get_last_index_under(25)
-        if index is not None:
-            self.value[index] += 1
-        else:
-            index = 0
+        if index is None:
             self.value = [0] + self.value
+            index = 0
+        else:
+            self.value[index] += 1
         for i in range(index + 1, len(self.value)):
             self.value[i] = 0
 
@@ -25,38 +30,36 @@ class PasswordGenerator:
         return None
 
     def valid(self) -> bool:
-        if not self.contains_triple():
-            return False
-        if self.contains_invalid():
-            return False
-        if not self.contains_pairs():
-            return False
-        return True
+        return (
+            self.contains_triple()
+            and not self.contains_invalid()
+            and self.num_pairs() > 1
+        )
 
     def contains_triple(self) -> bool:
         for i in range(len(self.value) - 2):
-            first, second, third = self.value[i], self.value[i + 1], self.value[i + 2]
-            if first + 1 == second and second + 1 == third:
+            start = self.value[i]
+            if start + 1 == self.value[i + 1] and start + 2 == self.value[i + 2]:
                 return True
         return False
 
     def contains_invalid(self) -> bool:
         all_invalid: list[int] = [
-            self.to_index("i"),
-            self.to_index("o"),
-            self.to_index("l"),
+            Generator.to_index("i"),
+            Generator.to_index("o"),
+            Generator.to_index("l"),
         ]
         for invalid in all_invalid:
             if invalid in self.value:
                 return True
         return False
 
-    def contains_pairs(self) -> bool:
+    def num_pairs(self) -> int:
         pairs: set[int] = set()
         for i, character in enumerate(self.value[:-1]):
             if character == self.value[i + 1]:
                 pairs.add(character)
-        return len(pairs) > 1
+        return len(pairs)
 
     def get_value(self) -> str:
         return "".join([chr(i + ord("a")) for i in self.value])
@@ -69,12 +72,12 @@ class PasswordGenerator:
 @answer.timer
 def main() -> None:
     value = Parser().string()
-    generator = PasswordGenerator(value)
+    generator = Generator.new(value)
     answer.part1("hxbxxyzz", run(generator))
     answer.part2("hxcaabcc", run(generator))
 
 
-def run(generator: PasswordGenerator) -> str:
+def run(generator: Generator) -> str:
     generator.next()
     while not generator.valid():
         generator.next()

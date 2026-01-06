@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from aoc import answer
 from aoc.parser import Parser
 
-Bridge = list[tuple[int, int]]
+type Bridge = list[tuple[int, int]]
 
 
 def strength(bridge: Bridge) -> int:

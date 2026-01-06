@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from aoc import answer
 from aoc.parser import Parser
 
-Point = tuple[int, int, int, int]
+type Point = tuple[int, int, int, int]
 
 
 def diff(p1: Point, p2: Point) -> int:

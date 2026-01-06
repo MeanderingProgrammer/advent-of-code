@@ -4,7 +4,7 @@ from typing import Self
 from aoc import answer
 from aoc.parser import Parser
 
-Vector = tuple[int, int, int]
+type Vector = tuple[int, int, int]
 
 
 def parse_vector(value: str) -> tuple[str, Vector]:

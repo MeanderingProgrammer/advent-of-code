@@ -5,7 +5,7 @@ from typing import Callable, Self
 from aoc import answer
 from aoc.parser import Parser
 
-Vector = tuple[int, int, int]
+type Vector = tuple[int, int, int]
 
 
 def add(v1: Vector, v2: Vector) -> Vector:

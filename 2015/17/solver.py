@@ -21,7 +21,7 @@ def get_combinations(capacities: list[int], volume: int) -> list[tuple[int, ...]
 
 
 def num_min(combinations: list[tuple[int, ...]]) -> int:
-    lengths: list[int] = [len(combination) for combination in combinations]
+    lengths = [len(combination) for combination in combinations]
     return sum([length == min(lengths) for length in lengths])
 
 

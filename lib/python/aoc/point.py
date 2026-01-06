@@ -59,6 +59,11 @@ type Point = tuple[int, int]
 
 class PointHelper:
     @staticmethod
+    def parse(s: str) -> Point:
+        x, y = s.split(",")
+        return int(x), int(y)
+
+    @staticmethod
     def add(p1: Point, p2: Point) -> Point:
         return (p1[0] + p2[0], p1[1] + p2[1])
 

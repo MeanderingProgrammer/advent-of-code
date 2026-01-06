@@ -1,5 +1,4 @@
 import pytest
-
 from aoc import answer
 
 

@@ -3,7 +3,7 @@ import json
 from aoc import answer
 from aoc.parser import Parser
 
-Doc = str | int | list["Doc"] | dict[str, "Doc"]
+type Doc = str | int | list[Doc] | dict[str, Doc]
 
 
 @answer.timer
@@ -20,11 +20,10 @@ def total(value: Doc, ignore_red: bool) -> int:
         return value
     elif isinstance(value, list):
         return sum([total(entry, ignore_red) for entry in value])
+    elif ignore_red and "red" in value.values():
+        return 0
     else:
-        if ignore_red and "red" in value.values():
-            return 0
-        else:
-            return sum([total(entry, ignore_red) for entry in value.values()])
+        return sum([total(entry, ignore_red) for entry in value.values()])
 
 
 if __name__ == "__main__":

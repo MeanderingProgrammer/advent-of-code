@@ -5,7 +5,7 @@ from aoc import answer
 from aoc.parser import Parser
 from aoc.point import Point
 
-Location = tuple[Point, int]
+type Location = tuple[Point, int]
 
 MIDDLE = (2, 2)
 

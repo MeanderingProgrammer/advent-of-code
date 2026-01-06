@@ -7,7 +7,7 @@ from aoc.parser import Parser
 
 
 class Computer:
-    def __init__(self, id: int, instructions: list["Instruction"]):
+    def __init__(self, id: int, instructions: list[Instruction]):
         self.regs: dict[str, int] = defaultdict(int)
         self.regs["p"] = id
         self.ip: int = 0

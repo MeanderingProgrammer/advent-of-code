@@ -11,9 +11,7 @@ def main() -> None:
 
 
 def unzip_sort(values: list[str], i: int) -> list[int]:
-    result = [int(value.split()[i]) for value in values]
-    result.sort()
-    return result
+    return sorted([int(value.split()[i]) for value in values])
 
 
 def sum_diff(left: list[int], right: list[int]) -> int:
