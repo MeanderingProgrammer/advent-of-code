@@ -1,6 +1,6 @@
-import os
 from dataclasses import dataclass
 
+from component.command import Executor
 from pojo.day import Day
 
 
@@ -26,7 +26,7 @@ class Ocaml:
     def setup(self, day: Day) -> None:
         binary = Ocaml.binary(day)
         dune = day.dir() / "dune"
-        os.system(f"sed -i '' -e 's/EXEC/{binary}/g' {dune}")
+        Executor().call(["sed", "-i", "", "-e", f"s/EXEC/{binary}/g", str(dune)])
 
     @staticmethod
     def binary(day: Day) -> str:

@@ -1,6 +1,7 @@
 import os
 import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 
 env = os.environ.copy()
 env["FORCE_COLOR"] = "1"
@@ -11,11 +12,14 @@ env["CLICOLOR_FORCE"] = "1"
 class Executor:
     output: bool = True
 
-    def run(self, command: list[str]) -> str:
-        if len(command) == 0:
+    def call(self, args: list[str], cwd: Path | None = None) -> None:
+        subprocess.run(args, cwd=cwd, check=True)
+
+    def run(self, args: list[str]) -> str:
+        if len(args) == 0:
             return ""
 
-        result = subprocess.run(command, env=env, capture_output=True, text=True)
+        result = subprocess.run(args, env=env, capture_output=True, text=True)
         output = self.tee(result.stdout)
         self.tee(result.stderr)
         if result.returncode != 0:

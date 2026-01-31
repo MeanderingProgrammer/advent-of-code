@@ -1,6 +1,6 @@
-import os
 from dataclasses import dataclass
 
+from component.command import Executor
 from pojo.day import Day
 
 
@@ -23,4 +23,4 @@ class Elixir:
     def setup(self, day: Day) -> None:
         module = f"Y{day.year}.D{day.day}"
         solution = day.dir() / self.file
-        os.system(f"sed -i '' -e 's/MODULE/{module}/g' {solution}")
+        Executor().call(["sed", "-i", "", "-e", f"s/MODULE/{module}/g", str(solution)])

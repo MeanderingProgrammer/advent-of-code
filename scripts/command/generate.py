@@ -1,4 +1,3 @@
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import StrEnum, auto
@@ -7,6 +6,7 @@ from typing import Any
 
 import requests
 
+from component.command import Executor
 from language.language import Language
 from pojo.day import Day
 
@@ -69,8 +69,10 @@ class Generator:
                 file.copy(target)
 
     def setup_data(self) -> None:
+        repo = Path("data")
+
         # create data directory if it is missing
-        root = Path("data") / self.day.dir()
+        root = repo / self.day.dir()
         root.mkdir(parents=True, exist_ok=True)
 
         data = root / "data.txt"
@@ -83,13 +85,11 @@ class Generator:
                 Generator.create_empty(sample)
             case Status.SUCCESS:
                 Generator.create_empty(sample)
-                push: list[str] = [
-                    "cd data",
-                    "git add .",
-                    f"git commit -m 'Add input for {self.day.dir()}'",
-                    "git push",
-                ]
-                os.system(" && ".join(push))
+                Executor().call(["git", "add", "."], repo)
+                Executor().call(
+                    ["git", "commit", "-m", f"Add input for {self.day.dir()}"], repo
+                )
+                Executor().call(["git", "push"], repo)
 
     def download_input(self, path: Path) -> Status:
         if path.exists():
